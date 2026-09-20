@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Menu, Avatar, Typography, Spin, Button } from 'antd';
+import { Avatar, Button, Menu, Spin, Typography } from 'antd';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 
-const { Sider, Content } = Layout;
 const { Text } = Typography;
 
 const MENU = [
@@ -60,13 +59,13 @@ export default function UserLayout() {
   }
 
   return (
-    <Layout className="user-layout-wrap">
-      <Sider width={200} className="user-sider">
+    <div className="user-layout-wrap">
+      <aside className="user-sider">
         <div className="user-sider-profile">
-          <Avatar src={info?.head} size={56}>
+          <Avatar src={info?.head} size={64}>
             {info?.name?.slice(0, 1)}
           </Avatar>
-          <div className="mt-8">
+          <div className="user-sider-name">
             <Text strong>{info?.name}</Text>
           </div>
           <Text type="secondary" className="color-secondary-12">
@@ -79,10 +78,10 @@ export default function UserLayout() {
             退出登录
           </Button>
         </div>
-      </Sider>
-      <Content>
+      </aside>
+      <section className="user-main">
         <Outlet />
-      </Content>
-    </Layout>
+      </section>
+    </div>
   );
 }

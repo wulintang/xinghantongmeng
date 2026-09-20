@@ -39,7 +39,6 @@ function ScrollToTop(): null {
 
 const theme = {
     token: {
-        colorPrimary: '#8a2b1d',
         borderRadius: 8,
     },
 };

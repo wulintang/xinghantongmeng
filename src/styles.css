@@ -566,45 +566,66 @@ body {
 }
 
 .user-layout-wrap {
-  max-width: 100%;
-  margin: 24px auto;
-  background: transparent;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .user-sider {
+  flex: 0 0 220px;
   background: #fff;
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
-  margin-right: 16px;
+  overflow: hidden;
 }
 
 .user-sider-profile {
-  padding: 16px;
+  padding: 20px 16px;
   text-align: center;
   border-bottom: 1px solid #f0f0f0;
+}
+
+.user-sider-name {
+  margin-top: 8px;
 }
 
 .user-sider-logout {
   padding: 12px;
 }
 
+.user-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 用户中心内的卡片铺满内容列，不再各自限宽 */
 .user-card {
+  margin: 0;
+  width: 100%;
+}
+
+.user-card-560,
+.user-card-720,
+.user-card-760 {
+  max-width: none;
+}
+
+/* 登录/注册独立页保持居中限宽 */
+.user-card-480 {
+  max-width: 480px;
   margin: 24px auto;
 }
 
-.user-card-480 {
-  max-width: 480px;
-}
+@media (max-width: 768px) {
+  .user-layout-wrap {
+    flex-direction: column;
+  }
 
-.user-card-560 {
-  max-width: 560px;
-}
-
-.user-card-720 {
-  max-width: 720px;
-}
-
-.user-card-760 {
-  max-width: 760px;
+  .user-sider {
+    flex: none;
+    width: 100%;
+  }
 }
 
 .user-profile-name {

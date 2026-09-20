@@ -47,6 +47,12 @@ const WebsiteDetailPage: React.FC = () => {
     const [error, setError] = useState('');
     const [liked, setLiked] = useState(false);
     const [zan, setZan] = useState(0);
+    // 认领状态 / 认领中 / 举报弹窗
+    const [claimed, setClaimed] = useState(false);
+    const [claiming, setClaiming] = useState(false);
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportContent, setReportContent] = useState('');
+    const [reporting, setReporting] = useState(false);
 
     usePageMeta({
         title: item?.title || item?.name || '站点详情',
@@ -59,7 +65,11 @@ const WebsiteDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        Promise.all([getWebsiteByDomain(domain, 1, getToken()), getPosts()])
+        // feed 失败不影响站点详情本身，单独兜底成空列表
+        Promise.all([
+            getWebsiteByDomain(domain, 1, getToken()),
+            getPosts().catch(() => [] as PostData[]),
+        ])
             .then(([r, posts]) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) {
@@ -72,8 +82,9 @@ const WebsiteDetailPage: React.FC = () => {
                 }
                 setAllPosts(posts);
             })
-            .catch(() => {
-                if (alive) setError('站点加载失败');
+            .catch((e: any) => {
+                // 不要把真实错误吞掉，否则任何异常都被糊成「站点加载失败」，无法定位
+                if (alive) setError('站点加载失败：' + (e?.message || String(e)));
             })
             .finally(() => {
                 if (alive) setLoading(false);
@@ -195,12 +206,8 @@ const WebsiteDetailPage: React.FC = () => {
                                 访问网站
                             </Button>
                         ) : null}
-                        <Button
-                            icon={liked ? '♥' : '♡'}
-                            type={liked ? 'primary' : 'default'}
-                            onClick={onLike}
-                        >
-                            点赞 {zan}
+                        <Button type={liked ? 'primary' : 'default'} onClick={onLike}>
+                            {liked ? '♥' : '♡'} 点赞 {zan}
                         </Button>
                         <Button onClick={() => setReportOpen(true)}>举报</Button>
                     </Space>

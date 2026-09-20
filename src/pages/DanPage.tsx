@@ -29,7 +29,7 @@ const DanPage: React.FC = () => {
         setLoading(true);
         setError('');
         setDan(null);
-        getDan(key)
+        getDan(key, 1)
             .then((r) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) setDan(r.data);

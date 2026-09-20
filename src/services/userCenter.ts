@@ -360,9 +360,9 @@ export function getTags(type?: number) {
   return request<ApiResp<TagItem[]>>(`${OPEN}/tags.html` + qs({ type }));
 }
 
-// 单页（my_dan）
-export function getDan(alias?: string) {
-  return request<ApiResp<DanItem>>(`${OPEN}/dan.html` + qs({ alias }));
+// 单页（my_dan）；count=1 时后端浏览量 +1（仅单页详情页传）
+export function getDan(alias?: string, count = 0) {
+  return request<ApiResp<DanItem>>(`${OPEN}/dan.html` + qs({ alias, count }));
 }
 export function getDans() {
   return request<ApiResp<DanItem[]>>(`${OPEN}/dans.html`);
@@ -406,8 +406,8 @@ export function getArticles(
 ) {
   return request<ApiResp<PageResult<ArticleItem>>>(`${OPEN}/articles.html` + qs(params));
 }
-export function getArticle(id: number | string, key = '') {
-  return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id, key }));
+export function getArticle(id: number | string, key = '', count = 0) {
+  return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id, key, count }));
 }
 
 // 广告位（my_ad）

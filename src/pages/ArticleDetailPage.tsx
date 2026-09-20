@@ -34,7 +34,7 @@ const ArticleDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        getArticle(articleId)
+        getArticle(articleId, getToken(), 1)
             .then((r) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) {

@@ -34,10 +34,10 @@ export default function BalancePage() {
   useEffect(load, [navigate]);
 
   return (
-    <Card style={{ maxWidth: 760, margin: '40px auto' }}>
+    <Card className="user-card user-card-760">
       <Title level={4}>余额明细</Title>
       <Spin spinning={loading}>
-        <Statistic title="账户余额(元)" value={total} precision={2} style={{ marginBottom: 16 }} />
+        <Statistic title="账户余额(元)" value={total} precision={2} className="mb-16" />
         <Table<BalanceItem>
           dataSource={list}
           rowKey="id"

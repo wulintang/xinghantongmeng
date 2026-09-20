@@ -61,19 +61,19 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 60 }}>
+      <div className="center-pad-60">
         <Spin />
       </div>
     );
   }
 
   return (
-    <Card style={{ maxWidth: 560, margin: '40px auto' }}>
-      <Space align="center" style={{ marginBottom: 16 }}>
+    <Card className="user-card user-card-560">
+      <Space align="center" className="mb-16">
         <Avatar src={info?.head} size={56}>
           {info?.name?.charAt(0)}
         </Avatar>
-        <Title level={4} style={{ margin: 0 }}>
+        <Title level={4} className="user-profile-name">
           {info?.name}
         </Title>
       </Space>

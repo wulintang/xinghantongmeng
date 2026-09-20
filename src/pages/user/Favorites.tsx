@@ -29,7 +29,7 @@ export default function FavoritesPage() {
   }, [navigate]);
 
   return (
-    <Card style={{ maxWidth: 720, margin: '40px auto' }}>
+    <Card className="user-card user-card-720">
       <Title level={4}>我的收藏</Title>
       <Spin spinning={loading}>
         {list.length === 0 ? (
@@ -45,7 +45,7 @@ export default function FavoritesPage() {
                     <>
                       <Tag>{it.domain}</Tag>
                       {it.feed_url ? <Tag color="green">有 feed</Tag> : <Tag>无 feed</Tag>}
-                      <span style={{ color: '#999' }}>{dayjs(it.time * 1000).format('YYYY-MM-DD')}</span>
+                      <span className="color-secondary-12">{dayjs(it.time * 1000).format('YYYY-MM-DD')}</span>
                     </>
                   }
                 />

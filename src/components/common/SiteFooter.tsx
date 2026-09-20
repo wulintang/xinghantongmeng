@@ -1,118 +1,70 @@
-import React from 'react';
-import { Layout, Typography, Space, Divider, Button, Dropdown, Menu, Tooltip } from 'antd';
-import { Rss, Github, Cloud } from 'lucide-react';
-
-const { Content } = Layout;
-const { Text, Link } = Typography;
-
-// 下拉菜单内容
-const rssMenu = (
-  <Menu>
-    <Menu.Item>
-      <Link href="https://www.xinghantongmeng.com/feed.xml" target="_blank">推荐文章 RSS 订阅</Link>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item>
-      <Link href="https://www.xinghantongmeng.com/feed.xml?sort=latest" target="_blank">最新文章 RSS 订阅</Link>
-    </Menu.Item>
-  </Menu>
-);
-
-const githubMenu = (
-  <Menu>
-    <Menu.Item>
-      <Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">前端代码 GitHub</Link>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item>
-      <Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">后端代码 GitHub</Link>
-    </Menu.Item>
-  </Menu>
-);
+import React, { useEffect, useState } from 'react';
+import { getSite, getLinks, type SiteConfig, type LinkItem } from '@/services/userCenter';
 
 export default function SiteFooter() {
-  return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
-      <div style={{ marginTop: 24 }}>
-        
-        {/* 顶部链接横向滚动区域 */}
-        <div style={{ whiteSpace: 'nowrap', overflowX: 'auto' }}>
-          <Space align="center" justify="center" size="small">
-            <Link strong href="/sponsor">赞助本站</Link>
-            <Divider type="vertical" />
-            <Link strong href="/release-notes">发布历史</Link>
-            <Divider type="vertical" />
-            <Link strong href="/about">关于本站</Link>
-            <Divider type="vertical" />
-            <Link strong href="/annual-reports">年度报告</Link>
-            <Divider type="vertical" />
-            <Link strong href="/similar-sites">同类网站</Link>
-          </Space>
-        </div>
+    const [site, setSite] = useState<SiteConfig | null>(null);
+    const [links, setLinks] = useState<LinkItem[]>([]);
 
-        <Divider style={{ margin: '12px 0' }} />
+    useEffect(() => {
+        Promise.all([getSite(), getLinks()])
+            .then(([s, l]) => {
+                if (s.code === 1 && s.data) setSite(s.data);
+                if (l.code === 1 && l.data) setLinks(l.data);
+            })
+            .catch(() => {});
+    }, []);
 
-        {/* 图标按钮区域 */}
-        <div style={{ marginTop: 8 }}>
-          <Space align="center" justify="center" size="small">
-            
-            {/* RSS 按钮 */}
-            <Dropdown overlay={rssMenu} trigger={['click']}>
-              <Button shape="circle" type="text" style={{ padding: 4 }}>
-                <Tooltip title="本站文章 RSS 订阅">
-                  <Rss width={14} height={14} />
-                </Tooltip>
-              </Button>
-            </Dropdown>
+    const bottomLinks = links.filter((l) => l.wz === 2);
+    const friendLinks = links.filter((l) => l.wz === 9);
 
-            <Divider type="vertical" />
-            
-            {/* GitHub 按钮 */}
-            <Dropdown overlay={githubMenu} trigger={['click']}>
-              <Button shape="circle" type="text" style={{ padding: 4 }}>
-                <Tooltip title="本站代码 GitHub 开源">
-                  <Github width={14} height={14} />
-                </Tooltip>
-              </Button>
-            </Dropdown>
+    return (
+        <footer className="site-footer">
+            <div className="container">
+                {bottomLinks.length > 0 && (
+                    <div className="site-footer-nav">
+                        {bottomLinks.map((l) => (
+                            <a
+                                key={l.id}
+                                href={l.lianjie}
+                                target={l.xin === 1 ? '_blank' : undefined}
+                                rel={l.xin === 1 ? 'noreferrer' : undefined}
+                            >
+                                {l.name}
+                            </a>
+                        ))}
+                    </div>
+                )}
 
-            <Divider type="vertical" />
-            
-            {/* 腾讯云按钮 */}
-            <Link href="https://curl.qcloud.com/okTsvSrj" target="_blank">
-              <Button shape="circle" type="text" style={{ padding: 4 }}>
-                <Tooltip title="本站使用腾讯云服务">
-                  <Cloud width={14} height={14} />
-                </Tooltip>
-              </Button>
-            </Link>
-          </Space>
-        </div>
+                {friendLinks.length > 0 && (
+                    <div className="site-footer-friends">
+                        <span className="site-footer-label">友情链接：</span>
+                        {friendLinks.map((l) => (
+                            <a
+                                key={l.id}
+                                href={l.lianjie}
+                                target={l.xin === 1 ? '_blank' : undefined}
+                                rel={l.xin === 1 ? 'noreferrer' : undefined}
+                            >
+                                {l.name}
+                            </a>
+                        ))}
+                    </div>
+                )}
 
-        {/* 版权信息 */}
-        <div style={{ marginTop: 16, marginBottom: 8, textAlign: 'center' }}>
-          <div style={{ marginBottom: 8 }}>
-            <Link href="/planet-shuttle" target="_blank">
-              <img
-                src="/assets/images/sites/logo/planet-shuttle.svg"
-                alt="星球穿梭"
-                style={{ height: 24 }}
-              />
-            </Link>
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <Text type="secondary">将一个个散落在各处的孤岛连接成一片广袤无垠的新大陆！</Text>
-          </div>
-
-          <Space direction="vertical" align="center" size="small">
-            <Link href="https://beian.miit.gov.cn/">辽ICP备2022012085号-2</Link>
-            <Text type="secondary">
-              Copyright © 2023-2026 <Link href="https://www.xinghantongmeng.com/home">兴汉同盟</Link>
-            </Text>
-          </Space>
-        </div>
-      </div>
-    </div>
-  );
+                <div className="site-footer-copyright">
+                    <div>{site?.title || '兴汉同盟'}</div>
+                    {site?.beian && (
+                        <div>
+                            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
+                                {site.beian}
+                            </a>
+                        </div>
+                    )}
+                    {site?.gonganbei && (
+                        <div dangerouslySetInnerHTML={{ __html: site.gonganbei }} />
+                    )}
+                </div>
+            </div>
+        </footer>
+    );
 }

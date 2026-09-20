@@ -56,9 +56,9 @@ export default function ReportsPage() {
   };
 
   return (
-    <Card style={{ maxWidth: 760, margin: '40px auto' }}>
+    <Card className="user-card user-card-760">
       <Title level={4}>我的举报</Title>
-      <Space style={{ marginBottom: 16 }}>
+      <Space className="mb-16">
         <Button type="primary" onClick={() => setOpen(true)}>
           提交举报
         </Button>

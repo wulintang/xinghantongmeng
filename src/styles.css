@@ -143,3 +143,548 @@ p img {
     transform: scale(1);
   }
 }
+
+/* ============ 统一布局 ============ */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.site-header {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.site-footer {
+  padding: 28px 0;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+}
+
+.site-footer a {
+  color: #888;
+}
+
+.site-content {
+  padding: 24px 0;
+  min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 12px;
+  }
+}
+
+/* ============ 头部 ============ */
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.site-logo-img {
+  height: 32px;
+  display: block;
+}
+
+.site-logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+.site-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.site-nav-menu {
+  border-bottom: none;
+  background: transparent;
+  width: 100%;
+  justify-content: center;
+}
+
+.site-user {
+  flex: none;
+}
+
+.site-user-avatar {
+  background: #8a2b1d;
+  cursor: pointer;
+}
+
+/* ============ 底部 ============ */
+.site-footer-nav {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.site-footer-friends {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.site-footer-label {
+  color: #888;
+}
+
+.site-footer-copyright {
+  margin-top: 8px;
+  line-height: 1.8;
+}
+
+.site-footer-copyright a {
+  color: #888;
+}
+
+.main-content-header {
+  margin-bottom: 12px;
+}
+
+/* ============ 骨架屏 ============ */
+.skeleton {
+  background: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.sk-line {
+  height: 12px;
+  margin: 8px 0;
+}
+
+.sk-line-long {
+  width: 100%;
+}
+
+.sk-line-mid {
+  width: 70%;
+}
+
+.sk-line-short {
+  width: 40%;
+}
+
+.sk-line-title {
+  height: 22px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+
+.sk-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.sk-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.sk-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.sk-card,
+.sk-blog-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.sk-home-banner {
+  height: 160px;
+  margin-bottom: 16px;
+}
+
+.sk-home-search {
+  height: 44px;
+  margin-bottom: 16px;
+}
+
+.sk-card-img {
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+.sk-blogs-filter {
+  height: 40px;
+  margin-bottom: 16px;
+}
+
+.sk-blog-card-img {
+  height: 110px;
+  margin-bottom: 10px;
+}
+
+.sk-detail {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.sk-detail-img {
+  flex: none;
+  width: 320px;
+  height: 280px;
+}
+
+.sk-detail-body {
+  flex: 1;
+}
+
+.sk-detail-body .sk-line {
+  margin: 10px 0;
+}
+
+.sk-dan-title {
+  height: 26px;
+  width: 40%;
+  margin-bottom: 16px;
+}
+
+.sk-dan-body .sk-line {
+  margin: 10px 0;
+}
+
+.sk-user {
+  display: flex;
+  gap: 24px;
+}
+
+.sk-user-menu {
+  width: 200px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sk-user-menu-item {
+  height: 16px;
+}
+
+.sk-user-card {
+  flex: 1;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.sk-user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .sk-grid-3,
+  .sk-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sk-detail {
+    flex-direction: column;
+  }
+
+  .sk-detail-img {
+    width: 100%;
+  }
+
+  .sk-user {
+    flex-direction: column;
+  }
+
+  .sk-user-menu {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* ============ 首页 / 博客广场 卡片 ============ */
+.website-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.website-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 16px;
+  transition: box-shadow 0.2s ease;
+}
+
+.website-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.website-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.website-card-ico {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: contain;
+  flex: none;
+}
+
+.website-card-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.website-card-keywords {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.website-card-meta {
+  color: #aaa;
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+}
+
+.home-hero {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.home-hero-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.home-hero-desc {
+  color: #888;
+  font-size: 14px;
+}
+
+.home-declare {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.blog-detail-wrap {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.blog-detail-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.blog-detail-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.8;
+  font-size: 15px;
+  color: #333;
+}
+
+.blog-detail-friends {
+  flex: none;
+  width: 220px;
+}
+
+.blog-detail-notfound {
+  text-align: center;
+  padding: 60px 0;
+  color: #888;
+}
+
+.dan-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dan-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.dan-content {
+  line-height: 1.9;
+  font-size: 15px;
+  color: #333;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .website-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .blog-detail-wrap {
+    flex-direction: column;
+  }
+
+  .blog-detail-friends {
+    width: 100%;
+  }
+}
+
+/* ============ 用户中心提交站点 ============ */
+.submit-site-form {
+  margin-top: 16px;
+  max-width: 480px;
+}
+
+/* ============ 工具类 / 用户中心 ============ */
+.mt-8 {
+  margin-top: 8px;
+}
+
+.mb-8 {
+  margin-bottom: 8px;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.mt-16 {
+  margin-top: 16px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.color-secondary-12 {
+  color: #999;
+  font-size: 12px;
+}
+
+.color-secondary-12-ml {
+  color: #999;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.user-loading {
+  text-align: center;
+  padding: 80px;
+}
+
+.user-layout-wrap {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: transparent;
+}
+
+.user-sider {
+  background: #fff;
+  border-radius: 8px;
+  margin-right: 16px;
+}
+
+.user-sider-profile {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.user-sider-logout {
+  padding: 12px;
+}
+
+.user-card {
+  margin: 40px auto;
+}
+
+.user-card-480 {
+  max-width: 480px;
+}
+
+.user-card-560 {
+  max-width: 560px;
+}
+
+.user-card-720 {
+  max-width: 720px;
+}
+
+.user-card-760 {
+  max-width: 760px;
+}
+
+.user-profile-name {
+  margin: 0;
+}
+
+.user-msg-text {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.compact-full {
+  width: 100%;
+}
+
+.compact-item {
+  flex: 1;
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+.center-pad-60 {
+  text-align: center;
+  padding: 60px;
+}

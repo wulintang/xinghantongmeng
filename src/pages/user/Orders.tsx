@@ -31,7 +31,7 @@ export default function OrdersPage() {
   useEffect(load, [navigate]);
 
   return (
-    <Card style={{ maxWidth: 760, margin: '40px auto' }}>
+    <Card className="user-card user-card-760">
       <Title level={4}>我的订单</Title>
       <Spin spinning={loading}>
         <Table<OrderItem>

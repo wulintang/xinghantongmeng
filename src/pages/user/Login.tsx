@@ -44,12 +44,12 @@ export default function LoginPage() {
   };
 
   return (
-    <Card style={{ maxWidth: 480, margin: '40px auto' }}>
+    <Card className="user-card user-card-480">
       <Title level={3}>登录</Title>
       <Radio.Group
         value={mode}
         onChange={(e) => setMode(e.target.value)}
-        style={{ marginBottom: 16 }}
+        className="mb-16"
       >
         <Radio.Button value="pwd">密码登录</Radio.Button>
         <Radio.Button value="code">验证码登录</Radio.Button>
@@ -80,11 +80,11 @@ export default function LoginPage() {
             <Form.Item name="mail" label="邮箱">
               <Input placeholder="用于接收邮箱验证码" />
             </Form.Item>
-            <Space.Compact style={{ width: '100%', marginBottom: 16 }}>
-              <Form.Item name="sms_code" label="短信验证码" style={{ flex: 1, marginRight: 8, marginBottom: 0 }}>
+            <Space.Compact className="compact-full mb-16">
+              <Form.Item name="sms_code" label="短信验证码" className="compact-item">
                 <Input placeholder="手机验证码" />
               </Form.Item>
-              <Form.Item name="email_code" label="邮箱验证码" style={{ flex: 1, marginBottom: 0 }}>
+              <Form.Item name="email_code" label="邮箱验证码" className="compact-item">
                 <Input placeholder="邮箱验证码" />
               </Form.Item>
               <Button onClick={onSendCode} loading={codeLoading}>

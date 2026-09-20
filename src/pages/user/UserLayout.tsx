@@ -10,6 +10,7 @@ import {
   FileText,
   AlertTriangle,
   LogOut,
+  Send,
 } from 'lucide-react';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
@@ -25,6 +26,7 @@ const MENU = [
   { key: '/user/balance', icon: <Wallet size={14} />, label: <Link to="/user/balance">余额明细</Link> },
   { key: '/user/orders', icon: <FileText size={14} />, label: <Link to="/user/orders">我的订单</Link> },
   { key: '/user/reports', icon: <AlertTriangle size={14} />, label: <Link to="/user/reports">我的举报</Link> },
+  { key: '/user/submit', icon: <Send size={14} />, label: <Link to="/user/submit">提交站点</Link> },
 ];
 
 export default function UserLayout() {
@@ -62,26 +64,26 @@ export default function UserLayout() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 80 }}>
+      <div className="user-loading">
         <Spin />
       </div>
     );
   }
 
   return (
-    <Layout style={{ maxWidth: 1000, margin: '40px auto', background: 'transparent' }}>
-      <Sider width={200} style={{ background: '#fff', borderRadius: 8, marginRight: 16 }}>
-        <div style={{ padding: 16, textAlign: 'center', borderBottom: '1px solid #f0f0f0' }}>
+    <Layout className="user-layout-wrap">
+      <Sider width={200} className="user-sider">
+        <div className="user-sider-profile">
           <Avatar src={info?.head} size={56} icon={<User size={24} />} />
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <Text strong>{info?.name}</Text>
           </div>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type="secondary" className="color-secondary-12">
             {info?.mail || info?.phone}
           </Text>
         </div>
-        <Menu mode="inline" selectedKeys={[selected]} items={MENU} style={{ borderRight: 0 }} />
-        <div style={{ padding: 12 }}>
+        <Menu mode="inline" selectedKeys={[selected]} items={MENU} />
+        <div className="user-sider-logout">
           <Button block icon={<LogOut size={14} />} onClick={onLogout}>
             退出登录
           </Button>

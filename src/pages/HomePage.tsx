@@ -1,70 +1,79 @@
-import React, { lazy, Suspense } from 'react';
-import { Flex, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Flex, Typography, Empty } from 'antd';
+import { Link } from 'react-router-dom';
 
-import { MainContentHeader, Meta, SearchBox, SwitchSortType } from '@components/common';
-import PostCardList from '@components/post-card/PostCardList';
+import { Meta, SearchBox, MainContentHeader } from '@components/common';
+import { HomeSkeleton } from '@components/common/skeleton';
+import { getWebsites, getSite, type WebsiteItem, type SiteConfig } from '@/services/userCenter';
 
-import { SwitchType } from '@types';
-import { getURLParameter } from '@utils/CommonUtil';
-import { HomeLatestNews } from '@components/home';
-import MomentsGallery from '@components/home/MomentsGallery';
-import { PCOnly } from '@components/common/Responsive';
+const { Text } = Typography;
 
-const SpecialThanks = lazy(() => import('@components/common/special-thanks/SpecialThanks'));
-
-const { Text, Link } = Typography;
-
-const SWITCH_TYPES = [
-    { name: '推荐', href: '/home', default: true },
-    { name: '最新', href: '/home?sort=latest', default: false },
-] as const satisfies readonly SwitchType[];
-
-interface SortKeywordShowPinned {
-    sort: string;
-    keyword: string;
-    showPinned: boolean;
-}
-
-const getSortAndKeywordAndShowPinned = (): SortKeywordShowPinned => {
-    let sort = getURLParameter('sort') || 'recommended';
-    const keyword = getURLParameter('keyword') || '';
-    let showPinned = false;
-    if (keyword && keyword.length > 0) {
-        sort = 'latest';
-    }
-    if ('recommended' === sort) {
-        showPinned = true;
-    }
-
-    return { sort, keyword: keyword || '', showPinned };
-};
+const siteDomain = (w: WebsiteItem): string => w.www || w.domain || (w.url ? w.url.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : '') || '';
 
 const HomePage: React.FC = () => {
-    const { sort, keyword, showPinned } = getSortAndKeywordAndShowPinned();
+    const [loading, setLoading] = useState(true);
+    const [sites, setSites] = useState<WebsiteItem[]>([]);
+    const [site, setSite] = useState<SiteConfig | null>(null);
+
+    useEffect(() => {
+        Promise.all([getWebsites(), getSite()])
+            .then(([w, s]) => {
+                if (w.code === 1 && w.data) setSites(w.data);
+                if (s.code === 1 && s.data) setSite(s.data);
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return (
+            <>
+                <Meta />
+                <HomeSkeleton />
+            </>
+        );
+    }
+
+    const heroDesc = site?.description || '兴汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！';
 
     return (
         <>
             <Meta />
             <Flex vertical gap={16}>
-                <MainContentHeader content='兴汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！' />
-                <HomeLatestNews />
-                <PCOnly>
-                    <MomentsGallery />
-                </PCOnly>
-                <SearchBox placeholder="搜索文章 ↵" gotoPage="/home" sortType="latest" />
-                <SwitchSortType types={SWITCH_TYPES} />
-                <PostCardList sort={sort} keyword={keyword} showPinned={showPinned} />
+                <div className="home-hero">
+                    <div className="home-hero-title">{site?.title || '兴汉同盟'}</div>
+                    <div className="home-hero-desc">{heroDesc}</div>
+                </div>
+                <SearchBox placeholder="搜索站点 ↵" gotoPage="/blogs" />
+                <MainContentHeader content="收录的博客站点" />
+                {sites.length === 0 ? (
+                    <Empty description="暂无收录站点" />
+                ) : (
+                    <div className="website-grid">
+                        {sites.map((w) => {
+                            const domain = siteDomain(w);
+                            return (
+                                <Link to={`/blogs/${domain}`} key={w.id ?? domain} className="website-card">
+                                    <div className="website-card-head">
+                                        {w.ico || w.pic ? (
+                                            <img className="website-card-ico" src={w.ico || w.pic} alt={w.title || w.name || ''} />
+                                        ) : null}
+                                        <span className="website-card-title">{w.title || w.name || '未命名站点'}</span>
+                                    </div>
+                                    {w.keywords ? <div className="website-card-keywords">{w.keywords}</div> : null}
+                                    <div className="website-card-meta">
+                                        <span>浏览 {w.view ?? 0}</span>
+                                        <span>点赞 {w.zan ?? 0}</span>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
             </Flex>
-            <Suspense>
-                <SpecialThanks isHome={true} />
-            </Suspense>
-            <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <div className="home-declare">
                 <Text type="secondary">
-                    特别声明：包含政治、色情、赌博、暴力以及全 AI 生成内容的博客，一经发现，将被永久移出收录名单！举报违规博客，请「
-                    <Link href="mailto:support@xinghantongmeng.com">
-                        联系站长
-                    </Link>
-                    」！
+                    特别声明：包含政治、色情、赌博、暴力以及全 AI 生成内容的博客，一经发现，将被永久移出收录名单！
                 </Text>
             </div>
         </>

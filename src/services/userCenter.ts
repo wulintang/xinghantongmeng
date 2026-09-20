@@ -76,6 +76,7 @@ export interface LinkItem {
   hover: string;
   px: number;
   wz: number;
+  xin?: number;
 }
 export interface TagItem {
   id: number;
@@ -188,4 +189,73 @@ export function getLinks() {
 }
 export function getTags() {
   return request<ApiResp<TagItem[]>>(`${BASE}/tags.html`);
+}
+
+// ============ 站点配置 / 单页 / 站点列表 / 提交站点 ============
+
+export interface SiteConfig {
+  title: string;
+  titles: string;
+  logo: string;
+  description: string;
+  keywords: string;
+  author: string;
+  beian: string;
+  gonganbei: string;
+}
+
+export interface WebsiteItem {
+  id?: number | string;
+  name?: string;
+  title?: string;
+  ico?: string;
+  pic?: string;
+  keywords?: string;
+  description?: string;
+  view?: number | string;
+  zan?: number | string;
+  www?: string;
+  domain?: string;
+  url?: string;
+  content?: string;
+  type?: string;
+  [key: string]: any;
+}
+
+export interface DanItem {
+  alias?: string;
+  title?: string;
+  content?: string;
+  [key: string]: any;
+}
+
+// 站点基础配置
+export function getSite() {
+  return request<ApiResp<SiteConfig>>(`${BASE}/site.html`);
+}
+
+// 单页内容（如关于本站 / 友链规则等）
+export function getDan(alias?: string) {
+  return request<ApiResp<DanItem>>(
+    `${BASE}/dan.html` + (alias ? `?alias=${encodeURIComponent(alias)}` : '')
+  );
+}
+
+// 站点列表（博客广场 / 首页推荐）
+export function getWebsites(params: { keyword?: string; type?: string } = {}) {
+  const query = new URLSearchParams();
+  if (params.keyword) query.append('keyword', params.keyword);
+  if (params.type) query.append('type', params.type);
+  const qs = query.toString();
+  return request<ApiResp<WebsiteItem[]>>(`${BASE}/websites.html` + (qs ? `?${qs}` : ''));
+}
+
+// 提交站点（需登录 key）
+export function submitSite(key: string, data: { name: string; url: string; type?: string }) {
+  return post<ApiResp<{ id?: number | string }>>('/submitSite.html', {
+    key,
+    name: data.name,
+    url: data.url,
+    type: data.type || 'website',
+  });
 }

@@ -46,10 +46,10 @@ export default function CheckinPage() {
   };
 
   return (
-    <Card style={{ maxWidth: 560, margin: '40px auto' }}>
+    <Card className="user-card user-card-560">
       <Title level={4}>每日签到</Title>
       <Spin spinning={loading}>
-        <Space size="large" style={{ marginBottom: 16 }}>
+        <Space size="large" className="mb-16">
           <Statistic title="连续签到(天)" value={data?.last_day ?? 0} />
           <Statistic title="累计签到(次)" value={data?.count ?? 0} />
         </Space>

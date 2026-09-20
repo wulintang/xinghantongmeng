@@ -42,10 +42,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card style={{ maxWidth: 480, margin: '40px auto' }}>
+    <Card className="user-card user-card-480">
       <Title level={3}>注册</Title>
       <Text type="secondary">手机号 + 短信验证码，或邮箱 + 邮箱验证码，二选一即可。</Text>
-      <Form form={form} layout="vertical" onFinish={onFinish} style={{ marginTop: 16 }}>
+      <Form form={form} layout="vertical" onFinish={onFinish} className="mt-16">
         <Form.Item
           name="phone"
           label="手机号"
@@ -57,7 +57,7 @@ export default function RegisterPage() {
           <Button onClick={() => onSendCode('sms')} loading={codeLoading}>
             获取短信验证码
           </Button>
-          <span style={{ marginLeft: 8, color: '#999' }}>（填了手机号再点）</span>
+          <span className="color-secondary-12-ml">（填了手机号再点）</span>
         </Form.Item>
         <Form.Item
           name="sms_code"
@@ -77,7 +77,7 @@ export default function RegisterPage() {
           <Button onClick={() => onSendCode('email')} loading={codeLoading}>
             获取邮箱验证码
           </Button>
-          <span style={{ marginLeft: 8, color: '#999' }}>（填了邮箱再点）</span>
+          <span className="color-secondary-12-ml">（填了邮箱再点）</span>
         </Form.Item>
         <Form.Item name="email_code" label="邮箱验证码">
           <Input placeholder="邮箱验证码" />

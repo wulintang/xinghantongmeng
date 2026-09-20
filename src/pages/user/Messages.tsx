@@ -38,7 +38,7 @@ export default function MessagesPage() {
   };
 
   return (
-    <Card style={{ maxWidth: 760, margin: '40px auto' }}>
+    <Card className="user-card user-card-760">
       <Title level={4}>消息中心</Title>
       <Spin spinning={loading}>
         {list.length === 0 ? (
@@ -65,7 +65,7 @@ export default function MessagesPage() {
                       <Text type="secondary">{fmt(m.time)}</Text>
                     </Space>
                   }
-                  description={<Paragraph style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{m.msg}</Paragraph>}
+                  description={<Paragraph className="user-msg-text">{m.msg}</Paragraph>}
                 />
               </List.Item>
             )}

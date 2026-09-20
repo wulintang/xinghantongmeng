@@ -176,7 +176,7 @@ const HomePage: React.FC = () => {
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
                         <Title level={4} className="section-title">
-                            最新文章
+                            站内动态
                         </Title>
                         <Button type="link" onClick={() => navigate('/feed')}>
                             更多

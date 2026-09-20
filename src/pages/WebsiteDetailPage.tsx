@@ -22,7 +22,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getWebsiteByDomain, toggleLike, type WebsiteItem } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
-import { domainOf, jumpUrl } from '@/utils/route';
+import { domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 import { message } from 'antd';
 
@@ -111,7 +111,7 @@ const WebsiteDetailPage: React.FC = () => {
     const related = Array.isArray(item.related) ? item.related : [];
     const siteDomain = domainOf(item);
     const sitePosts = allPosts.filter(
-        (p) => domainOf(p) === siteDomain
+        (p) => normalizeDomain(domainOf(p)) === normalizeDomain(siteDomain)
     );
 
     return (

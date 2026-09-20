@@ -80,6 +80,7 @@ const App: React.FC = () => {
                             </Route>
 
                             {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
+                            <Route path="/jump" element={<JumpPage />} />
                             <Route path="/:id" element={<WebsiteDetailPage />} />
 
                             <Route path="*" element={<NotFoundPage />} />

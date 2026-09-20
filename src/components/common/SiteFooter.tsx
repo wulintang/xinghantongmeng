@@ -56,17 +56,10 @@ function LinkColumn({
 }
 
 export default function SiteFooter(): React.JSX.Element {
-    const { site, topLinks, footLinks, friendLinks } = useSite();
+    const { site, footLinks, friendLinks } = useSite();
 
-    // 站内导航 = 顶部导航 + 底部导航，按 id 去重
-    const siteNav = useMemo(() => {
-        const seen = new Set<number>();
-        return [...topLinks, ...footLinks].filter((l) => {
-            if (seen.has(l.id)) return false;
-            seen.add(l.id);
-            return true;
-        });
-    }, [topLinks, footLinks]);
+    // 站内导航 = 后台配置的底部导航（不再并入顶部导航，避免上下重复）
+    const siteNav = useMemo(() => footLinks, [footLinks]);
 
     const year = new Date().getFullYear();
     const gonganHtml = useMemo(() => sanitizeHtml(site?.gonganbei || ''), [site?.gonganbei]);

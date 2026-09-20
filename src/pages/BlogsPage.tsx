@@ -7,7 +7,7 @@ import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsites, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 
@@ -43,7 +43,7 @@ const BlogsPage: React.FC = () => {
     useEffect(() => {
         let alive = true;
         setLoading(true);
-        Promise.all([getPosts(), getWebsites({ page: 1, limit: 1000 })])
+        Promise.all([getPosts(), getWebsites({ page: 1, limit: 100 })])
             .then(([list, sites]) => {
                 if (!alive) return;
                 setPosts(list);
@@ -66,6 +66,37 @@ const BlogsPage: React.FC = () => {
             alive = false;
         };
     }, []);
+
+    /** 列表分页可能截断或域名形态不一致，地图没命中的站点按需回源补一次站点 logo */
+    const missingDomains = useMemo(
+        () =>
+            Array.from(new Set(posts.map((p) => normalizeDomain(domainOf(p))))).filter(
+                (d) => d && !siteIcons[d]
+            ),
+        [posts, siteIcons]
+    );
+
+    useEffect(() => {
+        if (missingDomains.length === 0) return;
+        let alive = true;
+        Promise.all(missingDomains.map((d) => getWebsiteByDomain(d)))
+            .then((rs) => {
+                if (!alive) return;
+                const add: Record<string, string> = {};
+                rs.forEach((r) => {
+                    const item = r.data as WebsiteItem | null;
+                    if (r.code === 1 && item) {
+                        const icon = assetUrl(item.pic || item.ico || '');
+                        if (icon) add[normalizeDomain(domainOf(item))] = icon;
+                    }
+                });
+                if (Object.keys(add).length > 0) setSiteIcons((m) => ({ ...m, ...add }));
+            })
+            .catch(() => {});
+        return () => {
+            alive = false;
+        };
+    }, [missingDomains]);
 
     const updateParam = (patch: Record<string, string | number | undefined>) => {
         const next = new URLSearchParams(params);

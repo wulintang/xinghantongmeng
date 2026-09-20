@@ -365,20 +365,21 @@ export function getWebsites(
 ) {
   return request<ApiResp<PageResult<WebsiteItem>>>(`${OPEN}/websites.html` + qs(params));
 }
-export function getWebsite(id: number | string) {
-  return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id }));
+export function getWebsite(id: number | string, count = 0) {
+  return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id, count }));
 }
 
 /**
  * 按域名解析收录站点（前端路由 /域名 直达用）。
  * 后端 website.html 只接 id，所以先拉取站点列表用 domainOf 匹配，再取该站详情。
+ * count=1 时后端浏览量 +1（只有站点详情页传，列表兜底不传，避免虚增）。
  */
-export async function getWebsiteByDomain(domain: string): Promise<ApiResp<WebsiteItem>> {
+export async function getWebsiteByDomain(domain: string, count = 0): Promise<ApiResp<WebsiteItem>> {
   const norm = normalizeDomain(domain);
   const list = await getWebsites({ page: 1, limit: 1000 });
   if (list.code === 1 && list.data?.list) {
     const found = list.data.list.find((w) => normalizeDomain(domainOf(w)) === norm);
-    if (found) return getWebsite(found.id);
+    if (found) return getWebsite(found.id, count);
   }
   return { code: 0, msg: '站点不存在或未收录', data: null as any };
 }

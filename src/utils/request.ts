@@ -21,6 +21,17 @@ export async function request<T>(url: string, options?: RequestInit): Promise<T>
         try {
             return JSON.parse(text) as T;
         } catch {
+            // 部分后端应用（verify/user）开启 debug 时会在 JSON 后附加 trace HTML，
+            // 这里截取首尾大括号之间的内容二次解析，避免整条请求白白失败。
+            const s = text.indexOf('{');
+            const e = text.lastIndexOf('}');
+            if (s >= 0 && e > s) {
+                try {
+                    return JSON.parse(text.slice(s, e + 1)) as T;
+                } catch {
+                    /* 落到下面的统一报错 */
+                }
+            }
             throw new Error('接口返回的不是合法 JSON');
         }
     } finally {

@@ -51,7 +51,7 @@ const WebsiteDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        Promise.all([getWebsiteByDomain(domain), getPosts()])
+        Promise.all([getWebsiteByDomain(domain, 1), getPosts()])
             .then(([r, posts]) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) {

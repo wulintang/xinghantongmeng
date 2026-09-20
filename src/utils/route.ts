@@ -93,9 +93,15 @@ export function toolPageUrl(alias: string): string {
 }
 
 
-/** 从网址数据里取域名（后端可能只给 www / domain / url 其中之一） */
-export function domainOf(item: { www?: string; domain?: string; url?: string }): string {
-    const direct = (item.www || item.domain || '').trim();
+/** 从网址数据里取域名；feed 聚合数据的域名字段是 blogDomainName / blogAddress */
+export function domainOf(item: {
+    www?: string;
+    domain?: string;
+    url?: string;
+    blogDomainName?: string;
+    blogAddress?: string;
+}): string {
+    const direct = (item.www || item.domain || item.blogDomainName || item.blogAddress || '').trim();
     if (direct) return direct.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
     const u = (item.url || '').trim();
     return u.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');

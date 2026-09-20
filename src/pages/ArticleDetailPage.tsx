@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Divider, Flex, Space, Typography } from 'antd';
+import { Alert, Button, Card, Divider, Flex, Space, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getArticle, type ArticleItem } from '@/services/userCenter';
+import { getArticle, toggleLike, type ArticleItem } from '@/services/userCenter';
 import { stripHtmlSuffix } from '@/utils/route';
+import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph } = Typography;
 
@@ -19,6 +20,8 @@ const ArticleDetailPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState<ArticleItem | null>(null);
     const [error, setError] = useState('');
+    const [liked, setLiked] = useState(false);
+    const [zan, setZan] = useState(0);
 
     usePageMeta({
         title: item?.title || '文章详情',
@@ -49,6 +52,27 @@ const ArticleDetailPage: React.FC = () => {
             alive = false;
         };
     }, [articleId]);
+
+    const onLike = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再点赞');
+            navigate('/login');
+            return;
+        }
+        if (!item) return;
+        toggleLike(key, Number(item.id), 'article')
+            .then((r) => {
+                if (r.code === 1) {
+                    const now = r.data?.liked === 1;
+                    setLiked(now);
+                    setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                } else {
+                    message.error(r.msg || '操作失败');
+                }
+            })
+            .catch(() => message.error('网络错误'));
+    };
 
     if (loading) return <ArticleDetailSkeleton />;
 

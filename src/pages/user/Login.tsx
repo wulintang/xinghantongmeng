@@ -24,6 +24,7 @@ export default function LoginPage() {
       setCodeLoading(true);
       sendCode('sms', v.phone, 'login')
         .then((r: any) => message[r.code ? 'success' : 'error'](r.msg))
+        .catch(() => message.error('验证码发送失败，请稍后重试'))
         .finally(() => setCodeLoading(false));
     } else {
       if (!v.mail) {

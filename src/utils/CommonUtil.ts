@@ -14,6 +14,30 @@ export function plainText(md?: string | null): string {
 }
 
 /**
+ * 把 feed 摘要里混着 HTML 标签的内容压成纯文本：
+ * 去掉 <img> 等全部标签（图片 URL 不再长占位）、解码常见实体、折叠空白。
+ * 仅用于列表页摘要展示。
+ */
+export function htmlToText(html: string | null | undefined, maxLen = 160): string {
+  if (!html) return '';
+  let s = html;
+  s = s.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
+  s = s.replace(/<img[^>]*>/gi, '');
+  s = s.replace(/<br\s*\/?>/gi, ' ');
+  s = s.replace(/<[^>]+>/g, '');
+  s = s
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;/g, "'");
+  s = s.replace(/\s+/g, ' ').trim();
+  if (maxLen > 0 && s.length > maxLen) s = `${s.slice(0, maxLen)}…`;
+  return s;
+}
+
+/**
  * 清洗后端配置里自带的 HTML（如公安备案那段），只保留安全的结构与图片、链接。
  * 剥掉 script/style/iframe/object/embed/form 整段，以及 on* 事件属性与 javascript: 协议，
  * 保证任何后端配置都无法在页面里注入可执行脚本。

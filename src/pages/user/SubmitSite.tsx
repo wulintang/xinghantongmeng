@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Select, Space, Spin, Typography, Upload, message } from 'antd';
+import { Button, Card, Form, Input, Select, Space, Spin, Typography, Upload, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { addSite, captchaUrl, getWebsiteCates, uploadFile, type CateItem } from '@/services/userCenter';
@@ -103,7 +103,7 @@ const SubmitSite: React.FC = () => {
     );
 
     return (
-        <div className="submit-site">
+        <Card className="user-card">
             <Title level={4}>提交站点</Title>
             <Text type="secondary">填写你的站点信息并上传图标/截图，提交后由管理员审核收录。</Text>
             <Spin spinning={catesLoading}>
@@ -188,7 +188,7 @@ const SubmitSite: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Spin>
-        </div>
+        </Card>
     );
 };
 

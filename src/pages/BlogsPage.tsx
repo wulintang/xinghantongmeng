@@ -10,6 +10,7 @@ import { getPosts } from '@/services/postService';
 import { getWebsiteByDomain, getWebsites, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
+import { htmlToText } from '@/utils/CommonUtil';
 
 const { Text, Paragraph } = Typography;
 
@@ -112,7 +113,7 @@ const BlogsPage: React.FC = () => {
         const kw = keyword.trim().toLowerCase();
         let arr = posts.filter((p) => {
             if (!kw) return true;
-            return [p.title, p.description, p.blogName, domainOf(p)].some((v) =>
+            return [p.title, htmlToText(p.description), p.blogName, domainOf(p)].some((v) =>
                 (v || '').toLowerCase().includes(kw)
             );
         });
@@ -198,7 +199,7 @@ const BlogsPage: React.FC = () => {
                                         />
                                         {p.description ? (
                                             <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="post-summary">
-                                                {p.description}
+                                                {htmlToText(p.description, 120)}
                                             </Paragraph>
                                         ) : null}
                                     </List.Item>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Table, Tag, Space, Popconfirm, Modal, Form, Input, Switch, Upload, message, Typography } from 'antd';
+import { Link } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { getMySites, editMySite, delMySite, uploadFile } from '@/services/userCenter';
@@ -120,9 +121,7 @@ export default function MySitesPage() {
       render: (v: string, row: WebsiteItem) => (
         <Space>
           {row.ico ? <img src={row.ico} alt="" style={{ width: 20, height: 20, borderRadius: 4 }} /> : null}
-          <a href={row.www || '#'} target="_blank" rel="noreferrer">
-            {v}
-          </a>
+          <Link to={`/${row.www || row.domain}`}>{v}</Link>
         </Space>
       ),
     },
@@ -171,8 +170,34 @@ export default function MySitesPage() {
         onCancel={() => setEditing(null)}
         onOk={() => form.submit()}
         confirmLoading={saving}
+        width={680}
         destroyOnClose
       >
+        {editing ? (
+          <div className="mysite-current" style={{ marginBottom: 16 }}>
+            <Space size={24} align="center" wrap>
+              <Space size={8} align="center">
+                {editing.ico ? (
+                  <img src={editing.ico} alt="当前图标" style={{ width: 32, height: 32, borderRadius: 6 }} />
+                ) : null}
+                <Text type="secondary">当前图标{editing.ico ? '' : '：无'}</Text>
+              </Space>
+              <Space size={8} align="center">
+                {editing.pic ? (
+                  <img
+                    src={editing.pic}
+                    alt="当前截图"
+                    style={{ width: 96, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #f0f0f0' }}
+                  />
+                ) : null}
+                <Text type="secondary">当前截图{editing.pic ? '' : '：无'}</Text>
+              </Space>
+              <Text type="secondary">
+                HTTPS：{Number(editing.ssl) === 1 ? '已启用' : '未启用'}　浏览 {editing.view}　点赞 {editing.zan}
+              </Text>
+            </Space>
+          </div>
+        ) : null}
         <Form form={form} layout="vertical" onFinish={onSave}>
           <Form.Item name="title" label="站点名称" rules={[{ required: true }]}>
             <Input />

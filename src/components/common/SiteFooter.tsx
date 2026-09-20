@@ -60,14 +60,11 @@ export default function SiteFooter(): React.JSX.Element {
 
     // 站内导航 = 后台配置的底部导航（不再并入顶部导航，避免上下重复）
     const siteNav = useMemo(() => footLinks, [footLinks]);
-    // 友情链接：底部默认展示 5 条（前 4 条真实 + 第 5 条「更多」入口，独立 /links 页展示全部）
-    const friendPreview = useMemo<LinkItem[]>(() => {
-        if (friendLinks.length <= 4) return friendLinks;
-        return [
-            ...friendLinks.slice(0, 4),
-            { id: -1, name: '更多', lianjie: '/links', xin: 0 } as LinkItem,
-        ];
-    }, [friendLinks]);
+    // 友情链接：底部展示前 4 条真实友链，「更多」入口永远显示（独立 /links 页展示全部）
+    const friendPreview = useMemo<LinkItem[]>(() => [
+        ...friendLinks.slice(0, 4),
+        { id: -1, name: '更多', lianjie: '/links', xin: 0 } as LinkItem,
+    ], [friendLinks]);
 
     const year = new Date().getFullYear();
     const gonganHtml = useMemo(() => sanitizeHtml(site?.gonganbei || ''), [site?.gonganbei]);

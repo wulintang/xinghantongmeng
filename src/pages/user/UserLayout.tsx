@@ -7,16 +7,31 @@ import { getToken, setToken } from '@/utils/auth';
 const { Text } = Typography;
 
 const MENU = [
-  { key: '/user', label: <Link to="/user">个人资料</Link> },
-  { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
-  { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
-  { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
-  { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },
-  { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
-  { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
   { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
-  { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
+  {
+    type: 'group' as const,
+    label: '我的',
+    children: [
+      { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
+      { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
+      { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
+      { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
+    ],
+  },
+  {
+    type: 'group' as const,
+    label: '账户',
+    children: [
+      { key: '/user', label: <Link to="/user">个人资料</Link> },
+      { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
+      { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
+      { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },
+    ],
+  },
 ];
+
+/** 拍平菜单树取全部 key，用于高亮判断 */
+const MENU_KEYS = MENU.flatMap((m: any) => (m.children ? m.children.map((c: any) => c.key) : [m.key]));
 
 export default function UserLayout() {
   const navigate = useNavigate();
@@ -47,9 +62,7 @@ export default function UserLayout() {
     navigate('/login');
   };
 
-  const selected = MENU.map((m) => m.key).includes(location.pathname)
-    ? location.pathname
-    : '/user';
+  const selected = MENU_KEYS.includes(location.pathname) ? location.pathname : '/user';
 
   if (loading) {
     return (

@@ -124,9 +124,11 @@ export default function Header(): React.JSX.Element {
 
     const userMenu = {
         items: [
+            { key: 'submit', label: '提交站点' },
+            { key: 'mysites', label: '我的站点' },
+            { type: 'divider' as const },
             { key: 'profile', label: '个人中心' },
             { key: 'favorites', label: '我的收藏' },
-            { key: 'submit', label: '提交站点' },
             { type: 'divider' as const },
             { key: 'logout', label: '退出登录' },
         ],

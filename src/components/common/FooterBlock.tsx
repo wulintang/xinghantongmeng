@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Suspense, lazy } from 'react';
 import { Typography, Space } from 'antd';
 
@@ -39,7 +39,7 @@ export default function FooterBlock({ isHome }) {
                     <div>
                         <Text type="secondary">
                             特别声明：包含政治、色情、赌博、暴力以及全 AI 生成内容的博客，一经发现，将被永久移出收录名单！举报违规博客，请「
-                            <Link href="mailto:support@boyouquan.com">
+                            <Link href="mailto:support@xinghantongmeng.com">
                                 联系站长
                             </Link>
                             」！

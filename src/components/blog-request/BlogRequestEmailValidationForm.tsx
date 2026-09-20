@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Card, Flex, Typography, Input, Button, Form, Space } from 'antd';
 import { FormError } from '../../types';
 
@@ -164,7 +164,7 @@ export default function BlogRequestEmailValidationForm({
 
                         {!isAdminPage && (
                             <div style={{ marginTop: 8 }}>
-                                <Link style={{ fontSize: 12 }} href="mailto:support@boyouquan.com">
+                                <Link style={{ fontSize: 12 }} href="mailto:support@xinghantongmeng.com">
                                     收不到验证码？我要联系站长！
                                 </Link>
                             </div>

@@ -1,4 +1,4 @@
-import { Flex } from 'antd';
+﻿import { Flex } from 'antd';
 
 import { MainContentHeader, Meta } from '@components/common';
 import MonthlySelectedCardList from '@components/monthly-selected/MonthlySelectedCardList';
@@ -6,7 +6,7 @@ import Subscription from '@components/monthly-selected/Subscription';
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '每月精选 - 博友圈 · 博客人的朋友圈！',
+    title: '每月精选 - 星汉同盟 · 博客人的朋友圈！',
     keywords: '每月精选, 精选文章',
     description: '每个月的精选文章合集。'
 }

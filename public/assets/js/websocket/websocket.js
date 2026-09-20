@@ -1,4 +1,4 @@
-window.addEventListener('load', async function () {
+﻿window.addEventListener('load', async function () {
     if (!("Notification" in window)) {
         console.warn("This browser does not support desktop notification");
         return;
@@ -22,7 +22,7 @@ function connect() {
     // ✅ Firefox 兼容方式：手动创建 WebSocket
     const stompClient = new StompJs.Client({
         // 不直接使用 brokerURL，在 Firefox 下可能失效
-        webSocketFactory: () => new WebSocket('wss://www.boyouquan.com/websocket'),
+        webSocketFactory: () => new WebSocket('wss://www.xinghantongmeng.com/websocket'),
         reconnectDelay: 5000, // 自动重连
         debug: (str) => console.log(str)
     });
@@ -53,10 +53,10 @@ function connect() {
 }
 
 function notify(message, gotoUrl) {
-    const notify = new Notification("博友圈通知", {
+    const notify = new Notification("星汉同盟通知", {
         dir: 'auto',
         lang: 'zh-CN',
-        icon: 'https://www.boyouquan.com/assets/images/sites/logo/logo-small.png',
+        icon: 'https://www.xinghantongmeng.com/assets/images/sites/logo/logo-small.png',
         body: message
     });
 

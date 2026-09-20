@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Card, Flex, Typography, Input, Button, Form, Radio, Space } from 'antd';
 import { FormError } from '../../types';
 
@@ -181,7 +181,7 @@ export default function BlogRequestAddForm({ formData, error, handleChange, hand
                         {!isAdminPage && (
                             <div style={{ marginTop: 8 }}>
                                 <Text style={noticeStyle}>
-                                    <Link href="mailto:support@boyouquan.com">
+                                    <Link href="mailto:support@xinghantongmeng.com">
                                         提交博客遇到问题？我要联系站长！
                                     </Link>
                                 </Text>

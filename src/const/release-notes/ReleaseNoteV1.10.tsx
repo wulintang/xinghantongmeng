@@ -1,11 +1,11 @@
-import { Image, Typography } from 'antd';
+﻿import { Image, Typography } from 'antd';
 
 const { Title, Paragraph } = Typography;
 
 const META_V1_10 = {
-    title: 'v1.10 版本说明 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博友圈, 版本说明, v1.10',
-    description: '博友圈 v1.10 版本说明。'
+    title: 'v1.10 版本说明 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星汉同盟, 版本说明, v1.10',
+    description: '星汉同盟 v1.10 版本说明。'
 };
 
 const RELEASE_INFO_V1_10 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V1_10 = {
     content: (
         <>
             <Paragraph>
-                博友圈于 2024 年 03 月 31 日发布了 v1.10 版本！该版本对星球穿梭功能进行了整体优化。
+                星汉同盟于 2024 年 03 月 31 日发布了 v1.10 版本！该版本对星球穿梭功能进行了整体优化。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
@@ -24,7 +24,7 @@ const RELEASE_INFO_V1_10 = {
             </Paragraph>
 
             <Paragraph>
-                1）当博友在其博客的任一页面添加了博友圈「<a href="/planet-shuttle" target="_blank">星球穿梭链接</a>」时，其即开启了星球穿梭功能。
+                1）当博友在其博客的任一页面添加了星汉同盟「<a href="/planet-shuttle" target="_blank">星球穿梭链接</a>」时，其即开启了星球穿梭功能。
             </Paragraph>
 
             <div style={{ marginBottom: 14, textAlign: 'center' }}>
@@ -36,7 +36,7 @@ const RELEASE_INFO_V1_10 = {
             </div>
 
             <Paragraph>
-                2）当访问者点击星球穿梭链接时，即会跳转到博友圈星球穿梭页面。该页面会自动检测来源博客，并显示其博客名、助力值（助力次数）与博客的博友圈链接。
+                2）当访问者点击星球穿梭链接时，即会跳转到星汉同盟星球穿梭页面。该页面会自动检测来源博客，并显示其博客名、助力值（助力次数）与博客的星汉同盟链接。
             </Paragraph>
 
             <div style={{ marginBottom: 14, textAlign: 'center' }}>
@@ -76,7 +76,7 @@ const RELEASE_INFO_V1_10 = {
             </Paragraph>
 
             <Paragraph>
-                <strong>想马上体验一下？</strong>那就快戳示例博客：<a href="https://leileiluoluo.com" target="_blank">leileiluoluo.com</a>，然后拉至网站底部，点击「博友圈 · 星球穿梭」试试吧！
+                <strong>想马上体验一下？</strong>那就快戳示例博客：<a href="https://leileiluoluo.com" target="_blank">leileiluoluo.com</a>，然后拉至网站底部，点击「星汉同盟 · 星球穿梭」试试吧！
             </Paragraph>
         </>
     ),

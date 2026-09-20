@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { theme, Card, Flex, Typography, Progress, Tooltip } from 'antd';
 import { getYearsTillNow, getYear } from '../../utils/DateUtil';
 import { TrophyOutlined } from '@ant-design/icons';
@@ -21,7 +21,7 @@ export default function BlogPerformance({ domainName, collectedAt }) {
   const handleOpenCertificate = () => {
     window.open(
       certLink,
-      '博友圈',
+      '星汉同盟',
       'height=800,width=960,top=0,right=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no'
     );
   };

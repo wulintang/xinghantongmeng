@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Typography } from 'antd';
 
 const { Text, Link } = Typography;
@@ -12,7 +12,7 @@ export default function BlogRequestAddMainContentHeader() {
             </Link>
             」，以减少被驳回的可能。确认满足要求后，请使用下方表单提交，一般在 <strong>48</strong> 小时之内会得到审核！若您想对已提交的博客进行修改，请「
             <Link 
-                href="mailto:support@boyouquan.com" 
+                href="mailto:support@xinghantongmeng.com" 
                 style={{ color: '#1677ff' }}
             >
                 给我们发送邮件

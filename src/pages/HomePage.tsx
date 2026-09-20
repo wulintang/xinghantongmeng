@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+﻿import React, { lazy, Suspense } from 'react';
 import { Flex, Typography } from 'antd';
 
 import { MainContentHeader, Meta, SearchBox, SwitchSortType } from '@components/common';
@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
         <>
             <Meta />
             <Flex vertical gap={16}>
-                <MainContentHeader content='博友圈是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！' />
+                <MainContentHeader content='星汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！' />
                 <HomeLatestNews />
                 <PCOnly>
                     <MomentsGallery />
@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
             <div style={{ marginTop: 20, textAlign: 'center' }}>
                 <Text type="secondary">
                     特别声明：包含政治、色情、赌博、暴力以及全 AI 生成内容的博客，一经发现，将被永久移出收录名单！举报违规博客，请「
-                    <Link href="mailto:support@boyouquan.com">
+                    <Link href="mailto:support@xinghantongmeng.com">
                         联系站长
                     </Link>
                     」！

@@ -1,11 +1,11 @@
-import { Helmet } from 'react-helmet';
+﻿import { Helmet } from 'react-helmet';
 
 import { MetaFields, MetaProps } from '@types';
 
 const defaultMetaFields: MetaFields = {
-    title: '首页 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博客, 博友, 博客圈, 博友圈, 朋友圈, 收录, RSS, 聚合, 中文, 独立博客',
-    description: '博友圈是博客人的专属朋友圈。我们的愿景是：将一个个散落在各处的孤岛连接成一片广袤无垠的新大陆！'
+    title: '首页 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '博客, 博友, 博客圈, 星汉同盟, 朋友圈, 收录, RSS, 聚合, 中文, 独立博客',
+    description: '星汉同盟是博客人的专属朋友圈。我们的愿景是：将一个个散落在各处的孤岛连接成一片广袤无垠的新大陆！'
 }
 
 export default function Meta({ meta = defaultMetaFields }: MetaProps) {

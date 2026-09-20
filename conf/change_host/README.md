@@ -1,4 +1,4 @@
-# Host Change Document
+﻿# Host Change Document
 
 Based on CenOS 7
 
@@ -55,11 +55,11 @@ export PATH=$PATH:$JAVA_HOME/bin
 ```shell
 cd usr/share/nginx/
 mkdir cert
-scp root@boyouquan.com:/usr/share/nginx/cert/boyouquan.com_bundle.crt .
-scp root@boyouquan.com:/usr/share/nginx/cert/boyouquan.com.key .
+scp root@xinghantongmeng.com:/usr/share/nginx/cert/xinghantongmeng.com_bundle.crt .
+scp root@xinghantongmeng.com:/usr/share/nginx/cert/xinghantongmeng.com.key .
 
 cd /etc/nginx/conf.d/
-scp root@boyouquan.com:/etc/nginx/conf.d/boyouquan.conf .
+scp root@xinghantongmeng.com:/etc/nginx/conf.d/boyouquan.conf .
 
 service nginx restart
 ```
@@ -78,14 +78,14 @@ GRANT ALL PRIVILEGES ON boyouquan.* TO 'root'@'localhost' IDENTIFIED BY 'your_pa
 FLUSH PRIVILEGES;
 
 use boyouquan;
--- https://github.com/leileiluoluo/boyouquan-api/tree/main/sql/ddl
+-- https://github.com/leileiluoluo/xinghantongmeng/tree/main/sql/ddl
 -- create tables
 ```
 
 ```shell
 # on new host
 cd /tmp
-scp root@boyouquan.com:/tmp/boyouquan-20251011.sql .
+scp root@xinghantongmeng.com:/tmp/boyouquan-20251011.sql .
 mysql -u root -p boyouquan < /tmp/boyouquan-20251011.sql
 ```
 
@@ -104,9 +104,9 @@ zip -r gravatar.zip gravatar/
 mkdir /usr/app/
 cd /usr/app/
 
-scp root@boyouquan.com:/usr/app/image-upload.zip .
-scp root@boyouquan.com:/usr/app/post-images.zip .
-scp root@boyouquan.com:/usr/app/gravatar.zip .
+scp root@xinghantongmeng.com:/usr/app/image-upload.zip .
+scp root@xinghantongmeng.com:/usr/app/post-images.zip .
+scp root@xinghantongmeng.com:/usr/app/gravatar.zip .
 
 unzip image-upload.zip
 unzip post-images.zip
@@ -122,8 +122,8 @@ mkdir -p /usr/app/new/
 
 Replace the HOST and PASSWORD in Repository secrets, and re-run the pipelines.
 
-[UI](https://github.com/leileiluoluo/boyouquan-ui)
-[API](https://github.com/leileiluoluo/boyouquan-api)
+[UI](https://github.com/leileiluoluo/xinghantongmeng)
+[API](https://github.com/leileiluoluo/xinghantongmeng)
 
 ## DNS Config
 
@@ -138,7 +138,7 @@ cat /etc/nginx/conf.d/boyouquan.conf
 # please replace 106.52.59.218 to the real IP of the new host
 server {
     listen 80;
-    server_name boyouquan.com www.boyouquan.com;
+    server_name xinghantongmeng.com www.xinghantongmeng.com;
 
     location / {
         proxy_pass http://106.52.59.218;
@@ -156,10 +156,10 @@ server {
 
 server {
     listen 443 ssl;
-    server_name boyouquan.com www.boyouquan.com;
+    server_name xinghantongmeng.com www.xinghantongmeng.com;
 
-    ssl_certificate /usr/share/nginx/cert/boyouquan.com_bundle.crt;
-    ssl_certificate_key /usr/share/nginx/cert/boyouquan.com.key;
+    ssl_certificate /usr/share/nginx/cert/xinghantongmeng.com_bundle.crt;
+    ssl_certificate_key /usr/share/nginx/cert/xinghantongmeng.com.key;
 
     location / {
         proxy_pass https://106.52.59.218;

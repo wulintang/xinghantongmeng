@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Meta from '../common/Meta';
@@ -19,7 +19,7 @@ interface MetaData {
 
 const getMeta = (name: string, description: string): MetaData => {
     return {
-        title: `博客「${name}」审核详情 - 博友圈 · 博客人的朋友圈！`,
+        title: `博客「${name}」审核详情 - 星汉同盟 · 博客人的朋友圈！`,
         keywords: name,
         description: description
     };

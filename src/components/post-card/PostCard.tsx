@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { theme, Flex, Typography, Space, Divider, Tooltip, Badge, Avatar, Dropdown, MenuProps } from 'antd';
 import { PushpinOutlined, ClockCircleOutlined, EyeOutlined, MoreOutlined, ShareAltOutlined, StarOutlined, UserOutlined } from '@ant-design/icons';
 import { formatDateStr } from '../../utils/DateUtil';
@@ -35,7 +35,7 @@ const PostCard: React.FC<PostDataProps> = ({ showPinned, post, descriptionRows }
         {
             key: '1',
             label: (
-                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="mailto:support@boyouquan.com">
+                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="mailto:support@xinghantongmeng.com">
                     举报
                 </a>
             ),

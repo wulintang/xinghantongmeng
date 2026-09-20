@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+﻿import { lazy, Suspense } from 'react';
 import { Typography, List, Skeleton as AntSkeleton, Card, Space, Tag, Divider, Collapse, CollapseProps } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 
@@ -13,7 +13,7 @@ const { Panel } = Collapse;
 const SponsorMotion = lazy(() => import('@components/sponsor/SponsorMotion'));
 
 const meta: MetaFields = {
-    title: "赞助本站 - 博友圈 · 博客人的朋友圈！",
+    title: "赞助本站 - 星汉同盟 · 博客人的朋友圈！",
     keywords: "赞助本站",
     description: "赞助本站，以使得本站能更好的运营下去。",
 };
@@ -129,16 +129,16 @@ const content: JSX.Element = (
             感谢您点开此页，开设这个页面实属不得已为之！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            博友圈是一个非营利性的中文独立博客收录网站。为了保持网站良好的使用体验，运营至今，仍未植入诸如「Google
+            星汉同盟是一个非营利性的中文独立博客收录网站。为了保持网站良好的使用体验，运营至今，仍未植入诸如「Google
             AdSense」等广告。网站建立初期，运营成本主要由站长个人在承担，但在 2024
             年初开通该赞赏页面后，博友们的赞赏已基本能支撑网站的运行。在此，我对大家的支持与厚爱表示深深的感谢！这让我非常的感动，是我之前未预料到的！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            博友圈网站的运营成本主要是在服务器（最低需要 2G 以上的内存和 20G
+            星汉同盟网站的运营成本主要是在服务器（最低需要 2G 以上的内存和 20G
             以上的硬盘）购买和域名续费上，一年下来，开销有几百元。站长是一个靠写代码为生的人，个人境况虽不至于「衣不遮体、食不果腹」，但日子过得着实不算富裕，若是自己一个人应对这些开销老实来讲还是比较吃力的。
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            若您觉得这个网站还不错，想支持本站更长远地走下去，欢迎您进行随喜赞助（金额不限，没有排名，不论多少，博友圈都会铭记在心），这些赞助费将
+            若您觉得这个网站还不错，想支持本站更长远地走下去，欢迎您进行随喜赞助（金额不限，没有排名，不论多少，星汉同盟都会铭记在心），这些赞助费将
             <Text strong> 全数 </Text>
             用于网站的云资源购买或续费上！您的每一分支持都是我们将网站做好、做久的动力！
         </Paragraph>
@@ -170,7 +170,7 @@ const content: JSX.Element = (
         </div>
 
         <Title level={5} style={{ textAlign: 'center', marginTop: 32, marginBottom: 16 }} id="sponsor-list">
-            完整赞助名单（感谢您的赞助与接力，让博友圈运行至今）：
+            完整赞助名单（感谢您的赞助与接力，让星汉同盟运行至今）：
         </Title>
 
         <Card
@@ -235,9 +235,9 @@ const content: JSX.Element = (
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
             <Text strong>
-                除了个人赞助以外，博友圈还愿意承接一些跟博客或站长相关的、不影响用户体验、内容健康的广告内容，若您有合作意向，请联系：
-                <Link href="mailto:support@boyouquan.com">
-                    support@boyouquan.com
+                除了个人赞助以外，星汉同盟还愿意承接一些跟博客或站长相关的、不影响用户体验、内容健康的广告内容，若您有合作意向，请联系：
+                <Link href="mailto:support@xinghantongmeng.com">
+                    support@xinghantongmeng.com
                 </Link>
                 。
             </Text>

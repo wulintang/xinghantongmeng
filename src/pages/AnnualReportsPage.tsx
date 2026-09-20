@@ -1,4 +1,4 @@
-import { Typography } from 'antd';
+﻿import { Typography } from 'antd';
 import { Meta } from '@components/common';
 import Article from '@components/article/Article';
 import { MetaFields } from '@types';
@@ -6,9 +6,9 @@ import { MetaFields } from '@types';
 const { Title, Paragraph } = Typography;
 
 const meta: MetaFields = {
-    title: '年度报告 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博友圈, 年度报告',
-    description: '博友圈网站年度报告。'
+    title: '年度报告 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星汉同盟, 年度报告',
+    description: '星汉同盟网站年度报告。'
 };
 
 const content = (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
     theme, Layout, Flex, Menu, Typography, Drawer, Button,
     Tag,
@@ -67,7 +67,7 @@ const CommonHeader: React.FC = () => {
                 }}>
                     <img
                         src="/assets/images/sites/logo/logo-blue.svg"
-                        alt="博友圈"
+                        alt="星汉同盟"
                         style={{ height: 30 }}
                     />
                 </Link>

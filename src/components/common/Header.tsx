@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Menu, Row, Col, Typography, Avatar, Button, Space } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // 如果你项目用的是 next/link 就换成 next/link
 import { getToken } from '@/utils/auth';
@@ -57,7 +57,7 @@ export default function Header(): React.JSX.Element {
                     <Col flex="20%">
                         <div style={{ marginTop: 4 }}>
                             <Link to="/" style={siteNameStyle}>
-                                博友圈
+                                星汉同盟
                             </Link>
                         </div>
                     </Col>

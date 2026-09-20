@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Fragment, Suspense, useEffect, useState, lazy } from 'react';
 import RequestUtil from '../../utils/APIRequestUtil';
 import Meta from '../common/Meta';
@@ -52,7 +52,7 @@ interface BlogDetailData {
 
 const getMeta = (name: string | undefined, description: string | undefined): MetaData => {
     return {
-        title: `${name || ''} - 博友圈 · 博客人的朋友圈！`,
+        title: `${name || ''} - 星汉同盟 · 博客人的朋友圈！`,
         keywords: name || '',
         description: description || ''
     };
@@ -123,7 +123,7 @@ export default function BlogDetail({ domain }: BlogDetailProps): React.JSX.Eleme
         const certLink = `/certificates/${domain}`;
         window.open(
             certLink,
-            '博友圈',
+            '星汉同盟',
             'height=800,width=960,top=0,right=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no'
         );
     };
@@ -254,7 +254,7 @@ export default function BlogDetail({ domain }: BlogDetailProps): React.JSX.Eleme
                                         </Tag>}
 
                                         {!blogDetail.selfSubmitted &&
-                                            <Tooltip title="该博客由博友圈后台收录，认领博客或不想被收录可以邮件联系我们" styles={{ root: { fontSize: 12 } }}>
+                                            <Tooltip title="该博客由星汉同盟后台收录，认领博客或不想被收录可以邮件联系我们" styles={{ root: { fontSize: 12 } }}>
                                                 <Tag
                                                     style={{
                                                         fontSize: 13,

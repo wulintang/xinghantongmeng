@@ -1,11 +1,11 @@
-import { Image, Typography } from 'antd';
+﻿import { Image, Typography } from 'antd';
 
 const { Title, Paragraph } = Typography;
 
 const META_V1_5 = {
-    title: 'v1.5 版本说明 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博友圈, 版本说明, v1.5',
-    description: '博友圈 v1.5 版本说明。'
+    title: 'v1.5 版本说明 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星汉同盟, 版本说明, v1.5',
+    description: '星汉同盟 v1.5 版本说明。'
 };
 
 const RELEASE_INFO_V1_5 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V1_5 = {
     content: (
         <>
             <Paragraph>
-                博友圈于 2023 年 7 月 20 日发布了 v1.5 版本！该版本新加了一个在线自助「提交博客」的页面、「审核结果」页面和邮件推送功能。
+                星汉同盟于 2023 年 7 月 20 日发布了 v1.5 版本！该版本新加了一个在线自助「提交博客」的页面、「审核结果」页面和邮件推送功能。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>

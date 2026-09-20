@@ -1,11 +1,11 @@
-import { Typography, Image, Space, Divider } from 'antd';
+﻿import { Typography, Image, Space, Divider } from 'antd';
 
 const { Title, Paragraph, Text, Link } = Typography;
 
 const META_V3_0 = {
-    title: 'v3.0 版本说明 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博友圈, 版本说明, v3.0',
-    description: '博友圈 v3.0 版本说明。'
+    title: 'v3.0 版本说明 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星汉同盟, 版本说明, v3.0',
+    description: '星汉同盟 v3.0 版本说明。'
 }
 
 const RELEASE_INFO_V3_0 = {
@@ -13,14 +13,14 @@ const RELEASE_INFO_V3_0 = {
     content: (
         <>
             <Paragraph style={{ marginBottom: 16 }}>
-                博友圈于 2026 年 5 月 24 日发布了 v3.0 版本！这是一个大的版本升级，该版本启用了基于 antd 的全新 UI。
+                星汉同盟于 2026 年 5 月 24 日发布了 v3.0 版本！这是一个大的版本升级，该版本启用了基于 antd 的全新 UI。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 12, fontWeight: 'bold' }}>
                 1 新 UI 说明
             </Title>
             <Paragraph style={{ marginBottom: 16 }}>
-                这次的版本升级，博友圈将前端 UI 组件由 <Link href="https://radix-ui.com/" target="_blank">RadixUI</Link> 替换为了 <Link href="https://ant.design/" target="_blank">Ant Design</Link>，并对首页、博客广场、博客详情、随手一拍等几乎所有页面进行了全新的设计，力求页面简洁美观、交互轻便好用。
+                这次的版本升级，星汉同盟将前端 UI 组件由 <Link href="https://radix-ui.com/" target="_blank">RadixUI</Link> 替换为了 <Link href="https://ant.design/" target="_blank">Ant Design</Link>，并对首页、博客广场、博客详情、随手一拍等几乎所有页面进行了全新的设计，力求页面简洁美观、交互轻便好用。
             </Paragraph>
 
             <Paragraph style={{ marginBottom: 8, fontWeight: 500 }}>
@@ -76,10 +76,10 @@ const RELEASE_INFO_V3_0 = {
                 2 代码标签
             </Title>
             <Paragraph style={{ marginBottom: 8 }}>
-                博友圈前端：<Link href="https://github.com/leileiluoluo/boyouquan-ui/releases/tag/v3.0" target="_blank">boyouquan-ui</Link>
+                星汉同盟前端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v3.0" target="_blank">xinghantongmeng</Link>
             </Paragraph>
             <Paragraph style={{ marginBottom: 16 }}>
-                博友圈后端：<Link href="https://github.com/leileiluoluo/boyouquan-api/releases/tag/v3.0" target="_blank">boyouquan-api</Link>
+                星汉同盟后端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v3.0" target="_blank">xinghantongmeng</Link>
             </Paragraph>
         </>
     ),

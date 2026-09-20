@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+﻿import React, { Suspense, lazy, useEffect, useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Rss, Github, Cloud, Mail, ArrowUp, BarChart3, ExternalLink, Link2 } from 'lucide-react';
 import { theme, Layout, Divider, Typography, Flex, Button, Spin, Dropdown, Tooltip, Space } from 'antd';
@@ -42,7 +42,7 @@ const CommonFooter: React.FC = () => {
         {
             key: '1',
             label: (
-                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="https://github.com/leileiluoluo/boyouquan-ui">
+                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="https://github.com/leileiluoluo/xinghantongmeng">
                     前端源码
                 </a>
             ),
@@ -50,7 +50,7 @@ const CommonFooter: React.FC = () => {
         {
             key: '2',
             label: (
-                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="https://github.com/leileiluoluo/boyouquan-api">
+                <a style={{ fontSize: token.fontSizeSM, color: '#ffffff' }} target="_blank" rel="noopener noreferrer" href="https://github.com/leileiluoluo/xinghantongmeng">
                     后端源码
                 </a>
             ),
@@ -82,7 +82,7 @@ const CommonFooter: React.FC = () => {
                 <Flex vertical gap={token.padding}>
                     <Flex justify="space-between" gap={token.padding} wrap="wrap">
                         <Flex vertical gap={token.paddingSM}>
-                            <Text style={{ fontSize: token.fontSizeXL, color: token.colorText }}>博友圈</Text>
+                            <Text style={{ fontSize: token.fontSizeXL, color: token.colorText }}>星汉同盟</Text>
                             <Text style={{ fontSize: linkFontSize, color: token.colorText, lineHeight: 2 }}>让我们跨越山海彼此相连，一起用文字打败时间！</Text>
                             <Flex gap={token.paddingSM}>
                                 <Dropdown placement="topRight" menu={{ items: rssItems }}>
@@ -110,7 +110,7 @@ const CommonFooter: React.FC = () => {
                                             fontSize: token.fontSizeSM,
                                         }
                                     }}>
-                                    <Link target="_blank" href="mailto:support@boyouquan.com"><Mail color={token.colorText} size={16} /></Link>
+                                    <Link target="_blank" href="mailto:support@xinghantongmeng.com"><Mail color={token.colorText} size={16} /></Link>
                                 </Tooltip>
                             </Flex>
                         </Flex>

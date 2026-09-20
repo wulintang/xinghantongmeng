@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Layout, Typography, Space, Divider, Button, Dropdown, Menu, Tooltip } from 'antd';
 import { Rss, Github, Cloud } from 'lucide-react';
 
@@ -9,11 +9,11 @@ const { Text, Link } = Typography;
 const rssMenu = (
   <Menu>
     <Menu.Item>
-      <Link href="https://www.boyouquan.com/feed.xml" target="_blank">推荐文章 RSS 订阅</Link>
+      <Link href="https://www.xinghantongmeng.com/feed.xml" target="_blank">推荐文章 RSS 订阅</Link>
     </Menu.Item>
     <Menu.Divider />
     <Menu.Item>
-      <Link href="https://www.boyouquan.com/feed.xml?sort=latest" target="_blank">最新文章 RSS 订阅</Link>
+      <Link href="https://www.xinghantongmeng.com/feed.xml?sort=latest" target="_blank">最新文章 RSS 订阅</Link>
     </Menu.Item>
   </Menu>
 );
@@ -21,11 +21,11 @@ const rssMenu = (
 const githubMenu = (
   <Menu>
     <Menu.Item>
-      <Link href="https://github.com/leileiluoluo/boyouquan-ui" target="_blank">前端代码 GitHub</Link>
+      <Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">前端代码 GitHub</Link>
     </Menu.Item>
     <Menu.Divider />
     <Menu.Item>
-      <Link href="https://github.com/leileiluoluo/boyouquan-api" target="_blank">后端代码 GitHub</Link>
+      <Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">后端代码 GitHub</Link>
     </Menu.Item>
   </Menu>
 );
@@ -108,7 +108,7 @@ export default function SiteFooter() {
           <Space direction="vertical" align="center" size="small">
             <Link href="https://beian.miit.gov.cn/">辽ICP备2022012085号-2</Link>
             <Text type="secondary">
-              Copyright © 2023-2026 <Link href="https://www.boyouquan.com/home">博友圈</Link>
+              Copyright © 2023-2026 <Link href="https://www.xinghantongmeng.com/home">星汉同盟</Link>
             </Text>
           </Space>
         </div>

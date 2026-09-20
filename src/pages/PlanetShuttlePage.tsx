@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
 import RequestUtil from '@utils/APIRequestUtil';
@@ -9,9 +9,9 @@ import { getDaysTillNow } from '@utils/DateUtil';
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '星球穿梭 - 博友圈 · 博客人的朋友圈！',
-    keywords: '星球穿梭, 博友圈',
-    description: '博友圈星球穿梭，随机穿梭到一位博友的星球！'
+    title: '星球穿梭 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星球穿梭, 星汉同盟',
+    description: '星汉同盟星球穿梭，随机穿梭到一位博友的星球！'
 };
 
 const headStyle = `
@@ -103,7 +103,7 @@ export default function PlanetShuttlePage() {
                 </div>
                 <div style={fontSizeLargeStyle}>
                     {
-                        (null !== shuttleInfo.fromBlog) ? <><p style={marginOneStyle}>加入博友圈 {fromBlogJoinDays} 天、总助力值为 {shuttleInfo.fromBlogInitiatedCount} 的</p><p>「<a id="shuttle" href={`/blogs/${shuttleInfo.fromBlog.domainName}`} style={animationStyle}>{shuttleInfo.fromBlog.name}</a>」正在带您穿梭到「<a id="shuttle" href={getGoAddress(shuttleInfo.blogAddress)} style={animationStyle}>{shuttleInfo.blogName}</a>」的星球！</p></>
+                        (null !== shuttleInfo.fromBlog) ? <><p style={marginOneStyle}>加入星汉同盟 {fromBlogJoinDays} 天、总助力值为 {shuttleInfo.fromBlogInitiatedCount} 的</p><p>「<a id="shuttle" href={`/blogs/${shuttleInfo.fromBlog.domainName}`} style={animationStyle}>{shuttleInfo.fromBlog.name}</a>」正在带您穿梭到「<a id="shuttle" href={getGoAddress(shuttleInfo.blogAddress)} style={animationStyle}>{shuttleInfo.blogName}</a>」的星球！</p></>
                             : <p>您即将穿梭到「<a id="shuttle" href={getGoAddress(shuttleInfo.blogAddress)} style={animationStyle}>{shuttleInfo.blogName}</a>」的星球！</p>
                     }
                 </div>
@@ -113,7 +113,7 @@ export default function PlanetShuttlePage() {
                     }
                 </div>
                 <div style={marginStyle}>
-                    <span style={{ fontSize: '12px' }}>Copyright © 2023-2026 <a href="https://www.boyouquan.com/home" style={colorWhiteStyle}>博友圈</a></span>
+                    <span style={{ fontSize: '12px' }}>Copyright © 2023-2026 <a href="https://www.xinghantongmeng.com/home" style={colorWhiteStyle}>星汉同盟</a></span>
                 </div>
             </div>
         </>

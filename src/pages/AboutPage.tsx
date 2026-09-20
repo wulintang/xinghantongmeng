@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { Typography, Table, Space, Card, Divider } from 'antd';
 import { Meta } from '@components/common';
 import { scrollToHash } from '@utils/ScrollUtil';
@@ -8,25 +8,25 @@ import { MetaFields } from '@types';
 const { Title, Paragraph, Text, Link } = Typography;
 
 const meta: MetaFields = {
-    title: '关于本站 - 博友圈 · 博客人的朋友圈！',
+    title: '关于本站 - 星汉同盟 · 博客人的朋友圈！',
     keywords: '关于本站',
-    description: '博友圈网站介绍。'
+    description: '星汉同盟网站介绍。'
 }
 
 const content = (
     <>
         <Paragraph style={{ marginBottom: 16 }}>
-            您好，欢迎来到博友圈！
+            您好，欢迎来到星汉同盟！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            博友圈成立于 2023 年 7 月，旨在打造一个独立博客人专属的朋友圈！
+            星汉同盟成立于 2023 年 7 月，旨在打造一个独立博客人专属的朋友圈！
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="site-origin">
             建站初衷
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            博友圈的建站初衷源于对独立博客坚守者的敬佩，秉持「不能让好的独立博客无人问津，更不能让它们在时光的长河中就此消亡」。博友圈致力于建立一个博客人的专属朋友圈，提供一个免费的平台，让各个领域的优质独立博客博主连接起来，让博主间有一个可以发现彼此、关注彼此、助力彼此的共同圈子。
+            星汉同盟的建站初衷源于对独立博客坚守者的敬佩，秉持「不能让好的独立博客无人问津，更不能让它们在时光的长河中就此消亡」。星汉同盟致力于建立一个博客人的专属朋友圈，提供一个免费的平台，让各个领域的优质独立博客博主连接起来，让博主间有一个可以发现彼此、关注彼此、助力彼此的共同圈子。
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="submit-blog">
@@ -41,36 +41,36 @@ const content = (
             <li>原创要求：原创文章数占总文章数比例不少于 80%；</li>
             <li>AI 说明：本站不反对 AI 辅助创作，但抵制全 AI 生成内容；</li>
             <li>站龄要求：建站一年或以上；</li>
-            <li>RSS 要求：拥有可以访问的 RSS 地址（如：<Link href="https://www.boyouquan.com/feed.xml" target="_blank">https://www.boyouquan.com/feed.xml</Link>），且若您的博客有多种语言的文章，请为中文文章提供一个单独的 RSS 地址；</li>
+            <li>RSS 要求：拥有可以访问的 RSS 地址（如：<Link href="https://www.xinghantongmeng.com/feed.xml" target="_blank">https://www.xinghantongmeng.com/feed.xml</Link>），且若您的博客有多种语言的文章，请为中文文章提供一个单独的 RSS 地址；</li>
             <li>性能要求：优先确保在中国大陆地区拥有良好的访问性能；</li>
             <li>个人承诺：十年不停更，十年不闭站！</li>
         </ul>
         <Paragraph style={{ marginBottom: 16 }}>
-            确认满足如上要求并承诺十年不闭站后，可以通过点击导航栏「<Link href="https://www.boyouquan.com/blog-requests/add/email-validation" target="_blank">提交博客</Link>」按钮来填写申请表单，提交后一般在 24 小时内会得到审核，审核通过或未通过都会收到邮件提醒。
+            确认满足如上要求并承诺十年不闭站后，可以通过点击导航栏「<Link href="https://www.xinghantongmeng.com/blog-requests/add/email-validation" target="_blank">提交博客</Link>」按钮来填写申请表单，提交后一般在 24 小时内会得到审核，审核通过或未通过都会收到邮件提醒。
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="del-link">
             修改博客
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            若您因域名更换、站点重建等各种原因，想对已收录的博客信息进行修改，请使用能证明您是博客所有者的邮箱「<Link href="mailto:support@boyouquan.com">给我们发送邮件</Link>」，信息修改成功后会收到邮件通知！
+            若您因域名更换、站点重建等各种原因，想对已收录的博客信息进行修改，请使用能证明您是博客所有者的邮箱「<Link href="mailto:support@xinghantongmeng.com">给我们发送邮件</Link>」，信息修改成功后会收到邮件通知！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            若您因任何原因，不想自己的博客被博友圈收录，也可以「<Link href="mailto:support@boyouquan.com">联系我们</Link>」进行删除，博客删除成功后也会收到邮件通知！
+            若您因任何原因，不想自己的博客被星汉同盟收录，也可以「<Link href="mailto:support@xinghantongmeng.com">联系我们</Link>」进行删除，博客删除成功后也会收到邮件通知！
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="add-link">
             添加链接
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            希望您在收到博客通过审核的邮件通知后，将博友圈链接添加到您博客的适当位置，以让更多的博客人发现我们这个圈子！
+            希望您在收到博客通过审核的邮件通知后，将星汉同盟链接添加到您博客的适当位置，以让更多的博客人发现我们这个圈子！
         </Paragraph>
 
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>站名：博友圈</li>
-            <li>网址：<Link href="https://www.boyouquan.com/home" target="_blank">https://www.boyouquan.com/home</Link></li>
+            <li>站名：星汉同盟</li>
+            <li>网址：<Link href="https://www.xinghantongmeng.com/home" target="_blank">https://www.xinghantongmeng.com/home</Link></li>
             <li>描述：让我们跨越山海彼此相连，一起用文字打败时间！</li>
-            <li>星球穿梭页：<Link href="https://www.boyouquan.com/planet-shuttle" target="_blank">https://www.boyouquan.com/planet-shuttle</Link></li>
+            <li>星球穿梭页：<Link href="https://www.xinghantongmeng.com/planet-shuttle" target="_blank">https://www.xinghantongmeng.com/planet-shuttle</Link></li>
             <li>素材：各尺寸 Logo 如下，请按需自取！</li>
         </ul>
 
@@ -98,11 +98,11 @@ const content = (
                     key: '4',
                     size: '100px * 30px',
                     light: {
-                        src: 'https://www.boyouquan.com/images/logo/performance.svg?domainName=leileiluoluo.com',
+                        src: 'https://www.xinghantongmeng.com/images/logo/performance.svg?domainName=leileiluoluo.com',
                         tip: '请将链接中的 domainName 替换为您自己的',
                     },
                     dark: {
-                        src: 'https://www.boyouquan.com/images/logo/performance-dark.svg?domainName=leileiluoluo.com',
+                        src: 'https://www.xinghantongmeng.com/images/logo/performance-dark.svg?domainName=leileiluoluo.com',
                         tip: '请将链接中的 domainName 替换为您自己的',
                     },
                 },
@@ -194,7 +194,7 @@ const content = (
         </Paragraph>
         <div style={{ overflowX: 'auto', marginBottom: 16 }}>
             <Text code style={{ whiteSpace: 'nowrap' }}>
-                Mozilla/5.0 (compatible; Boyouquanspider/1.0; +https://www.boyouquan.com/about#data-spider)
+                Mozilla/5.0 (compatible; Xinghantongmengspider/1.0; +https://www.xinghantongmeng.com/about#data-spider)
             </Text>
         </div>
         <Paragraph style={{ marginBottom: 16 }}>
@@ -208,21 +208,21 @@ const content = (
             除了使用浏览器访问本站外，有一些朋友可能仍保留着使用订阅软件来阅读文章的习惯，本站特为这些用户开发了文章 RSS 订阅服务，订阅地址如下。
         </Paragraph>
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>推荐文章 RSS 订阅地址：<Link href="https://www.boyouquan.com/feed.xml?sort=recommended" target="_blank">https://www.boyouquan.com/feed.xml?sort=recommended</Link></li>
+            <li>推荐文章 RSS 订阅地址：<Link href="https://www.xinghantongmeng.com/feed.xml?sort=recommended" target="_blank">https://www.xinghantongmeng.com/feed.xml?sort=recommended</Link></li>
         </ul>
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>最新文章 RSS 订阅地址：<Link href="https://www.boyouquan.com/feed.xml?sort=latest" target="_blank">https://www.boyouquan.com/feed.xml?sort=latest</Link></li>
+            <li>最新文章 RSS 订阅地址：<Link href="https://www.xinghantongmeng.com/feed.xml?sort=latest" target="_blank">https://www.xinghantongmeng.com/feed.xml?sort=latest</Link></li>
         </ul>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="open-source">
             代码开源
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            博友圈是一个前后端分离的 Web 项目，前端使用 React 编写，后端使用 Java 编写。源码已在 GitHub 开源，欢迎编码爱好者添加关注！您也可以完全自由的使用该开源代码搭建另一个「博友圈」，要求仅有一条，就是在您的网站底部标注一句话「本站使用博友圈（www.boyouquan.com）开源程序创建」。
+            星汉同盟是一个前后端分离的 Web 项目，前端使用 React 编写，后端使用 Java 编写。源码已在 GitHub 开源，欢迎编码爱好者添加关注！您也可以完全自由的使用该开源代码搭建另一个「星汉同盟」，要求仅有一条，就是在您的网站底部标注一句话「本站使用星汉同盟（www.xinghantongmeng.com）开源程序创建」。
         </Paragraph>
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>前端源码：<Link href="https://github.com/leileiluoluo/boyouquan-ui" target="_blank">github.com/leileiluoluo/boyouquan-ui</Link></li>
-            <li>后端源码：<Link href="https://github.com/leileiluoluo/boyouquan-api" target="_blank">github.com/leileiluoluo/boyouquan-api</Link></li>
+            <li>前端源码：<Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">github.com/leileiluoluo/xinghantongmeng</Link></li>
+            <li>后端源码：<Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">github.com/leileiluoluo/xinghantongmeng</Link></li>
         </ul>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="contact-admin">
@@ -232,7 +232,7 @@ const content = (
             若您有关于本站的任何问题，请使用如下方式与我们联系！
         </Paragraph>
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>邮箱地址：<Link href="mailto:support@boyouquan.com">support@boyouquan.com</Link></li>
+            <li>邮箱地址：<Link href="mailto:support@xinghantongmeng.com">support@xinghantongmeng.com</Link></li>
         </ul>
 
         <Paragraph style={{ marginBottom: 16 }}>

@@ -1,4 +1,4 @@
-import { Flex } from 'antd';
+﻿import { Flex } from 'antd';
 
 import { Meta } from '@components/common';
 import BlogRequestAddMainContentHeader from '@components/blog-request/BlogRequestAddMainContentHeader';
@@ -6,7 +6,7 @@ import BlogRequestEmailValidation from '@components/blog-request/BlogRequestEmai
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '提交博客 - 博友圈 · 博客人的朋友圈！',
+    title: '提交博客 - 星汉同盟 · 博客人的朋友圈！',
     keywords: '提交博客, 邮箱验证',
     description: '提交博客，邮箱验证。'
 }

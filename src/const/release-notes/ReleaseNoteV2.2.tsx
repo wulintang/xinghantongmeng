@@ -1,11 +1,11 @@
-import { Image, Typography } from 'antd';
+﻿import { Image, Typography } from 'antd';
 
 const { Title, Paragraph } = Typography;
 
 const META_V2_2 = {
-    title: 'v2.2 版本说明 - 博友圈 · 博客人的朋友圈！',
-    keywords: '博友圈, 版本说明, v2.2',
-    description: '博友圈 v2.2 版本说明。'
+    title: 'v2.2 版本说明 - 星汉同盟 · 博客人的朋友圈！',
+    keywords: '星汉同盟, 版本说明, v2.2',
+    description: '星汉同盟 v2.2 版本说明。'
 };
 
 const RELEASE_INFO_V2_2 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V2_2 = {
     content: (
         <>
             <Paragraph>
-                博友圈于 2025 年 4 月 20 日发布了 v2.2 版本！该版本对「提交博客」页面进行了优化，由之前的无邮箱验证即可直接提交博客，改为了先验证邮箱后提交博客。
+                星汉同盟于 2025 年 4 月 20 日发布了 v2.2 版本！该版本对「提交博客」页面进行了优化，由之前的无邮箱验证即可直接提交博客，改为了先验证邮箱后提交博客。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
@@ -47,10 +47,10 @@ const RELEASE_INFO_V2_2 = {
                 2 代码标签
             </Title>
             <Paragraph>
-                博友圈前端：<a href="https://github.com/leileiluoluo/boyouquan-ui/releases/tag/v2.2" target="_blank">boyouquan-ui</a>
+                星汉同盟前端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.2" target="_blank">xinghantongmeng</a>
             </Paragraph>
             <Paragraph>
-                博友圈后端：<a href="https://github.com/leileiluoluo/boyouquan-api/releases/tag/v2.2" target="_blank">boyouquan-api</a>
+                星汉同盟后端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.2" target="_blank">xinghantongmeng</a>
             </Paragraph>
         </>
     ),

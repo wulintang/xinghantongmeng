@@ -1,4 +1,5 @@
 import { request } from '@/utils/request';
+import { domainOf, normalizeDomain } from '@/utils/route';
 
 // 好道核心现成接口（app/controller/Api.php），路径带 /index.php/
 const API = '/index.php/api';
@@ -366,6 +367,20 @@ export function getWebsites(
 }
 export function getWebsite(id: number | string) {
   return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id }));
+}
+
+/**
+ * 按域名解析收录站点（前端路由 /域名 直达用）。
+ * 后端 website.html 只接 id，所以先拉取站点列表用 domainOf 匹配，再取该站详情。
+ */
+export async function getWebsiteByDomain(domain: string): Promise<ApiResp<WebsiteItem>> {
+  const norm = normalizeDomain(domain);
+  const list = await getWebsites({ page: 1, limit: 1000 });
+  if (list.code === 1 && list.data?.list) {
+    const found = list.data.list.find((w) => normalizeDomain(domainOf(w)) === norm);
+    if (found) return getWebsite(found.id);
+  }
+  return { code: 0, msg: '站点不存在或未收录', data: null as any };
 }
 
 // 文章（my_article + my_article_cate）

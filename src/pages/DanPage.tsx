@@ -51,10 +51,10 @@ const DanPage: React.FC = () => {
     if (error || !dan) {
         return (
             <Flex vertical gap={16}>
-                <PageHeader title="单页" crumbs={[{ label: '首页', to: '/home' }, { label: '单页' }]} />
+                <PageHeader title="单页" crumbs={[{ label: '首页', to: '/' }, { label: '单页' }]} />
                 <Alert type="warning" showIcon message={error || '页面不存在'} />
                 <div>
-                    <Button onClick={() => navigate('/home')}>返回首页</Button>
+                    <Button onClick={() => navigate('/')}>返回首页</Button>
                 </div>
             </Flex>
         );
@@ -67,7 +67,7 @@ const DanPage: React.FC = () => {
         <Flex vertical gap={20} className="dan-wrap">
             <PageHeader
                 title={dan.title || key}
-                crumbs={[{ label: '首页', to: '/home' }, { label: dan.title || key }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: dan.title || key }]}
             />
 
             <Space split="·" wrap className="detail-meta">
@@ -90,7 +90,7 @@ const DanPage: React.FC = () => {
             </Card>
 
             <div>
-                <Button onClick={() => navigate('/home')}>返回首页</Button>
+                <Button onClick={() => navigate('/')}>返回首页</Button>
             </div>
         </Flex>
     );

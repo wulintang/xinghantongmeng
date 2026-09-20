@@ -17,13 +17,13 @@ interface NavItem {
 }
 
 /** feed 是独立插件，它的入口不在后台导航表 my_link 里，这里固定补一个入口 */
-const BLOG_ENTRY: NavItem = { key: 'blogs', name: '博客广场', external: false, to: '/blogs' };
+const BLOG_ENTRY: NavItem = { key: 'feed', name: 'Feed广场', external: false, to: '/feed' };
 
 /** 当前路径是否命中该导航项 */
 function isActive(pathname: string, to?: string): boolean {
     if (!to) return false;
     const p = (to.split('?')[0] || '/').replace(/\/+$/, '') || '/';
-    if (p === '/home') return pathname === '/' || pathname === '/home';
+    if (p === '/') return pathname === '/';
     return pathname === p || pathname.startsWith(`${p}/`);
 }
 
@@ -36,7 +36,7 @@ export default function Header(): React.JSX.Element {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [token, setToken] = useState<string>(() => getToken());
 
-    // 后端导航数据驱动；后端若未配置博客广场入口则补上
+    // 后端导航数据驱动；后端若未配置 Feed广场入口则补上
     const navItems = useMemo<NavItem[]>(() => {
         const list: NavItem[] = topLinks.map((l) => {
             const t = toRoute(l.lianjie);
@@ -48,7 +48,7 @@ export default function Header(): React.JSX.Element {
                 href: t.href,
             };
         });
-        if (!list.some((n) => n.to && n.to.startsWith('/blogs'))) list.push(BLOG_ENTRY);
+        if (!list.some((n) => n.to && n.to.startsWith('/feed'))) list.push(BLOG_ENTRY);
         return list;
     }, [topLinks]);
 
@@ -63,13 +63,13 @@ export default function Header(): React.JSX.Element {
                 {item.name}
             </a>
         ) : (
-            <Link to={item.to || '/home'}>{item.name}</Link>
+            <Link to={item.to || '/'}>{item.name}</Link>
         );
 
     const logout = () => {
         clearToken();
         setToken('');
-        navigate('/home');
+        navigate('/');
     };
 
     const userMenu = {
@@ -102,7 +102,7 @@ export default function Header(): React.JSX.Element {
     return (
         <header className="site-header">
             <div className="container site-header-inner">
-                <Link to="/home" className="site-logo">
+                <Link to="/" className="site-logo">
                     {site?.logo ? (
                         <img src={site.logo} alt={site.title || ''} className="site-logo-img" />
                     ) : (

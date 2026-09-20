@@ -38,7 +38,7 @@ export default function RegisterPage() {
     })
       .then((r: any) => {
         if (r.code === 1) {
-          setToken(r.key || '1');
+          setToken(r.key || '');
           message.success('注册成功');
           navigate('/user');
         } else {

@@ -55,7 +55,7 @@ export default function ProfilePage() {
     userLogout().finally(() => {
       clearToken();
       message.success('已退出');
-      navigate('/home');
+      navigate('/');
     });
   };
 

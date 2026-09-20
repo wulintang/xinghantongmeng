@@ -34,8 +34,10 @@ const ArticleDetailPage: React.FC = () => {
         getArticle(articleId)
             .then((r) => {
                 if (!alive) return;
-                if (r.code === 1 && r.data) setItem(r.data);
-                else setError(r.msg || '文章不存在');
+                if (r.code === 1 && r.data) {
+                    setItem(r.data);
+                    setZan(Number(r.data.zan) || 0);
+                } else setError(r.msg || '文章不存在');
             })
             .catch(() => {
                 if (alive) setError('文章加载失败');
@@ -55,7 +57,7 @@ const ArticleDetailPage: React.FC = () => {
             <Flex vertical gap={16}>
                 <PageHeader
                     title="文章详情"
-                    crumbs={[{ label: '首页', to: '/home' }, { label: '文章资讯', to: '/articles' }, { label: '详情' }]}
+                    crumbs={[{ label: '首页', to: '/' }, { label: '文章资讯', to: '/articles' }, { label: '详情' }]}
                 />
                 <Alert type="warning" showIcon message={error || '文章不存在'} />
                 <div>
@@ -70,12 +72,19 @@ const ArticleDetailPage: React.FC = () => {
             <PageHeader
                 title={item.title}
                 crumbs={[
-                    { label: '首页', to: '/home' },
+                    { label: '首页', to: '/' },
                     { label: '文章资讯', to: '/articles' },
                     { label: item.title },
                 ]}
                 extra={
-                    <Space>
+                    <Space wrap>
+                        <Button
+                            icon={liked ? '♥' : '♡'}
+                            type={liked ? 'primary' : 'default'}
+                            onClick={onLike}
+                        >
+                            点赞 {zan}
+                        </Button>
                         <Button onClick={() => navigate('/articles')}>返回列表</Button>
                     </Space>
                 }
@@ -84,7 +93,7 @@ const ArticleDetailPage: React.FC = () => {
             <Space split={<Divider type="vertical" />} wrap className="detail-meta">
                 <Text type="secondary">{dayjs.unix(item.time).format('YYYY-MM-DD HH:mm')}</Text>
                 <Text type="secondary">浏览 {item.view}</Text>
-                <Text type="secondary">点赞 {item.zan}</Text>
+                <Text type="secondary">点赞 {zan}</Text>
             </Space>
 
             <Card>

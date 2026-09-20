@@ -6,6 +6,7 @@ import { CateFilter, PageHeader, SearchBox } from '@components/common';
 import { WebsitesSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getWebsiteCates, getWebsites, type CateItem, type WebsiteItem } from '@/services/userCenter';
+import { domainOf } from '@/utils/route';
 
 const { Text, Paragraph } = Typography;
 
@@ -83,7 +84,7 @@ const WebsitesPage: React.FC = () => {
             <PageHeader
                 title="网址导航"
                 description="按分类浏览后台收录的全部站点"
-                crumbs={[{ label: '首页', to: '/home' }, { label: '网址导航' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '网址导航' }]}
             />
 
             <SearchBox placeholder="搜索站点名称、关键词、域名" gotoPage="/websites" />
@@ -118,9 +119,9 @@ const WebsitesPage: React.FC = () => {
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
                                             <Flex vertical gap={2} className="site-card-body">
-                                                <Link to={`/websites/${w.id}`} className="site-card-name">
-                                                    {w.title || w.name}
-                                                </Link>
+                                            <Link to={`/${domainOf(w)}`} className="site-card-name">
+                                                {w.title || w.name}
+                                            </Link>
                                                 <Text type="secondary" className="site-card-domain">
                                                     {w.domain || w.www}
                                                 </Text>
@@ -134,23 +135,12 @@ const WebsitesPage: React.FC = () => {
                                                 浏览 {w.view} · 点赞 {w.zan}
                                             </Text>
                                             <Flex gap={4}>
-                                                {w.feed_url ? (
-                                                    <Link to={`/blogs/${w.domain || w.www}`}>
+                                                {w.url ? (
+                                                    <Link to={`/${domainOf(w)}`}>
                                                         <Button type="link" size="small">
-                                                            博文
+                                                            {w.feed_url ? '查看文章' : '访问'}
                                                         </Button>
                                                     </Link>
-                                                ) : null}
-                                                {w.url ? (
-                                                    <Button
-                                                        type="link"
-                                                        size="small"
-                                                        href={w.url}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                    >
-                                                        访问
-                                                    </Button>
                                                 ) : null}
                                             </Flex>
                                         </Flex>

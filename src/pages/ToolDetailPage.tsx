@@ -54,7 +54,7 @@ const ToolDetailPage: React.FC = () => {
             <Flex vertical gap={16}>
                 <PageHeader
                     title="工具详情"
-                    crumbs={[{ label: '首页', to: '/home' }, { label: '常用工具', to: '/tools' }, { label: '详情' }]}
+                    crumbs={[{ label: '首页', to: '/' }, { label: '常用工具', to: '/tools' }, { label: '详情' }]}
                 />
                 <Alert type="warning" showIcon message={error || '工具不存在'} />
                 <div>
@@ -69,7 +69,7 @@ const ToolDetailPage: React.FC = () => {
             <PageHeader
                 title={item.title}
                 crumbs={[
-                    { label: '首页', to: '/home' },
+                    { label: '首页', to: '/' },
                     { label: '常用工具', to: '/tools' },
                     { label: item.title },
                 ]}

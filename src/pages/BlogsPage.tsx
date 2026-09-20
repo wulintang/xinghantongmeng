@@ -7,8 +7,9 @@ import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
+import { getWebsites, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
-import { domainOf } from '@/utils/route';
+import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 
 const { Text, Paragraph } = Typography;
 
@@ -30,19 +31,30 @@ const BlogsPage: React.FC = () => {
 
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState<PostData[]>([]);
+    /** 域名 -> 站点头像（用网站数据 API 的 ico/pic，提交时上传、不可能为空） */
+    const [siteIcons, setSiteIcons] = useState<Record<string, string>>({});
 
     usePageMeta({
-        title: '博客广场',
-        keywords: '博客广场, 博文聚合, 博客圈',
-        description: '兴汉同盟收录站点的最新博文聚合。',
+        title: 'Feed广场',
+        keywords: 'Feed广场, 文章聚合, 站点圈',
+        description: '兴汉同盟收录站点的最新文章聚合。',
     });
 
     useEffect(() => {
         let alive = true;
         setLoading(true);
-        getPosts()
-            .then((list) => {
-                if (alive) setPosts(list);
+        Promise.all([getPosts(), getWebsites({ page: 1, limit: 1000 })])
+            .then(([list, sites]) => {
+                if (!alive) return;
+                setPosts(list);
+                const map: Record<string, string> = {};
+                if (sites.code === 1 && sites.data?.list) {
+                    (sites.data.list as WebsiteItem[]).forEach((w) => {
+                        const icon = assetUrl(w.ico || w.pic || '');
+                        if (icon) map[normalizeDomain(domainOf(w))] = icon;
+                    });
+                }
+                setSiteIcons(map);
             })
             .catch(() => {
                 if (alive) setPosts([]);
@@ -87,12 +99,12 @@ const BlogsPage: React.FC = () => {
     return (
         <Flex vertical gap={20}>
             <PageHeader
-                title="博客广场"
-                description={`来自 ${siteCount} 个站点的最新博文`}
-                crumbs={[{ label: '首页', to: '/home' }, { label: '博客广场' }]}
+                title="Feed广场"
+                description={`来自 ${siteCount} 个站点的最新文章`}
+                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场' }]}
             />
 
-            <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/blogs" />
+            <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/feed" />
 
             <Flex justify="space-between" align="center" wrap gap={12}>
                 <Text type="secondary">共 {list.length} 篇</Text>
@@ -109,8 +121,8 @@ const BlogsPage: React.FC = () => {
                 <Alert
                     type="info"
                     showIcon
-                    message="暂无博文"
-                    description={keyword ? `关键词「${keyword}」没有匹配结果。` : '站点尚未聚合到博文。'}
+                    message="暂无文章"
+                    description={keyword ? `关键词「${keyword}」没有匹配结果。` : '站点尚未聚合到文章。'}
                 />
             ) : (
                 <>
@@ -121,6 +133,7 @@ const BlogsPage: React.FC = () => {
                             rowKey={(p) => p.link || `${domainOf(p)}-${p.title}`}
                             renderItem={(p) => {
                                 const domain = domainOf(p);
+                                const icon = siteIcons[normalizeDomain(domain)];
                                 return (
                                     <List.Item
                                         key={p.link || p.title}
@@ -134,21 +147,18 @@ const BlogsPage: React.FC = () => {
                                     >
                                         <List.Item.Meta
                                             avatar={
-                                                <Avatar
-                                                    shape="square"
-                                                    src={p.blogAdminMediumImageURL || p.blogAdminLargeImageURL || undefined}
-                                                >
+                                                <Avatar shape="square" src={icon || undefined}>
                                                     {(p.blogName || domain || '?').slice(0, 1)}
                                                 </Avatar>
                                             }
                                             title={
-                                                <a href={p.link} target="_blank" rel="noreferrer">
+                                                <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
                                                     {p.title || '无标题'}
                                                 </a>
                                             }
                                             description={
                                                 <Flex align="center" gap={8} wrap>
-                                                    <Link to={`/blogs/${domain}`}>
+                                                    <Link to={`/${domain}`}>
                                                         <Tag color="blue">{p.blogName || domain}</Tag>
                                                     </Link>
                                                     <Text type="secondary">{domain}</Text>

@@ -15,11 +15,11 @@ const NotFoundPage: React.FC = () => {
             subTitle="抱歉，未找到你要访问的页面。"
             extra={
                 <Space>
-                    <Button type="primary" onClick={() => navigate('/home')}>
+                    <Button type="primary" onClick={() => navigate('/')}>
                         返回首页
                     </Button>
                     <Button onClick={() => navigate('/websites')}>去网址导航</Button>
-                    <Button onClick={() => navigate('/blogs')}>去博客广场</Button>
+                    <Button onClick={() => navigate('/feed')}>去Feed广场</Button>
                 </Space>
             }
         />

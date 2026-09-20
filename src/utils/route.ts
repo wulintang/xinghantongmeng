@@ -21,14 +21,29 @@ const SEGMENT_MAP: Record<string, string> = {
     website: '/websites',
     article: '/articles',
     tool: '/tools',
-    blog: '/blogs',
+    blog: '/feed',
     dan: '/dan',
 };
+
+/**
+ * 外站 URL 末尾追加来源标记 ?lailu=hao.dao.js.cn（已有查询参数则用 &）。
+ * 所有跳往站外的链接都必须先经过 /jump 中间页，这里只负责拼来源参数。
+ */
+export function appendLailu(url: string, lailu = 'hao.dao.js.cn'): string {
+    const u = (url || '').trim();
+    if (!u) return u;
+    return u.includes('?') ? `${u}&lailu=${encodeURIComponent(lailu)}` : `${u}?lailu=${encodeURIComponent(lailu)}`;
+}
+
+/** 生成安全跳转中间页的前端路由地址（/jump?url=编码后的目标） */
+export function jumpUrl(url: string): string {
+    return `/jump?url=${encodeURIComponent(appendLailu(url))}`;
+}
 
 /** 把后端下发的地址转换成前端可用的跳转目标 */
 export function toRoute(url?: string | null): RouteTarget {
     const raw = (url || '').trim();
-    if (!raw) return { external: false, to: '/home' };
+    if (!raw) return { external: false, to: '/' };
     if (/^(https?:)?\/\//i.test(raw) || /^(mailto|tel):/i.test(raw)) {
         return { external: true, href: raw };
     }
@@ -39,7 +54,7 @@ export function toRoute(url?: string | null): RouteTarget {
     const path = (qIndex >= 0 ? raw.slice(0, qIndex) : raw).replace(/\.html?$/i, '');
     const segments = path.split('/').filter(Boolean);
 
-    if (segments.length === 0) return { external: false, to: `/home${query}` };
+    if (segments.length === 0) return { external: false, to: `/${query}` };
 
     const base = SEGMENT_MAP[segments[0].toLowerCase()];
     if (!base) return { external: false, to: `/${segments.join('/')}${query}` };

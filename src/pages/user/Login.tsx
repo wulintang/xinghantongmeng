@@ -50,8 +50,8 @@ export default function LoginPage() {
     userLogin(payload)
       .then((r: any) => {
         if (r.code === 1) {
-          // 好道原生 login 不返回 key，登录态靠 cookie；前端存登录标记
-          setToken(r.key || '1');
+          // 好道 login 成功返回 key（后端 Api.php::login 已补 'key' 返回）
+          setToken(r.key || '');
           message.success('登录成功');
           navigate('/user');
         } else {

@@ -84,7 +84,7 @@ const ArticlesPage: React.FC = () => {
             <PageHeader
                 title="文章资讯"
                 description="后台发布的全部文章"
-                crumbs={[{ label: '首页', to: '/home' }, { label: '文章资讯' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '文章资讯' }]}
             />
 
             <SearchBox placeholder="搜索文章标题" gotoPage="/articles" />

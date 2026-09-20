@@ -22,7 +22,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
-import { domainOf, normalizeDomain } from '@/utils/route';
+import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -112,7 +112,7 @@ const HomePage: React.FC = () => {
                                             <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
-                                            <Link to={`/websites/${w.id}`} className="site-card-name">
+                                            <Link to={`/${domainOf(w)}`} className="site-card-name">
                                                 {w.title || w.name}
                                             </Link>
                                         </Flex>
@@ -124,9 +124,11 @@ const HomePage: React.FC = () => {
                                                 浏览 {w.view} · 点赞 {w.zan}
                                             </Text>
                                             {w.url ? (
-                                                <Button type="link" size="small" href={w.url} target="_blank" rel="noreferrer">
-                                                    访问
-                                                </Button>
+                                                <Link to={`/${domainOf(w)}`} className="site-card-visit">
+                                                    <Button type="link" size="small">
+                                                        访问
+                                                    </Button>
+                                                </Link>
                                             ) : null}
                                         </Flex>
                                     </Flex>
@@ -174,14 +176,14 @@ const HomePage: React.FC = () => {
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
                         <Title level={4} className="section-title">
-                            最新博文
+                            最新文章
                         </Title>
-                        <Button type="link" onClick={() => navigate('/blogs')}>
+                        <Button type="link" onClick={() => navigate('/feed')}>
                             更多
                         </Button>
                     </Flex>
                     {posts.length === 0 ? (
-                        <Alert type="info" showIcon message="暂无聚合博文" />
+                        <Alert type="info" showIcon message="暂无聚合文章" />
                     ) : (
                         <List
                             size="small"
@@ -192,19 +194,13 @@ const HomePage: React.FC = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         title={
-                                            <a href={p.link} target="_blank" rel="noreferrer">
+                                            <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
                                                 {p.title}
                                             </a>
                                         }
                                         description={
                                             <Text type="secondary">
-                                                <Link
-                                                    to={
-                                                        siteIdByDomain.get(normalizeDomain(domainOf(p))) !== undefined
-                                                            ? `/websites/${siteIdByDomain.get(normalizeDomain(domainOf(p)))}`
-                                                            : `/blogs/${domainOf(p)}`
-                                                    }
-                                                >
+                                                <Link to={`/${domainOf(p)}`}>
                                                     {p.blogName || domainOf(p)}
                                                 </Link>
                                                 {' · '}

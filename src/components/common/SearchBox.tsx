@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface SearchBoxProps {
     placeholder?: string;
-    /** 提交后跳转的前端路由，如 /websites、/blogs */
+    /** 提交后跳转的前端路由，如 /websites、/feed */
     gotoPage: string;
     /** 搜索关键词写进 URL 的参数名，默认 keyword */
     paramName?: string;

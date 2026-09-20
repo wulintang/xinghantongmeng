@@ -19,22 +19,26 @@ import dayjs from 'dayjs';
 import { PageHeader } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getWebsite, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, toggleLike, type WebsiteItem } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
-import { stripHtmlSuffix, domainOf, normalizeDomain } from '@/utils/route';
+import { domainOf, jumpUrl } from '@/utils/route';
+import { getToken } from '@/utils/auth';
+import { message } from 'antd';
 
 const { Text, Paragraph, Title } = Typography;
 
 const WebsiteDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    const siteId = stripHtmlSuffix(id);
+    const domain = (id || '').trim();
 
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState<WebsiteItem | null>(null);
     const [allPosts, setAllPosts] = useState<PostData[]>([]);
     const [error, setError] = useState('');
+    const [liked, setLiked] = useState(false);
+    const [zan, setZan] = useState(0);
 
     usePageMeta({
         title: item?.title || item?.name || '站点详情',
@@ -47,11 +51,15 @@ const WebsiteDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        Promise.all([getWebsite(siteId), getPosts()])
+        Promise.all([getWebsiteByDomain(domain), getPosts()])
             .then(([r, posts]) => {
                 if (!alive) return;
-                if (r.code === 1 && r.data) setItem(r.data);
-                else setError(r.msg || '站点不存在');
+                if (r.code === 1 && r.data) {
+                    setItem(r.data);
+                    setZan(Number(r.data.zan) || 0);
+                } else {
+                    setError(r.msg || '站点不存在');
+                }
                 setAllPosts(posts);
             })
             .catch(() => {
@@ -63,14 +71,35 @@ const WebsiteDetailPage: React.FC = () => {
         return () => {
             alive = false;
         };
-    }, [siteId]);
+    }, [domain]);
+
+    const onLike = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再点赞');
+            navigate('/login');
+            return;
+        }
+        if (!item) return;
+        toggleLike(key, Number(item.id), 'website')
+            .then((r) => {
+                if (r.code === 1) {
+                    const now = r.data?.liked === 1;
+                    setLiked(now);
+                    setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                } else {
+                    message.error(r.msg || '操作失败');
+                }
+            })
+            .catch(() => message.error('网络错误'));
+    };
 
     if (loading) return <WebsiteDetailSkeleton />;
 
     if (error || !item) {
         return (
             <Flex vertical gap={16}>
-                <PageHeader title="站点详情" crumbs={[{ label: '首页', to: '/home' }, { label: '网址导航', to: '/websites' }, { label: '详情' }]} />
+                <PageHeader title="站点详情" crumbs={[{ label: '首页', to: '/' }, { label: '网址导航', to: '/websites' }, { label: '详情' }]} />
                 <Alert type="warning" showIcon message={error || '站点不存在'} />
                 <div>
                     <Button onClick={() => navigate('/websites')}>返回网址导航</Button>
@@ -80,9 +109,9 @@ const WebsiteDetailPage: React.FC = () => {
     }
 
     const related = Array.isArray(item.related) ? item.related : [];
-    const domain = domainOf(item);
+    const siteDomain = domainOf(item);
     const sitePosts = allPosts.filter(
-        (p) => normalizeDomain(p.blogDomainName) === normalizeDomain(domain)
+        (p) => domainOf(p) === siteDomain
     );
 
     return (
@@ -90,22 +119,24 @@ const WebsiteDetailPage: React.FC = () => {
             <PageHeader
                 title={item.title || item.name}
                 crumbs={[
-                    { label: '首页', to: '/home' },
+                    { label: '首页', to: '/' },
                     { label: '网址导航', to: '/websites' },
                     { label: item.title || item.name },
                 ]}
                 extra={
                     <Space wrap>
-                        {item.feed_url ? (
-                            <Link to={`/blogs/${domain}`}>
-                                <Button>查看博文</Button>
-                            </Link>
-                        ) : null}
                         {item.url ? (
-                            <Button type="primary" href={item.url} target="_blank" rel="noreferrer">
+                            <Button type="primary" href={jumpUrl(item.url)} target="_blank" rel="noreferrer">
                                 访问网站
                             </Button>
                         ) : null}
+                        <Button
+                            icon={liked ? '♥' : '♡'}
+                            type={liked ? 'primary' : 'default'}
+                            onClick={onLike}
+                        >
+                            点赞 {zan}
+                        </Button>
                     </Space>
                 }
             />
@@ -127,21 +158,15 @@ const WebsiteDetailPage: React.FC = () => {
                             {item.content || '暂无站点简介'}
                         </Paragraph>
                     </Flex>
+                    {item.pic ? (
+                        <img src={item.pic} alt={item.title || item.name} className="detail-shot-side" />
+                    ) : null}
                 </Flex>
             </Card>
 
             <Card title="站点信息">
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
                     <Descriptions.Item label="域名">{item.domain || item.www || '-'}</Descriptions.Item>
-                    <Descriptions.Item label="访问地址">
-                        {item.url ? (
-                            <a href={item.url} target="_blank" rel="noreferrer">
-                                {item.url}
-                            </a>
-                        ) : (
-                            '-'
-                        )}
-                    </Descriptions.Item>
                     <Descriptions.Item label="浏览">{item.view}</Descriptions.Item>
                     <Descriptions.Item label="点赞">{item.zan}</Descriptions.Item>
                     <Descriptions.Item label="收录时间">
@@ -152,7 +177,7 @@ const WebsiteDetailPage: React.FC = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="RSS" span={2}>
                         {item.feed_url ? (
-                            <a href={item.feed_url} target="_blank" rel="noreferrer">
+                            <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer">
                                 {item.feed_url}
                             </a>
                         ) : (
@@ -167,9 +192,9 @@ const WebsiteDetailPage: React.FC = () => {
                 </Descriptions>
             </Card>
 
-            <Card title="站点博文" extra={item.feed_url ? <Link to={`/blogs/${domain}`}>全部博文</Link> : undefined}>
+            <Card title="站点文章">
                 {sitePosts.length === 0 ? (
-                    <Alert type="info" showIcon message="该站点暂无聚合博文" />
+                    <Alert type="info" showIcon message="该站点暂无聚合文章" />
                 ) : (
                     <List
                         size="small"
@@ -179,7 +204,7 @@ const WebsiteDetailPage: React.FC = () => {
                             <List.Item>
                                 <List.Item.Meta
                                     title={
-                                        <a href={p.link} target="_blank" rel="noreferrer">
+                                        <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
                                             {p.title || '无标题'}
                                         </a>
                                     }
@@ -195,12 +220,6 @@ const WebsiteDetailPage: React.FC = () => {
                 )}
             </Card>
 
-            {item.pic ? (
-                <Card title="站点截图">
-                    <img src={item.pic} alt={item.title || item.name} className="detail-shot" />
-                </Card>
-            ) : null}
-
             {related.length > 0 ? (
                 <Card title="相关站点">
                     <Row gutter={[16, 16]}>
@@ -209,7 +228,7 @@ const WebsiteDetailPage: React.FC = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         avatar={<Avatar shape="square" src={r.ico || r.pic || undefined} />}
-                                        title={<Link to={`/websites/${r.id}`}>{r.title || r.name}</Link>}
+                                        title={<Link to={`/${domainOf(r)}`}>{r.title || r.name}</Link>}
                                         description={<Text type="secondary">{r.domain || r.www}</Text>}
                                     />
                                 </List.Item>

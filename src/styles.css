@@ -301,6 +301,21 @@ body {
   display: block;
 }
 
+.detail-shot-side {
+  width: 280px;
+  max-width: 40%;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 575px) {
+  .detail-shot-side {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 .article-lead {
   margin-bottom: 16px;
 }

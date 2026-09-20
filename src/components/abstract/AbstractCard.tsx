@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { theme, Flex, Typography, Space, Divider, Tooltip, Alert, Badge, Avatar, Dropdown, MenuProps } from 'antd';
 import { PushpinOutlined, ClockCircleOutlined, EyeOutlined, MoreOutlined, ShareAltOutlined, StarOutlined, UserOutlined } from '@ant-design/icons';
 import { formatDateStr } from '../../utils/DateUtil';

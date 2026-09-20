@@ -1,4 +1,4 @@
-﻿# 兴汉同盟前端源码
+# 兴汉同盟前端源码
 
 兴汉同盟（xinghantongmeng）是一个前后端分离的 Web 项目，该工程（[xinghantongmeng](https://github.com/wulintang/xinghantongmeng)）为前端部分。后端由「好道」系统（wulintang）承载，通过 `verify`、`feed`、`user` 等插件提供 `/api`、`/verify`、`/feed`、`/user` 等接口。
 

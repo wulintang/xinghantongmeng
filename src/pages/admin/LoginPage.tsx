@@ -1,4 +1,4 @@
-﻿import Meta from '../../components/common/Meta';
+import Meta from '../../components/common/Meta';
 import Login from '../../components/admin/Login';
 
 const meta = {

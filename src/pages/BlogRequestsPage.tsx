@@ -1,4 +1,4 @@
-﻿import { Flex } from 'antd';
+import { Flex } from 'antd';
 
 import { MainContentHeader, SearchBox, Meta } from '@components/common';
 import BlogRequests from '@components/blog-requests/BlogRequests';

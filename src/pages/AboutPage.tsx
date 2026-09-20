@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Typography, Table, Space, Card, Divider } from 'antd';
 import { Meta } from '@components/common';
 import { scrollToHash } from '@utils/ScrollUtil';

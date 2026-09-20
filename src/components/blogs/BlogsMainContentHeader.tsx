@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import RequestUtil from '../../utils/APIRequestUtil';
 import { Typography, Skeleton } from 'antd';

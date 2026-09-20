@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Suspense, lazy } from 'react';
 import { Typography, Space } from 'antd';
 

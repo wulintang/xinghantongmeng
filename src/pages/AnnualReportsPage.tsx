@@ -1,4 +1,4 @@
-﻿import { Typography } from 'antd';
+import { Typography } from 'antd';
 import { Meta } from '@components/common';
 import Article from '@components/article/Article';
 import { MetaFields } from '@types';

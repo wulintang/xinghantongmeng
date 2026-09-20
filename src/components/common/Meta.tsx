@@ -1,4 +1,4 @@
-﻿import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet';
 
 import { MetaFields, MetaProps } from '@types';
 

@@ -1,4 +1,4 @@
-﻿import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Card, Typography, Flex, Spin, Empty } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 

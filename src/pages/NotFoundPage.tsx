@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 import { Meta } from '@components/common';
 import Article from '@components/article/Article';

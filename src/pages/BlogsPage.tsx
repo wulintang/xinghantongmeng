@@ -1,4 +1,4 @@
-﻿import { Card, Flex } from 'antd';
+import { Card, Flex } from 'antd';
 
 import { SearchBox, SwitchSortType, Meta, HotSearch } from '@components/common';
 import { BlogsMainContentHeader, BlogCardList } from '@components/blogs';

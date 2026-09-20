@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Card, Flex, Typography, Input, Button, Form, Radio, Space } from 'antd';
 import { FormError } from '../../types';
 

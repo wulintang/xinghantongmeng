@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Fragment, Suspense, useEffect, useState, lazy } from 'react';
 import RequestUtil from '../../utils/APIRequestUtil';
 import Meta from '../common/Meta';

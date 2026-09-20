@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, Row, Col, Typography, Avatar, Button, Space } from 'antd';
 import { Link, useNavigate } from 'react-router-dom'; // 如果你项目用的是 next/link 就换成 next/link
 import { getToken } from '@/utils/auth';

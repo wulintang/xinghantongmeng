@@ -1,4 +1,4 @@
-﻿import { Flex } from 'antd';
+import { Flex } from 'antd';
 
 import { MainContentHeader, Meta } from '@components/common';
 import MonthlySelectedCardList from '@components/monthly-selected/MonthlySelectedCardList';

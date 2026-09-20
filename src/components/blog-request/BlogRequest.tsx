@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import RequestUtil from '../../utils/APIRequestUtil';

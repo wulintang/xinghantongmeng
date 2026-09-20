@@ -1,4 +1,4 @@
-﻿import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Flex, Typography } from 'antd';
 
 import { MainContentHeader, Meta, SearchBox, SwitchSortType } from '@components/common';

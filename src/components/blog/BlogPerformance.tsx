@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { theme, Card, Flex, Typography, Progress, Tooltip } from 'antd';
 import { getYearsTillNow, getYear } from '../../utils/DateUtil';
 import { TrophyOutlined } from '@ant-design/icons';

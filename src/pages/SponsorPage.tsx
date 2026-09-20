@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Typography, List, Skeleton as AntSkeleton, Card, Space, Tag, Divider, Collapse, CollapseProps } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 

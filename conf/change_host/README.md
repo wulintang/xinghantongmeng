@@ -1,4 +1,4 @@
-﻿# Host Change Document
+# Host Change Document
 
 Based on CenOS 7
 

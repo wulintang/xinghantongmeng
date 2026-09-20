@@ -1,4 +1,4 @@
-﻿
+
 import { Meta } from '@components/common';
 import CancelSubscription from '@components/subscription/CancelSubscription';
 import { MetaFields } from '@types';

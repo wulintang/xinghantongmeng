@@ -177,26 +177,30 @@ export function submitSite(
   });
 }
 
-// ===================== 下方为「后端核心无现成 JSON 接口」的部分（待路线定） =====================
-// 站名/导航/友链/单页/首页列表：好道是服务端渲染模板（view/wulintang），核心 Api.php 没有这些 JSON 接口。
-// 目前前端 Header/Footer/首页仍调用下面这些函数，后端无对应接口会返回空——待你定路线
-// （A 告知后端现成接口路径 / B 授权加只读接口 / C 前端静态配置）后统一改干净。
+// ===================== 站点展示数据（openapi 插件） =====================
+// 数据源全部是后台现有数据表，由 /index.php/openapi/index/* 输出：
+//   my_set(alias=set) 站点配置 / my_link 导航与友链(wz=1 顶部,2 底部,9 友链) / my_dan 单页
+//   my_website+_cate 网址库 / my_article+_cate 文章 / my_tag 标签 / my_ad 广告 / app_toolbox 工具
+const OPEN = '/index.php/openapi/index';
+
 export interface LinkItem {
   id: number;
+  wz: number;
   name: string;
   pic: string;
   lianjie: string;
   hover: string;
   px: number;
-  wz: number;
-  xin?: number;
+  xin: number;
 }
+
 export interface TagItem {
   id: number;
   name: string;
   type: number;
   px: number;
 }
+
 export interface SiteConfig {
   title: string;
   titles: string;
@@ -207,47 +211,183 @@ export interface SiteConfig {
   beian: string;
   gonganbei: string;
 }
+
+export interface CateItem {
+  id: number;
+  tid: number | string;
+  name: string;
+  pic: string;
+  px: number;
+}
+
 export interface WebsiteItem {
   id?: number | string;
-  name?: string;
+  tid?: string;
   title?: string;
+  name?: string;
+  www?: string;
+  domain?: string;
+  url?: string;
   ico?: string;
   pic?: string;
   keywords?: string;
   description?: string;
   view?: number | string;
   zan?: number | string;
-  www?: string;
-  domain?: string;
-  url?: string;
   content?: string;
+  feed_url?: string;
   type?: string;
   [key: string]: any;
 }
+
+export interface ArticleItem {
+  id: number;
+  tid: number;
+  title: string;
+  view: number;
+  zan: number;
+  time: number;
+  times: number;
+  keywords?: string;
+  description?: string;
+  content?: string;
+}
+
 export interface DanItem {
+  id?: number;
   alias?: string;
   title?: string;
   content?: string;
+  pic?: string;
+  view?: number;
   [key: string]: any;
 }
-export function getLinks() {
-  return request<ApiResp<LinkItem[]>>(`${USER}/links.html`);
+
+export interface AdItem {
+  id: number;
+  name: string;
+  alias: string;
+  content: string;
+  px: number;
+  times: string;
 }
-export function getTags() {
-  return request<ApiResp<TagItem[]>>(`${USER}/tags.html`);
+
+export interface PageResult<T> {
+  list: T[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
 }
+
+export interface LinkGroups {
+  top: LinkItem[];
+  foot: LinkItem[];
+  friend: LinkItem[];
+}
+
+// 拼查询串（自动跳过空值）
+function qs(params: Record<string, any>): string {
+  const q = new URLSearchParams();
+  Object.keys(params).forEach((k) => {
+    const v = params[k];
+    if (v !== undefined && v !== null && v !== '') q.append(k, String(v));
+  });
+  const s = q.toString();
+  return s ? `?${s}` : '';
+}
+
+// 站点配置（my_set alias=set）
 export function getSite() {
-  return request<ApiResp<SiteConfig>>(`${USER}/site.html`);
+  return request<ApiResp<SiteConfig>>(`${OPEN}/site.html`);
 }
-export function getDan(alias?: string) {
-  return request<ApiResp<DanItem>>(
-    `${USER}/dan.html` + (alias ? `?alias=${encodeURIComponent(alias)}` : '')
+
+// 首屏聚合：站点配置 + 三组链接 + 网址分类
+export function getInit() {
+  return request<ApiResp<{ site: SiteConfig; links: LinkGroups; cates: CateItem[] }>>(
+    `${OPEN}/init.html`
   );
 }
-export function getWebsites(params: { keyword?: string; type?: string } = {}) {
-  const query = new URLSearchParams();
-  if (params.keyword) query.append('keyword', params.keyword);
-  if (params.type) query.append('type', params.type);
-  const qs = query.toString();
-  return request<ApiResp<WebsiteItem[]>>(`${USER}/websites.html` + (qs ? `?${qs}` : ''));
+
+// 顶部导航 / 底部导航 / 友情链接（my_link，wz=1/2/9）
+// 接口按 wz 分组返回，这里合并成平铺数组，每项仍带 wz 便于页面自行分组
+export function getLinks(): Promise<ApiResp<LinkItem[]>> {
+  return request<ApiResp<LinkGroups>>(`${OPEN}/links.html`).then((r) => {
+    const g = r.data || { top: [], foot: [], friend: [] };
+    const data: LinkItem[] = [...(g.top || []), ...(g.foot || []), ...(g.friend || [])];
+    return { code: r.code, msg: r.msg, data };
+  });
+}
+
+// 标签（my_tag）
+export function getTags(type?: number) {
+  return request<ApiResp<TagItem[]>>(`${OPEN}/tags.html` + qs({ type }));
+}
+
+// 单页（my_dan）
+export function getDan(alias?: string) {
+  return request<ApiResp<DanItem>>(`${OPEN}/dan.html` + qs({ alias }));
+}
+export function getDans() {
+  return request<ApiResp<DanItem[]>>(`${OPEN}/dans.html`);
+}
+
+// 网址库（my_website + my_website_cate）
+export function getWebsiteCates() {
+  return request<ApiResp<CateItem[]>>(`${OPEN}/websiteCates.html`);
+}
+export function getWebsites(
+  params: {
+    cate?: string | number;
+    keyword?: string;
+    tool?: number;
+    order?: string;
+    page?: number;
+    limit?: number;
+  } = {}
+): Promise<ApiResp<WebsiteItem[]>> {
+  return request<ApiResp<PageResult<WebsiteItem>>>(`${OPEN}/websites.html` + qs(params)).then((r) => {
+    const data: WebsiteItem[] = r.data && r.data.list ? r.data.list : [];
+    return { code: r.code, msg: r.msg, data };
+  });
+}
+export function getWebsite(id: number | string) {
+  return request<ApiResp<WebsiteItem & { related: WebsiteItem[] }>>(`${OPEN}/website.html` + qs({ id }));
+}
+
+// 文章（my_article + my_article_cate）
+export function getArticleCates() {
+  return request<ApiResp<CateItem[]>>(`${OPEN}/articleCates.html`);
+}
+export function getArticles(
+  params: { cate?: string | number; keyword?: string; order?: string; page?: number; limit?: number } = {}
+): Promise<ApiResp<ArticleItem[]>> {
+  return request<ApiResp<PageResult<ArticleItem>>>(`${OPEN}/articles.html` + qs(params)).then((r) => {
+    const data: ArticleItem[] = r.data && r.data.list ? r.data.list : [];
+    return { code: r.code, msg: r.msg, data };
+  });
+}
+export function getArticle(id: number | string) {
+  return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id }));
+}
+
+// 广告位（my_ad）
+export function getAds(alias?: string) {
+  return request<ApiResp<AdItem[]>>(`${OPEN}/ads.html` + qs({ alias }));
+}
+
+// 工具（app_toolbox + app_toolbox_cate）
+export function getToolCates() {
+  return request<ApiResp<CateItem[]>>(`${OPEN}/toolCates.html`);
+}
+export function getTools(
+  params: { cate?: string | number; keyword?: string; page?: number; limit?: number } = {}
+): Promise<ApiResp<any[]>> {
+  return request<ApiResp<PageResult<any>>>(`${OPEN}/tools.html` + qs(params)).then((r) => {
+    const data: any[] = r.data && r.data.list ? r.data.list : [];
+    return { code: r.code, msg: r.msg, data };
+  });
+}
+export function getTool(id: number | string) {
+  return request<ApiResp<any>>(`${OPEN}/tool.html` + qs({ id }));
 }

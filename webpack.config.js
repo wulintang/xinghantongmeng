@@ -73,6 +73,7 @@ module.exports = {
     plugins: [
         new DotenvWebpack({
             path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+            systemvars: true,
         }),
         new webpack.ProvidePlugin({
             "React": "react",

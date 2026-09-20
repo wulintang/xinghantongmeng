@@ -1,68 +1,147 @@
-import React, { useEffect, useState } from 'react';
-import { Flex, Typography, Empty } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Avatar, Empty, Flex, List, Pagination, Segmented, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
 
-import { SearchBox, Meta, MainContentHeader } from '@components/common';
+import { Meta, MainContentHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
-import { getWebsites, type WebsiteItem } from '@/services/userCenter';
+import { getPosts } from '@/services/postService';
+import type { PostData } from '@/types/post';
 import { getURLParameter } from '@/utils/CommonUtil';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
-const siteDomain = (w: WebsiteItem): string => w.www || w.domain || (w.url ? w.url.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : '') || '';
+const PAGE_SIZE = 10;
+
+type SortKey = 'latest' | 'earliest' | 'site';
+
+const sortOptions = [
+    { label: '最新', value: 'latest' },
+    { label: '最早', value: 'earliest' },
+    { label: '按站点', value: 'site' },
+];
 
 const meta = {
-    title: '博客广场 - 兴汉同盟 · 博客人的朋友圈！',
-    keywords: '博客广场, 博客列表',
-    description: '展示兴汉同盟所收录的全部博客。',
+    title: '博客广场 - 兴汉同盟',
+    keywords: '博客广场, 博文聚合, 博客圈',
+    description: '兴汉同盟收录的全部博客最新文章。',
 };
+
+const domainOf = (p: PostData): string => (p.blogDomainName || p.blogAddress || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
 const BlogsPage: React.FC = () => {
     const keyword = getURLParameter('keyword') || '';
     const [loading, setLoading] = useState(true);
-    const [sites, setSites] = useState<WebsiteItem[]>([]);
+    const [posts, setPosts] = useState<PostData[]>([]);
+    const [sort, setSort] = useState<SortKey>('latest');
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         setLoading(true);
-        getWebsites({ keyword })
-            .then((r) => {
-                if (r.code === 1 && r.data) setSites(r.data);
-            })
-            .catch(() => {})
+        getPosts()
+            .then((list) => setPosts(list))
+            .catch(() => setPosts([]))
             .finally(() => setLoading(false));
-    }, [keyword]);
+    }, []);
+
+    useEffect(() => {
+        setPage(1);
+    }, [keyword, sort]);
+
+    const list = useMemo(() => {
+        const kw = keyword.trim().toLowerCase();
+        let arr = posts.filter((p) => {
+            if (!kw) return true;
+            return [p.title, p.description, p.blogName, domainOf(p)].some((v) =>
+                (v || '').toLowerCase().includes(kw)
+            );
+        });
+        if (sort === 'earliest') {
+            arr = [...arr].sort((a, b) => (a.publishedAt || '').localeCompare(b.publishedAt || ''));
+        } else if (sort === 'site') {
+            arr = [...arr].sort((a, b) => (a.blogName || '').localeCompare(b.blogName || '', 'zh-CN'));
+        }
+        return arr;
+    }, [posts, keyword, sort]);
+
+    const pageList = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
         <>
             <Meta meta={meta} />
             <Flex vertical gap={16}>
                 <MainContentHeader content="博客广场" />
-                <SearchBox placeholder="搜索站点 ↵" gotoPage="/blogs" />
+                <SearchBox placeholder="搜索文章、站点 ↵" gotoPage="/blogs" />
+                <Flex justify="space-between" align="center" wrap gap={12}>
+                    <Text type="secondary">共 {list.length} 篇</Text>
+                    <Segmented
+                        value={sort}
+                        onChange={(v) => setSort(v as SortKey)}
+                        options={sortOptions}
+                    />
+                </Flex>
                 {loading ? (
                     <BlogsSkeleton />
-                ) : sites.length === 0 ? (
-                    <Empty description="未找到相关站点，试试更换关键词吧！" />
+                ) : list.length === 0 ? (
+                    <Empty description={keyword ? '没有匹配的文章，换个关键词试试' : '暂无文章'} />
                 ) : (
-                    <div className="website-grid">
-                        {sites.map((w) => {
-                            const domain = siteDomain(w);
-                            return (
-                                <Link to={`/blogs/${domain}`} key={w.id ?? domain} className="website-card">
-                                    <div className="website-card-head">
-                                        {w.ico || w.pic ? (
-                                            <img className="website-card-ico" src={w.ico || w.pic} alt={w.title || w.name || ''} />
+                    <>
+                        <List
+                            itemLayout="vertical"
+                            dataSource={pageList}
+                            rowKey={(p) => p.link || `${domainOf(p)}-${p.title}`}
+                            renderItem={(p) => {
+                                const domain = domainOf(p);
+                                return (
+                                    <List.Item
+                                        key={p.link || p.title}
+                                        actions={[
+                                            <Text type="secondary" key="time">
+                                                {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD HH:mm') : ''}
+                                            </Text>,
+                                        ]}
+                                    >
+                                        <List.Item.Meta
+                                            avatar={
+                                                <Avatar shape="square" src={p.blogAdminMediumImageURL || p.blogAdminLargeImageURL || undefined}>
+                                                    {(p.blogName || domain || '?').slice(0, 1)}
+                                                </Avatar>
+                                            }
+                                            title={
+                                                <a href={p.link} target="_blank" rel="noreferrer noopener">
+                                                    {p.title || '无标题'}
+                                                </a>
+                                            }
+                                            description={
+                                                <Flex align="center" gap={8} wrap>
+                                                    <Link to={`/blogs/${domain}`}>
+                                                        <Tag color="blue">{p.blogName || domain}</Tag>
+                                                    </Link>
+                                                    <Text type="secondary">{domain}</Text>
+                                                </Flex>
+                                            }
+                                        />
+                                        {p.description ? (
+                                            <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }} className="post-summary">
+                                                {p.description}
+                                            </Typography.Paragraph>
                                         ) : null}
-                                        <span className="website-card-title">{w.title || w.name || '未命名站点'}</span>
-                                    </div>
-                                    {w.keywords ? <div className="website-card-keywords">{w.keywords}</div> : null}
-                                    <div className="website-card-meta">
-                                        <span>浏览 {w.view ?? 0}</span>
-                                        <span>点赞 {w.zan ?? 0}</span>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
+                                    </List.Item>
+                                );
+                            }}
+                        />
+                        {list.length > PAGE_SIZE ? (
+                            <Flex justify="center">
+                                <Pagination
+                                    current={page}
+                                    pageSize={PAGE_SIZE}
+                                    total={list.length}
+                                    showSizeChanger={false}
+                                    onChange={setPage}
+                                />
+                            </Flex>
+                        ) : null}
+                    </>
                 )}
             </Flex>
         </>

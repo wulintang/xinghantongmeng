@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
     const [site, setSite] = useState<SiteConfig | null>(null);
 
     useEffect(() => {
-        Promise.all([getWebsites(), getSite()])
+        Promise.all([getWebsites({ limit: 100 }), getSite()])
             .then(([w, s]) => {
                 if (w.code === 1 && w.data) setSites(w.data);
                 if (s.code === 1 && s.data) setSite(s.data);

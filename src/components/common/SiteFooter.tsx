@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSite, getLinks, type SiteConfig, type LinkItem } from '@/services/userCenter';
+import { sanitizeHtml } from '@/utils/CommonUtil';
 
 export default function SiteFooter() {
     const [site, setSite] = useState<SiteConfig | null>(null);
@@ -61,7 +62,7 @@ export default function SiteFooter() {
                         </div>
                     )}
                     {site?.gonganbei && (
-                        <div dangerouslySetInnerHTML={{ __html: site.gonganbei }} />
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(site.gonganbei) }} />
                     )}
                 </div>
             </div>

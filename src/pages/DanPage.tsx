@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Meta } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { getDan, type DanItem } from '@/services/userCenter';
+import { sanitizeHtml } from '@/utils/CommonUtil';
 
 const DanPage: React.FC = () => {
     const { alias } = useParams<{ alias: string }>();
@@ -31,7 +32,8 @@ const DanPage: React.FC = () => {
     }
 
     const title = dan?.title || alias || '单页';
-    const content = dan?.content || '';
+    const raw = dan?.content || '';
+    const content = sanitizeHtml(raw);
     const isHtml = /<[a-z][\s\S]*>/i.test(content);
 
     return (

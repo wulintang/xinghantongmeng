@@ -1,12 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const DotenvWebpack = require('dotenv-webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// 生产构建缺少后端地址时给出显式提示（前端会退化成相对路径请求后端）
+if (isProduction && !process.env.BOYOUQUAN_API_ADDRESS) {
+    console.warn('\n[webpack] 警告：未检测到构建环境变量 BOYOUQUAN_API_ADDRESS，前端将改用相对路径请求后端。\n');
+}
 
 module.exports = {
     entry: './src/index.tsx', // 入口文件
@@ -71,10 +75,18 @@ module.exports = {
         ],
     },
     plugins: [
-        new DotenvWebpack({
-            path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
-            systemvars: true,
-        }),
+        // 环境变量注入：
+        //   生产（部署平台构建）——只读取构建环境变量（部署平台面板里配的 BOYOUQUAN_API_ADDRESS），
+        //                        仓库内不保存任何后端地址，.env.production 不进仓库。
+        //   开发（本地）——读取本地 .env（.gitignore 已忽略）。
+        isProduction
+            ? new webpack.DefinePlugin({
+                  'process.env.BOYOUQUAN_API_ADDRESS': JSON.stringify(process.env.BOYOUQUAN_API_ADDRESS || ''),
+              })
+            : new DotenvWebpack({
+                  path: '.env',
+                  systemvars: true,
+              }),
         new webpack.ProvidePlugin({
             "React": "react",
         }),
@@ -86,14 +98,6 @@ module.exports = {
             filename: '[name].[contenthash].css',
             chunkFilename: '[id].[contenthash].css',
         }),
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: "public/assets",
-                    to: path.resolve(__dirname, 'dist', 'assets')
-                }
-            ]
-        }),
     ],
     resolve: {
         alias: {
@@ -101,13 +105,9 @@ module.exports = {
             '@pages': path.resolve(__dirname, 'src/pages'),
             '@layouts': path.resolve(__dirname, 'src/layouts'),
             '@components': path.resolve(__dirname, 'src/components'),
-            '@constants': path.resolve(__dirname, 'src/constants'),
-            '@hooks': path.resolve(__dirname, 'src/hooks'),
             '@services': path.resolve(__dirname, 'src/services'),
             '@types': path.resolve(__dirname, 'src/types'),
             '@utils': path.resolve(__dirname, 'src/utils'),
-            '@const': path.resolve(__dirname, 'src/const'),
-            '@json': path.resolve(__dirname, 'src/json'),
         },
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     },

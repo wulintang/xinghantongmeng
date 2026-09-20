@@ -1,15 +1,3 @@
-export interface PostDataListParams {
-  sortType: string;
-  keyword?: string;
-  pageNo: number;
-}
-
-export interface PostDataList {
-  pageSize: number;
-  total: number;
-  results: PostData[];
-}
-
 export interface PostData {
   blogAddress: string;
   blogAdminLargeImageURL: string | null | undefined;

@@ -89,7 +89,7 @@ const SubmitSite: React.FC = () => {
                                 <img
                                     src={codeSrc}
                                     alt="code"
-                                    style={{ height: 30, cursor: 'pointer' }}
+                                    className="captcha-img"
                                     onClick={refreshCode}
                                 />
                             }

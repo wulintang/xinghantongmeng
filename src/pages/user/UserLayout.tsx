@@ -1,32 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Layout, Menu, Avatar, Typography, Spin, Button } from 'antd';
-import {
-  User,
-  Star,
-  Calendar,
-  Bell,
-  Wallet,
-  FileText,
-  AlertTriangle,
-  LogOut,
-  Send,
-} from 'lucide-react';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 
 const { Sider, Content } = Layout;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const MENU = [
-  { key: '/user', icon: <User size={14} />, label: <Link to="/user">个人资料</Link> },
-  { key: '/user/favorites', icon: <Star size={14} />, label: <Link to="/user/favorites">我的收藏</Link> },
-  { key: '/user/checkin', icon: <Calendar size={14} />, label: <Link to="/user/checkin">每日签到</Link> },
-  { key: '/user/messages', icon: <Bell size={14} />, label: <Link to="/user/messages">消息中心</Link> },
-  { key: '/user/balance', icon: <Wallet size={14} />, label: <Link to="/user/balance">余额明细</Link> },
-  { key: '/user/orders', icon: <FileText size={14} />, label: <Link to="/user/orders">我的订单</Link> },
-  { key: '/user/reports', icon: <AlertTriangle size={14} />, label: <Link to="/user/reports">我的举报</Link> },
-  { key: '/user/submit', icon: <Send size={14} />, label: <Link to="/user/submit">提交站点</Link> },
+  { key: '/user', label: <Link to="/user">个人资料</Link> },
+  { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
+  { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
+  { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
+  { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },
+  { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
+  { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
+  { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
 ];
 
 export default function UserLayout() {
@@ -74,7 +63,9 @@ export default function UserLayout() {
     <Layout className="user-layout-wrap">
       <Sider width={200} className="user-sider">
         <div className="user-sider-profile">
-          <Avatar src={info?.head} size={56} icon={<User size={24} />} />
+          <Avatar src={info?.head} size={56}>
+            {info?.name?.slice(0, 1)}
+          </Avatar>
           <div className="mt-8">
             <Text strong>{info?.name}</Text>
           </div>
@@ -84,7 +75,7 @@ export default function UserLayout() {
         </div>
         <Menu mode="inline" selectedKeys={[selected]} items={MENU} />
         <div className="user-sider-logout">
-          <Button block icon={<LogOut size={14} />} onClick={onLogout}>
+          <Button block onClick={onLogout}>
             退出登录
           </Button>
         </div>

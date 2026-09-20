@@ -1,11 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import { Flex, Input, Button, Space } from 'antd';
-import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
+import { Input } from 'antd';
 import { getURLParameter, redirectTo } from '../../utils/CommonUtil';
-import { useNavigate } from 'react-router-dom';
-
-const { Search } = Input;
 
 interface SearchBoxProps {
     placeholder: string;
@@ -16,10 +12,9 @@ interface SearchBoxProps {
 export default function SearchBox({ placeholder, gotoPage, sortType }: SearchBoxProps): React.JSX.Element {
     const keyword = getURLParameter('keyword');
     const [searchTerm, setSearchTerm] = useState(keyword ?? '');
-    const navigate = useNavigate();
 
-    const doSearch = () => {
-        const trimmed = searchTerm.trim();
+    const doSearch = (value?: string) => {
+        const trimmed = (value ?? searchTerm).trim();
         if (!trimmed) return;
 
         const goTo =
@@ -30,38 +25,15 @@ export default function SearchBox({ placeholder, gotoPage, sortType }: SearchBox
         redirectTo(goTo);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            doSearch();
-        }
-    };
-
-    const clearSearch = () => {
-        setSearchTerm('');
-        navigate(window.location.pathname, { replace: true });
-    };
-
     return (
-        <Flex align="center" justify="start" gap={8} style={{ width: '100%', background: 'transparent' }}>
-            <Input
-                placeholder={placeholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={handleKeyDown}
-                prefix={<SearchOutlined />}
-                suffix={
-                    searchTerm && (
-                        <CloseOutlined
-                            onClick={clearSearch}
-                            style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.45)' }}
-                        />
-                    )
-                }
-                style={{ flex: 1 }}
-            />
-            <Button type="primary" onClick={doSearch}>
-                搜索
-            </Button>
-        </Flex>
+        <Input.Search
+            className="site-search"
+            placeholder={placeholder}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onSearch={doSearch}
+            enterButton="搜索"
+            allowClear
+        />
     );
 }

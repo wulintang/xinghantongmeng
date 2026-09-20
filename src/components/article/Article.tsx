@@ -1,6 +1,5 @@
 import React from 'react';
-import { Card, Typography, Space } from 'antd';
-import { CalendarOutlined } from '@ant-design/icons';
+import { Card, Space, Typography } from 'antd';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -12,28 +11,21 @@ interface ArticleProps {
 
 export default function Article({ title, content, publishedAt }: ArticleProps): React.JSX.Element {
     return (
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {/* 文章头部 */}
+        <Space direction="vertical" size="middle" className="article-wrap">
             <div className="article-header">
-                <Title level={4} style={{ margin: 0 }}>
+                <Title level={4} className="article-title">
                     {title}
                 </Title>
-                {publishedAt && (
-                    <Space size="small" style={{ marginTop: 10 }}>
-                        <CalendarOutlined style={{ color: '#8c8c8c' }} />
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                            {publishedAt}
-                        </Text>
-                    </Space>
-                )}
+                {publishedAt ? (
+                    <Text type="secondary" className="article-time">
+                        {publishedAt}
+                    </Text>
+                ) : null}
             </div>
 
-            {/* 文章内容卡片 */}
             <Card>
                 {typeof content === 'string' ? (
-                    <Paragraph style={{ marginBottom: 0, color: 'rgba(0, 0, 0, 0.85)' }}>
-                        {content}
-                    </Paragraph>
+                    <Paragraph className="article-body">{content}</Paragraph>
                 ) : (
                     content
                 )}

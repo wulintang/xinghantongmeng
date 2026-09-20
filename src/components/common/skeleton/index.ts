@@ -1,4 +1,10 @@
 export { default as HomeSkeleton } from './HomeSkeleton';
+export { default as WebsitesSkeleton } from './WebsitesSkeleton';
+export { default as WebsiteDetailSkeleton } from './WebsiteDetailSkeleton';
+export { default as ArticlesSkeleton } from './ArticlesSkeleton';
+export { default as ArticleDetailSkeleton } from './ArticleDetailSkeleton';
+export { default as ToolsSkeleton } from './ToolsSkeleton';
+export { default as ToolDetailSkeleton } from './ToolDetailSkeleton';
 export { default as BlogsSkeleton } from './BlogsSkeleton';
 export { default as BlogDetailSkeleton } from './BlogDetailSkeleton';
 export { default as DanSkeleton } from './DanSkeleton';

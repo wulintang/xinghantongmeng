@@ -1,15 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Avatar, Empty, Flex, List, Pagination, Segmented, Tag, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import { Alert, Avatar, Card, Flex, List, Pagination, Segmented, Tag, Typography } from 'antd';
+import { Link, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { Meta, MainContentHeader, SearchBox } from '@components/common';
+import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
-import { getURLParameter } from '@/utils/CommonUtil';
+import { domainOf } from '@/utils/route';
 
-const { Text, Title } = Typography;
+const { Text, Paragraph } = Typography;
 
 const PAGE_SIZE = 10;
 
@@ -21,32 +22,48 @@ const sortOptions = [
     { label: '按站点', value: 'site' },
 ];
 
-const meta = {
-    title: '博客广场 - 兴汉同盟',
-    keywords: '博客广场, 博文聚合, 博客圈',
-    description: '兴汉同盟收录的全部博客最新文章。',
-};
-
-const domainOf = (p: PostData): string => (p.blogDomainName || p.blogAddress || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-
 const BlogsPage: React.FC = () => {
-    const keyword = getURLParameter('keyword') || '';
+    const [params, setParams] = useSearchParams();
+    const keyword = params.get('keyword') || '';
+    const sort = (params.get('sort') as SortKey) || 'latest';
+    const page = Math.max(1, Number(params.get('page') || 1));
+
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState<PostData[]>([]);
-    const [sort, setSort] = useState<SortKey>('latest');
-    const [page, setPage] = useState(1);
+
+    usePageMeta({
+        title: '博客广场',
+        keywords: '博客广场, 博文聚合, 博客圈',
+        description: '兴汉同盟收录站点的最新博文聚合。',
+    });
 
     useEffect(() => {
+        let alive = true;
         setLoading(true);
         getPosts()
-            .then((list) => setPosts(list))
-            .catch(() => setPosts([]))
-            .finally(() => setLoading(false));
+            .then((list) => {
+                if (alive) setPosts(list);
+            })
+            .catch(() => {
+                if (alive) setPosts([]);
+            })
+            .finally(() => {
+                if (alive) setLoading(false);
+            });
+        return () => {
+            alive = false;
+        };
     }, []);
 
-    useEffect(() => {
-        setPage(1);
-    }, [keyword, sort]);
+    const updateParam = (patch: Record<string, string | number | undefined>) => {
+        const next = new URLSearchParams(params);
+        Object.keys(patch).forEach((k) => {
+            const v = patch[k];
+            if (v === undefined || v === '' || v === null) next.delete(k);
+            else next.set(k, String(v));
+        });
+        setParams(next);
+    };
 
     const list = useMemo(() => {
         const kw = keyword.trim().toLowerCase();
@@ -65,27 +82,39 @@ const BlogsPage: React.FC = () => {
     }, [posts, keyword, sort]);
 
     const pageList = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const siteCount = useMemo(() => new Set(posts.map((p) => domainOf(p))).size, [posts]);
 
     return (
-        <>
-            <Meta meta={meta} />
-            <Flex vertical gap={16}>
-                <MainContentHeader content="博客广场" />
-                <SearchBox placeholder="搜索文章、站点 ↵" gotoPage="/blogs" />
-                <Flex justify="space-between" align="center" wrap gap={12}>
-                    <Text type="secondary">共 {list.length} 篇</Text>
-                    <Segmented
-                        value={sort}
-                        onChange={(v) => setSort(v as SortKey)}
-                        options={sortOptions}
-                    />
-                </Flex>
-                {loading ? (
-                    <BlogsSkeleton />
-                ) : list.length === 0 ? (
-                    <Empty description={keyword ? '没有匹配的文章，换个关键词试试' : '暂无文章'} />
-                ) : (
-                    <>
+        <Flex vertical gap={20}>
+            <PageHeader
+                title="博客广场"
+                description={`来自 ${siteCount} 个站点的最新博文`}
+                crumbs={[{ label: '首页', to: '/home' }, { label: '博客广场' }]}
+            />
+
+            <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/blogs" />
+
+            <Flex justify="space-between" align="center" wrap gap={12}>
+                <Text type="secondary">共 {list.length} 篇</Text>
+                <Segmented
+                    value={sort}
+                    onChange={(v) => updateParam({ sort: String(v), page: undefined })}
+                    options={sortOptions}
+                />
+            </Flex>
+
+            {loading ? (
+                <BlogsSkeleton />
+            ) : list.length === 0 ? (
+                <Alert
+                    type="info"
+                    showIcon
+                    message="暂无博文"
+                    description={keyword ? `关键词「${keyword}」没有匹配结果。` : '站点尚未聚合到博文。'}
+                />
+            ) : (
+                <>
+                    <Card>
                         <List
                             itemLayout="vertical"
                             dataSource={pageList}
@@ -99,16 +128,21 @@ const BlogsPage: React.FC = () => {
                                             <Text type="secondary" key="time">
                                                 {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD HH:mm') : ''}
                                             </Text>,
-                                        ]}
+                                            p.recommended ? <Tag color="red" key="rec">推荐</Tag> : null,
+                                            p.pinned ? <Tag color="orange" key="pin">置顶</Tag> : null,
+                                        ].filter(Boolean)}
                                     >
                                         <List.Item.Meta
                                             avatar={
-                                                <Avatar shape="square" src={p.blogAdminMediumImageURL || p.blogAdminLargeImageURL || undefined}>
+                                                <Avatar
+                                                    shape="square"
+                                                    src={p.blogAdminMediumImageURL || p.blogAdminLargeImageURL || undefined}
+                                                >
                                                     {(p.blogName || domain || '?').slice(0, 1)}
                                                 </Avatar>
                                             }
                                             title={
-                                                <a href={p.link} target="_blank" rel="noreferrer noopener">
+                                                <a href={p.link} target="_blank" rel="noreferrer">
                                                     {p.title || '无标题'}
                                                 </a>
                                             }
@@ -122,29 +156,29 @@ const BlogsPage: React.FC = () => {
                                             }
                                         />
                                         {p.description ? (
-                                            <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }} className="post-summary">
+                                            <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="post-summary">
                                                 {p.description}
-                                            </Typography.Paragraph>
+                                            </Paragraph>
                                         ) : null}
                                     </List.Item>
                                 );
                             }}
                         />
-                        {list.length > PAGE_SIZE ? (
-                            <Flex justify="center">
-                                <Pagination
-                                    current={page}
-                                    pageSize={PAGE_SIZE}
-                                    total={list.length}
-                                    showSizeChanger={false}
-                                    onChange={setPage}
-                                />
-                            </Flex>
-                        ) : null}
-                    </>
-                )}
-            </Flex>
-        </>
+                    </Card>
+                    {list.length > PAGE_SIZE ? (
+                        <Flex justify="center">
+                            <Pagination
+                                current={page}
+                                pageSize={PAGE_SIZE}
+                                total={list.length}
+                                showSizeChanger={false}
+                                onChange={(p) => updateParam({ page: p })}
+                            />
+                        </Flex>
+                    ) : null}
+                </>
+            )}
+        </Flex>
     );
 };
 

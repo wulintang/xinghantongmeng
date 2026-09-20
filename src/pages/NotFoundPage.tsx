@@ -1,31 +1,29 @@
 import React from 'react';
+import { Button, Result, Space } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
-import { Meta } from '@components/common';
-import Article from '@components/article/Article';
-import { MetaFields } from '@types';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
-const meta: MetaFields = {
-    title: '404 - 兴汉同盟 · 博客人的朋友圈！',
-    keywords: '404',
-    description: '404'
+const NotFoundPage: React.FC = () => {
+    const navigate = useNavigate();
+    usePageMeta({ title: '页面不存在' });
+
+    return (
+        <Result
+            status="404"
+            title="404"
+            subTitle="抱歉，未找到你要访问的页面。"
+            extra={
+                <Space>
+                    <Button type="primary" onClick={() => navigate('/home')}>
+                        返回首页
+                    </Button>
+                    <Button onClick={() => navigate('/websites')}>去网址导航</Button>
+                    <Button onClick={() => navigate('/blogs')}>去博客广场</Button>
+                </Space>
+            }
+        />
+    );
 };
 
-const titleStyle: React.CSSProperties = { textAlign: 'center' };
-const contentStyle: React.CSSProperties = { textAlign: 'center', fontSize: '60px' };
-
-const content: JSX.Element = (
-    <>
-        <h4 style={titleStyle}>抱歉，未找到您要访问的页面！</h4>
-        <p style={contentStyle}>404</p>
-    </>
-);
-
-export default function NotFoundPage() {
-    return (
-        <>
-            <Meta meta={meta} />
-            <Article title="" content={content} />
-        </>
-    );
-}
-
+export default NotFoundPage;

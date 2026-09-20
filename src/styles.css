@@ -1,4 +1,14 @@
-/* ============ 统一布局 ============ */
+/* ============================================================
+   全局布局：头部 / 内容区 / 页脚 统一同宽（1200px），全部响应式
+   ============================================================ */
+body {
+  margin: 0;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.88);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 .container {
   width: 100%;
   max-width: 1200px;
@@ -7,59 +17,59 @@
   box-sizing: border-box;
 }
 
-.site-header {
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+.site-layout {
+  min-height: 100vh;
   background: #fff;
 }
 
-.site-footer {
-  padding: 28px 0;
-  border-top: 1px solid #eee;
-  background: #fafafa;
-  text-align: center;
-  font-size: 13px;
-  color: #888;
-}
-
-.site-footer a {
-  color: #888;
-}
-
 .site-content {
-  padding: 24px 0;
-  min-height: calc(100vh - 120px);
+  padding: 24px 0 40px;
+  min-height: calc(100vh - 260px);
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 0 12px;
   }
+
+  .site-content {
+    padding: 16px 0 28px;
+  }
 }
 
-/* ============ 头部 ============ */
+/* ============================================================
+   头部
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
 .site-header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  min-height: 60px;
 }
 
 .site-logo {
   display: flex;
   align-items: center;
-  cursor: pointer;
+  flex: none;
+  text-decoration: none;
 }
 
 .site-logo-img {
-  height: 32px;
+  height: 34px;
   display: block;
 }
 
 .site-logo-text {
   font-size: 20px;
-  font-weight: 600;
-  color: #1a1a1a;
   white-space: nowrap;
 }
 
@@ -73,8 +83,8 @@
 .site-nav-menu {
   border-bottom: none;
   background: transparent;
-  width: 100%;
   justify-content: center;
+  min-width: 0;
 }
 
 .site-user {
@@ -86,43 +96,350 @@
   cursor: pointer;
 }
 
-/* ============ 底部 ============ */
-.site-footer-nav {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
+/* ============================================================
+   页脚
+   ============================================================ */
+.site-footer {
+  margin-top: 24px;
+  padding: 40px 0 24px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
 }
 
-.site-footer-friends {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
+.site-footer-logo {
+  height: 32px;
+  display: block;
 }
 
-.site-footer-label {
-  color: #888;
+.site-footer-brand {
+  margin: 0;
 }
 
-.site-footer-copyright {
-  margin-top: 8px;
-  line-height: 1.8;
+.site-footer-desc {
+  margin: 0;
 }
 
-.site-footer-copyright a {
-  color: #888;
+.site-footer-col-title {
+  margin: 0;
+}
+
+.site-footer a {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.site-footer a:hover {
+  color: #8a2b1d;
+}
+
+.site-footer-divider {
+  margin: 28px 0 16px;
+}
+
+.site-footer-bottom {
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 28px 0 20px;
+  }
+
+  .site-footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* ============================================================
+   通用：页面头 / 搜索 / 分类
+   ============================================================ */
+.page-header {
+  padding-bottom: 4px;
+}
+
+.page-header-main {
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0;
+}
+
+.page-desc {
+  margin: 0;
+}
+
+.page-header-extra {
+  flex: none;
+}
+
+.cate-filter {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.site-search {
+  width: 100%;
 }
 
 .main-content-header {
   margin-bottom: 12px;
 }
 
-/* ============ 骨架屏 ============ */
+/* ============================================================
+   首页
+   ============================================================ */
+.home-hero {
+  text-align: center;
+  padding: 28px 0 8px;
+}
+
+.home-hero-title {
+  margin: 0 0 8px;
+}
+
+.home-hero-desc {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.home-hero-search {
+  max-width: 620px;
+  margin: 20px auto 12px;
+}
+
+.home-hero-cates {
+  justify-content: center;
+}
+
+.section-head {
+  margin-bottom: 12px;
+}
+
+.section-title {
+  margin: 0;
+}
+
+.home-list {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 4px 16px;
+}
+
+/* ============================================================
+   站点卡片
+   ============================================================ */
+.site-card {
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.site-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-card-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-card-domain {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-card-desc {
+  margin: 0;
+  min-height: 44px;
+  font-size: 13px;
+}
+
+.site-card-meta {
+  font-size: 12px;
+}
+
+/* ============================================================
+   详情页
+   ============================================================ */
+.detail-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-subtitle {
+  margin: 0;
+}
+
+.detail-content {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.9;
+  word-break: break-word;
+}
+
+/* 后端纯文本正文（含换行）原样呈现 */
+.detail-plain {
+  white-space: pre-wrap;
+}
+
+.detail-meta {
+  font-size: 13px;
+}
+
+.detail-shot {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.article-detail {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.article-lead {
+  margin-bottom: 16px;
+}
+
+.post-summary {
+  margin: 0;
+}
+
+/* ============================================================
+   工具卡片
+   ============================================================ */
+.tool-card {
+  height: 100%;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.tool-card-ico {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
+}
+
+.tool-card-name {
+  text-align: center;
+}
+
+.tool-card-desc {
+  margin: 0;
+  font-size: 12px;
+  text-align: center;
+}
+
+.tool-detail-ico {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ============================================================
+   单页
+   ============================================================ */
+.dan-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   骨架屏
+   ============================================================ */
+.sk-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sk-hero {
+  padding: 24px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+}
+
+.sk-search {
+  max-width: 100%;
+}
+
+.sk-section-title {
+  width: 180px;
+}
+
+.sk-filter {
+  width: 320px;
+  max-width: 100%;
+}
+
+.sk-card {
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 16px;
+  height: 100%;
+}
+
+.sk-list-item {
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.sk-detail-head {
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.sk-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.sk-tool-card {
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-tool-name {
+  width: 70%;
+}
+
+.sk-tool-desc {
+  width: 90%;
+}
+
+.sk-article {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .sk-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 通用 shimmer 占位块（用户中心骨架屏使用） */
 .skeleton {
-  background: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+  background: linear-gradient(90deg, #f0f0f0, #f7f7f7, #f0f0f0);
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite;
   border-radius: 6px;
@@ -161,51 +478,6 @@
   margin-bottom: 12px;
 }
 
-.sk-grid {
-  display: grid;
-  gap: 16px;
-  margin-top: 8px;
-}
-
-.sk-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.sk-grid-4 {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.sk-card {
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 12px;
-}
-
-.sk-home-banner {
-  height: 160px;
-  margin-bottom: 16px;
-}
-
-.sk-home-search {
-  height: 44px;
-  margin-bottom: 16px;
-}
-
-.sk-card-img {
-  height: 90px;
-  margin-bottom: 10px;
-}
-
-.sk-dan-title {
-  height: 26px;
-  width: 40%;
-  margin-bottom: 16px;
-}
-
-.sk-dan-body .sk-line {
-  margin: 10px 0;
-}
-
 .sk-user {
   display: flex;
   gap: 24px;
@@ -225,7 +497,7 @@
 
 .sk-user-card {
   flex: 1;
-  border: 1px solid #eee;
+  border: 1px solid #f0f0f0;
   border-radius: 10px;
   padding: 20px;
 }
@@ -238,11 +510,6 @@
 }
 
 @media (max-width: 768px) {
-  .sk-grid-3,
-  .sk-grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .sk-user {
     flex-direction: column;
   }
@@ -254,124 +521,9 @@
   }
 }
 
-/* ============ 首页 站点卡片 ============ */
-.website-grid {
-  display: grid;
-  gap: 16px;
-  margin-top: 8px;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.website-card {
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 16px;
-  transition: box-shadow 0.2s ease;
-}
-
-.website-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.website-card-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.website-card-ico {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  object-fit: contain;
-  flex: none;
-}
-
-.website-card-title {
-  font-weight: 600;
-  font-size: 15px;
-  color: #1a1a1a;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.website-card-keywords {
-  color: #888;
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.website-card-meta {
-  color: #aaa;
-  font-size: 12px;
-  display: flex;
-  gap: 16px;
-}
-
-.home-hero {
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.home-hero-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 6px;
-}
-
-.home-hero-desc {
-  color: #888;
-  font-size: 14px;
-}
-
-.home-declare {
-  margin-top: 20px;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .website-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ============ 博客广场 / 博客详情 ============ */
-.post-summary {
-  margin-bottom: 0;
-}
-
-.back-link {
-  padding: 0;
-}
-
-.blog-site-name {
-  margin: 0;
-}
-
-/* ============ 单页 ============ */
-.dan-wrap {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.dan-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 16px;
-}
-
-.dan-content {
-  line-height: 1.9;
-  font-size: 15px;
-  color: #333;
-  word-break: break-word;
-}
-
-/* ============ 工具类 / 用户中心 ============ */
+/* ============================================================
+   用户中心 / 工具类
+   ============================================================ */
 .mt-8 {
   margin-top: 8px;
 }
@@ -410,7 +562,7 @@
 
 .user-layout-wrap {
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 24px auto;
   background: transparent;
 }
 
@@ -431,7 +583,7 @@
 }
 
 .user-card {
-  margin: 40px auto;
+  margin: 24px auto;
 }
 
 .user-card-480 {
@@ -474,38 +626,11 @@
   padding: 60px;
 }
 
-/* ============ 提交站点 ============ */
 .submit-site-form {
   margin-top: 16px;
   max-width: 480px;
 }
 
-/* ============ 搜索框 ============ */
-.site-search {
-  width: 100%;
-}
-
-/* ============ 文章 ============ */
-.article-wrap {
-  width: 100%;
-}
-
-.article-title {
-  margin: 0;
-}
-
-.article-time {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 12px;
-}
-
-.article-body {
-  margin-bottom: 0;
-  color: rgba(0, 0, 0, 0.85);
-}
-
-/* ============ 图形验证码 ============ */
 .captcha-img {
   height: 30px;
   cursor: pointer;

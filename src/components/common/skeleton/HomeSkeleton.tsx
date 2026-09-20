@@ -1,21 +1,24 @@
 import React from 'react';
-import Skeleton from './Skeleton';
+import { Col, Row, Skeleton } from 'antd';
 
-// 首页骨架：顶部横幅条 + 搜索框条 + 卡片栅格（每行 2-3 个圆角块）
-export default function HomeSkeleton() {
+/** 首页骨架：横幅 + 搜索条 + 站点卡片网格（与首页三段结构一一对应） */
+export default function HomeSkeleton(): React.JSX.Element {
     return (
-        <div className="sk-home">
-            <Skeleton className="sk-home-banner" />
-            <Skeleton className="sk-home-search" />
-            <div className="sk-grid sk-grid-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div className="sk-card" key={i}>
-                        <Skeleton className="sk-card-img" />
-                        <Skeleton className="sk-line sk-line-long" />
-                        <Skeleton className="sk-line sk-line-mid" />
-                    </div>
-                ))}
+        <div className="sk-page">
+            <div className="sk-hero">
+                <Skeleton active title={{ width: '45%' }} paragraph={{ rows: 2 }} />
             </div>
+            <Skeleton.Input active block size="large" className="sk-search" />
+            <Skeleton.Input active size="small" className="sk-section-title" />
+            <Row gutter={[16, 16]}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <Col key={i} xs={24} sm={12} md={8} lg={6}>
+                        <div className="sk-card">
+                            <Skeleton avatar={{ shape: 'square', size: 40 }} active title paragraph={{ rows: 2 }} />
+                        </div>
+                    </Col>
+                ))}
+            </Row>
         </div>
     );
 }

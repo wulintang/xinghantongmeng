@@ -1,17 +1,16 @@
-export function getURLParameter(name: string): string | null {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-export function redirectTo(link: string, delaySeconds?: number | null): void {
-  let delay = 0;
-  if (null !== delaySeconds && undefined !== delaySeconds) {
-    delay = delaySeconds;
-  }
-
-  setTimeout(function () {
-    window.location.href = link;
-  }, delay * 1000);
+/**
+ * 把后端存的 Markdown 风格说明（工具介绍等）转成纯文本摘要。
+ * 仅用于列表页摘要展示，不做完整 Markdown 渲染。
+ */
+export function plainText(md?: string | null): string {
+  return (md || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s*/gm, '')
+    .replace(/[*`_~>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /**

@@ -1,82 +1,217 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Typography, Empty } from 'antd';
-import { Link } from 'react-router-dom';
+import {
+    Alert,
+    Avatar,
+    Button,
+    Card,
+    Col,
+    Flex,
+    List,
+    Row,
+    Space,
+    Tag,
+    Typography,
+} from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
-import { Meta, SearchBox, MainContentHeader } from '@components/common';
+import { AdSlot, SearchBox } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
-import { getWebsites, getSite, type WebsiteItem, type SiteConfig } from '@/services/userCenter';
+import { useSite } from '@/context/SiteContext';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
+import { getPosts } from '@/services/postService';
+import type { PostData } from '@/types/post';
+import { domainOf } from '@/utils/route';
 
-const { Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
-const siteDomain = (w: WebsiteItem): string => w.www || w.domain || (w.url ? w.url.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : '') || '';
+const HOME_SITE_LIMIT = 12;
+const HOME_SIDE_LIMIT = 6;
 
 const HomePage: React.FC = () => {
+    const navigate = useNavigate();
+    const { site, cates, loading: siteLoading } = useSite();
     const [loading, setLoading] = useState(true);
     const [sites, setSites] = useState<WebsiteItem[]>([]);
-    const [site, setSite] = useState<SiteConfig | null>(null);
+    const [articles, setArticles] = useState<ArticleItem[]>([]);
+    const [posts, setPosts] = useState<PostData[]>([]);
+
+    usePageMeta({});
 
     useEffect(() => {
-        Promise.all([getWebsites({ limit: 100 }), getSite()])
-            .then(([w, s]) => {
-                if (w.code === 1 && w.data) setSites(w.data);
-                if (s.code === 1 && s.data) setSite(s.data);
+        Promise.all([
+            getWebsites({ page: 1, limit: HOME_SITE_LIMIT }),
+            getArticles({ page: 1, limit: HOME_SIDE_LIMIT }),
+            getPosts(),
+        ])
+            .then(([w, a, p]) => {
+                if (w.code === 1 && w.data?.list) setSites(w.data.list);
+                if (a.code === 1 && a.data?.list) setArticles(a.data.list);
+                setPosts(p.slice(0, HOME_SIDE_LIMIT));
             })
             .catch(() => {})
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) {
-        return (
-            <>
-                <Meta />
-                <HomeSkeleton />
-            </>
-        );
-    }
+    if (loading || siteLoading) return <HomeSkeleton />;
 
-    const heroDesc = site?.description || '兴汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！';
+    const heroTitle = site?.titles || site?.title || '兴汉同盟';
+    const heroDesc =
+        site?.description ||
+        '我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！';
 
     return (
-        <>
-            <Meta />
-            <Flex vertical gap={16}>
-                <div className="home-hero">
-                    <div className="home-hero-title">{site?.title || '兴汉同盟'}</div>
-                    <div className="home-hero-desc">{heroDesc}</div>
+        <Flex vertical gap={28}>
+            <div className="home-hero">
+                <Title level={2} className="home-hero-title">
+                    {heroTitle}
+                </Title>
+                <Paragraph type="secondary" className="home-hero-desc">
+                    {heroDesc}
+                </Paragraph>
+                <div className="home-hero-search">
+                    <SearchBox placeholder="搜索收录的站点" gotoPage="/websites" />
                 </div>
-                <SearchBox placeholder="搜索站点 ↵" gotoPage="/blogs" />
-                <MainContentHeader content="收录的博客站点" />
-                {sites.length === 0 ? (
-                    <Empty description="暂无收录站点" />
-                ) : (
-                    <div className="website-grid">
-                        {sites.map((w) => {
-                            const domain = siteDomain(w);
-                            return (
-                                <Link to={`/blogs/${domain}`} key={w.id ?? domain} className="website-card">
-                                    <div className="website-card-head">
-                                        {w.ico || w.pic ? (
-                                            <img className="website-card-ico" src={w.ico || w.pic} alt={w.title || w.name || ''} />
-                                        ) : null}
-                                        <span className="website-card-title">{w.title || w.name || '未命名站点'}</span>
-                                    </div>
-                                    {w.keywords ? <div className="website-card-keywords">{w.keywords}</div> : null}
-                                    <div className="website-card-meta">
-                                        <span>浏览 {w.view ?? 0}</span>
-                                        <span>点赞 {w.zan ?? 0}</span>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                )}
-            </Flex>
-            <div className="home-declare">
-                <Text type="secondary">
-                    特别声明：包含政治、色情、赌博、暴力以及全 AI 生成内容的博客，一经发现，将被永久移出收录名单！
-                </Text>
+                {cates.length > 0 ? (
+                    <Space size={[8, 8]} wrap className="home-hero-cates">
+                        <Text type="secondary">网址分类：</Text>
+                        {cates.map((c) => (
+                            <Link key={c.id} to={`/websites?cate=${c.id}`}>
+                                <Tag color="processing">{c.name}</Tag>
+                            </Link>
+                        ))}
+                    </Space>
+                ) : null}
             </div>
-        </>
+
+            <section>
+                <Flex className="section-head" justify="space-between" align="center">
+                    <Title level={4} className="section-title">
+                        最新收录站点
+                    </Title>
+                    <Button type="link" onClick={() => navigate('/websites')}>
+                        查看全部
+                    </Button>
+                </Flex>
+                {sites.length === 0 ? (
+                    <Alert type="info" showIcon message="暂无收录站点" />
+                ) : (
+                    <Row gutter={[16, 16]}>
+                        {sites.map((w) => (
+                            <Col key={w.id} xs={24} sm={12} md={8} lg={6}>
+                                <Card className="site-card" size="small">
+                                    <Flex vertical gap={10}>
+                                        <Flex align="center" gap={10}>
+                                            <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
+                                                {(w.title || w.name || '?').slice(0, 1)}
+                                            </Avatar>
+                                            <Link to={`/websites/${w.id}`} className="site-card-name">
+                                                {w.title || w.name}
+                                            </Link>
+                                        </Flex>
+                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
+                                            {w.keywords || w.content || w.domain}
+                                        </Paragraph>
+                                        <Flex justify="space-between" align="center">
+                                            <Text type="secondary" className="site-card-meta">
+                                                浏览 {w.view} · 点赞 {w.zan}
+                                            </Text>
+                                            {w.url ? (
+                                                <Button type="link" size="small" href={w.url} target="_blank" rel="noreferrer">
+                                                    访问
+                                                </Button>
+                                            ) : null}
+                                        </Flex>
+                                    </Flex>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+            </section>
+
+            <Row gutter={[24, 24]}>
+                <Col xs={24} lg={12}>
+                    <Flex className="section-head" justify="space-between" align="center">
+                        <Title level={4} className="section-title">
+                            最新文章
+                        </Title>
+                        <Button type="link" onClick={() => navigate('/articles')}>
+                            更多
+                        </Button>
+                    </Flex>
+                    {articles.length === 0 ? (
+                        <Alert type="info" showIcon message="暂无文章" />
+                    ) : (
+                        <List
+                            size="small"
+                            className="home-list"
+                            dataSource={articles}
+                            rowKey={(a) => a.id}
+                            renderItem={(a) => (
+                                <List.Item>
+                                    <List.Item.Meta
+                                        title={<Link to={`/articles/${a.id}`}>{a.title}</Link>}
+                                        description={
+                                            <Text type="secondary">
+                                                {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
+                                            </Text>
+                                        }
+                                    />
+                                </List.Item>
+                            )}
+                        />
+                    )}
+                </Col>
+
+                <Col xs={24} lg={12}>
+                    <Flex className="section-head" justify="space-between" align="center">
+                        <Title level={4} className="section-title">
+                            最新博文
+                        </Title>
+                        <Button type="link" onClick={() => navigate('/blogs')}>
+                            更多
+                        </Button>
+                    </Flex>
+                    {posts.length === 0 ? (
+                        <Alert type="info" showIcon message="暂无聚合博文" />
+                    ) : (
+                        <List
+                            size="small"
+                            className="home-list"
+                            dataSource={posts}
+                            rowKey={(p) => p.link || p.title}
+                            renderItem={(p) => (
+                                <List.Item>
+                                    <List.Item.Meta
+                                        title={
+                                            <a href={p.link} target="_blank" rel="noreferrer">
+                                                {p.title}
+                                            </a>
+                                        }
+                                        description={
+                                            <Text type="secondary">
+                                                <Link to={`/blogs/${domainOf(p)}`}>{p.blogName || domainOf(p)}</Link>
+                                                {' · '}
+                                                {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD') : ''}
+                                            </Text>
+                                        }
+                                    />
+                                </List.Item>
+                            )}
+                        />
+                    )}
+                </Col>
+            </Row>
+
+            <Alert
+                type="warning"
+                showIcon
+                message="特别声明"
+                description="包含政治、色情、赌博、暴力以及全 AI 生成内容的站点，一经发现将被永久移出收录名单。"
+            />
+        </Flex>
     );
 };
 

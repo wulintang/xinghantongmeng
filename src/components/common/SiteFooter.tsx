@@ -1,70 +1,127 @@
-import React, { useEffect, useState } from 'react';
-import { getSite, getLinks, type SiteConfig, type LinkItem } from '@/services/userCenter';
+import React, { useMemo } from 'react';
+import { Col, Divider, Flex, Row, Space, Tag, Typography } from 'antd';
+import { Link } from 'react-router-dom';
+
+import { useSite } from '@/context/SiteContext';
+import type { LinkItem } from '@/services/userCenter';
 import { sanitizeHtml } from '@/utils/CommonUtil';
+import { toRoute } from '@/utils/route';
 
-export default function SiteFooter() {
-    const [site, setSite] = useState<SiteConfig | null>(null);
-    const [links, setLinks] = useState<LinkItem[]>([]);
+const { Title, Text, Paragraph, Link: AntLink } = Typography;
 
-    useEffect(() => {
-        Promise.all([getSite(), getLinks()])
-            .then(([s, l]) => {
-                if (s.code === 1 && s.data) setSite(s.data);
-                if (l.code === 1 && l.data) setLinks(l.data);
-            })
-            .catch(() => {});
-    }, []);
+/** 后端链接项渲染成链接（外链新窗口、站内走 SPA 路由） */
+function FooterLink({ item }: { item: LinkItem }): React.JSX.Element {
+    const target = toRoute(item.lianjie);
+    const external = item.xin === 1 || target.external;
 
-    const bottomLinks = links.filter((l) => l.wz === 2);
-    const friendLinks = links.filter((l) => l.wz === 9);
+    if (target.external) {
+        return (
+            <a href={target.href} target="_blank" rel="noreferrer noopener">
+                {item.name}
+            </a>
+        );
+    }
+    return (
+        <Link to={target.to || '/home'} {...(external ? { target: '_blank' } : {})}>
+            {item.name}
+        </Link>
+    );
+}
+
+function LinkColumn({
+    title,
+    items,
+    emptyText,
+}: {
+    title: string;
+    items: LinkItem[];
+    emptyText?: string;
+}): React.JSX.Element {
+    return (
+        <Flex vertical gap={10}>
+            <Title level={5} className="site-footer-col-title">
+                {title}
+            </Title>
+            {items.length === 0 ? (
+                <Text type="secondary">{emptyText || '暂无'}</Text>
+            ) : (
+                <Flex vertical gap={8}>
+                    {items.map((l) => (
+                        <FooterLink key={l.id} item={l} />
+                    ))}
+                </Flex>
+            )}
+        </Flex>
+    );
+}
+
+export default function SiteFooter(): React.JSX.Element {
+    const { site, topLinks, footLinks, friendLinks } = useSite();
+
+    // 站内导航 = 顶部导航 + 底部导航，按 id 去重
+    const siteNav = useMemo(() => {
+        const seen = new Set<number>();
+        return [...topLinks, ...footLinks].filter((l) => {
+            if (seen.has(l.id)) return false;
+            seen.add(l.id);
+            return true;
+        });
+    }, [topLinks, footLinks]);
+
+    const year = new Date().getFullYear();
+    const gonganHtml = useMemo(() => sanitizeHtml(site?.gonganbei || ''), [site?.gonganbei]);
 
     return (
         <footer className="site-footer">
             <div className="container">
-                {bottomLinks.length > 0 && (
-                    <div className="site-footer-nav">
-                        {bottomLinks.map((l) => (
-                            <a
-                                key={l.id}
-                                href={l.lianjie}
-                                target={l.xin === 1 ? '_blank' : undefined}
-                                rel={l.xin === 1 ? 'noreferrer' : undefined}
-                            >
-                                {l.name}
-                            </a>
-                        ))}
-                    </div>
-                )}
+                <Row gutter={[32, 28]}>
+                    <Col xs={24} md={10}>
+                        <Flex vertical gap={12}>
+                            <Flex align="center" gap={10}>
+                                {site?.logo ? (
+                                    <img src={site.logo} alt={site.title || ''} className="site-footer-logo" />
+                                ) : null}
+                                <Title level={4} className="site-footer-brand">
+                                    {site?.title || '兴汉同盟'}
+                                </Title>
+                            </Flex>
+                            {site?.titles ? <Text type="secondary">{site.titles}</Text> : null}
+                            {site?.description ? (
+                                <Paragraph type="secondary" className="site-footer-desc">
+                                    {site.description}
+                                </Paragraph>
+                            ) : null}
+                            <Space size={[8, 8]} wrap>
+                                {site?.author ? <Tag>{site.author}</Tag> : null}
+                                <Tag color="processing">共 {siteNav.length + friendLinks.length} 个入口</Tag>
+                            </Space>
+                        </Flex>
+                    </Col>
 
-                {friendLinks.length > 0 && (
-                    <div className="site-footer-friends">
-                        <span className="site-footer-label">友情链接：</span>
-                        {friendLinks.map((l) => (
-                            <a
-                                key={l.id}
-                                href={l.lianjie}
-                                target={l.xin === 1 ? '_blank' : undefined}
-                                rel={l.xin === 1 ? 'noreferrer' : undefined}
-                            >
-                                {l.name}
-                            </a>
-                        ))}
-                    </div>
-                )}
+                    <Col xs={24} sm={12} md={7}>
+                        <LinkColumn title="站内导航" items={siteNav} />
+                    </Col>
 
-                <div className="site-footer-copyright">
-                    <div>{site?.title || '兴汉同盟'}</div>
-                    {site?.beian && (
-                        <div>
-                            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
+                    <Col xs={24} sm={12} md={7}>
+                        <LinkColumn title="友情链接" items={friendLinks} emptyText="暂无友情链接" />
+                    </Col>
+                </Row>
+
+                <Divider className="site-footer-divider" />
+
+                <Flex className="site-footer-bottom" justify="space-between" align="center" gap={12} wrap>
+                    <Text type="secondary">
+                        © {year} {site?.title || '兴汉同盟'} 版权所有
+                    </Text>
+                    <Space split={<Divider type="vertical" />} wrap>
+                        {site?.beian ? (
+                            <AntLink href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
                                 {site.beian}
-                            </a>
-                        </div>
-                    )}
-                    {site?.gonganbei && (
-                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(site.gonganbei) }} />
-                    )}
-                </div>
+                            </AntLink>
+                        ) : null}
+                        {gonganHtml ? <span dangerouslySetInnerHTML={{ __html: gonganHtml }} /> : null}
+                    </Space>
+                </Flex>
             </div>
         </footer>
     );

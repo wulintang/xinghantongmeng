@@ -2,8 +2,10 @@ import { request } from '@/utils/request';
 
 // 好道核心现成接口（app/controller/Api.php），路径带 /index.php/
 const API = '/index.php/api';
-// 用户中心（app/user 插件，按之前授权创建），路径带 /index.php/
+// 用户中心（app/user 插件），路径带 /index.php/
 const USER = '/index.php/user/index';
+// 站点展示数据（openapi 插件），全部读后台现有数据表，只读
+const OPEN = '/index.php/openapi/index';
 
 export interface MemberInfo {
   id: number;
@@ -90,7 +92,7 @@ export function sendCode(type: 'sms' | 'email', target: string, scene = 'reg') {
   );
 }
 
-// 注册（好道 Api.php::reg：邮箱 + 短信验证码 且 手机 + 邮箱验证码，双必验；密码 + 确认密码）
+// 注册（好道 Api.php::reg：手机+邮箱双必验）
 export function userRegister(data: {
   mail: string;
   phone: string;
@@ -117,7 +119,7 @@ export function userLogout() {
   return post<ApiResp>('/logout.html');
 }
 
-// ===================== 用户中心（app/user 插件，按授权创建） =====================
+// ===================== 用户中心（app/user 插件） =====================
 export function getUserProfile(key: string) {
   return request<ApiResp<MemberInfo>>(`${USER}/profile.html?key=${encodeURIComponent(key)}`);
 }
@@ -178,31 +180,23 @@ export function submitSite(
 }
 
 // ===================== 站点展示数据（openapi 插件） =====================
-// 数据源全部是后台现有数据表，由 /index.php/openapi/index/* 输出：
 //   my_set(alias=set) 站点配置 / my_link 导航与友链(wz=1 顶部,2 底部,9 友链) / my_dan 单页
 //   my_website+_cate 网址库 / my_article+_cate 文章 / my_tag 标签 / my_ad 广告 / app_toolbox 工具
-const OPEN = '/index.php/openapi/index';
 
 export interface LinkItem {
   id: number;
   wz: number;
   name: string;
-  pic: string;
+  pic: string | null;
   lianjie: string;
-  hover: string;
+  hover: string | null;
   px: number;
   xin: number;
 }
 
-export interface TagItem {
-  id: number;
-  name: string;
-  type: number;
-  px: number;
-}
-
 export interface SiteConfig {
   title: string;
+  /** 完整标题（如「兴汉同盟 - 优质中文网站图鉴」），导航栏/页脚展示用 */
   titles: string;
   logo: string;
   description: string;
@@ -218,26 +212,31 @@ export interface CateItem {
   name: string;
   pic: string;
   px: number;
+  time?: number;
+  open?: number;
 }
 
 export interface WebsiteItem {
-  id?: number | string;
-  tid?: string;
-  title?: string;
-  name?: string;
-  www?: string;
-  domain?: string;
-  url?: string;
-  ico?: string;
-  pic?: string;
-  keywords?: string;
-  description?: string;
-  view?: number | string;
-  zan?: number | string;
-  content?: string;
-  feed_url?: string;
-  type?: string;
-  [key: string]: any;
+  id: number;
+  tid: string;
+  title: string;
+  name: string;
+  www: string;
+  domain: string;
+  url: string;
+  tips: string;
+  tool: number;
+  keywords: string;
+  ico: string;
+  pic: string;
+  view: number;
+  zan: number;
+  settop: number;
+  time: number;
+  times: number;
+  content: string;
+  feed_url: string;
+  related?: WebsiteItem[];
 }
 
 export interface ArticleItem {
@@ -248,18 +247,43 @@ export interface ArticleItem {
   zan: number;
   time: number;
   times: number;
-  keywords?: string;
-  description?: string;
+  keywords: string | null;
+  description: string | null;
   content?: string;
 }
 
 export interface DanItem {
-  id?: number;
-  alias?: string;
-  title?: string;
-  content?: string;
-  pic?: string;
-  view?: number;
+  id: number;
+  alias: string;
+  title: string;
+  content: string;
+  pic: string;
+  view: number;
+  time: number;
+  muban: string;
+}
+
+/** 工具（app_toolbox）。config 是后端工具页自带的表单 HTML，前端不渲染，只做跳转。 */
+export interface ToolItem {
+  id: number;
+  tid: number;
+  rmb: string;
+  ai: number;
+  title: string;
+  alias: string;
+  pic: string;
+  open: number;
+  content: string;
+  px: number;
+  time: number;
+  config?: string;
+}
+
+export interface TagItem {
+  id: number;
+  name: string;
+  type: number;
+  px: number;
   [key: string]: any;
 }
 
@@ -270,8 +294,10 @@ export interface AdItem {
   content: string;
   px: number;
   times: string;
+  muban: string | null;
 }
 
+/** 后端列表接口统一的分页结构 */
 export interface PageResult<T> {
   list: T[];
   total: number;
@@ -285,6 +311,8 @@ export interface LinkGroups {
   foot: LinkItem[];
   friend: LinkItem[];
 }
+
+export const EMPTY_LINK_GROUPS: LinkGroups = { top: [], foot: [], friend: [] };
 
 // 拼查询串（自动跳过空值）
 function qs(params: Record<string, any>): string {
@@ -302,7 +330,7 @@ export function getSite() {
   return request<ApiResp<SiteConfig>>(`${OPEN}/site.html`);
 }
 
-// 首屏聚合：站点配置 + 三组链接 + 网址分类
+// 首屏聚合：站点配置 + 三组链接 + 网址分类（Header / Footer / 首页共用，全站只请求一次）
 export function getInit() {
   return request<ApiResp<{ site: SiteConfig; links: LinkGroups; cates: CateItem[] }>>(
     `${OPEN}/init.html`
@@ -310,13 +338,8 @@ export function getInit() {
 }
 
 // 顶部导航 / 底部导航 / 友情链接（my_link，wz=1/2/9）
-// 接口按 wz 分组返回，这里合并成平铺数组，每项仍带 wz 便于页面自行分组
-export function getLinks(): Promise<ApiResp<LinkItem[]>> {
-  return request<ApiResp<LinkGroups>>(`${OPEN}/links.html`).then((r) => {
-    const g = r.data || { top: [], foot: [], friend: [] };
-    const data: LinkItem[] = [...(g.top || []), ...(g.foot || []), ...(g.friend || [])];
-    return { code: r.code, msg: r.msg, data };
-  });
+export function getLinks() {
+  return request<ApiResp<LinkGroups>>(`${OPEN}/links.html`);
 }
 
 // 标签（my_tag）
@@ -337,22 +360,12 @@ export function getWebsiteCates() {
   return request<ApiResp<CateItem[]>>(`${OPEN}/websiteCates.html`);
 }
 export function getWebsites(
-  params: {
-    cate?: string | number;
-    keyword?: string;
-    tool?: number;
-    order?: string;
-    page?: number;
-    limit?: number;
-  } = {}
-): Promise<ApiResp<WebsiteItem[]>> {
-  return request<ApiResp<PageResult<WebsiteItem>>>(`${OPEN}/websites.html` + qs(params)).then((r) => {
-    const data: WebsiteItem[] = r.data && r.data.list ? r.data.list : [];
-    return { code: r.code, msg: r.msg, data };
-  });
+  params: { cate?: string | number; keyword?: string; tool?: number; order?: string; page?: number; limit?: number } = {}
+) {
+  return request<ApiResp<PageResult<WebsiteItem>>>(`${OPEN}/websites.html` + qs(params));
 }
 export function getWebsite(id: number | string) {
-  return request<ApiResp<WebsiteItem & { related: WebsiteItem[] }>>(`${OPEN}/website.html` + qs({ id }));
+  return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id }));
 }
 
 // 文章（my_article + my_article_cate）
@@ -361,11 +374,8 @@ export function getArticleCates() {
 }
 export function getArticles(
   params: { cate?: string | number; keyword?: string; order?: string; page?: number; limit?: number } = {}
-): Promise<ApiResp<ArticleItem[]>> {
-  return request<ApiResp<PageResult<ArticleItem>>>(`${OPEN}/articles.html` + qs(params)).then((r) => {
-    const data: ArticleItem[] = r.data && r.data.list ? r.data.list : [];
-    return { code: r.code, msg: r.msg, data };
-  });
+) {
+  return request<ApiResp<PageResult<ArticleItem>>>(`${OPEN}/articles.html` + qs(params));
 }
 export function getArticle(id: number | string) {
   return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id }));
@@ -380,14 +390,9 @@ export function getAds(alias?: string) {
 export function getToolCates() {
   return request<ApiResp<CateItem[]>>(`${OPEN}/toolCates.html`);
 }
-export function getTools(
-  params: { cate?: string | number; keyword?: string; page?: number; limit?: number } = {}
-): Promise<ApiResp<any[]>> {
-  return request<ApiResp<PageResult<any>>>(`${OPEN}/tools.html` + qs(params)).then((r) => {
-    const data: any[] = r.data && r.data.list ? r.data.list : [];
-    return { code: r.code, msg: r.msg, data };
-  });
+export function getTools(params: { cate?: string | number; keyword?: string; page?: number; limit?: number } = {}) {
+  return request<ApiResp<PageResult<ToolItem>>>(`${OPEN}/tools.html` + qs(params));
 }
 export function getTool(id: number | string) {
-  return request<ApiResp<any>>(`${OPEN}/tool.html` + qs({ id }));
+  return request<ApiResp<ToolItem>>(`${OPEN}/tool.html` + qs({ id }));
 }

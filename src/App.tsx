@@ -26,6 +26,8 @@ import BalancePage from '@pages/user/Balance';
 import OrdersPage from '@pages/user/Orders';
 import ReportsPage from '@pages/user/Reports';
 import SubmitSitePage from '@pages/user/SubmitSite';
+import MySitesPage from '@pages/user/MySites';
+import LinksPage from '@pages/LinksPage';
 import { SiteProvider } from '@/context/SiteContext';
 
 /** 路由切换后回到页面顶部，否则从长页面跳转会停在半空 */
@@ -63,6 +65,8 @@ const App: React.FC = () => {
 
                             <Route path="/feed" element={<BlogsPage />} />
 
+                            <Route path="/links" element={<LinksPage />} />
+
                             <Route path="/dan/:alias" element={<DanPage />} />
 
                             <Route path="/login" element={<LoginPage_ />} />
@@ -76,6 +80,7 @@ const App: React.FC = () => {
                                 <Route path="orders" element={<OrdersPage />} />
                                 <Route path="reports" element={<ReportsPage />} />
                                 <Route path="submit" element={<SubmitSitePage />} />
+                                <Route path="mysites" element={<MySitesPage />} />
                             </Route>
 
                             {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}

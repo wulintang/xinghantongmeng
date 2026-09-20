@@ -6,8 +6,13 @@
 
 const TIMEOUT_MS = 20000;
 
+/** 后端根地址（构建期注入），供验证码图片等非 fetch 场景拼绝对 URL */
+export function apiBase(): string {
+    return (process.env.BOYOUQUAN_API_ADDRESS || '').replace(/\/+$/, '');
+}
+
 export async function request<T>(url: string, options?: RequestInit): Promise<T> {
-    const base = (process.env.BOYOUQUAN_API_ADDRESS || '').replace(/\/+$/, '');
+    const base = apiBase();
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), TIMEOUT_MS) : null;
 

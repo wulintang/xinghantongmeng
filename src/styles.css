@@ -92,7 +92,6 @@ body {
 }
 
 .site-user-avatar {
-  background: #8a2b1d;
   cursor: pointer;
 }
 
@@ -128,7 +127,7 @@ body {
 }
 
 .site-footer a:hover {
-  color: #8a2b1d;
+  color: #1677ff;
 }
 
 .site-footer-divider {
@@ -630,6 +629,34 @@ body {
 
 .user-profile-name {
   margin: 0;
+}
+
+.user-avatar-upload {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.user-avatar-upload .ant-avatar {
+  display: block;
+}
+
+.user-avatar-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.user-avatar-upload:hover .user-avatar-mask {
+  opacity: 1;
 }
 
 .user-msg-text {

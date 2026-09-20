@@ -1,4 +1,4 @@
-import { request } from '@/utils/request';
+import { request, apiBase } from '@/utils/request';
 import { domainOf, normalizeDomain } from '@/utils/route';
 
 // 好道核心现成接口（app/controller/Api.php），路径带 /index.php/
@@ -83,6 +83,9 @@ function post<T>(path: string, data: Record<string, any> = {}, base = API): Prom
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
+    // user 应用后端 CORS 是 echo Origin + Allow-Credentials:true，
+    // 带 cookie 才能让图形验证码 session 生效（captcha 存在 api 域 session）
+    credentials: base === USER ? 'include' : undefined,
   });
 }
 
@@ -170,18 +173,52 @@ export function submitReport(
   return post<ApiResp>('/report.html', { key, ...data }, USER);
 }
 
-// 提交站点（好道 Api.php::getAdd：名称 + URL + 图形验证码 code，需登录）
-export function submitSite(
+// 提交站点（走 user 插件 addSite：key 登录 + 图形验证码 session 校验 + 写 my_tijiao）
+export function addSite(
   key: string,
-  data: { name: string; url: string; type?: string; code: string }
+  data: {
+    name: string;
+    url: string;
+    code: string;
+    type?: string;
+    cate?: string | number;
+    ico?: string;
+    pic?: string;
+    feed_url?: string;
+  }
 ) {
-  return post<ApiResp<{ id?: number | string }>>('/getAdd.html', {
-    key,
-    name: data.name,
-    url: data.url,
-    type: data.type || 'website',
-    code: data.code,
+  return post<ApiResp>('/addSite.html', { key, ...data }, USER);
+}
+
+/** 图形验证码图片地址（api 应用 generate，session 存 captcha；img 标签加载自带 cookie） */
+export function captchaUrl(): string {
+  return `${apiBase()}/index.php/api/generate.html?t=${Date.now()}`;
+}
+
+// 通用图片上传（user 插件 upload：七牛/本地与后台同款策略；for=avatar 时同时更新头像）
+export function uploadFile(key: string, file: File, forAvatar = false) {
+  const body = new FormData();
+  body.append('key', key);
+  body.append('file', file);
+  if (forAvatar) body.append('for', 'avatar');
+  return request<ApiResp<{ url: string }>>(`${USER}/upload.html`, {
+    method: 'POST',
+    body,
+    credentials: 'include',
   });
+}
+
+// 我的站点（my_website.uid = 我）
+export function getMySites(key: string) {
+  return request<ApiResp<WebsiteItem[]>>(`${USER}/mySites.html?key=${encodeURIComponent(key)}`);
+}
+// 编辑我的站点（仅 title/www/tips/keywords/pic/ico/content 可改）
+export function editMySite(key: string, data: Record<string, any>) {
+  return post<ApiResp>('/siteEdit.html', { key, ...data }, USER);
+}
+// 删除我的站点
+export function delMySite(key: string, id: number | string) {
+  return post<ApiResp>('/siteDel.html', { key, id }, USER);
 }
 
 // ===================== 站点展示数据（openapi 插件） =====================

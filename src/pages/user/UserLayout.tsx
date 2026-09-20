@@ -15,6 +15,7 @@ const MENU = [
   { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
   { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
   { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
+  { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
 ];
 
 export default function UserLayout() {

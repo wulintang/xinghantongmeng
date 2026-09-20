@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin } from 'antd';
-import { getUserProfile, updateUserProfile, userLogout } from '@/services/userCenter';
+import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin, Upload } from 'antd';
+import { getUserProfile, updateUserProfile, userLogout, uploadFile } from '@/services/userCenter';
 import { getToken, clearToken } from '@/utils/auth';
+import { assetUrl } from '@/utils/route';
 import { MemberInfo } from '@/services/userCenter';
 
 const { Title, Text } = Typography;
@@ -13,6 +14,35 @@ export default function ProfilePage() {
   const [info, setInfo] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // 头像上传：走 user 插件 upload（for=avatar 后端直接更新 my_member.head）
+  const onUploadAvatar = (file: File) => {
+    const key = getToken();
+    if (!key) return false;
+    if (!/^image\//.test(file.type)) {
+      message.error('请选择图片文件');
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      message.error('图片不能超过 5MB');
+      return false;
+    }
+    setUploading(true);
+    uploadFile(key, file, true)
+      .then((r: any) => {
+        if (r.code === 1) {
+          const url = r.data?.url || '';
+          setInfo((prev) => (prev ? { ...prev, head: url } : prev));
+          message.success('头像已更新');
+        } else {
+          message.error(r.msg || '上传失败');
+        }
+      })
+      .catch(() => message.error('上传失败，请稍后重试'))
+      .finally(() => setUploading(false));
+    return false; // 阻止 antd 自动上传
+  };
 
   useEffect(() => {
     const key = getToken();
@@ -70,9 +100,19 @@ export default function ProfilePage() {
   return (
     <Card className="user-card user-card-560">
       <Space align="center" className="mb-16">
-        <Avatar src={info?.head} size={56}>
-          {info?.name?.charAt(0)}
-        </Avatar>
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          beforeUpload={onUploadAvatar}
+          disabled={uploading}
+        >
+          <div className="user-avatar-upload">
+            <Avatar src={assetUrl(info?.head) || undefined} size={56}>
+              {info?.name?.charAt(0)}
+            </Avatar>
+            <span className="user-avatar-mask">{uploading ? '上传中' : '更换'}</span>
+          </div>
+        </Upload>
         <Title level={4} className="user-profile-name">
           {info?.name}
         </Title>

@@ -85,3 +85,8 @@ export function domainOf(item: { www?: string; domain?: string; url?: string }):
     const u = (item.url || '').trim();
     return u.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
 }
+
+/** 域名归一化：去协议、去路径、转小写，用于站点与 feed 博文的域名匹配 */
+export function normalizeDomain(v?: string | null): string {
+    return (v || '').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim().toLowerCase();
+}

@@ -66,7 +66,7 @@ const ArticleDetailPage: React.FC = () => {
     }
 
     return (
-        <Flex vertical gap={20} className="article-detail">
+        <Flex vertical gap={20}>
             <PageHeader
                 title={item.title}
                 crumbs={[

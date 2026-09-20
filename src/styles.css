@@ -301,11 +301,6 @@ body {
   display: block;
 }
 
-.article-detail {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
 .article-lead {
   margin-bottom: 16px;
 }
@@ -424,11 +419,6 @@ body {
 
 .sk-tool-desc {
   width: 90%;
-}
-
-.sk-article {
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -609,16 +599,6 @@ body {
 .user-msg-text {
   white-space: pre-wrap;
   margin: 0;
-}
-
-.compact-full {
-  width: 100%;
-}
-
-.compact-item {
-  flex: 1;
-  margin-right: 8px;
-  margin-bottom: 0;
 }
 
 .center-pad-60 {

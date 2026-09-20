@@ -22,7 +22,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
-import { domainOf } from '@/utils/route';
+import { domainOf, normalizeDomain } from '@/utils/route';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -36,17 +36,23 @@ const HomePage: React.FC = () => {
     const [sites, setSites] = useState<WebsiteItem[]>([]);
     const [articles, setArticles] = useState<ArticleItem[]>([]);
     const [posts, setPosts] = useState<PostData[]>([]);
+    const [siteIdByDomain, setSiteIdByDomain] = useState<Map<string, number>>(new Map());
 
     usePageMeta({});
 
     useEffect(() => {
         Promise.all([
-            getWebsites({ page: 1, limit: HOME_SITE_LIMIT }),
+            getWebsites({ page: 1, limit: 100 }),
             getArticles({ page: 1, limit: HOME_SIDE_LIMIT }),
             getPosts(),
         ])
             .then(([w, a, p]) => {
-                if (w.code === 1 && w.data?.list) setSites(w.data.list);
+                if (w.code === 1 && w.data?.list) {
+                    setSites(w.data.list.slice(0, HOME_SITE_LIMIT));
+                    const map = new Map<string, number>();
+                    w.data.list.forEach((s) => map.set(normalizeDomain(domainOf(s)), s.id));
+                    setSiteIdByDomain(map);
+                }
                 if (a.code === 1 && a.data?.list) setArticles(a.data.list);
                 setPosts(p.slice(0, HOME_SIDE_LIMIT));
             })
@@ -192,7 +198,15 @@ const HomePage: React.FC = () => {
                                         }
                                         description={
                                             <Text type="secondary">
-                                                <Link to={`/blogs/${domainOf(p)}`}>{p.blogName || domainOf(p)}</Link>
+                                                <Link
+                                                    to={
+                                                        siteIdByDomain.get(normalizeDomain(domainOf(p))) !== undefined
+                                                            ? `/websites/${siteIdByDomain.get(normalizeDomain(domainOf(p)))}`
+                                                            : `/blogs/${domainOf(p)}`
+                                                    }
+                                                >
+                                                    {p.blogName || domainOf(p)}
+                                                </Link>
                                                 {' · '}
                                                 {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD') : ''}
                                             </Text>

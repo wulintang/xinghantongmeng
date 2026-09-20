@@ -119,6 +119,7 @@ export default function Header(): React.JSX.Element {
                         <Menu
                             mode="horizontal"
                             className="site-nav-menu"
+                            disabledOverflow
                             selectedKeys={selectedKey ? [selectedKey] : []}
                             items={navItems.map((n) => ({ key: n.key, label: renderNavLabel(n) }))}
                         />

@@ -20,7 +20,9 @@ import { PageHeader } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getWebsite, type WebsiteItem } from '@/services/userCenter';
-import { stripHtmlSuffix, domainOf } from '@/utils/route';
+import { getPosts } from '@/services/postService';
+import type { PostData } from '@/types/post';
+import { stripHtmlSuffix, domainOf, normalizeDomain } from '@/utils/route';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -31,6 +33,7 @@ const WebsiteDetailPage: React.FC = () => {
 
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState<WebsiteItem | null>(null);
+    const [allPosts, setAllPosts] = useState<PostData[]>([]);
     const [error, setError] = useState('');
 
     usePageMeta({
@@ -44,11 +47,12 @@ const WebsiteDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        getWebsite(siteId)
-            .then((r) => {
+        Promise.all([getWebsite(siteId), getPosts()])
+            .then(([r, posts]) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) setItem(r.data);
                 else setError(r.msg || '站点不存在');
+                setAllPosts(posts);
             })
             .catch(() => {
                 if (alive) setError('站点加载失败');
@@ -77,6 +81,9 @@ const WebsiteDetailPage: React.FC = () => {
 
     const related = Array.isArray(item.related) ? item.related : [];
     const domain = domainOf(item);
+    const sitePosts = allPosts.filter(
+        (p) => normalizeDomain(p.blogDomainName) === normalizeDomain(domain)
+    );
 
     return (
         <Flex vertical gap={20}>
@@ -158,6 +165,34 @@ const WebsiteDetailPage: React.FC = () => {
                         </Descriptions.Item>
                     ) : null}
                 </Descriptions>
+            </Card>
+
+            <Card title="站点博文" extra={item.feed_url ? <Link to={`/blogs/${domain}`}>全部博文</Link> : undefined}>
+                {sitePosts.length === 0 ? (
+                    <Alert type="info" showIcon message="该站点暂无聚合博文" />
+                ) : (
+                    <List
+                        size="small"
+                        dataSource={sitePosts.slice(0, 5)}
+                        rowKey={(p) => p.link || p.title}
+                        renderItem={(p) => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    title={
+                                        <a href={p.link} target="_blank" rel="noreferrer">
+                                            {p.title || '无标题'}
+                                        </a>
+                                    }
+                                    description={
+                                        <Text type="secondary">
+                                            {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD') : ''}
+                                        </Text>
+                                    }
+                                />
+                            </List.Item>
+                        )}
+                    />
+                )}
             </Card>
 
             {item.pic ? (

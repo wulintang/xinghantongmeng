@@ -83,14 +83,20 @@ export default function LoginPage() {
             >
               <Input placeholder="用于接收短信验证码" />
             </Form.Item>
-            <Space.Compact className="compact-full mb-16">
-              <Form.Item name="sms_code" label="短信验证码" className="compact-item">
-                <Input placeholder="手机验证码" />
-              </Form.Item>
-              <Button onClick={onSendCode} loading={codeLoading}>
-                获取验证码
-              </Button>
-            </Space.Compact>
+            <Form.Item label="短信验证码" className="mb-16">
+              <Space.Compact block>
+                <Form.Item
+                  name="sms_code"
+                  noStyle
+                  rules={[{ required: true, message: '请输入短信验证码' }]}
+                >
+                  <Input placeholder="手机验证码" />
+                </Form.Item>
+                <Button onClick={onSendCode} loading={codeLoading}>
+                  获取验证码
+                </Button>
+              </Space.Compact>
+            </Form.Item>
           </>
         ) : (
           <>
@@ -101,14 +107,20 @@ export default function LoginPage() {
             >
               <Input placeholder="用于接收邮箱验证码" />
             </Form.Item>
-            <Space.Compact className="compact-full mb-16">
-              <Form.Item name="email_code" label="邮箱验证码" className="compact-item">
-                <Input placeholder="邮箱验证码" />
-              </Form.Item>
-              <Button onClick={onSendCode} loading={codeLoading}>
-                获取验证码
-              </Button>
-            </Space.Compact>
+            <Form.Item label="邮箱验证码" className="mb-16">
+              <Space.Compact block>
+                <Form.Item
+                  name="email_code"
+                  noStyle
+                  rules={[{ required: true, message: '请输入邮箱验证码' }]}
+                >
+                  <Input placeholder="邮箱验证码" />
+                </Form.Item>
+                <Button onClick={onSendCode} loading={codeLoading}>
+                  获取验证码
+                </Button>
+              </Space.Compact>
+            </Form.Item>
           </>
         )}
         <Form.Item

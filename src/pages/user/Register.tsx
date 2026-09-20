@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [codeLoading, setCodeLoading] = useState(false);
 
+  // 好道 Api.php::reg：邮箱 + 手机 都必验
   const onSendCode = (scene: 'sms' | 'email') => {
     const v = form.getFieldsValue();
     const target = scene === 'sms' ? v.phone : v.mail;
@@ -27,10 +28,17 @@ export default function RegisterPage() {
 
   const onFinish = (values: any) => {
     setLoading(true);
-    userRegister(values)
+    userRegister({
+      mail: values.mail,
+      phone: values.phone,
+      password: values.password,
+      passwords: values.passwords,
+      sms_code: values.sms_code,
+      email_code: values.email_code,
+    })
       .then((r: any) => {
         if (r.code === 1) {
-          setToken(r.key);
+          setToken(r.key || '1');
           message.success('注册成功');
           navigate('/user');
         } else {
@@ -44,25 +52,21 @@ export default function RegisterPage() {
   return (
     <Card className="user-card user-card-480">
       <Title level={3}>注册</Title>
-      <Text type="secondary">手机号 + 短信验证码，或邮箱 + 邮箱验证码，二选一即可。</Text>
+      <Text type="secondary">手机号 + 短信验证码、邮箱 + 邮箱验证码，两者都需验证。</Text>
       <Form form={form} layout="vertical" onFinish={onFinish} className="mt-16">
         <Form.Item
           name="phone"
           label="手机号"
           rules={[{ pattern: /^1[3-9]\d{9}$/, message: '手机号格式错误', validateTrigger: 'onBlur' }]}
         >
-          <Input placeholder="选填，用于短信验证" />
+          <Input placeholder="用于短信验证" />
         </Form.Item>
         <Form.Item>
           <Button onClick={() => onSendCode('sms')} loading={codeLoading}>
             获取短信验证码
           </Button>
-          <span className="color-secondary-12-ml">（填了手机号再点）</span>
         </Form.Item>
-        <Form.Item
-          name="sms_code"
-          label="短信验证码"
-        >
+        <Form.Item name="sms_code" label="短信验证码">
           <Input placeholder="手机验证码" />
         </Form.Item>
 
@@ -71,13 +75,12 @@ export default function RegisterPage() {
           label="邮箱"
           rules={[{ type: 'email', message: '邮箱格式错误', validateTrigger: 'onBlur' }]}
         >
-          <Input placeholder="选填，用于邮箱验证" />
+          <Input placeholder="用于邮箱验证" />
         </Form.Item>
         <Form.Item>
           <Button onClick={() => onSendCode('email')} loading={codeLoading}>
             获取邮箱验证码
           </Button>
-          <span className="color-secondary-12-ml">（填了邮箱再点）</span>
         </Form.Item>
         <Form.Item name="email_code" label="邮箱验证码">
           <Input placeholder="邮箱验证码" />

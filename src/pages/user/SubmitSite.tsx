@@ -9,8 +9,15 @@ const { Title, Text } = Typography;
 const SubmitSite: React.FC = () => {
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
+    const [codeSrc, setCodeSrc] = useState(
+        '/index.php/api/generate.html?t=' + Date.now()
+    );
 
-    const onFinish = (values: { name: string; url: string; type?: string }) => {
+    const refreshCode = () => {
+        setCodeSrc('/index.php/api/generate.html?t=' + Date.now());
+    };
+
+    const onFinish = (values: { name: string; url: string; type?: string; code: string }) => {
         const key = getToken();
         if (!key) {
             message.warning('请先登录');
@@ -21,13 +28,16 @@ const SubmitSite: React.FC = () => {
             name: values.name,
             url: values.url,
             type: values.type || 'website',
+            code: values.code,
         })
             .then((r) => {
                 if (r.code === 1) {
                     message.success('提交成功，等待审核');
                     form.resetFields();
+                    refreshCode();
                 } else {
                     message.error(r.msg || '提交失败，请稍后重试');
+                    refreshCode();
                 }
             })
             .catch(() => message.error('提交失败，请稍后重试'))
@@ -67,6 +77,23 @@ const SubmitSite: React.FC = () => {
                     </Form.Item>
                     <Form.Item label="站点类型" name="type">
                         <Input placeholder="website" />
+                    </Form.Item>
+                    <Form.Item
+                        label="图形验证码"
+                        name="code"
+                        rules={[{ required: true, message: '请输入图形验证码' }]}
+                    >
+                        <Input
+                            placeholder="请输入右侧验证码"
+                            addonAfter={
+                                <img
+                                    src={codeSrc}
+                                    alt="code"
+                                    style={{ height: 30, cursor: 'pointer' }}
+                                    onClick={refreshCode}
+                                />
+                            }
+                        />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit" loading={submitting}>

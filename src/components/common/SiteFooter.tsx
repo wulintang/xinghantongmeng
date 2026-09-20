@@ -81,20 +81,12 @@ export default function SiteFooter(): React.JSX.Element {
                                 {site?.logo ? (
                                     <img src={site.logo} alt={site.title || ''} className="site-footer-logo" />
                                 ) : null}
-                                <Title level={4} className="site-footer-brand">
-                                    {site?.title || '兴汉同盟'}
-                                </Title>
                             </Flex>
-                            {site?.titles ? <Text type="secondary">{site.titles}</Text> : null}
                             {site?.description ? (
                                 <Paragraph type="secondary" className="site-footer-desc">
                                     {site.description}
                                 </Paragraph>
                             ) : null}
-                            <Space size={[8, 8]} wrap>
-                                {site?.author ? <Tag>{site.author}</Tag> : null}
-                                <Tag color="processing">共 {siteNav.length + friendLinks.length} 个入口</Tag>
-                            </Space>
                         </Flex>
                     </Col>
 

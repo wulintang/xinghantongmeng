@@ -22,6 +22,7 @@ const ArticleDetailPage: React.FC = () => {
     const [error, setError] = useState('');
     const [liked, setLiked] = useState(false);
     const [zan, setZan] = useState(0);
+    const [liking, setLiking] = useState(false);
 
     usePageMeta({
         title: item?.title || '文章详情',
@@ -60,7 +61,8 @@ const ArticleDetailPage: React.FC = () => {
             navigate('/login');
             return;
         }
-        if (!item) return;
+        if (!item || liking) return;
+        setLiking(true);
         toggleLike(key, Number(item.id), 'article')
             .then((r) => {
                 if (r.code === 1) {
@@ -73,7 +75,8 @@ const ArticleDetailPage: React.FC = () => {
                     message.error(r.msg || '操作失败');
                 }
             })
-            .catch(() => message.error('网络错误'));
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setLiking(false));
     };
 
     if (loading) return <ArticleDetailSkeleton />;
@@ -108,6 +111,7 @@ const ArticleDetailPage: React.FC = () => {
                             icon={liked ? '♥' : '♡'}
                             type={liked ? 'primary' : 'default'}
                             onClick={onLike}
+                            loading={liking}
                         >
                             点赞 {zan}
                         </Button>

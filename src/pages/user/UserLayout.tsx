@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Menu, Spin, Typography } from 'antd';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Text } = Typography;
 
@@ -33,9 +34,23 @@ const MENU = [
 /** 拍平菜单树取全部 key，用于高亮判断 */
 const MENU_KEYS = MENU.flatMap((m: any) => (m.children ? m.children.map((c: any) => c.key) : [m.key]));
 
+/** 根据路径兜底设置浏览器标题（子页面 usePageMeta 会覆盖为更精确的标题） */
+const TITLE_MAP: Record<string, string> = {
+  '/user': '个人资料',
+  '/user/submit': '提交站点',
+  '/user/mysites': '我的站点',
+  '/user/favorites': '我的收藏',
+  '/user/orders': '我的订单',
+  '/user/reports': '我的举报',
+  '/user/checkin': '每日签到',
+  '/user/messages': '消息中心',
+  '/user/balance': '余额明细',
+};
+
 export default function UserLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  usePageMeta({ title: TITLE_MAP[location.pathname] || '用户中心' });
   const [info, setInfo] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(true);
 

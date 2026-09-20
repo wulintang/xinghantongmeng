@@ -4,11 +4,13 @@ import { Card, Typography, Statistic, Button, Space, message, Spin, Tag } from '
 import { getCheckin, doCheckin } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { CheckinStatus } from '@/services/userCenter';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title } = Typography;
 
 export default function CheckinPage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '每日签到' });
   const [data, setData] = useState<CheckinStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [doing, setDoing] = useState(false);

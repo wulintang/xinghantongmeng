@@ -1,113 +1,88 @@
 import React, { useEffect, useState } from 'react';
+import { Card, Empty, List, Tag, Typography, message, Popconfirm, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Table, Tag, Spin, Button, Modal, Form, Input, Space, message } from 'antd';
-import { getReports, submitReport, type ReportItem } from '@/services/userCenter';
+import dayjs from 'dayjs';
+
+import { PageHeader } from '@components/common';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { getReports, type ReportItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 
-const { Title } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
-export default function ReportsPage() {
-  const navigate = useNavigate();
-  const [list, setList] = useState<ReportItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [form] = Form.useForm();
+/** 我的举报：卡片纵向排布（状态行独立一行，杜绝文字重叠），显示后台审核回复 */
+const ReportsPage: React.FC = () => {
+    const navigate = useNavigate();
+    const [list, setList] = useState<ReportItem[]>([]);
+    const [loading, setLoading] = useState(true);
 
-  const fmt = (t: number) => (t ? new Date(t * 1000).toLocaleString() : '');
+    usePageMeta('我的举报');
 
-  const load = () => {
-    const key = getToken();
-    if (!key) {
-      navigate('/login');
-      return;
-    }
-    getReports(key)
-      .then((r: any) => {
-        if (r.code === 1) setList(r.data || []);
-        else navigate('/login');
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  };
+    const load = () => {
+        const key = getToken();
+        if (!key) {
+            navigate('/login');
+            return;
+        }
+        setLoading(true);
+        getReports(key)
+            .then((r: any) => {
+                if (r.code === 1) setList(r.data || []);
+                else if (String(r.msg || '').indexOf('登录') >= 0) navigate('/login');
+                else message.error(r.msg || '加载失败');
+            })
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setLoading(false));
+    };
 
-  useEffect(load, [navigate]);
+    useEffect(load, [navigate]);
 
-  const onSubmit = () => {
-    form
-      .validateFields()
-      .then((vals) => {
-        setSubmitting(true);
-        submitReport(getToken() || '', vals)
-          .then((r: any) => {
-            if (r.code === 1) {
-              message.success('举报已提交');
-              setOpen(false);
-              form.resetFields();
-              load();
-            } else {
-              message.error(r.msg || '提交失败');
-            }
-          })
-          .catch(() => message.error('网络错误'))
-          .finally(() => setSubmitting(false));
-      })
-      .catch(() => {});
-  };
+    const statusOf = (v: any) => {
+        const n = Number(v);
+        if (n === 1) return { color: 'green', text: '已处理' };
+        if (n === 9) return { color: 'red', text: '已拒绝' };
+        return { color: 'orange', text: '待审核' };
+    };
 
-  return (
-    <Card className="user-card user-card-760">
-      <Title level={4}>我的举报</Title>
-      <Space className="mb-16">
-        <Button type="primary" onClick={() => setOpen(true)}>
-          提交举报
-        </Button>
-      </Space>
-      <Spin spinning={loading}>
-        <Table<ReportItem>
-          dataSource={list}
-          rowKey="id"
-          pagination={false}
-          columns={[
-            { title: '标题', dataIndex: 'title' },
-            { title: '内容', dataIndex: 'content', ellipsis: true },
-            { title: '关键字', dataIndex: 'tag' },
-            {
-              title: '状态',
-              dataIndex: 'status',
-              render: (s: number) =>
-                s === 1 ? <Tag color="green">已审核</Tag> : <Tag color="orange">待审核</Tag>,
-            },
-            { title: '时间', dataIndex: 'time', render: (t: number) => fmt(t) },
-          ]}
-        />
-      </Spin>
-      <Modal
-        title="提交举报"
-        open={open}
-        onOk={onSubmit}
-        confirmLoading={submitting}
-        onCancel={() => setOpen(false)}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="title" label="标题">
-            <Input placeholder="举报标题" />
-          </Form.Item>
-          <Form.Item
-            name="content"
-            label="内容"
-            rules={[{ required: true, message: '请填写举报内容' }]}
-          >
-            <Input.TextArea rows={4} placeholder="举报内容" />
-          </Form.Item>
-          <Form.Item name="tag" label="关键字">
-            <Input placeholder="如 违规类型" />
-          </Form.Item>
-          <Form.Item name="tid" label="关联ID(可选)">
-            <Input placeholder="如某文章/站点 id" />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </Card>
-  );
-}
+    return (
+        <Card className="user-card" loading={loading}>
+            <Title level={4}>我的举报</Title>
+            {list.length === 0 && !loading ? (
+                <Empty description="暂无举报记录" />
+            ) : (
+                <List
+                    dataSource={list}
+                    renderItem={(item) => {
+                        const st = statusOf(item.open);
+                        return (
+                            <List.Item className="report-item">
+                                <div className="report-line">
+                                    <Text strong>{item.name || `举报 #${item.id}`}</Text>
+                                    <Tag color={st.color}>{st.text}</Tag>
+                                </div>
+                                <div className="report-line">
+                                    <Text type="secondary">
+                                        {item.url || ''}　{item.time ? dayjs.unix(Number(item.time)).format('YYYY-MM-DD HH:mm') : ''}
+                                    </Text>
+                                </div>
+                                {item.content ? (
+                                    <Paragraph type="secondary" className="report-line" style={{ marginBottom: 0 }}>
+                                        举报内容：{item.content}
+                                    </Paragraph>
+                                ) : null}
+                                {item.huifu ? (
+                                    <Paragraph className="report-line" style={{ marginBottom: 0 }}>
+                                        <Text type="warning">官方回复：</Text>
+                                        {item.huifu}
+                                    </Paragraph>
+                                ) : null}
+                            </List.Item>
+                        );
+                    }}
+                />
+            )}
+        </Card>
+    );
+};
+
+export default ReportsPage;

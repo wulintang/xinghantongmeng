@@ -4,12 +4,14 @@ import { Card, List, Typography, Empty, Spin, Tag } from 'antd';
 import { getFavorites } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { FavoriteItem } from '@/services/userCenter';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
 
 export default function FavoritesPage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '我的收藏' });
   const [list, setList] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
 

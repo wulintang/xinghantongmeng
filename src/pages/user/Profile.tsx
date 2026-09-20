@@ -5,11 +5,13 @@ import { getUserProfile, updateUserProfile, userLogout, uploadFile } from '@/ser
 import { getToken, clearToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
 import { MemberInfo } from '@/services/userCenter';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title, Text } = Typography;
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '个人资料' });
   const [form] = Form.useForm();
   const [info, setInfo] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(true);

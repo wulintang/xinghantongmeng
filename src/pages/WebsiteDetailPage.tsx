@@ -47,6 +47,7 @@ const WebsiteDetailPage: React.FC = () => {
     const [error, setError] = useState('');
     const [liked, setLiked] = useState(false);
     const [zan, setZan] = useState(0);
+    const [liking, setLiking] = useState(false);
     // 认领状态 / 认领中 / 举报弹窗
     const [claimed, setClaimed] = useState(false);
     const [claiming, setClaiming] = useState(false);
@@ -101,7 +102,8 @@ const WebsiteDetailPage: React.FC = () => {
             navigate('/login');
             return;
         }
-        if (!item) return;
+        if (!item || liking) return;
+        setLiking(true);
         toggleLike(key, Number(item.id), 'website')
             .then((r) => {
                 if (r.code === 1) {
@@ -114,7 +116,8 @@ const WebsiteDetailPage: React.FC = () => {
                     message.error(r.msg || '操作失败');
                 }
             })
-            .catch(() => message.error('网络错误'));
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setLiking(false));
     };
 
     const onClaim = () => {
@@ -206,7 +209,7 @@ const WebsiteDetailPage: React.FC = () => {
                                 访问网站
                             </Button>
                         ) : null}
-                        <Button type={liked ? 'primary' : 'default'} onClick={onLike}>
+                        <Button type={liked ? 'primary' : 'default'} onClick={onLike} loading={liking}>
                             {liked ? '♥' : '♡'} 点赞 {zan}
                         </Button>
                         <Button onClick={() => setReportOpen(true)}>举报</Button>

@@ -185,6 +185,8 @@ export function addSite(
     ico?: string;
     pic?: string;
     feed_url?: string;
+    nofollow?: number;
+    xin?: number;
   }
 ) {
   return post<ApiResp>('/addSite.html', { key, ...data }, USER);

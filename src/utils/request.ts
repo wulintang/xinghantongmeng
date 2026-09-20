@@ -32,36 +32,48 @@ export async function request<T>(url: string, options?: RequestInit): Promise<T>
 }
 
 /**
- * 提取响应体开头的第一个完整 JSON 对象。
- * 部分 后端应用（verify/user）开 debug 时会在 JSON 后附加 trace HTML，内含 JS 大括号，
- * 简单的 indexOf/lastIndexOf 截取会被干扰，这里做平衡扫描：字符串感知 + 花括号计数。
+ * 提取响应体中的第一个可解析的 JSON 对象/数组。
+ * 部分后端应用（verify/user）开 debug 时会在 JSON 前后附加 trace HTML、PHP Notice、JS/CSS 大括号等，
+ * 简单用 indexOf('{') 定位会被干扰。这里枚举所有 '{' 候选起点，用字符串感知 + 花括号计数找到闭合，
+ * 逐个尝试 JSON.parse，第一个成功的即为真实接口返回。
  */
 function extractJson(text: string): unknown {
-    const start = text.indexOf('{');
-    if (start < 0) return null;
-    let depth = 0;
-    let inStr = false;
-    let esc = false;
-    for (let i = start; i < text.length; i++) {
-        const ch = text[i];
-        if (inStr) {
-            if (esc) esc = false;
-            else if (ch === '\\') esc = true;
-            else if (ch === '"') inStr = false;
-            continue;
-        }
-        if (ch === '"') inStr = true;
-        else if (ch === '{') depth++;
-        else if (ch === '}') {
-            depth--;
-            if (depth === 0) {
-                try {
-                    return JSON.parse(text.slice(start, i + 1));
-                } catch {
-                    return null;
+    let searchFrom = 0;
+    while (true) {
+        const start = text.indexOf('{', searchFrom);
+        if (start < 0) break;
+        let depth = 0;
+        let inStr = false;
+        let esc = false;
+        let end = -1;
+        for (let i = start; i < text.length; i++) {
+            const ch = text[i];
+            if (inStr) {
+                if (esc) esc = false;
+                else if (ch === '\\') esc = true;
+                else if (ch === '"') inStr = false;
+                continue;
+            }
+            if (ch === '"') inStr = true;
+            else if (ch === '{') depth++;
+            else if (ch === '}') {
+                depth--;
+                if (depth === 0) {
+                    end = i;
+                    break;
                 }
             }
         }
+        if (end >= 0) {
+            try {
+                const candidate = text.slice(start, end + 1);
+                const parsed = JSON.parse(candidate);
+                if (parsed && typeof parsed === 'object') return parsed;
+            } catch {
+                /* 不是合法 JSON，尝试下一个候选 */
+            }
+        }
+        searchFrom = start + 1;
     }
     return null;
 }

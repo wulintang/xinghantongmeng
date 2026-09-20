@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, InputNumber, Modal, Space, Tag, Table, Statistic, Spin, Typography, message } from 'antd';
 import { getBalance, getUserProfile, type BalanceItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title } = Typography;
 
 export default function BalancePage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '余额明细' });
   const [list, setList] = useState<BalanceItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);

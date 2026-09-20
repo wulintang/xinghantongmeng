@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Form, Input, Space, Typography, message, Tag } from 'antd';
+import { Button, Card, Form, Input, Space, Switch, Typography, message, Tag } from 'antd';
 import { addSite, captchaUrl } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -16,7 +16,7 @@ export default function LinksPage() {
 
     const refreshCode = () => setCodeSrc(captchaUrl());
 
-    const onFinish = (values: { name: string; url: string; code: string }) => {
+    const onFinish = (values: { name: string; url: string; code: string; nofollow?: boolean; xin?: boolean }) => {
         const key = getToken();
         if (!key) {
             message.warning('请先登录后再申请友链');
@@ -28,6 +28,8 @@ export default function LinksPage() {
             name: values.name,
             url: values.url,
             code: values.code,
+            nofollow: values.nofollow ? 1 : 0,
+            xin: values.xin ? 1 : 0,
         })
             .then((r: any) => {
                 if (r.code === 1) {
@@ -84,6 +86,18 @@ export default function LinksPage() {
                         ]}
                     >
                         <Input placeholder="https://example.com" />
+                    </Form.Item>
+                    <Form.Item label="nofollow" name="nofollow" valuePropName="checked" initialValue={false}>
+                        <Space>
+                            <Switch />
+                            <Text type="secondary">搜索引擎不传递权重</Text>
+                        </Space>
+                    </Form.Item>
+                    <Form.Item label="新窗口打开" name="xin" valuePropName="checked" initialValue={true}>
+                        <Space>
+                            <Switch />
+                            <Text type="secondary">点击后在新的浏览器标签页打开</Text>
+                        </Space>
                     </Form.Item>
                     <Form.Item
                         label="图形验证码"

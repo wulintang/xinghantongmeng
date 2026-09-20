@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Typography, Table, Tag, Spin } from 'antd';
 import { getOrders, type OrderItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title } = Typography;
 
 export default function OrdersPage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '我的订单' });
   const [list, setList] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
 

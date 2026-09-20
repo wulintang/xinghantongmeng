@@ -3,10 +3,12 @@ import { useSite } from '@/context/SiteContext';
 import { Button, Card, Form, Input, Space, Typography, message, Tag } from 'antd';
 import { addSite, captchaUrl } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function LinksPage() {
+    usePageMeta({ title: '友情链接' });
     const { friendLinks } = useSite();
     const [codeSrc, setCodeSrc] = useState(() => captchaUrl());
     const [submitting, setSubmitting] = useState(false);

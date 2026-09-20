@@ -6,17 +6,24 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { getMySites, editMySite, delMySite, uploadFile } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import type { WebsiteItem } from '@/services/userCenter';
 
 const { Title, Text } = Typography;
 
+/** DB 的 ssl 字段是字符串 'https://' / 'http://'，不是 0/1 */
+const sslOn = (v: unknown) => String(v || '').indexOf('https') === 0;
+
 export default function MySitesPage() {
   const navigate = useNavigate();
+  usePageMeta({ title: '我的站点' });
   const [list, setList] = useState<WebsiteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<WebsiteItem | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [ico, setIco] = useState('');
+  const [pic, setPic] = useState('');
   const [form] = Form.useForm();
 
   const load = () => {
@@ -42,15 +49,15 @@ export default function MySitesPage() {
 
   const openEdit = (row: WebsiteItem) => {
     setEditing(row);
+    setIco(row.ico || '');
+    setPic(row.pic || '');
     form.setFieldsValue({
       title: row.title,
       www: row.www,
       tips: row.tips,
       keywords: row.keywords,
       content: row.content,
-      pic: row.pic,
-      ico: row.ico,
-      ssl: Number(row.ssl) === 1,
+      ssl: sslOn(row.ssl),
     });
   };
 
@@ -61,7 +68,8 @@ export default function MySitesPage() {
     uploadFile(key, file)
       .then((r: any) => {
         if (r.code === 1 && r.data?.url) {
-          form.setFieldsValue({ [field]: r.data.url });
+          if (field === 'ico') setIco(r.data.url);
+          else setPic(r.data.url);
           message.success('上传成功');
         } else {
           message.error(r.msg || '上传失败');
@@ -83,9 +91,9 @@ export default function MySitesPage() {
       tips: values.tips,
       keywords: values.keywords,
       content: values.content,
-      pic: values.pic,
-      ico: values.ico,
-      ssl: values.ssl ? 1 : 0,
+      pic,
+      ico,
+      ssl: values.ssl ? 'https://' : 'http://',
     })
       .then((r: any) => {
         if (r.code === 1) {
@@ -173,31 +181,6 @@ export default function MySitesPage() {
         width={680}
         destroyOnClose
       >
-        {editing ? (
-          <div className="mysite-current" style={{ marginBottom: 16 }}>
-            <Space size={24} align="center" wrap>
-              <Space size={8} align="center">
-                {editing.ico ? (
-                  <img src={editing.ico} alt="当前图标" style={{ width: 32, height: 32, borderRadius: 6 }} />
-                ) : null}
-                <Text type="secondary">当前图标{editing.ico ? '' : '：无'}</Text>
-              </Space>
-              <Space size={8} align="center">
-                {editing.pic ? (
-                  <img
-                    src={editing.pic}
-                    alt="当前截图"
-                    style={{ width: 96, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #f0f0f0' }}
-                  />
-                ) : null}
-                <Text type="secondary">当前截图{editing.pic ? '' : '：无'}</Text>
-              </Space>
-              <Text type="secondary">
-                HTTPS：{Number(editing.ssl) === 1 ? '已启用' : '未启用'}　浏览 {editing.view}　点赞 {editing.zan}
-              </Text>
-            </Space>
-          </div>
-        ) : null}
         <Form form={form} layout="vertical" onFinish={onSave}>
           <Form.Item name="title" label="站点名称" rules={[{ required: true }]}>
             <Input />
@@ -214,9 +197,14 @@ export default function MySitesPage() {
           <Form.Item name="content" label="站点描述">
             <Input.TextArea rows={3} />
           </Form.Item>
-          <Form.Item name="ico" label="站点图标">
+          <Form.Item label="站点图标">
             <Space>
-              <Input style={{ width: 240 }} placeholder="图标地址（可上传自动填充）" />
+              <Input
+                style={{ width: 240 }}
+                placeholder="图标地址（可上传自动填充）"
+                value={ico}
+                onChange={(e) => setIco(e.target.value)}
+              />
               <Upload accept="image/*" showUploadList={false} beforeUpload={(f) => onUpload(f, 'ico')}>
                 <Button size="small" loading={uploading}>
                   <PlusOutlined /> 上传图标
@@ -224,9 +212,14 @@ export default function MySitesPage() {
               </Upload>
             </Space>
           </Form.Item>
-          <Form.Item name="pic" label="站点截图">
+          <Form.Item label="站点截图">
             <Space>
-              <Input style={{ width: 240 }} placeholder="截图地址（可上传自动填充）" />
+              <Input
+                style={{ width: 240 }}
+                placeholder="截图地址（可上传自动填充）"
+                value={pic}
+                onChange={(e) => setPic(e.target.value)}
+              />
               <Upload accept="image/*" showUploadList={false} beforeUpload={(f) => onUpload(f, 'pic')}>
                 <Button size="small" loading={uploading}>
                   <PlusOutlined /> 上传截图

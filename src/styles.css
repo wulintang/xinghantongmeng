@@ -671,7 +671,7 @@ body {
 
 .submit-site-form {
   margin-top: 16px;
-  max-width: 480px;
+  width: 100%;
 }
 
 .captcha-img {

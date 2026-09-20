@@ -4,11 +4,13 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { addSite, captchaUrl, getWebsiteCates, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title, Text } = Typography;
 
 /** 提交站点：分类=后台真实网站分类（my_website_cate），图标/截图直接上传，feed 填订阅地址 */
 const SubmitSite: React.FC = () => {
+    usePageMeta({ title: '提交站点' });
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
     const [cates, setCates] = useState<CateItem[]>([]);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Avatar, Card, Flex, List, Pagination, Segmented, Tag, Typography } from 'antd';
+import { Alert, Avatar, Card, Col, Flex, Pagination, Row, Segmented, Space, Tag, Typography } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -158,55 +158,50 @@ const BlogsPage: React.FC = () => {
                 />
             ) : (
                 <>
-                    <Card>
-                        <List
-                            itemLayout="vertical"
-                            dataSource={pageList}
-                            rowKey={(p) => p.link || `${domainOf(p)}-${p.title}`}
-                            renderItem={(p) => {
-                                const domain = domainOf(p);
-                                const icon = siteIcons[normalizeDomain(domain)];
-                                return (
-                                    <List.Item
-                                        key={p.link || p.title}
-                                        actions={[
-                                            <Text type="secondary" key="time">
-                                                {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD HH:mm') : ''}
-                                            </Text>,
-                                            p.recommended ? <Tag color="red" key="rec">推荐</Tag> : null,
-                                            p.pinned ? <Tag color="orange" key="pin">置顶</Tag> : null,
-                                        ].filter(Boolean)}
-                                    >
-                                        <List.Item.Meta
-                                            avatar={
-                                                <Avatar shape="square" src={icon || undefined}>
+                    <Row gutter={[16, 16]}>
+                        {pageList.map((p) => {
+                            const domain = domainOf(p);
+                            const icon = siteIcons[normalizeDomain(domain)];
+                            return (
+                                <Col key={p.link || `${domainOf(p)}-${p.title}`} xs={24} sm={12} lg={8}>
+                                    <Card className="site-card" size="small">
+                                        <Flex vertical gap={10}>
+                                            <Flex align="center" gap={10}>
+                                                <Avatar shape="square" size={40} src={icon || undefined}>
                                                     {(p.blogName || domain || '?').slice(0, 1)}
                                                 </Avatar>
-                                            }
-                                            title={
-                                                <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
-                                                    {p.title || '无标题'}
-                                                </a>
-                                            }
-                                            description={
-                                                <Flex align="center" gap={8} wrap>
-                                                    <Link to={`/${domain}`}>
-                                                        <Tag color="blue">{p.blogName || domain}</Tag>
-                                                    </Link>
-                                                    <Text type="secondary">{domain}</Text>
-                                                </Flex>
-                                            }
-                                        />
-                                        {p.description ? (
-                                            <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="post-summary">
-                                                {htmlToText(p.description, 120)}
-                                            </Paragraph>
-                                        ) : null}
-                                    </List.Item>
-                                );
-                            }}
-                        />
-                    </Card>
+                                                <Link to={`/${domain}`} className="site-card-name">
+                                                    {p.blogName || domain}
+                                                </Link>
+                                            </Flex>
+                                            <a
+                                                href={jumpUrl(p.link)}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="feed-card-title"
+                                            >
+                                                {p.title || '无标题'}
+                                            </a>
+                                            {p.description ? (
+                                                <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
+                                                    {htmlToText(p.description, 120)}
+                                                </Paragraph>
+                                            ) : null}
+                                            <Flex justify="space-between" align="center" className="site-card-meta">
+                                                <Text type="secondary">
+                                                    {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD HH:mm') : ''}
+                                                </Text>
+                                                <Space>
+                                                    {p.recommended ? <Tag color="red">推荐</Tag> : null}
+                                                    {p.pinned ? <Tag color="orange">置顶</Tag> : null}
+                                                </Space>
+                                            </Flex>
+                                        </Flex>
+                                    </Card>
+                                </Col>
+                            );
+                        })}
+                    </Row>
                     {list.length > PAGE_SIZE ? (
                         <Flex justify="center">
                             <Pagination

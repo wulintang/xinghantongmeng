@@ -70,6 +70,7 @@ export interface ReportItem {
   title: string;
   content: string;
   tag: string;
+  huifu?: string;
   time: number;
 }
 
@@ -105,7 +106,7 @@ export function userRegister(data: {
   sms_code: string;
   email_code: string;
 }) {
-  return post<ApiResp<{ key: string }>>('/reg.html', data);
+  return post<ApiResp<{ key: string }>>('/reg.html', data, API, { credentials: 'include' });
 }
 
 // 登录（好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码）
@@ -116,7 +117,7 @@ export function userLogin(data: {
   sms_code?: string;
   email_code?: string;
 }) {
-  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data);
+  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data, API, { credentials: 'include' });
 }
 
 export function userLogout() {

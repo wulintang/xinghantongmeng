@@ -52,17 +52,18 @@ const ReportsPage: React.FC = () => {
             ) : (
                 <List
                     dataSource={list}
-                    renderItem={(item) => {
-                        const st = statusOf(item.open);
+                    renderItem={(item: any) => {
+                        const st = statusOf(item.status);
                         return (
                             <List.Item className="report-item">
-                                <div className="report-line">
-                                    <Text strong>{item.name || `举报 #${item.id}`}</Text>
+                                <div className="report-line report-head">
+                                    <Text strong>{item.title || `举报 #${item.id}`}</Text>
                                     <Tag color={st.color}>{st.text}</Tag>
                                 </div>
-                                <div className="report-line">
+                                <div className="report-line report-meta">
                                     <Text type="secondary">
-                                        {item.url || ''}　{item.time ? dayjs.unix(Number(item.time)).format('YYYY-MM-DD HH:mm') : ''}
+                                        {item.time ? dayjs.unix(Number(item.time)).format('YYYY-MM-DD HH:mm') : ''}
+                                        {item.tag ? `　分类：${item.tag}` : ''}
                                     </Text>
                                 </div>
                                 {item.content ? (
@@ -71,7 +72,7 @@ const ReportsPage: React.FC = () => {
                                     </Paragraph>
                                 ) : null}
                                 {item.huifu ? (
-                                    <Paragraph className="report-line" style={{ marginBottom: 0 }}>
+                                    <Paragraph className="report-line report-reply" style={{ marginBottom: 0 }}>
                                         <Text type="warning">官方回复：</Text>
                                         {item.huifu}
                                     </Paragraph>

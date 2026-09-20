@@ -266,6 +266,22 @@ body {
   font-size: 12px;
 }
 
+/* Feed 广场文章卡片标题（复用 home 卡片栅格风格，两行截断） */
+.feed-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+}
+.feed-card-title:hover {
+  color: #1677ff;
+}
+
 /* ============================================================
    详情页
    ============================================================ */
@@ -662,6 +678,36 @@ body {
 .user-msg-text {
   white-space: pre-wrap;
   margin: 0;
+}
+
+/* 我的举报：纵向排布，避免 antd List.Item 默认 flex 行导致文字重叠 */
+.report-item {
+  display: block;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--c-border, #f0f0f0);
+}
+.report-item:last-child {
+  border-bottom: none;
+}
+.report-line {
+  display: block;
+  line-height: 1.8;
+}
+.report-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.report-meta {
+  font-size: 12px;
+}
+.report-reply {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 4px;
 }
 
 .center-pad-60 {

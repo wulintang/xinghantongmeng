@@ -1,10 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { Avatar, Button, Drawer, Dropdown, Flex, Grid, Menu, Space, Typography } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Avatar, Badge, Button, Drawer, Dropdown, Flex, Grid, Menu, Space, Tag, Typography, message } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useSite } from '@/context/SiteContext';
 import { getToken, clearToken } from '@/utils/auth';
-import { toRoute } from '@/utils/route';
+import { toRoute, assetUrl } from '@/utils/route';
+import {
+    doCheckin,
+    getCheckin,
+    getMessages,
+    getUserProfile,
+    type MemberInfo,
+} from '@/services/userCenter';
 
 const { Text } = Typography;
 
@@ -35,6 +42,49 @@ export default function Header(): React.JSX.Element {
     const { site, topLinks } = useSite();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [token, setToken] = useState<string>(() => getToken());
+    const [me, setMe] = useState<MemberInfo | null>(null);
+    const [checkinDone, setCheckinDone] = useState<boolean | null>(null);
+    const [unread, setUnread] = useState(0);
+
+    // 登录后拉取头像、签到状态、未读消息数（路径变化时也刷新，保证登录/退出后立即同步）
+    useEffect(() => {
+        if (!token) {
+            setMe(null);
+            setCheckinDone(null);
+            setUnread(0);
+            return;
+        }
+        getUserProfile(token)
+            .then((r: any) => {
+                if (r.code === 1) setMe(r.data);
+            })
+            .catch(() => {});
+        getCheckin(token)
+            .then((r: any) => {
+                if (r.code === 1) setCheckinDone(r.data.today_done === 1);
+            })
+            .catch(() => {});
+        getMessages(token)
+            .then((r: any) => {
+                if (r.code === 1) setUnread((r.data || []).filter((m: any) => !m.open).length);
+            })
+            .catch(() => {});
+    }, [token, location.pathname]);
+
+    const onCheckin = () => {
+        if (!token) return;
+        doCheckin(token)
+            .then((r: any) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '签到成功');
+                    setCheckinDone(true);
+                } else {
+                    message.info(r.msg || '今天已签到');
+                    setCheckinDone(true);
+                }
+            })
+            .catch(() => message.error('签到失败，请稍后重试'));
+    };
 
     // 后端导航数据驱动；后端若未配置 Feed广场入口则补上
     const navItems = useMemo<NavItem[]>(() => {
@@ -87,9 +137,25 @@ export default function Header(): React.JSX.Element {
     };
 
     const userArea = token ? (
-        <Dropdown menu={userMenu} trigger={['click']} placement="bottomRight">
-            <Avatar className="site-user-avatar">我</Avatar>
-        </Dropdown>
+        <Space size={10} align="center">
+            {checkinDone === true ? (
+                <Tag color="green">已签到</Tag>
+            ) : checkinDone === false ? (
+                <Button size="small" onClick={onCheckin}>
+                    签到
+                </Button>
+            ) : null}
+            <Badge count={unread} size="small">
+                <Button size="small" onClick={() => navigate('/user/messages')}>
+                    消息
+                </Button>
+            </Badge>
+            <Dropdown menu={userMenu} trigger={['click']} placement="bottomRight">
+                <Avatar src={assetUrl(me?.head) || undefined} className="site-user-avatar">
+                    {me?.name?.slice(0, 1) || '我'}
+                </Avatar>
+            </Dropdown>
+        </Space>
     ) : (
         <Space>
             <Button onClick={() => navigate('/login')}>登录</Button>

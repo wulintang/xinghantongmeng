@@ -7,11 +7,14 @@ import {
     Col,
     Descriptions,
     Flex,
+    Input,
     List,
+    Modal,
     Row,
     Space,
     Tag,
     Typography,
+    message,
 } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -19,12 +22,17 @@ import dayjs from 'dayjs';
 import { PageHeader } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getWebsiteByDomain, toggleLike, type WebsiteItem } from '@/services/userCenter';
+import {
+    claimWebsite,
+    getWebsiteByDomain,
+    submitReport,
+    toggleLike,
+    type WebsiteItem,
+} from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
 import { domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { getToken } from '@/utils/auth';
-import { message } from 'antd';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -51,12 +59,14 @@ const WebsiteDetailPage: React.FC = () => {
         setLoading(true);
         setError('');
         setItem(null);
-        Promise.all([getWebsiteByDomain(domain, 1), getPosts()])
+        Promise.all([getWebsiteByDomain(domain, 1, getToken()), getPosts()])
             .then(([r, posts]) => {
                 if (!alive) return;
                 if (r.code === 1 && r.data) {
                     setItem(r.data);
                     setZan(Number(r.data.zan) || 0);
+                    setLiked(Number((r.data as any).liked) === 1);
+                    setClaimed(Number((r.data as any).uid) > 0);
                 } else {
                     setError(r.msg || '站点不存在');
                 }
@@ -86,12 +96,67 @@ const WebsiteDetailPage: React.FC = () => {
                 if (r.code === 1) {
                     const now = r.data?.liked === 1;
                     setLiked(now);
-                    setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                    // 后端同步了业务表 zan 字段，直接用后端返回的最新值
+                    if (typeof r.data?.zan === 'number') setZan(r.data.zan);
+                    else setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
                 } else {
                     message.error(r.msg || '操作失败');
                 }
             })
             .catch(() => message.error('网络错误'));
+    };
+
+    const onClaim = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再认领');
+            navigate('/login');
+            return;
+        }
+        if (!item) return;
+        setClaiming(true);
+        claimWebsite(key, Number(item.id))
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '认领成功');
+                    setClaimed(true);
+                } else {
+                    message.error(r.msg || '认领失败');
+                }
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setClaiming(false));
+    };
+
+    const onReport = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再举报');
+            navigate('/login');
+            return;
+        }
+        if (!reportContent.trim()) {
+            message.warning('请填写举报内容');
+            return;
+        }
+        setReporting(true);
+        submitReport(key, {
+            tid: String(item?.id || ''),
+            m: 'website',
+            title: item?.title || '',
+            content: reportContent.trim(),
+        })
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '举报已提交');
+                    setReportOpen(false);
+                    setReportContent('');
+                } else {
+                    message.error(r.msg || '提交失败');
+                }
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setReporting(false));
     };
 
     if (loading) return <WebsiteDetailSkeleton />;
@@ -137,6 +202,7 @@ const WebsiteDetailPage: React.FC = () => {
                         >
                             点赞 {zan}
                         </Button>
+                        <Button onClick={() => setReportOpen(true)}>举报</Button>
                     </Space>
                 }
             />
@@ -147,6 +213,15 @@ const WebsiteDetailPage: React.FC = () => {
                         {(item.title || item.name || '?').slice(0, 1)}
                     </Avatar>
                     <Flex vertical gap={10} className="detail-main">
+                        <Space size={[8, 8]} wrap>
+                            <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
+                            {claimed && item.owner ? <Tag>站长：{item.owner}</Tag> : null}
+                            {!claimed ? (
+                                <Button size="small" type="link" loading={claiming} onClick={onClaim}>
+                                    认领该站点
+                                </Button>
+                            ) : null}
+                        </Space>
                         {item.keywords ? (
                             <Space size={[8, 8]} wrap>
                                 {item.keywords.split(',').filter(Boolean).map((k) => (
@@ -167,6 +242,7 @@ const WebsiteDetailPage: React.FC = () => {
             <Card title="站点信息">
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
                     <Descriptions.Item label="域名">{item.domain || item.www || '-'}</Descriptions.Item>
+                    <Descriptions.Item label="站长">{claimed ? item.owner || '-' : '未认领'}</Descriptions.Item>
                     <Descriptions.Item label="浏览">{item.view}</Descriptions.Item>
                     <Descriptions.Item label="点赞">{item.zan}</Descriptions.Item>
                     <Descriptions.Item label="收录时间">
@@ -241,6 +317,24 @@ const WebsiteDetailPage: React.FC = () => {
             <div>
                 <Button onClick={() => navigate('/websites')}>返回网址导航</Button>
             </div>
+
+            <Modal
+                title={`举报「${item.title || item.name}」`}
+                open={reportOpen}
+                onCancel={() => setReportOpen(false)}
+                onOk={onReport}
+                okText="提交举报"
+                confirmLoading={reporting}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder="请描述该站点的违规情况（如：虚假内容、恶意软件、垃圾信息等）"
+                    maxLength={500}
+                    showCount
+                />
+            </Modal>
         </Flex>
     );
 };

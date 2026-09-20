@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Table, Statistic, Spin, Tag } from 'antd';
-import { getBalance, type BalanceItem } from '@/services/userCenter';
+import { Button, Card, InputNumber, Modal, Space, Tag, Table, Statistic, Spin, Typography, message } from 'antd';
+import { getBalance, getUserProfile, type BalanceItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 
 const { Title } = Typography;
@@ -11,6 +11,10 @@ export default function BalancePage() {
   const [list, setList] = useState<BalanceItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [uid, setUid] = useState(0);
+  const [payOpen, setPayOpen] = useState(false);
+  const [amount, setAmount] = useState<number | null>(null);
+  const [paying, setPaying] = useState(false);
 
   const load = () => {
     const key = getToken();
@@ -29,15 +33,43 @@ export default function BalancePage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+    // 充值下单要 uid（好道 Pay::alipay 按 uid 建订单）
+    getUserProfile(key)
+      .then((r: any) => {
+        if (r.code === 1) setUid(r.data.id);
+      })
+      .catch(() => {});
   };
 
   useEffect(load, [navigate]);
+
+  // 好道原生支付宝充值：Pay::alipay($uid) 按 uid+amount 建订单并跳支付宝收银台
+  const onPay = () => {
+    if (!(Number(amount) > 0)) {
+      message.warning('请输入正确的充值金额');
+      return;
+    }
+    if (!uid) {
+      message.error('用户信息加载中，请稍后再试');
+      return;
+    }
+    setPaying(true);
+    const base = (process.env.BOYOUQUAN_API_ADDRESS || '').replace(/\/+$/, '');
+    window.open(`${base}/index.php/pay/alipay.html?uid=${uid}&amount=${Number(amount)}`, '_blank');
+    setPayOpen(false);
+    setPaying(false);
+  };
 
   return (
     <Card className="user-card user-card-760">
       <Title level={4}>余额明细</Title>
       <Spin spinning={loading}>
-        <Statistic title="账户余额(元)" value={total} precision={2} className="mb-16" />
+        <Space className="mb-16" align="center">
+          <Statistic title="账户余额(元)" value={total} precision={2} />
+          <Button type="primary" onClick={() => setPayOpen(true)}>
+            充值
+          </Button>
+        </Space>
         <Table<BalanceItem>
           dataSource={list}
           rowKey="id"
@@ -56,6 +88,28 @@ export default function BalancePage() {
           ]}
         />
       </Spin>
+      <Modal
+        title="账户充值（支付宝）"
+        open={payOpen}
+        onCancel={() => setPayOpen(false)}
+        onOk={onPay}
+        okText="去支付"
+        confirmLoading={paying}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0.01}
+            step={1}
+            precision={2}
+            value={amount}
+            onChange={(v) => setAmount(v)}
+            addonBefore="¥"
+            placeholder="请输入充值金额"
+          />
+          <Typography.Text type="secondary">点击「去支付」后将跳转支付宝收银台完成付款。</Typography.Text>
+        </Space>
+      </Modal>
     </Card>
   );
 }

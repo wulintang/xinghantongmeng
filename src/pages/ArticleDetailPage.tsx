@@ -66,7 +66,9 @@ const ArticleDetailPage: React.FC = () => {
                 if (r.code === 1) {
                     const now = r.data?.liked === 1;
                     setLiked(now);
-                    setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                    // 后端同步了业务表 zan 字段，直接用后端返回的最新值
+                    if (typeof r.data?.zan === 'number') setZan(r.data.zan);
+                    else setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
                 } else {
                     message.error(r.msg || '操作失败');
                 }

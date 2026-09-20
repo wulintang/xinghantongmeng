@@ -134,7 +134,11 @@ export function toggleFavorite(key: string, tid: number, m = 'website') {
   return post<ApiResp<{ faved: number }>>('/favoriteToggle.html', { key, tid, m }, USER);
 }
 export function toggleLike(key: string, tid: number, m = 'website') {
-  return post<ApiResp<{ liked: number }>>('/likeToggle.html', { key, tid, m }, USER);
+  return post<ApiResp<{ liked: number; zan: number }>>('/likeToggle.html', { key, tid, m }, USER);
+}
+// 认领站点（my_website.uid，仅未认领的站可认领）
+export function claimWebsite(key: string, tid: number) {
+  return post<ApiResp>('/claim.html', { key, tid }, USER);
 }
 export function getCheckin(key: string) {
   return request<ApiResp<CheckinStatus>>(`${USER}/checkin.html?key=${encodeURIComponent(key)}`);
@@ -238,6 +242,12 @@ export interface WebsiteItem {
   content: string;
   feed_url: string;
   related?: WebsiteItem[];
+  /** 认领站长 uid（0=未认领，openapi 详情接口带出） */
+  uid?: number;
+  /** 站长用户名（已认领时） */
+  owner?: string;
+  /** 当前登录用户是否已赞（带 key 请求详情时返回） */
+  liked?: number;
 }
 
 export interface ArticleItem {
@@ -251,6 +261,8 @@ export interface ArticleItem {
   keywords: string | null;
   description: string | null;
   content?: string;
+  /** 当前登录用户是否已赞（带 key 请求详情时返回） */
+  liked?: number;
 }
 
 export interface DanItem {
@@ -365,21 +377,22 @@ export function getWebsites(
 ) {
   return request<ApiResp<PageResult<WebsiteItem>>>(`${OPEN}/websites.html` + qs(params));
 }
-export function getWebsite(id: number | string, count = 0) {
-  return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id, count }));
+export function getWebsite(id: number | string, count = 0, key = '') {
+  return request<ApiResp<WebsiteItem>>(`${OPEN}/website.html` + qs({ id, count, key }));
 }
 
 /**
  * 按域名解析收录站点（前端路由 /域名 直达用）。
  * 后端 website.html 只接 id，所以先拉取站点列表用 domainOf 匹配，再取该站详情。
  * count=1 时后端浏览量 +1（只有站点详情页传，列表兜底不传，避免虚增）。
+ * key 用于后端返回 liked（当前用户是否已赞）。
  */
-export async function getWebsiteByDomain(domain: string, count = 0): Promise<ApiResp<WebsiteItem>> {
+export async function getWebsiteByDomain(domain: string, count = 0, key = ''): Promise<ApiResp<WebsiteItem>> {
   const norm = normalizeDomain(domain);
   const list = await getWebsites({ page: 1, limit: 1000 });
   if (list.code === 1 && list.data?.list) {
     const found = list.data.list.find((w) => normalizeDomain(domainOf(w)) === norm);
-    if (found) return getWebsite(found.id, count);
+    if (found) return getWebsite(found.id, count, key);
   }
   return { code: 0, msg: '站点不存在或未收录', data: null as any };
 }
@@ -393,8 +406,8 @@ export function getArticles(
 ) {
   return request<ApiResp<PageResult<ArticleItem>>>(`${OPEN}/articles.html` + qs(params));
 }
-export function getArticle(id: number | string) {
-  return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id }));
+export function getArticle(id: number | string, key = '') {
+  return request<ApiResp<ArticleItem>>(`${OPEN}/article.html` + qs({ id, key }));
 }
 
 // 广告位（my_ad）

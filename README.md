@@ -1,6 +1,6 @@
-﻿# 星汉同盟前端源码
+﻿# 兴汉同盟前端源码
 
-星汉同盟（xinghantongmeng）是一个前后端分离的 Web 项目，该工程（[xinghantongmeng](https://github.com/wulintang/xinghantongmeng)）为前端部分。后端由「好道」系统（wulintang）承载，通过 `verify`、`feed`、`user` 等插件提供 `/api`、`/verify`、`/feed`、`/user` 等接口。
+兴汉同盟（xinghantongmeng）是一个前后端分离的 Web 项目，该工程（[xinghantongmeng](https://github.com/wulintang/xinghantongmeng)）为前端部分。后端由「好道」系统（wulintang）承载，通过 `verify`、`feed`、`user` 等插件提供 `/api`、`/verify`、`/feed`、`/user` 等接口。
 
 ## 工程架构
 
@@ -32,7 +32,7 @@ npm start
 |---|---|
 | `BOYOUQUAN_API_ADDRESS` | 后端根地址（如 `https://www.your-domain.com`），**不要带结尾斜杠**。会被烧进 JS 包，修改后需重新构建。 |
 
-> 注：变量名保持历史命名 `BOYOUQUAN_API_ADDRESS` 仅为兼容既有代码，与「星汉同盟」项目无关联。
+> 注：变量名保持历史命名 `BOYOUQUAN_API_ADDRESS` 仅为兼容既有代码，与「兴汉同盟」项目无关联。
 
 在 `webpack.config.js` 中，`dotenv-webpack` 已开启 `systemvars: true`，因此**部署平台（如 EdgeOne Makers）构建环境变量中填写的值会优先生效**，无需修改 `.env.production` 文件。
 

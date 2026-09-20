@@ -57,7 +57,7 @@ export default function Header(): React.JSX.Element {
                     <Col flex="20%">
                         <div style={{ marginTop: 4 }}>
                             <Link to="/" style={siteNameStyle}>
-                                星汉同盟
+                                兴汉同盟
                             </Link>
                         </div>
                     </Col>

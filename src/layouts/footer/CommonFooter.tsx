@@ -82,7 +82,7 @@ const CommonFooter: React.FC = () => {
                 <Flex vertical gap={token.padding}>
                     <Flex justify="space-between" gap={token.padding} wrap="wrap">
                         <Flex vertical gap={token.paddingSM}>
-                            <Text style={{ fontSize: token.fontSizeXL, color: token.colorText }}>星汉同盟</Text>
+                            <Text style={{ fontSize: token.fontSizeXL, color: token.colorText }}>兴汉同盟</Text>
                             <Text style={{ fontSize: linkFontSize, color: token.colorText, lineHeight: 2 }}>让我们跨越山海彼此相连，一起用文字打败时间！</Text>
                             <Flex gap={token.paddingSM}>
                                 <Dropdown placement="topRight" menu={{ items: rssItems }}>

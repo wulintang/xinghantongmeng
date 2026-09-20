@@ -5,7 +5,7 @@ import Article from '@components/article/Article';
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '404 - 星汉同盟 · 博客人的朋友圈！',
+    title: '404 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '404',
     description: '404'
 };

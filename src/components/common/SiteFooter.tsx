@@ -108,7 +108,7 @@ export default function SiteFooter() {
           <Space direction="vertical" align="center" size="small">
             <Link href="https://beian.miit.gov.cn/">辽ICP备2022012085号-2</Link>
             <Text type="secondary">
-              Copyright © 2023-2026 <Link href="https://www.xinghantongmeng.com/home">星汉同盟</Link>
+              Copyright © 2023-2026 <Link href="https://www.xinghantongmeng.com/home">兴汉同盟</Link>
             </Text>
           </Space>
         </div>

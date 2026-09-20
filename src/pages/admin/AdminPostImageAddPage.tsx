@@ -5,7 +5,7 @@ import Meta from '../../components/common/Meta';
 import AdminPostImageAdd from '../../components/admin/AdminPostImageAdd';
 
 const meta = {
-    title: '文章配图 - 管理页面 - 星汉同盟 · 博客人的朋友圈！',
+    title: '文章配图 - 管理页面 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '管理页面',
     description: '管理页面'
 }

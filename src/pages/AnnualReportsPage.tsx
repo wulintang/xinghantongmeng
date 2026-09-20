@@ -6,9 +6,9 @@ import { MetaFields } from '@types';
 const { Title, Paragraph } = Typography;
 
 const meta: MetaFields = {
-    title: '年度报告 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 年度报告',
-    description: '星汉同盟网站年度报告。'
+    title: '年度报告 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 年度报告',
+    description: '兴汉同盟网站年度报告。'
 };
 
 const content = (

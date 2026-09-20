@@ -3,9 +3,9 @@
 const { Title, Paragraph } = Typography;
 
 const META_V2_3 = {
-    title: 'v2.3 版本说明 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 版本说明, v2.3',
-    description: '星汉同盟 v2.3 版本说明。'
+    title: 'v2.3 版本说明 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 版本说明, v2.3',
+    description: '兴汉同盟 v2.3 版本说明。'
 };
 
 const RELEASE_INFO_V2_3 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V2_3 = {
     content: (
         <>
             <Paragraph>
-                星汉同盟于 2025 年 7 月 29 日发布了 v2.3 版本！该版本使用「<a href="https://www.radix-ui.com/" target="_blank">Radix UI</a>」组件库对前端 React 工程进行了重写。重写后的前端页面变得更加轻巧、简洁、标准、统一。
+                兴汉同盟于 2025 年 7 月 29 日发布了 v2.3 版本！该版本使用「<a href="https://www.radix-ui.com/" target="_blank">Radix UI</a>」组件库对前端 React 工程进行了重写。重写后的前端页面变得更加轻巧、简洁、标准、统一。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
@@ -67,10 +67,10 @@ const RELEASE_INFO_V2_3 = {
                 2 代码标签
             </Title>
             <Paragraph>
-                星汉同盟前端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.3" target="_blank">xinghantongmeng</a>
+                兴汉同盟前端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.3" target="_blank">xinghantongmeng</a>
             </Paragraph>
             <Paragraph>
-                星汉同盟后端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.3" target="_blank">xinghantongmeng</a>
+                兴汉同盟后端：<a href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.3" target="_blank">xinghantongmeng</a>
             </Paragraph>
         </>
     ),

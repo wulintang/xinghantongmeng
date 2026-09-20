@@ -67,7 +67,7 @@ const CommonHeader: React.FC = () => {
                 }}>
                     <img
                         src="/assets/images/sites/logo/logo-blue.svg"
-                        alt="星汉同盟"
+                        alt="兴汉同盟"
                         style={{ height: 30 }}
                     />
                 </Link>

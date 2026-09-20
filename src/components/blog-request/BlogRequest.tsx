@@ -17,7 +17,7 @@ interface MetaData {
 
 const getMeta = (name: string | undefined, description: string | undefined): MetaData => {
     return {
-        title: `博客「${name || ''}」审核详情 - 星汉同盟 · 博客人的朋友圈！`,
+        title: `博客「${name || ''}」审核详情 - 兴汉同盟 · 博客人的朋友圈！`,
         keywords: name || '',
         description: description || ''
     };

@@ -3,9 +3,9 @@
 const { Title, Paragraph } = Typography;
 
 const META_V1_9 = {
-    title: 'v1.9 版本说明 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 版本说明, v1.9',
-    description: '星汉同盟 v1.9 版本说明。'
+    title: 'v1.9 版本说明 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 版本说明, v1.9',
+    description: '兴汉同盟 v1.9 版本说明。'
 };
 
 const RELEASE_INFO_V1_9 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V1_9 = {
     content: (
         <>
             <Paragraph>
-                星汉同盟于 2024 年 01 月 26 日发布了 v1.9 版本！该版本发布了一个新的页面「每月精选」，用于展示过去每个月的精选文章。
+                兴汉同盟于 2024 年 01 月 26 日发布了 v1.9 版本！该版本发布了一个新的页面「每月精选」，用于展示过去每个月的精选文章。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>

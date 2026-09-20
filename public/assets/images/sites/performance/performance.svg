@@ -78,7 +78,7 @@
         font-family="微软雅黑, sans-serif" font-weight="bold"
         fill="#FFD100" stroke="#B88800" stroke-width="0.5"
         filter="url(#textGlow)">
-    <tspan x="120" dy="-30" font-size="24">星汉同盟</tspan>
+    <tspan x="120" dy="-30" font-size="24">兴汉同盟</tspan>
     <tspan x="120" dy="50" font-size="48">履约中</tspan>
   </text>
 </svg>

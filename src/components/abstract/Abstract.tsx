@@ -21,14 +21,14 @@ const { Text } = Typography;
 const getMeta = (isSharingPage: boolean, title: string, description: string): MetaFields => {
     if (isSharingPage) {
         return {
-            title: `发现一篇有趣的文章：「${title}」 - 星汉同盟 · 博客人的朋友圈！`,
+            title: `发现一篇有趣的文章：「${title}」 - 兴汉同盟 · 博客人的朋友圈！`,
             keywords: '文章分享',
             description: description
         };
     }
 
     return {
-        title: `「${title}」的摘要 - 星汉同盟 · 博客人的朋友圈！`,
+        title: `「${title}」的摘要 - 兴汉同盟 · 博客人的朋友圈！`,
         keywords: '文章摘要',
         description: description
     };

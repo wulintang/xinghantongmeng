@@ -5,7 +5,7 @@ import Meta from '../../components/common/Meta';
 import AdminMonthlySelected from '../../components/admin/monthly-selected/AdminMonthlySelected';
 
 const meta = {
-    title: '每月精选 - 管理页面 - 星汉同盟 · 博客人的朋友圈！',
+    title: '每月精选 - 管理页面 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '管理页面',
     description: '管理页面'
 }

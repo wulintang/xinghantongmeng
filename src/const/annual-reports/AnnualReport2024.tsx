@@ -3,9 +3,9 @@
 const { Title, Paragraph, Link } = Typography;
 
 const META_2024 = {
-  title: '2024 年度报告 - 星汉同盟 · 博客人的朋友圈！',
-  keywords: '星汉同盟, 年度报告, 2024',
-  description: '星汉同盟网站 2024 年度报告。'
+  title: '2024 年度报告 - 兴汉同盟 · 博客人的朋友圈！',
+  keywords: '兴汉同盟, 年度报告, 2024',
+  description: '兴汉同盟网站 2024 年度报告。'
 };
 
 const REPORT_INFO_2024 = {
@@ -13,7 +13,7 @@ const REPORT_INFO_2024 = {
   content: (
     <>
       <Paragraph>
-        时光荏苒，岁月如梭，转眼间，已步入岁末。回首过去的 2024 年，星汉同盟感恩有您！
+        时光荏苒，岁月如梭，转眼间，已步入岁末。回首过去的 2024 年，兴汉同盟感恩有您！
       </Paragraph>
 
       {/* 1 年度数字 */}
@@ -22,13 +22,13 @@ const REPORT_INFO_2024 = {
       </Title>
 
       <Paragraph>
-        2024 全年，星汉同盟共收录了 <Link strong>402</Link> 个博客，其中 <Link strong>212</Link> 个为自行提交，<Link strong>190</Link> 个为后台收录。
+        2024 全年，兴汉同盟共收录了 <Link strong>402</Link> 个博客，其中 <Link strong>212</Link> 个为自行提交，<Link strong>190</Link> 个为后台收录。
       </Paragraph>
       <Paragraph>
         2024 全年，大家共发布了 <Link strong>16677</Link> 篇文章，其中 <Link strong>1249</Link> 篇被加入到了首页推荐，<Link strong>69</Link> 篇被置顶过。发布文章最多的博友为「<a href="https://www.xinghantongmeng.com/blogs/rushihu.com">如是乎 · 生活百味随笔</a>」，共发布了 <Link strong>364</Link> 篇文章。
       </Paragraph>
       <Paragraph>
-        2024 全年，星汉同盟共给大家带去了 <Link strong>541358</Link> 个独立 IP 访问，这些 IP 来自于全国各地，分布如下（颜色愈深访问愈多）：
+        2024 全年，兴汉同盟共给大家带去了 <Link strong>541358</Link> 个独立 IP 访问，这些 IP 来自于全国各地，分布如下（颜色愈深访问愈多）：
       </Paragraph>
 
       <div style={{ marginBottom: 14, textAlign: 'center' }}>
@@ -60,7 +60,7 @@ const REPORT_INFO_2024 = {
         2024 全年，共有 <Link strong>64</Link> 个博友加入了「<a href="https://www.xinghantongmeng.com/planet-shuttle">星球穿梭</a>」助力计划，其中给大家带去流量最多的博友是「<a href="https://www.xinghantongmeng.com/blogs/xyzbz.cn">网友小宋</a>」，带去了 <Link strong>708</Link> 个独立 IP 访问。
       </Paragraph>
       <Paragraph>
-        2024 全年，星汉同盟共收到 <Link strong>784.78</Link> 元的热心赞助！我深受感动！深深感受到大家对于星汉同盟的那份鼓励与热爱。得益于这些赞助，以及恰逢云提供商的新用户推广券，星汉同盟网站现在的续费就可以让其一直运行到 2026 年！这是我在设立赞助页面前未预料到的。再次感谢您的慷慨解囊！星汉同盟必将不忘初心，尽力做的更好！
+        2024 全年，兴汉同盟共收到 <Link strong>784.78</Link> 元的热心赞助！我深受感动！深深感受到大家对于兴汉同盟的那份鼓励与热爱。得益于这些赞助，以及恰逢云提供商的新用户推广券，兴汉同盟网站现在的续费就可以让其一直运行到 2026 年！这是我在设立赞助页面前未预料到的。再次感谢您的慷慨解囊！兴汉同盟必将不忘初心，尽力做的更好！
       </Paragraph>
 
       {/* 2 年度文章 */}
@@ -69,7 +69,7 @@ const REPORT_INFO_2024 = {
       </Title>
 
       <Paragraph>
-        根据访问量、转发量、月度推荐等多个维度的综合分析，星汉同盟甄选的 2024 年度文章为：
+        根据访问量、转发量、月度推荐等多个维度的综合分析，兴汉同盟甄选的 2024 年度文章为：
       </Paragraph>
       <ul style={{ paddingLeft: 20 }}>
         <li><a href="https://www.xinghantongmeng.com/go?from=website&link=https%3A%2F%2Fihaihe.cn%2F2713.htm">天池，掉落人间的碧玉</a></li>
@@ -93,7 +93,7 @@ const REPORT_INFO_2024 = {
       </Title>
 
       <Paragraph>
-        根据文章质量、访问量等多个维度综合评估，星汉同盟甄选的 2024 年度博客为：
+        根据文章质量、访问量等多个维度综合评估，兴汉同盟甄选的 2024 年度博客为：
       </Paragraph>
 
       <ul style={{ paddingLeft: 20 }}>
@@ -130,13 +130,13 @@ const REPORT_INFO_2024 = {
         <li>
           <a href="https://www.xinghantongmeng.com/blogs/sliun.com"><Link strong>理论派</Link></a>
           <Paragraph style={{ fontStyle: 'italic', margin: '8px 0 16px 0' }}>
-            「个人感觉理论派的文章属于很有深度、很严肃的类型，该博主也是星汉同盟里非常难得的洞见型、思考型作者。从文章内容来看，该博主对于法律、历史、文化等有非常深入的研究，每篇文章涉及的知识面非常广，古今中外的典籍信手拈来。尽管博主的知识储备非常深厚，但不是为了求新求异而写文章，而是举实例、说来由，拜读几篇该博主的文章，您会从中感受到博主有一种用事实说话的严谨性，也有一种忧国忧民的大气魄。」
+            「个人感觉理论派的文章属于很有深度、很严肃的类型，该博主也是兴汉同盟里非常难得的洞见型、思考型作者。从文章内容来看，该博主对于法律、历史、文化等有非常深入的研究，每篇文章涉及的知识面非常广，古今中外的典籍信手拈来。尽管博主的知识储备非常深厚，但不是为了求新求异而写文章，而是举实例、说来由，拜读几篇该博主的文章，您会从中感受到博主有一种用事实说话的严谨性，也有一种忧国忧民的大气魄。」
           </Paragraph>
         </li>
       </ul>
 
       <Paragraph style={{ marginTop: 16 }}>
-        综上，即是您与星汉同盟走过的 2024。新的 2025，让我们继续携手来书写！
+        综上，即是您与兴汉同盟走过的 2024。新的 2025，让我们继续携手来书写！
       </Paragraph>
     </>
   ),

@@ -3,9 +3,9 @@
 const { Title, Paragraph } = Typography;
 
 const META_V1_2 = {
-    title: 'v1.2 版本说明 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 版本说明, v1.2',
-    description: '星汉同盟 v1.2 版本说明。'
+    title: 'v1.2 版本说明 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 版本说明, v1.2',
+    description: '兴汉同盟 v1.2 版本说明。'
 };
 
 const RELEASE_INFO_V1_2 = {
@@ -13,14 +13,14 @@ const RELEASE_INFO_V1_2 = {
     content: (
         <>
             <Paragraph>
-                星汉同盟于 2023 年 7 月 10 日发布了 v1.2 版本！该版本主要增加了「星球穿梭」页面。
+                兴汉同盟于 2023 年 7 月 10 日发布了 v1.2 版本！该版本主要增加了「星球穿梭」页面。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
                 1 功能说明
             </Title>
             <Paragraph>
-                访问「星球穿梭」页面可以随机穿梭到一位博友的星球，即该页面会从星汉同盟所收录的博客中随机找一个，等待几秒钟后跳转过去。
+                访问「星球穿梭」页面可以随机穿梭到一位博友的星球，即该页面会从兴汉同盟所收录的博客中随机找一个，等待几秒钟后跳转过去。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>

@@ -15,9 +15,9 @@ import { MetaFields } from '@types';
 import { Meta } from '@components/common';
 
 const meta: MetaFields = {
-  title: '专业博客服务 - 星汉同盟 · 博客人的朋友圈！',
+  title: '专业博客服务 - 兴汉同盟 · 博客人的朋友圈！',
   keywords: '博客服务, 博客搭建, 博客优化',
-  description: '星汉同盟专业博客付费服务。'
+  description: '兴汉同盟专业博客付费服务。'
 }
 
 interface ServiceItem {
@@ -191,7 +191,7 @@ const ServicePage: React.FC = () => {
             专业可信赖的博客服务
           </Typography.Title>
           <Typography.Paragraph style={{ fontSize: 16, color: '#6b7280' }}>
-            星汉同盟站长推出的一站式博客搭建、博客托管、自动化运维与定制开发服务
+            兴汉同盟站长推出的一站式博客搭建、博客托管、自动化运维与定制开发服务
           </Typography.Paragraph>
         </div>
 

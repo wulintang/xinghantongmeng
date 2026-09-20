@@ -6,9 +6,9 @@ import { getURLParameter, redirectTo } from '@utils/CommonUtil';
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '网址跳转 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '网址跳转, 星汉同盟',
-    description: '星汉同盟网址跳转。'
+    title: '网址跳转 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '网址跳转, 兴汉同盟',
+    description: '兴汉同盟网址跳转。'
 };
 
 export default function GoPage() {

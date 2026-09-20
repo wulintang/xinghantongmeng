@@ -6,7 +6,7 @@ import { MetaFields, SwitchType } from '@types';
 import RequestsSwitchSortType from '@components/common/RequestsSwitchSortType';
 
 const meta: MetaFields = {
-    title: '博客审核结果 - 星汉同盟 · 博客人的朋友圈！',
+    title: '博客审核结果 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '博客收录申请',
     description: '博客收录申请。'
 }

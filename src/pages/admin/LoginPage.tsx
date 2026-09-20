@@ -2,7 +2,7 @@
 import Login from '../../components/admin/Login';
 
 const meta = {
-    title: '登录 - 管理页面 - 星汉同盟 · 博客人的朋友圈！',
+    title: '登录 - 管理页面 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '登录',
     description: '博友全管理后台登录页面。'
 }

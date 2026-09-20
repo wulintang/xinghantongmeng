@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
         <>
             <Meta />
             <Flex vertical gap={16}>
-                <MainContentHeader content='星汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！' />
+                <MainContentHeader content='兴汉同盟是博客人的专属朋友圈！我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！' />
                 <HomeLatestNews />
                 <PCOnly>
                     <MomentsGallery />

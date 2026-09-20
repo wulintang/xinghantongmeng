@@ -14,7 +14,7 @@ import { Button, Spin } from 'antd';
 
 const getMeta = (name: string, description: string): MetaFields => {
     return {
-        title: `${name}的履约证书 - 星汉同盟 · 博客人的朋友圈！`,
+        title: `${name}的履约证书 - 兴汉同盟 · 博客人的朋友圈！`,
         keywords: name,
         description: description
     };
@@ -149,7 +149,7 @@ const shareImage = async (dataUrl, filename, blogDetail) => {
                 await navigator.share({
                     files: [file],
                     title: `${blogDetail.name}的履约证书`,
-                    text: `查看${blogDetail.name}在星汉同盟的履约证书`
+                    text: `查看${blogDetail.name}在兴汉同盟的履约证书`
                 });
                 return true;
             }
@@ -166,8 +166,8 @@ export default function CertificatePage() {
     const [copied, setCopied] = useState(false);
     const [isCapturing, setIsCapturing] = useState(false);
 
-    const darkCode = `<a href="https://www.xinghantongmeng.com/certificates/${domainName}" title="正在星汉同盟履约中" target="_blank"><img style="height: 26px;" src="https://www.xinghantongmeng.com/images/logo/performance-dark.svg?domainName=${domainName}" alt="正在星汉同盟履约中" /></a>`;
-    const dimCode = `<a href="https://www.xinghantongmeng.com/certificates/${domainName}" title="正在星汉同盟履约中" target="_blank"><img style="height: 26px;" src="https://www.xinghantongmeng.com/images/logo/performance.svg?domainName=${domainName}" alt="正在星汉同盟履约中" /></a>`;
+    const darkCode = `<a href="https://www.xinghantongmeng.com/certificates/${domainName}" title="正在兴汉同盟履约中" target="_blank"><img style="height: 26px;" src="https://www.xinghantongmeng.com/images/logo/performance-dark.svg?domainName=${domainName}" alt="正在兴汉同盟履约中" /></a>`;
+    const dimCode = `<a href="https://www.xinghantongmeng.com/certificates/${domainName}" title="正在兴汉同盟履约中" target="_blank"><img style="height: 26px;" src="https://www.xinghantongmeng.com/images/logo/performance.svg?domainName=${domainName}" alt="正在兴汉同盟履约中" /></a>`;
 
     const currentCode = selectedTheme === 'dark' ? darkCode : dimCode;
 
@@ -406,7 +406,7 @@ export default function CertificatePage() {
                                     履约证书
                                 </h1>
                                 <p className="text-lg sm:text-1xl text-yellow-100 break-all">
-                                    兹证明如下博客正在与「<a href="https://www.xinghantongmeng.com/" target="_blank">星汉同盟</a>」正常履约中，未有不可访问及中途毁约等情形。
+                                    兹证明如下博客正在与「<a href="https://www.xinghantongmeng.com/" target="_blank">兴汉同盟</a>」正常履约中，未有不可访问及中途毁约等情形。
                                 </p>
                             </div>
 
@@ -423,7 +423,7 @@ export default function CertificatePage() {
                                         </a>
                                     </div>
                                     <div className="text-yellow-100/90 text-sm sm:text-base break-all">
-                                        本证书可证明该博客的收录时间、收录地址、博客等级与履约情况等信息在「<a href="https://www.xinghantongmeng.com/" target="_blank">星汉同盟</a>」真实有效。
+                                        本证书可证明该博客的收录时间、收录地址、博客等级与履约情况等信息在「<a href="https://www.xinghantongmeng.com/" target="_blank">兴汉同盟</a>」真实有效。
                                     </div>
 
                                     <div className="grid grid-cols-2 sm:flex sm:gap-6 mt-4 items-center text-center sm:text-left">
@@ -514,7 +514,7 @@ export default function CertificatePage() {
                                 <div className="text-xs sm:text-sm">
                                     签发网站:{' '}
                                     <a href="https://www.xinghantongmeng.com/home" target="_blank">
-                                        星汉同盟
+                                        兴汉同盟
                                     </a>
                                 </div>
                                 <div className="text-xs sm:text-sm">签发时间: {issueNumber}</div>
@@ -572,7 +572,7 @@ export default function CertificatePage() {
                         <div className="mt-4 ml-2 flex justify-center">
                             <a
                                 href={`/certificates/${domainName}`}
-                                title="正在星汉同盟履约中"
+                                title="正在兴汉同盟履约中"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
@@ -583,7 +583,7 @@ export default function CertificatePage() {
                                             ? `https://www.xinghantongmeng.com/images/logo/performance-dark.svg?domainName=${domainName}`
                                             : `https://www.xinghantongmeng.com/images/logo/performance.svg?domainName=${domainName}`
                                     }
-                                    alt="正在星汉同盟履约中"
+                                    alt="正在兴汉同盟履约中"
                                 />
                             </a>
                         </div>

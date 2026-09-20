@@ -23,7 +23,7 @@ export default function BlogsMainContentHeader() {
     return (
         <div>
             <Text type="secondary">
-                欢迎来博客广场发现好博客！截止目前星汉同盟已收录了{' '}
+                欢迎来博客广场发现好博客！截止目前兴汉同盟已收录了{' '}
                 {loaded ? (
                     <strong>{statistic.totalBlogs}</strong>
                 ) : (

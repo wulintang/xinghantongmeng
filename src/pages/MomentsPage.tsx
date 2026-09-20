@@ -6,7 +6,7 @@ import MomentsCardList from '@components/moments/MomentsCardList';
 import { MetaFields } from '@types';
 
 const meta: MetaFields = {
-    title: '随手一拍 - 星汉同盟 · 博客人的朋友圈！',
+    title: '随手一拍 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '随手一拍，分享照片',
     description: '随手一拍，分享此刻的一个瞬间。'
 };

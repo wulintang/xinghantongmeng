@@ -8,25 +8,25 @@ import { MetaFields } from '@types';
 const { Title, Paragraph, Text, Link } = Typography;
 
 const meta: MetaFields = {
-    title: '关于本站 - 星汉同盟 · 博客人的朋友圈！',
+    title: '关于本站 - 兴汉同盟 · 博客人的朋友圈！',
     keywords: '关于本站',
-    description: '星汉同盟网站介绍。'
+    description: '兴汉同盟网站介绍。'
 }
 
 const content = (
     <>
         <Paragraph style={{ marginBottom: 16 }}>
-            您好，欢迎来到星汉同盟！
+            您好，欢迎来到兴汉同盟！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            星汉同盟成立于 2023 年 7 月，旨在打造一个独立博客人专属的朋友圈！
+            兴汉同盟成立于 2023 年 7 月，旨在打造一个独立博客人专属的朋友圈！
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="site-origin">
             建站初衷
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            星汉同盟的建站初衷源于对独立博客坚守者的敬佩，秉持「不能让好的独立博客无人问津，更不能让它们在时光的长河中就此消亡」。星汉同盟致力于建立一个博客人的专属朋友圈，提供一个免费的平台，让各个领域的优质独立博客博主连接起来，让博主间有一个可以发现彼此、关注彼此、助力彼此的共同圈子。
+            兴汉同盟的建站初衷源于对独立博客坚守者的敬佩，秉持「不能让好的独立博客无人问津，更不能让它们在时光的长河中就此消亡」。兴汉同盟致力于建立一个博客人的专属朋友圈，提供一个免费的平台，让各个领域的优质独立博客博主连接起来，让博主间有一个可以发现彼此、关注彼此、助力彼此的共同圈子。
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="submit-blog">
@@ -56,18 +56,18 @@ const content = (
             若您因域名更换、站点重建等各种原因，想对已收录的博客信息进行修改，请使用能证明您是博客所有者的邮箱「<Link href="mailto:support@xinghantongmeng.com">给我们发送邮件</Link>」，信息修改成功后会收到邮件通知！
         </Paragraph>
         <Paragraph style={{ marginBottom: 16 }}>
-            若您因任何原因，不想自己的博客被星汉同盟收录，也可以「<Link href="mailto:support@xinghantongmeng.com">联系我们</Link>」进行删除，博客删除成功后也会收到邮件通知！
+            若您因任何原因，不想自己的博客被兴汉同盟收录，也可以「<Link href="mailto:support@xinghantongmeng.com">联系我们</Link>」进行删除，博客删除成功后也会收到邮件通知！
         </Paragraph>
 
         <Title level={5} style={{ marginTop: 24, marginBottom: 16, fontWeight: 'bold' }} id="add-link">
             添加链接
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            希望您在收到博客通过审核的邮件通知后，将星汉同盟链接添加到您博客的适当位置，以让更多的博客人发现我们这个圈子！
+            希望您在收到博客通过审核的邮件通知后，将兴汉同盟链接添加到您博客的适当位置，以让更多的博客人发现我们这个圈子！
         </Paragraph>
 
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
-            <li>站名：星汉同盟</li>
+            <li>站名：兴汉同盟</li>
             <li>网址：<Link href="https://www.xinghantongmeng.com/home" target="_blank">https://www.xinghantongmeng.com/home</Link></li>
             <li>描述：让我们跨越山海彼此相连，一起用文字打败时间！</li>
             <li>星球穿梭页：<Link href="https://www.xinghantongmeng.com/planet-shuttle" target="_blank">https://www.xinghantongmeng.com/planet-shuttle</Link></li>
@@ -218,7 +218,7 @@ const content = (
             代码开源
         </Title>
         <Paragraph style={{ marginBottom: 16 }}>
-            星汉同盟是一个前后端分离的 Web 项目，前端使用 React 编写，后端使用 Java 编写。源码已在 GitHub 开源，欢迎编码爱好者添加关注！您也可以完全自由的使用该开源代码搭建另一个「星汉同盟」，要求仅有一条，就是在您的网站底部标注一句话「本站使用星汉同盟（www.xinghantongmeng.com）开源程序创建」。
+            兴汉同盟是一个前后端分离的 Web 项目，前端使用 React 编写，后端使用 Java 编写。源码已在 GitHub 开源，欢迎编码爱好者添加关注！您也可以完全自由的使用该开源代码搭建另一个「兴汉同盟」，要求仅有一条，就是在您的网站底部标注一句话「本站使用兴汉同盟（www.xinghantongmeng.com）开源程序创建」。
         </Paragraph>
         <ul style={{ marginBottom: 16, paddingLeft: 24 }}>
             <li>前端源码：<Link href="https://github.com/leileiluoluo/xinghantongmeng" target="_blank">github.com/leileiluoluo/xinghantongmeng</Link></li>

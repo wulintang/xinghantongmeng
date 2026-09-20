@@ -3,9 +3,9 @@
 const { Title, Paragraph, Link } = Typography;
 
 const META_V2_5 = {
-    title: 'v2.5 版本说明 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 版本说明, v2.5',
-    description: '星汉同盟 v2.5 版本说明。'
+    title: 'v2.5 版本说明 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 版本说明, v2.5',
+    description: '兴汉同盟 v2.5 版本说明。'
 };
 
 const RELEASE_INFO_V2_5 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V2_5 = {
     content: (
         <>
             <Paragraph>
-                星汉同盟于 2025 年 9 月 24 日发布了 v2.5 版本！该版本对「<Link href="/monthly-selected">每月精选</Link>」页面进行了优化，将之前的表格展示改为了现在的图文展示。
+                兴汉同盟于 2025 年 9 月 24 日发布了 v2.5 版本！该版本对「<Link href="/monthly-selected">每月精选</Link>」页面进行了优化，将之前的表格展示改为了现在的图文展示。
             </Paragraph>
 
             <Title level={5} style={{ marginTop: 16, marginBottom: 8 }}>
@@ -38,10 +38,10 @@ const RELEASE_INFO_V2_5 = {
                 2 代码标签
             </Title>
             <Paragraph>
-                星汉同盟前端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.5">xinghantongmeng</Link>
+                兴汉同盟前端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.5">xinghantongmeng</Link>
             </Paragraph>
             <Paragraph>
-                星汉同盟后端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.5">xinghantongmeng</Link>
+                兴汉同盟后端：<Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.5">xinghantongmeng</Link>
             </Paragraph>
         </>
     ),

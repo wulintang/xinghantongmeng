@@ -3,9 +3,9 @@
 const { Title, Paragraph, Text } = Typography;
 
 const META_2025 = {
-  title: '2025 年度报告 - 星汉同盟 · 博客人的朋友圈！',
-  keywords: '星汉同盟, 年度报告, 2025',
-  description: '星汉同盟网站 2025 年度报告。'
+  title: '2025 年度报告 - 兴汉同盟 · 博客人的朋友圈！',
+  keywords: '兴汉同盟, 年度报告, 2025',
+  description: '兴汉同盟网站 2025 年度报告。'
 };
 
 const REPORT_INFO_2025 = {
@@ -13,19 +13,19 @@ const REPORT_INFO_2025 = {
   content: (
     <>
       <Paragraph>
-        时光荏苒，岁月如梭，转眼已是岁末时分。回首即将过去的 2025 年，星汉同盟感恩有您一路相伴！
+        时光荏苒，岁月如梭，转眼已是岁末时分。回首即将过去的 2025 年，兴汉同盟感恩有您一路相伴！
       </Paragraph>
 
-      {/* 一、星汉同盟这一年 */}
+      {/* 一、兴汉同盟这一年 */}
       <Title level={5} style={{ marginTop: 24, marginBottom: 16 }}>
-        一、星汉同盟这一年
+        一、兴汉同盟这一年
       </Title>
 
       <Paragraph>
-        2025 这一年，星汉同盟推出了「<a href="/moments" target="_blank">随手一拍</a>」和「<a href="/certificates/leileiluoluo.com" target="_blank">履约证书</a>」两大功能，获得了博友们的广泛关注和喜爱；
+        2025 这一年，兴汉同盟推出了「<a href="/moments" target="_blank">随手一拍</a>」和「<a href="/certificates/leileiluoluo.com" target="_blank">履约证书</a>」两大功能，获得了博友们的广泛关注和喜爱；
       </Paragraph>
       <Paragraph>
-        2025 这一年，星汉同盟共收录了 <Text strong>284</Text> 个博客，其中 <Text strong>265</Text> 个为自行提交，<Text strong>19</Text> 个为后台收录；
+        2025 这一年，兴汉同盟共收录了 <Text strong>284</Text> 个博客，其中 <Text strong>265</Text> 个为自行提交，<Text strong>19</Text> 个为后台收录；
       </Paragraph>
       <Paragraph>
         2025 这一年，博友们共发布了 <Text strong>21258</Text> 篇文章，其中 <Text strong>857</Text> 篇被加入到了首页推荐，<Text strong>152</Text> 篇被置顶过；
@@ -37,10 +37,10 @@ const REPORT_INFO_2025 = {
         2025 这一年，共有 <Text strong>94</Text> 个博友发起过「<a href="/planet-shuttle" target="_blank">星球穿梭</a>」，共给大家带去 <Text strong>2454</Text> 个 IP 访问；
       </Paragraph>
       <Paragraph>
-        2025 这一年，星汉同盟共收到 <Text strong>750.92</Text> 元的赞助，在此衷心感谢您的支持与帮助，这些资金已<a href="/sponsor" target="_blank"><Text strong>全数</Text></a>用在了云资源的续费上！
+        2025 这一年，兴汉同盟共收到 <Text strong>750.92</Text> 元的赞助，在此衷心感谢您的支持与帮助，这些资金已<a href="/sponsor" target="_blank"><Text strong>全数</Text></a>用在了云资源的续费上！
       </Paragraph>
       <Paragraph>
-        2025 这一年，星汉同盟共给大家带去了 <Text strong>42532</Text> 个 IP 访问，这些 IP 来自于全国各地，分布如下（颜色愈深访问愈多）：
+        2025 这一年，兴汉同盟共给大家带去了 <Text strong>42532</Text> 个 IP 访问，这些 IP 来自于全国各地，分布如下（颜色愈深访问愈多）：
       </Paragraph>
 
       <div style={{ marginBottom: 14, textAlign: 'center' }}>
@@ -51,7 +51,7 @@ const REPORT_INFO_2025 = {
         />
       </div>
 
-      <Paragraph>访问星汉同盟最多的三个的省份或直辖市为：</Paragraph>
+      <Paragraph>访问兴汉同盟最多的三个的省份或直辖市为：</Paragraph>
       <ul style={{ paddingLeft: 20 }}>
         <li>广东</li>
         <li>江苏</li>
@@ -65,7 +65,7 @@ const REPORT_INFO_2025 = {
 
       <ul style={{ paddingLeft: 20 }}>
         <li>
-          加入星汉同盟最早的博客为「<a href="https://www.xinghantongmeng.com/blogs/yinji.org" target="_blank">印记</a>」，加入时间为 <Text strong>2023</Text> 年 <Text strong>7</Text> 月；
+          加入兴汉同盟最早的博客为「<a href="https://www.xinghantongmeng.com/blogs/yinji.org" target="_blank">印记</a>」，加入时间为 <Text strong>2023</Text> 年 <Text strong>7</Text> 月；
         </li>
         <li>
           友链指向最多的博客为「<a href="https://www.xinghantongmeng.com/blogs/xyzbz.cn" target="_blank">网友小宋</a>」，共 <Text strong>102</Text> 个博客的友链指向了该博客；

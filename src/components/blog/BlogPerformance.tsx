@@ -21,7 +21,7 @@ export default function BlogPerformance({ domainName, collectedAt }) {
   const handleOpenCertificate = () => {
     window.open(
       certLink,
-      '星汉同盟',
+      '兴汉同盟',
       'height=800,width=960,top=0,right=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no'
     );
   };

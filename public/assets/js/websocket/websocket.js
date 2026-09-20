@@ -53,7 +53,7 @@ function connect() {
 }
 
 function notify(message, gotoUrl) {
-    const notify = new Notification("星汉同盟通知", {
+    const notify = new Notification("兴汉同盟通知", {
         dir: 'auto',
         lang: 'zh-CN',
         icon: 'https://www.xinghantongmeng.com/assets/images/sites/logo/logo-small.png',

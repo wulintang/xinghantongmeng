@@ -3,9 +3,9 @@
 const { Title, Paragraph, Link } = Typography;
 
 const META_V2_6 = {
-    title: 'v2.6 版本说明 - 星汉同盟 · 博客人的朋友圈！',
-    keywords: '星汉同盟, 版本说明, v2.6',
-    description: '星汉同盟 v2.6 版本说明。'
+    title: 'v2.6 版本说明 - 兴汉同盟 · 博客人的朋友圈！',
+    keywords: '兴汉同盟, 版本说明, v2.6',
+    description: '兴汉同盟 v2.6 版本说明。'
 };
 
 const RELEASE_INFO_V2_6 = {
@@ -13,7 +13,7 @@ const RELEASE_INFO_V2_6 = {
     content: (
         <>
             <Paragraph>
-                星汉同盟于 2025 年 10 月 10 日发布了 v2.6 版本！该版本增加了一个新的页面「
+                兴汉同盟于 2025 年 10 月 10 日发布了 v2.6 版本！该版本增加了一个新的页面「
                 <Link href="/moments">随手一拍</Link>
                 」，用于分享一处美景或一个瞬间。
             </Paragraph>
@@ -40,13 +40,13 @@ const RELEASE_INFO_V2_6 = {
                 2 代码标签
             </Title>
             <Paragraph>
-                星汉同盟前端：
+                兴汉同盟前端：
                 <Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.6">
                     xinghantongmeng
                 </Link>
             </Paragraph>
             <Paragraph>
-                星汉同盟后端：
+                兴汉同盟后端：
                 <Link href="https://github.com/leileiluoluo/xinghantongmeng/releases/tag/v2.6">
                     xinghantongmeng
                 </Link>

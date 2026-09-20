@@ -1,0 +1,8 @@
+# nodejs
+.env
+node_modules
+build
+dist
+
+# mac
+**.DS_Store

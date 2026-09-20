@@ -1,0 +1,59 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, List, Typography, Empty, Spin, Tag } from 'antd';
+import { getFavorites } from '@/services/userCenter';
+import { getToken } from '@/utils/auth';
+import { FavoriteItem } from '@/services/userCenter';
+import dayjs from 'dayjs';
+
+const { Title } = Typography;
+
+export default function FavoritesPage() {
+  const navigate = useNavigate();
+  const [list, setList] = useState<FavoriteItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const key = getToken();
+    if (!key) {
+      navigate('/login');
+      return;
+    }
+    getFavorites(key)
+      .then((r: any) => {
+        if (r.code === 1) setList(r.data || []);
+        else navigate('/login');
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [navigate]);
+
+  return (
+    <Card style={{ maxWidth: 720, margin: '40px auto' }}>
+      <Title level={4}>我的收藏</Title>
+      <Spin spinning={loading}>
+        {list.length === 0 ? (
+          <Empty description="还没有收藏" />
+        ) : (
+          <List
+            dataSource={list}
+            renderItem={(it) => (
+              <List.Item>
+                <List.Item.Meta
+                  title={<a href={`https://${it.domain}`} target="_blank" rel="noreferrer">{it.site_name}</a>}
+                  description={
+                    <>
+                      <Tag>{it.domain}</Tag>
+                      {it.feed_url ? <Tag color="green">有 feed</Tag> : <Tag>无 feed</Tag>}
+                      <span style={{ color: '#999' }}>{dayjs(it.time * 1000).format('YYYY-MM-DD')}</span>
+                    </>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        )}
+      </Spin>
+    </Card>
+  );
+}

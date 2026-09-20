@@ -1,0 +1,74 @@
+{
+    "name": "boyouquan-ui",
+    "version": "2.0.0",
+    "main": "/src/index.tsx",
+    "scripts": {
+        "start": "webpack-dev-server",
+        "build": "webpack --mode production",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject"
+    },
+    "dependencies": {
+        "antd": "^6.0.0",
+        "blueimp-md5": "^2.19.0",
+        "dayjs": "^1.11.13",
+        "dom-to-image-more": "^3.7.1",
+        "framer-motion": "^12.23.24",
+        "frappe-charts": "^1.6.2",
+        "html2canvas": "^1.4.1",
+        "lucide-react": "^0.539.0",
+        "react": "^18.0.0",
+        "react-countup": "^6.5.3",
+        "react-dom": "^18.0.0",
+        "react-helmet": "^6.1.0",
+        "react-router-dom": "^6.27.0"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@babel/core": "^7.25.8",
+        "@babel/preset-env": "^7.25.8",
+        "@babel/preset-react": "^7.27.1",
+        "@babel/preset-typescript": "^7.27.0",
+        "@types/blueimp-md5": "^2.18.2",
+        "@types/node": "^20.14.0",
+        "@types/react": "^18.3.0",
+        "@types/react-dom": "^18.3.0",
+        "@types/react-helmet": "^6.1.6",
+        "@types/react-router-dom": "^5.3.3",
+        "ajv": "^6.12.6",
+        "ajv-keywords": "^3.5.2",
+        "autoprefixer": "^10.4.21",
+        "babel-loader": "^9.2.1",
+        "compression-webpack-plugin": "^11.1.0",
+        "copy-webpack-plugin": "^12.0.2",
+        "css-loader": "^7.1.2",
+        "dotenv-webpack": "^8.1.0",
+        "html-webpack-plugin": "^5.6.0",
+        "mini-css-extract-plugin": "^2.9.1",
+        "react-scripts": "^5.0.0",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.5.0",
+        "webpack": "^5.95.0",
+        "webpack-cli": "^6.0.1",
+        "webpack-dev-server": "^5.1.1"
+    },
+    "overrides": {
+        "react-scripts": {
+            "typescript": "^5.5.0"
+        },
+        "nth-check": "^2.1.1",
+        "postcss": "^8.4.38",
+        "webpack-dev-server": "^5.1.1"
+    }
+}

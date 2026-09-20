@@ -1,0 +1,145 @@
+.common-header {
+  padding: 0 32px;
+}
+
+.common-footer {
+  padding: 16px 40px;
+}
+
+.common-content {
+  padding: 24px 32px;
+}
+
+/* mobile */
+@media (max-width: 767px) {
+  .common-header {
+    padding: 0 10px;
+  }
+
+  .common-footer {
+    padding: 22px 20px;
+  }
+
+  .common-content {
+    padding: 10px 10px;
+  }
+}
+
+/* antd */
+.ant-dropdown-menu {
+  background-color: #000000 !important;
+  /*  hover 色 */
+}
+
+.ant-dropdown-menu-item {
+  color: #fff !important;
+  /* 文字白 */
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: #374151 !important;
+  /*  hover 色 */
+  color: #fff !important;
+}
+
+/* global.css */
+:root {
+  /* 轮播的条数，可以覆盖 */
+  --s: 6;
+  /* 单个条目的高度 */
+  --h: 36;
+  /* 单次动画的时长 */
+  --speed: 3s;
+}
+
+.latest-news {
+  /* margin-top: 4px; */
+  height: calc(var(--h) * 1px);
+  line-height: calc(var(--h) * 1px);
+  border-radius: 6px;
+  border: 1px solid rgb(202, 201, 201);
+  overflow: hidden;
+  display: flex;
+}
+
+.latest-news .icon {
+  width: 12px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.latest-news .content {
+  font-size: 14px;
+  overflow: hidden;
+  margin-left: 8px;
+}
+
+.latest-news .content ul {
+  animation: move calc(var(--speed) * var(--s)) steps(var(--s)) infinite;
+  margin: 0;
+  padding: 0;
+}
+
+.latest-news .content ul li {
+  list-style: none;
+  white-space: nowrap;
+  cursor: pointer;
+  animation: liMove calc(var(--speed)) infinite;
+}
+
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(0, calc(var(--s) * var(--h) * -1px));
+  }
+}
+
+@keyframes liMove {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  80%,
+  100% {
+    transform: translate(0, calc(var(--h) * -1px));
+  }
+}
+
+a {
+  color: rgb(22, 119, 255);
+}
+
+a,
+.radix-link {
+  text-decoration: none !important;
+}
+
+[data-has-background="true"] {
+  background: none !important;
+}
+
+p img {
+  display: block;
+  margin: 0 auto;
+  border-color: var(--gray-5);
+  border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@keyframes autoClear {
+  0% {
+    filter: blur(8px);
+    transform: scale(1.1);
+  }
+
+  100% {
+    filter: blur(0);
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,61 @@
+import { useEffect } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
+
+import { Meta } from '@components/common';
+import Article from '@components/article/Article';
+import { MetaFields } from '@types';
+
+import { META_2025, REPORT_INFO_2025 } from '@const/annual-reports/AnnualReport2025';
+import { META_2024, REPORT_INFO_2024 } from '@const/annual-reports/AnnualReport2024';
+import { scrollToHash } from '@utils/ScrollUtil';
+
+
+export interface ReportInfo {
+    title: string;
+    content: JSX.Element;
+    publishedAt: string;
+}
+
+const getMetaAndYearInfo = (year?: string) => {
+    let meta: MetaFields | null = null
+    let reportInfo: ReportInfo | null = null
+    if (!year) {
+        return { meta, reportInfo }
+    }
+
+    switch (year) {
+        case '2025':
+            meta = META_2025;
+            reportInfo = REPORT_INFO_2025;
+            break;
+        case '2024':
+            meta = META_2024;
+            reportInfo = REPORT_INFO_2024;
+            break;
+        default:
+    }
+    return { meta, reportInfo }
+}
+
+export default function AnnualReportPage() {
+    const { year } = useParams();
+    const { meta, reportInfo } = getMetaAndYearInfo(year);
+
+    if (meta === null || reportInfo === null) {
+        return <Navigate to='/annual-reports' />
+    }
+
+    useEffect(() => {
+        scrollToHash();
+    });
+
+    return (
+        <>
+            <Meta meta={meta} />
+            <Article
+                title={reportInfo.title}
+                content={reportInfo.content}
+                publishedAt={reportInfo.publishedAt} />
+        </>
+    )
+}

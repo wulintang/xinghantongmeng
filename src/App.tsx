@@ -1,0 +1,107 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+
+import MainLayout from '@layouts/MainLayout';
+import HomePage from '@pages/HomePage';
+import ReleaseNotesPage from '@pages/ReleaseNotesPage';
+import ReleaseNotePage from '@pages/ReleaseNotePage';
+import SimilarSitesPage from '@pages/SimilarSitesPage';
+import AboutPage from '@pages/AboutPage';
+import SponsorPage from '@pages/SponsorPage';
+import GoPage from '@pages/GoPage';
+import PlanetShuttlePage from '@pages/PlanetShuttlePage';
+import AbstractPage from '@pages/AbstractPage';
+import NotFoundPage from '@pages/NotFoundPage';
+import MonthlySelectedPage from '@pages/MonthlySelectedPage';
+import BlogsPage from '@pages/BlogsPage';
+import BlogPage from '@pages/BlogPage';
+import BlogRequestsPage from '@pages/BlogRequestsPage';
+import BlogRequestPage from '@pages/BlogRequestPage';
+import BlogRequestAddPage from '@pages/BlogRequestAddPage';
+import LoginPage from '@pages/admin/LoginPage';
+import AdminBlogRequestsPage from '@pages/admin/AdminBlogRequestsPage';
+import AdminBlogRequestPage from '@pages/admin/AdminBlogRequestPage';
+import AdminBlogRequestAddPage from '@pages/admin/AdminBlogRequestAddPage';
+import AdminRecommendedPostsPage from '@pages/admin/AdminRecommendedPostsPage';
+import AdminRecommendPostPage from '@pages/admin/AdminRecommendPostPage';
+import AnnualReportsPage from '@pages/AnnualReportsPage';
+import AnnualReportPage from '@pages/AnnualReportPage';
+import BlogRequestEmailValidationPage from '@pages/BlogRequestEmailValidationPage';
+import CancelSubscriptionPage from '@pages/CancelSubscriptionPage';
+import AdminPostImageAddPage from '@pages/admin/AdminPostImageAddPage';
+import AdminMonthlySelectedPage from '@pages/admin/AdminMonthlySelectedPage';
+import MomentsPage from '@pages/MomentsPage';
+import CertificatePage from '@pages/CertificatePage';
+import TestPage from '@pages/TestPage';
+import ServicePage from '@pages/ServicePage';
+import LoginPage_ from '@pages/user/Login';
+import RegisterPage from '@pages/user/Register';
+import UserLayout from '@pages/user/UserLayout';
+import ProfilePage from '@pages/user/Profile';
+import FavoritesPage from '@pages/user/Favorites';
+import CheckinPage from '@pages/user/Checkin';
+import MessagesPage from '@pages/user/Messages';
+import BalancePage from '@pages/user/Balance';
+import OrdersPage from '@pages/user/Orders';
+import ReportsPage from '@pages/user/Reports';
+
+const App: React.FC = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route element={<MainLayout />}>
+                    <Route path="/" element={<Navigate to='/home' replace />} />
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/moments" element={<MomentsPage />} />
+                    <Route path="/monthly-selected" element={<MonthlySelectedPage />} />
+                    <Route path="/blogs" element={<BlogsPage />} />
+                    <Route path="/blogs/:domain" element={<BlogPage />} />
+                    <Route path="/blog-requests" element={<BlogRequestsPage />} />
+                    <Route path="/blog-requests/add" element={<BlogRequestAddPage />} />
+                    <Route path="/blog-requests/add/email-validation" element={<BlogRequestEmailValidationPage />} />
+                    <Route path="/blog-requests/:id" element={<BlogRequestPage />} />
+                    <Route path="/admin/login" element={<LoginPage />} />
+                    <Route path="/admin/blog-requests" element={<AdminBlogRequestsPage />} />
+                    <Route path="/admin/blog-requests/:id" element={<AdminBlogRequestPage />} />
+                    <Route path="/admin/blog-requests/add" element={<AdminBlogRequestAddPage />} />
+                    <Route path="/admin/monthly-selected" element={<AdminMonthlySelectedPage />} />
+                    <Route path="/admin/recommended-posts" element={<AdminRecommendedPostsPage />} />
+                    <Route path="/admin/recommended-posts/add" element={<AdminRecommendPostPage />} />
+                    <Route path="/admin/post-images/add" element={<AdminPostImageAddPage />} />
+                    <Route path="/sharing" element={<AbstractPage isSharingPage={true} />} />
+                    <Route path="/abstract" element={<AbstractPage isSharingPage={false} />} />
+                    <Route path="/planet-shuttle" element={<PlanetShuttlePage />} />
+                    <Route path="/go" element={<GoPage />} />
+                    <Route path="/cancel-subscription" element={<CancelSubscriptionPage />} />
+                    <Route path="/certificates/:domain" element={<CertificatePage />} />
+                    <Route path="/certificates/:domain/:sub" element={<CertificatePage />} />
+                    <Route path="/certificates/:domain/:sub/:subsub" element={<CertificatePage />} />
+                    <Route path="/sponsor" element={<SponsorPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/similar-sites" element={<SimilarSitesPage />} />
+                    <Route path="/release-notes" element={<ReleaseNotesPage />} />
+                    <Route path="/release-notes/:version" element={<ReleaseNotePage />} />
+                    <Route path="/annual-reports" element={<AnnualReportsPage />} />
+                    <Route path="/annual-reports/:year" element={<AnnualReportPage />} />
+                    <Route path="/services" element={<ServicePage />} />
+                    <Route path="/test" element={<TestPage />} />
+                    <Route path="/login" element={<LoginPage_ />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/user" element={<UserLayout />}>
+                        <Route index element={<ProfilePage />} />
+                        <Route path="favorites" element={<FavoritesPage />} />
+                        <Route path="checkin" element={<CheckinPage />} />
+                        <Route path="messages" element={<MessagesPage />} />
+                        <Route path="balance" element={<BalancePage />} />
+                        <Route path="orders" element={<OrdersPage />} />
+                        <Route path="reports" element={<ReportsPage />} />
+                    </Route>
+                    <Route path="/404-not-found" element={<NotFoundPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
+};
+
+export default App;

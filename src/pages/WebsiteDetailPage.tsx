@@ -28,6 +28,7 @@ import {
     submitReport,
     toggleLike,
     toggleFavorite,
+    readFaved,
     type WebsiteItem,
 } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
@@ -80,6 +81,7 @@ const WebsiteDetailPage: React.FC = () => {
                     setZan(Number(r.data.zan) || 0);
                     setLiked(Number((r.data as any).liked) === 1);
                     setClaimed(Number((r.data as any).uid) > 0);
+                    readFaved(getToken(), Number(r.data.id), 'website').then(setFaved);
                 } else {
                     setError(r.msg || '站点不存在');
                 }

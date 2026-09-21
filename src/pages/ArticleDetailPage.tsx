@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { PageHeader } from '@components/common';
 import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getArticle, submitReport, toggleLike, toggleFavorite, type ArticleItem } from '@/services/userCenter';
+import { getArticle, submitReport, toggleLike, toggleFavorite, readFaved, type ArticleItem } from '@/services/userCenter';
 import { stripHtmlSuffix } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
@@ -45,6 +45,8 @@ const ArticleDetailPage: React.FC = () => {
                 if (r.code === 1 && r.data) {
                     setItem(r.data);
                     setZan(Number(r.data.zan) || 0);
+                    setLiked(Number((r.data as any).liked) === 1);
+                    readFaved(getToken(), Number(r.data.id), 'article').then(setFaved);
                 } else setError(r.msg || '文章不存在');
             })
             .catch(() => {

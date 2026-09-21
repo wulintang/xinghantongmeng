@@ -7,7 +7,7 @@ import { PageHeader } from '@components/common';
 import { AbstractSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, submitReport, toggleLike, toggleFavorite, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
@@ -41,11 +41,6 @@ const MoreIcon = () => (
         <path d="M456 231a56 56 0 10112 0 56 56 0 10-112 0zm0 280a56 56 0 10112 0 56 56 0 10-112 0zm0 280a56 56 0 10112 0 56 56 0 10-112 0z" />
     </svg>
 );
-const HeartIcon = () => (
-    <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M923 283.6c-13.4-31.1-32.6-58.9-56.9-82.8-24.3-23.8-52.5-42.4-84-55.5-32.5-13.1-67-19.7-102.9-19.7-46.4 0-91.4 14.5-130.7 41.4-38.4-27-83.4-41.4-129.8-41.4-35.9 0-70.4 6.6-102.9 19.7-31.5 13.1-59.7 31.7-84 55.5-24.3 23.9-43.5 51.7-56.9 82.8-13.9 32.3-21 67.1-21 103.9 0 61.9 25.1 119.2 70.3 169.7 41.7 43.9 100.1 89.6 166.8 137.1 30.9 21.4 62.8 42 95.5 61.9 24.2 15.1 48.9 29.4 74 42.7l3.2 1.6c11.7 5.8 24.4 9 37.4 9 13 0 25.7-3.2 37.4-9l3.2-1.6c25.1-13.3 49.8-27.6 74-42.7 32.7-19.9 64.6-40.5 95.5-61.9 66.7-47.5 125.1-93.2 166.8-137.1 45.2-50.5 70.3-107.8 70.3-169.7 0-36.8-7.1-71.6-21-103.9z" />
-    </svg>
-);
 
 function timeAgo(t?: string): string {
     if (!t) return '';
@@ -77,9 +72,6 @@ const AbstractPage: React.FC = () => {
     const [reportOpen, setReportOpen] = useState(false);
     const [reportContent, setReportContent] = useState('');
     const [reporting, setReporting] = useState(false);
-
-    const [liked, setLiked] = useState(false);
-    const [faved, setFaved] = useState(false);
 
     usePageMeta({
         title: '文章详情',
@@ -147,45 +139,6 @@ const AbstractPage: React.FC = () => {
             })
             .catch((e) => message.error(e?.message || '网络错误'))
             .finally(() => setReporting(false));
-    };
-
-    const onLike = () => {
-        const key = getToken();
-        if (!key) {
-            message.warning('请先登录后再点赞');
-            navigate('/login');
-            return;
-        }
-        if (!p) return;
-        toggleLike(key, Number(p.blogId), 'article')
-            .then((r) => {
-                if (r.code === 1) {
-                    setLiked(r.data?.liked === 1);
-                    message.success(r.data?.liked === 1 ? '点赞成功' : '已取消点赞');
-                } else {
-                    message.error(r.msg || '操作失败');
-                }
-            })
-            .catch((e) => message.error(e?.message || '网络错误'));
-    };
-    const onFav = () => {
-        const key = getToken();
-        if (!key) {
-            message.warning('请先登录后再收藏');
-            navigate('/login');
-            return;
-        }
-        if (!p) return;
-        toggleFavorite(key, Number(p.blogId), 'article')
-            .then((r) => {
-                if (r.code === 1) {
-                    setFaved(r.data?.faved === 1);
-                    message.success(r.data?.faved === 1 ? '已收藏' : '已取消收藏');
-                } else {
-                    message.error(r.msg || '操作失败');
-                }
-            })
-            .catch((e) => message.error(e?.message || '网络错误'));
     };
 
     if (loading) {
@@ -276,28 +229,6 @@ const AbstractPage: React.FC = () => {
                                 {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                             </Space>
                             <Space size={12} className="feed-bubble-actions">
-                                <Tooltip title="点赞">
-                                    <span
-                                        className={liked ? 'feed-bubble-action feed-bubble-icon-only liked' : 'feed-bubble-action feed-bubble-icon-only'}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onLike();
-                                        }}
-                                    >
-                                        <HeartIcon />
-                                    </span>
-                                </Tooltip>
-                                <Tooltip title="收藏">
-                                    <span
-                                        className={faved ? 'feed-bubble-action feed-bubble-icon-only faved' : 'feed-bubble-action feed-bubble-icon-only'}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onFav();
-                                        }}
-                                    >
-                                        <StarIcon />
-                                    </span>
-                                </Tooltip>
                                 <Tooltip title="原文">
                                     <a
                                         className="feed-bubble-action feed-bubble-icon-only"

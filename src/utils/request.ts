@@ -11,6 +11,40 @@ export function apiBase(): string {
     return (process.env.BOYOUQUAN_API_ADDRESS || '').replace(/\/+$/, '');
 }
 
+function extractJson(text: string): any {
+    const trimmed = text.trim();
+    try {
+        return JSON.parse(trimmed);
+    } catch {
+        const start = trimmed.indexOf('{');
+        if (start === -1) throw new Error('接口返回的不是合法 JSON');
+        let depth = 0;
+        let inStr = false;
+        let esc = false;
+        let end = -1;
+        for (let i = start; i < trimmed.length; i++) {
+            const c = trimmed[i];
+            if (inStr) {
+                if (esc) esc = false;
+                else if (c === '\\') esc = true;
+                else if (c === '"') inStr = false;
+            } else {
+                if (c === '"') inStr = true;
+                else if (c === '{') depth++;
+                else if (c === '}') {
+                    depth--;
+                    if (depth === 0) {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+        }
+        if (end === -1) throw new Error('接口返回的不是合法 JSON');
+        return JSON.parse(trimmed.slice(start, end + 1));
+    }
+}
+
 export async function request<T>(url: string, options?: RequestInit): Promise<T> {
     const base = apiBase();
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -23,11 +57,7 @@ export async function request<T>(url: string, options?: RequestInit): Promise<T>
         });
         if (!res.ok) throw new Error(`请求异常（HTTP ${res.status}）`);
         const text = await res.text();
-        try {
-            return JSON.parse(text) as T;
-        } catch {
-            throw new Error('接口返回的不是合法 JSON');
-        }
+        return extractJson(text) as T;
     } finally {
         if (timer) clearTimeout(timer);
     }

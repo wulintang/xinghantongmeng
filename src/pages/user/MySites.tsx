@@ -170,6 +170,7 @@ export default function MySitesPage() {
         columns={columns}
         dataSource={list}
         pagination={false}
+        scroll={{ x: 'max-content' }}
       />
 
       <Modal

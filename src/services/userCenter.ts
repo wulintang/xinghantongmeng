@@ -149,6 +149,13 @@ export function toggleFavorite(key: string, tid: number, m = 'website') {
 export function toggleLike(key: string, tid: number, m = 'website') {
   return post<ApiResp<{ liked: number; zan: number }>>('/likeToggle.html', { key, tid, m }, USER);
 }
+// 读取某目标当前是否已被收藏（解决刷新后收藏态丢失）
+export function readFaved(key: string, tid: number, m: string): Promise<boolean> {
+  if (!key) return Promise.resolve(false);
+  return getFavorites(key)
+    .then((r) => (r.code === 1 && r.data ? r.data.some((f) => Number(f.tid) === tid && f.m === m) : false))
+    .catch(() => false);
+}
 // 认领站点（my_website.uid，仅未认领的站可认领）
 export function claimWebsite(key: string, tid: number) {
   return post<ApiResp>('/claim.html', { key, tid }, USER);
@@ -416,8 +423,8 @@ export function getTags(type?: number) {
 }
 
 // 单页（my_dan）；count=1 时后端浏览量 +1（仅单页详情页传）
-export function getDan(alias?: string, count = 0) {
-  return request<ApiResp<DanItem>>(`${OPEN}/dan.html` + qs({ alias, count }));
+export function getDan(alias?: string, count = 0, key = '') {
+  return request<ApiResp<DanItem>>(`${OPEN}/dan.html` + qs({ alias, count, key }));
 }
 export function getDans() {
   return request<ApiResp<DanItem[]>>(`${OPEN}/dans.html`);
@@ -477,6 +484,6 @@ export function getToolCates() {
 export function getTools(params: { cate?: string | number; keyword?: string; page?: number; limit?: number } = {}) {
   return request<ApiResp<PageResult<ToolItem>>>(`${OPEN}/tools.html` + qs(params));
 }
-export function getTool(id: number | string) {
-  return request<ApiResp<ToolItem>>(`${OPEN}/tool.html` + qs({ id }));
+export function getTool(id: number | string, key = '') {
+  return request<ApiResp<ToolItem>>(`${OPEN}/tool.html` + qs({ id, key }));
 }

@@ -634,14 +634,14 @@ body {
 }
 
 .user-layout-wrap {
-  display: flex;
+  display: flex !important;
   gap: 16px;
   align-items: flex-start;
-  width: 100%;
+  width: 100% !important;
 }
 
 .user-sider {
-  flex: 0 0 220px;
+  flex: 0 0 220px !important;
   background: #fff;
   border: 1px solid #f0f0f0;
   border-radius: 8px;
@@ -663,13 +663,16 @@ body {
 }
 
 .user-main {
-  flex: 1;
-  min-width: 0;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
 }
 
 .user-center-card {
-  margin: 0 auto;
-  width: 100%;
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
 }
 
 .user-center-table .ant-table .ant-table-cell {
@@ -680,18 +683,42 @@ body {
 
 @media (max-width: 768px) {
   .user-layout-wrap {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .user-sider {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    flex: 0 0 auto;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
   }
 
   .user-center-card {
-    max-width: 100%;
+    max-width: 100% !important;
+  }
+
+  /* antd 组件在窄屏下不换行 / 横向溢出，统一约束 */
+  .user-sider .ant-menu {
+    overflow-x: auto !important;
+  }
+
+  .user-center-card .ant-table {
+    overflow-x: auto !important;
+  }
+
+  .user-center-card .ant-descriptions {
+    width: 100% !important;
+  }
+
+  .user-center-card .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+
+  .user-center-card .ant-picker,
+  .user-center-card .ant-input-number,
+  .user-center-card .ant-input,
+  .user-center-card .ant-select {
+    max-width: 100% !important;
   }
 }
 

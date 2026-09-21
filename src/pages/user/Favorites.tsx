@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Empty, Tag } from 'antd';
+import { Card, List, Typography, Empty, Tag, Alert } from 'antd';
 import { getFavorites } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { FavoriteItem } from '@/services/userCenter';
@@ -15,6 +15,7 @@ export default function FavoritesPage() {
   usePageMeta({ title: '我的收藏' });
   const [list, setList] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
 
   useEffect(() => {
     const key = getToken();
@@ -24,10 +25,14 @@ export default function FavoritesPage() {
     }
     getFavorites(key)
       .then((r: any) => {
-        if (r.code === 1) setList(r.data || []);
-        else navigate('/login');
+        if (r.code === 1) {
+          setList(r.data || []);
+          setErr('');
+        } else {
+          setErr(r.msg || '加载收藏失败');
+        }
       })
-      .catch(() => {})
+      .catch((e: any) => setErr(e?.message || '加载收藏失败'))
       .finally(() => setLoading(false));
   }, [navigate]);
 
@@ -48,6 +53,8 @@ export default function FavoritesPage() {
       <Title level={4}>我的收藏</Title>
       {loading ? (
         <FavoritesSkeleton />
+      ) : err ? (
+        <Alert type="error" showIcon message={err} />
       ) : list.length === 0 ? (
         <Empty description="还没有收藏" />
       ) : (

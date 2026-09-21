@@ -58,6 +58,7 @@ const ReportsPage: React.FC = () => {
                     dataSource={list}
                     rowKey="id"
                     pagination={false}
+                    scroll={{ x: 'max-content' }}
                     expandable={{
                         expandedRowRender: (item: any) => (
                             <div className="report-detail">

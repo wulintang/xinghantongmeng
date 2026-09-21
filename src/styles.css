@@ -670,12 +670,12 @@ body {
 .user-center-card {
   margin: 0 auto;
   width: 100%;
-  max-width: 760px;
 }
 
-.user-center-table .ant-table-cell {
-  white-space: normal;
-  word-break: break-word;
+.user-center-table .ant-table .ant-table-cell {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
 }
 
 @media (max-width: 768px) {

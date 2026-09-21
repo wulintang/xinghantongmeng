@@ -22,7 +22,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
 import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
-import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
+import { assetUrl, domainOf, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
 import { getToken } from '@/utils/auth';
 
@@ -63,7 +63,7 @@ const MoreIcon = () => (
 
 const ShareIcon = () => (
     <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V882c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z" />
+        <path d="M752 664c-116.6 0-211.9 90.3-231.3 205.1a31.1 31.1 0 0 0 27.2 44.9h303.8c14.1 0 25.6-11.5 25.6-25.6V699.5c0-14.1-11.5-25.5-25.6-25.5h-99.7zm-201.7-91.2c-19.6 0-35.5 15.9-35.5 35.5v176.4h-77.7c-13 0-23.6-10.6-23.6-23.6V564c0-13 10.6-23.6 23.6-23.6h303.8c13 0 23.6 10.6 23.6 23.6v67.6c0 19.6-15.9 35.5-35.5 35.5h-99.7c-19.6 0-35.5 15.9-35.5 35.5v38.1c0 13.8-11.2 25-25 25h-25.2c-13.8 0-25-11.2-25-25v-38.1c0-19.6-15.9-35.5-35.5-35.5h-99.7z" />
     </svg>
 );
 
@@ -284,20 +284,13 @@ const BlogsPage: React.FC = () => {
 
                                     <div
                                         className="feed-bubble"
-                                        onClick={() => window.open(jumpUrl(p.link), '_blank')}
+                                        onClick={() => navigate(abstractRoute)}
                                     >
                                         <div className="feed-bubble-arrow feed-bubble-arrow-border" />
                                         <div className="feed-bubble-arrow feed-bubble-arrow-fill" />
                                         <div className="feed-bubble-inner">
-                                            <a
-                                                className="feed-bubble-title"
-                                                href={jumpUrl(p.link)}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {p.title || '无标题'}
-                                            </a>
+                                            <Link to={abstractRoute} className="feed-bubble-title" onClick={(e) => e.stopPropagation()}>
+                                                {p.title || '无标题'}</Link>
                                             {p.description ? (
                                                 <div className="feed-bubble-desc">
                                                     {htmlToText(p.description, 140)}
@@ -317,15 +310,8 @@ const BlogsPage: React.FC = () => {
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
                                                     <Tooltip title="进入原文">
-                                                        <a
-                                                            className="feed-bubble-action feed-bubble-icon-only"
-                                                            href={jumpUrl(p.link)}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            <ShareIcon />
-                                                        </a>
+                                                        <Link to={abstractRoute} className="feed-bubble-action feed-bubble-icon-only" onClick={(e) => e.stopPropagation()}>
+                                                            <ShareIcon /></Link>
                                                     </Tooltip>
                                                     <Tooltip title="举报">
                                                         <span

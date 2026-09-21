@@ -88,11 +88,11 @@ export default function SiteFooter(): React.JSX.Element {
                         </Flex>
                     </Col>
 
-                    <Col xs={24} sm={12} md={7}>
+                    <Col xs={12} sm={12} md={7}>
                         <LinkColumn title="站内导航" items={siteNav} />
                     </Col>
 
-                    <Col xs={24} sm={12} md={7}>
+                    <Col xs={12} sm={12} md={7}>
                         <LinkColumn title="友情链接" items={friendPreview} emptyText="暂无友情链接" />
                     </Col>
                 </Row>

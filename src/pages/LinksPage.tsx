@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Col, Form, Input, List, Row, Space, Spin, Switch, Tag, Typography, message } from 'antd';
+import { Button, Card, Col, Form, Input, List, Row, Space, Switch, Tag, Typography, message } from 'antd';
 import { addSite, captchaUrl, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { LinksSkeleton } from '@components/common/skeleton';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -181,9 +182,7 @@ export default function LinksPage() {
                     <Title level={5}>我的友链</Title>
                     <Paragraph type="secondary">你提交的友链申请及审核状态（仅本人可见）。</Paragraph>
                     {myLoading ? (
-                        <div style={{ textAlign: 'center', padding: 40 }}>
-                            <Spin />
-                        </div>
+                        <LinksSkeleton />
                     ) : myLinks.length === 0 ? (
                         <Text type="secondary">暂无申请记录</Text>
                     ) : (

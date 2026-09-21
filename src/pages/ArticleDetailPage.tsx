@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { PageHeader } from '@components/common';
 import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getArticle, submitReport, toggleLike, type ArticleItem } from '@/services/userCenter';
+import { getArticle, submitReport, toggleLike, toggleFavorite, type ArticleItem } from '@/services/userCenter';
 import { stripHtmlSuffix } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
@@ -21,6 +21,7 @@ const ArticleDetailPage: React.FC = () => {
     const [item, setItem] = useState<ArticleItem | null>(null);
     const [error, setError] = useState('');
     const [liked, setLiked] = useState(false);
+    const [faved, setFaved] = useState(false);
     const [zan, setZan] = useState(0);
     const [liking, setLiking] = useState(false);
     const [reportOpen, setReportOpen] = useState(false);
@@ -81,6 +82,26 @@ const ArticleDetailPage: React.FC = () => {
             })
             .catch((e) => message.error(e?.message || '网络错误'))
             .finally(() => setLiking(false));
+    };
+    const onFav = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再收藏');
+            navigate('/login');
+            return;
+        }
+        if (!item) return;
+        toggleFavorite(key, Number(item.id), 'article')
+            .then((r) => {
+                if (r.code === 1) {
+                    const now = r.data?.faved === 1;
+                    setFaved(now);
+                    message.success(now ? '已收藏' : '已取消收藏');
+                } else {
+                    message.error(r.msg || '操作失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'));
     };
 
     const onReport = () => {
@@ -149,6 +170,9 @@ const ArticleDetailPage: React.FC = () => {
                             loading={liking}
                         >
                             点赞 {zan}
+                        </Button>
+                        <Button type={faved ? 'primary' : 'default'} onClick={onFav}>
+                            {faved ? '★' : '☆'} 收藏
                         </Button>
                         <Button onClick={() => setReportOpen(true)}>举报</Button>
                         <Button onClick={() => navigate('/articles')}>返回列表</Button>

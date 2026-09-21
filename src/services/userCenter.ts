@@ -161,7 +161,7 @@ export function doCheckin(key: string) {
 export function getMessages(key: string) {
   return request<ApiResp<MessageItem[]>>(`${USER}/messages.html?key=${encodeURIComponent(key)}`);
 }
-export function readMessage(key: string, id: number) {
+export function readMessage(key: string, id: number | 'all' | number[]) {
   return post<ApiResp>('/readMsg.html', { key, id }, USER);
 }
 export function getBalance(key: string) {

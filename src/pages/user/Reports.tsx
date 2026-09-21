@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Empty, List, Tag, Typography, message, Popconfirm, Button } from 'antd';
+import { Card, Empty, List, Tag, Typography, message, Popconfirm, Button, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
+import { ReportsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getReports, type ReportItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
@@ -43,11 +44,14 @@ const ReportsPage: React.FC = () => {
         if (n === 9) return { color: 'red', text: '已拒绝' };
         return { color: 'orange', text: '待审核' };
     };
+    const typeName = (m: any) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', ziti: '字库' }[m] || '内容');
 
     return (
-        <Card className="user-card" loading={loading}>
+        <Card className="user-card">
             <Title level={4}>我的举报</Title>
-            {list.length === 0 && !loading ? (
+            {loading ? (
+                <ReportsSkeleton />
+            ) : list.length === 0 ? (
                 <Empty description="暂无举报记录" />
             ) : (
                 <List
@@ -58,7 +62,10 @@ const ReportsPage: React.FC = () => {
                             <List.Item className="report-item">
                                 <div className="report-line report-head">
                                     <Text strong>{item.title || `举报 #${item.id}`}</Text>
-                                    <Tag color={st.color}>{st.text}</Tag>
+                                    <Space>
+                                        <Tag color="default">{typeName(item.m)}</Tag>
+                                        <Tag color={st.color}>{st.text}</Tag>
+                                    </Space>
                                 </div>
                                 <div className="report-line report-meta">
                                     <Text type="secondary">

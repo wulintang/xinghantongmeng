@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, List, Tag, Button, Space, Spin, Empty, message } from 'antd';
+import { Card, Typography, List, Tag, Button, Space, Empty, message, Checkbox } from 'antd';
 import { getMessages, readMessage, type MessageItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { MessagesSkeleton } from '@components/common/skeleton';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -12,6 +13,7 @@ export default function MessagesPage() {
   usePageMeta({ title: '消息中心' });
   const [list, setList] = useState<MessageItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allChecked, setAllChecked] = useState(false);
 
   const fmt = (t: number) => (t ? new Date(t * 1000).toLocaleString() : '');
 
@@ -41,42 +43,52 @@ export default function MessagesPage() {
       .catch(() => {});
     if (m.url) window.open(m.url, '_blank');
   };
+  const onReadAll = () => {
+    readMessage(getToken() || '', 'all')
+      .then(() => setList((l) => l.map((x) => ({ ...x, open: 1 }))))
+      .catch(() => {});
+    setAllChecked(false);
+  };
 
   return (
     <Card className="user-card user-card-760">
       <Title level={4}>消息中心</Title>
-      <Spin spinning={loading}>
-        {list.length === 0 ? (
-          <Empty description="暂无消息" />
-        ) : (
-          <List
-            dataSource={list}
-            renderItem={(m) => (
-              <List.Item
-                actions={[
-                  <Button key="read" size="small" onClick={() => onRead(m)}>
-                    {m.open ? '查看' : '标记已读'}
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={
-                    <Space>
-                      {m.open ? (
-                        <Tag color="default">已读</Tag>
-                      ) : (
-                        <Tag color="blue">未读</Tag>
-                      )}
-                      <Text type="secondary">{fmt(m.time)}</Text>
-                    </Space>
-                  }
-                  description={<Paragraph className="user-msg-text">{m.msg}</Paragraph>}
-                />
-              </List.Item>
-            )}
-          />
-        )}
-      </Spin>
+      <div className="msg-toolbar">
+        <Checkbox checked={allChecked} onChange={(e) => setAllChecked(e.target.checked)}>全选</Checkbox>
+        <Button size="small" type="primary" onClick={onReadAll} disabled={!allChecked}>标记已读</Button>
+      </div>
+      {loading ? (
+        <MessagesSkeleton />
+      ) : list.length === 0 ? (
+        <Empty description="暂无消息" />
+      ) : (
+        <List
+          dataSource={list}
+          renderItem={(m) => (
+            <List.Item
+              actions={[
+                <Button key="read" size="small" onClick={() => onRead(m)}>
+                  {m.open ? '查看' : '标记已读'}
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={
+                  <Space>
+                    {m.open ? (
+                      <Tag color="default">已读</Tag>
+                    ) : (
+                      <Tag color="blue">未读</Tag>
+                    )}
+                    <Text type="secondary">{fmt(m.time)}</Text>
+                  </Space>
+                }
+                description={<Paragraph className="user-msg-text">{m.msg}</Paragraph>}
+              />
+            </List.Item>
+          )}
+        />
+      )}
     </Card>
   );
 }

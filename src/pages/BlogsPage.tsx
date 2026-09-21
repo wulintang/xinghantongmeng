@@ -20,7 +20,7 @@ import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, submitReport, toggleFavorite, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
@@ -98,6 +98,13 @@ const BlogsPage: React.FC = () => {
 
     // 举报弹窗
     const [reportPost, setReportPost] = useState<PostData | null>(null);
+    const onFavFeed = (p: PostData) => {
+        const key = getToken();
+        if (!key) { message.warning('请先登录后再收藏'); navigate('/login'); return; }
+        toggleFavorite(key, Number(p.id), 'feed')
+            .then((r) => { if (r.code === 1) message.success(r.data?.faved === 1 ? '已收藏' : '已取消收藏'); else message.error(r.msg || '操作失败'); })
+            .catch((e) => message.error(e?.message || '网络错误'));
+    };
     const [reportContent, setReportContent] = useState('');
     const [reporting, setReporting] = useState(false);
 
@@ -323,6 +330,14 @@ const BlogsPage: React.FC = () => {
                                                         >
                                                             <ShareIcon />
                                                         </Link>
+                                                    </Tooltip>
+                                                    <Tooltip title="收藏">
+                                                        <span
+                                                            className="feed-bubble-action feed-bubble-icon-only"
+                                                            onClick={(e) => { e.stopPropagation(); onFavFeed(p); }}
+                                                        >
+                                                            <StarIcon />
+                                                        </span>
                                                     </Tooltip>
                                                     <Tooltip title="举报">
                                                         <span

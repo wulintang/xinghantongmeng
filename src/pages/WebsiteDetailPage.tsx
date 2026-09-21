@@ -27,6 +27,7 @@ import {
     getWebsiteByDomain,
     submitReport,
     toggleLike,
+    toggleFavorite,
     type WebsiteItem,
 } from '@/services/userCenter';
 import { getPosts } from '@/services/postService';
@@ -48,6 +49,7 @@ const WebsiteDetailPage: React.FC = () => {
     const [liked, setLiked] = useState(false);
     const [zan, setZan] = useState(0);
     const [liking, setLiking] = useState(false);
+    const [faved, setFaved] = useState(false);
     // 认领状态 / 认领中 / 举报弹窗
     const [claimed, setClaimed] = useState(false);
     const [claiming, setClaiming] = useState(false);
@@ -119,6 +121,26 @@ const WebsiteDetailPage: React.FC = () => {
             })
             .catch((e) => message.error(e?.message || '网络错误'))
             .finally(() => setLiking(false));
+    };
+    const onFav = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再收藏');
+            navigate('/login');
+            return;
+        }
+        if (!item) return;
+        toggleFavorite(key, Number(item.id), 'website')
+            .then((r) => {
+                if (r.code === 1) {
+                    const now = r.data?.faved === 1;
+                    setFaved(now);
+                    message.success(now ? '已收藏' : '已取消收藏');
+                } else {
+                    message.error(r.msg || '操作失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'));
     };
 
     const onClaim = () => {
@@ -212,6 +234,9 @@ const WebsiteDetailPage: React.FC = () => {
                         ) : null}
                         <Button type={liked ? 'primary' : 'default'} onClick={onLike} loading={liking}>
                             {liked ? '♥' : '♡'} 点赞 {zan}
+                        </Button>
+                        <Button type={faved ? 'primary' : 'default'} onClick={onFav}>
+                            {faved ? '★' : '☆'} 收藏
                         </Button>
                         <Button onClick={() => setReportOpen(true)}>举报</Button>
                     </Space>

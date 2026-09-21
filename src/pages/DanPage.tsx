@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { PageHeader } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getDan, submitReport, type DanItem } from '@/services/userCenter';
+import { getDan, submitReport, toggleLike, toggleFavorite, type DanItem } from '@/services/userCenter';
 import { sanitizeHtml } from '@/utils/CommonUtil';
 import { normalizeAlias } from '@/utils/route';
 import { getToken } from '@/utils/auth';
@@ -25,6 +25,8 @@ const DanPage: React.FC = () => {
     const [reportOpen, setReportOpen] = useState(false);
     const [reportContent, setReportContent] = useState('');
     const [reporting, setReporting] = useState(false);
+    const [liked, setLiked] = useState(false);
+    const [faved, setFaved] = useState(false);
 
     usePageMeta({ title: dan?.title || '单页' });
 
@@ -80,6 +82,22 @@ const DanPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '网络错误'))
             .finally(() => setReporting(false));
     };
+    const onLike = () => {
+        const key = getToken();
+        if (!key) { message.warning('请先登录后再点赞'); navigate('/login'); return; }
+        if (!dan) return;
+        toggleLike(key, Number(dan.id), 'dan')
+            .then((r) => { if (r.code === 1) { setLiked(r.data?.liked === 1); message.success(r.data?.liked === 1 ? '点赞成功' : '已取消点赞'); } else message.error(r.msg || '操作失败'); })
+            .catch((e) => message.error(e?.message || '网络错误'));
+    };
+    const onFav = () => {
+        const key = getToken();
+        if (!key) { message.warning('请先登录后再收藏'); navigate('/login'); return; }
+        if (!dan) return;
+        toggleFavorite(key, Number(dan.id), 'dan')
+            .then((r) => { if (r.code === 1) { setFaved(r.data?.faved === 1); message.success(r.data?.faved === 1 ? '已收藏' : '已取消收藏'); } else message.error(r.msg || '操作失败'); })
+            .catch((e) => message.error(e?.message || '网络错误'));
+    };
 
     if (loading) return <DanSkeleton />;
 
@@ -105,6 +123,8 @@ const DanPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: dan.title || key }]}
                 extra={
                     <Space>
+                        <Button type={liked ? 'primary' : 'default'} onClick={onLike}>{liked ? '♥' : '♡'} 点赞</Button>
+                        <Button type={faved ? 'primary' : 'default'} onClick={onFav}>{faved ? '★' : '☆'} 收藏</Button>
                         <Button onClick={() => setReportOpen(true)}>举报</Button>
                     </Space>
                 }

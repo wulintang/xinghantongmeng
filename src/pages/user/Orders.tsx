@@ -26,7 +26,7 @@ export default function OrdersPage() {
         if (r.code === 1) setList(r.data || []);
         else navigate('/login');
       })
-      .catch(() => {})
+      .catch((e) => message.error(e?.message || '网络错误'))
       .finally(() => setLoading(false));
   };
 

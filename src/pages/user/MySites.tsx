@@ -128,7 +128,7 @@ export default function MySitesPage() {
       dataIndex: 'title',
       render: (v: string, row: WebsiteItem) => (
         <Space>
-          {row.ico ? <img src={row.ico} alt="" style={{ width: 20, height: 20, borderRadius: 4 }} /> : null}
+          {row.ico ? <img src={row.ico} alt="" className="mysite-ico" /> : null}
           <Link to={`/${row.www || row.domain}`}>{v}</Link>
         </Space>
       ),
@@ -145,7 +145,7 @@ export default function MySitesPage() {
     {
       title: '操作',
       render: (_: any, row: WebsiteItem) => (
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space wrap className="mysite-actions">
           <Button size="small" onClick={() => openEdit(row)}>
             编辑
           </Button>
@@ -175,6 +175,7 @@ export default function MySitesPage() {
 
       <Modal
         title="编辑站点"
+        className="user-center-modal"
         open={!!editing}
         onCancel={() => setEditing(null)}
         onOk={() => form.submit()}
@@ -199,9 +200,9 @@ export default function MySitesPage() {
             <Input.TextArea rows={3} />
           </Form.Item>
           <Form.Item label="站点图标">
-            <Space>
+            <Space wrap className="mysite-form-space">
               <Input
-                style={{ width: 240 }}
+                className="mysite-input"
                 placeholder="图标地址（可上传自动填充）"
                 value={ico}
                 onChange={(e) => setIco(e.target.value)}
@@ -214,9 +215,9 @@ export default function MySitesPage() {
             </Space>
           </Form.Item>
           <Form.Item label="站点截图">
-            <Space>
+            <Space wrap className="mysite-form-space">
               <Input
-                style={{ width: 240 }}
+                className="mysite-input"
                 placeholder="截图地址（可上传自动填充）"
                 value={pic}
                 onChange={(e) => setPic(e.target.value)}

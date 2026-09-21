@@ -137,27 +137,27 @@ const SubmitSite: React.FC = () => {
                         </Select>
                     </Form.Item>
                     <Form.Item label="网站图标" required>
-                        <Space>
+                        <Space wrap className="submit-site-form-space">
                             <Input
-                                style={{ width: 260 }}
+                                className="submit-input"
                                 value={ico}
                                 onChange={(e) => setIco(e.target.value)}
                                 placeholder="图标地址（可上传自动填充）"
                             />
                             {uploadButton('ico', '上传图标')}
-                            {ico ? <img src={ico} alt="ico" style={{ width: 24, height: 24 }} /> : null}
+                            {ico ? <img src={ico} alt="ico" className="submit-ico-preview" /> : null}
                         </Space>
                     </Form.Item>
                     <Form.Item label="网站截图" required>
-                        <Space>
+                        <Space wrap className="submit-site-form-space">
                             <Input
-                                style={{ width: 260 }}
+                                className="submit-input"
                                 value={pic}
                                 onChange={(e) => setPic(e.target.value)}
                                 placeholder="截图地址（可上传自动填充）"
                             />
                             {uploadButton('pic', '上传截图')}
-                            {pic ? <img src={pic} alt="shot" style={{ width: 48, height: 32, objectFit: 'cover' }} /> : null}
+                            {pic ? <img src={pic} alt="shot" className="submit-shot-preview" /> : null}
                         </Space>
                     </Form.Item>
                     <Form.Item
@@ -172,13 +172,13 @@ const SubmitSite: React.FC = () => {
                         name="code"
                         rules={[{ required: true, message: '请输入图形验证码' }]}
                     >
-                        <Space.Compact style={{ width: '100%' }}>
+                        <Space.Compact className="captcha-compact">
                             <Input placeholder="请输入右侧验证码" />
                             <img
                                 src={codeSrc}
                                 alt="验证码"
                                 title="点击刷新"
-                                style={{ height: 32, cursor: 'pointer', marginLeft: 8 }}
+                                className="captcha-img"
                                 onClick={refreshCode}
                             />
                         </Space.Compact>

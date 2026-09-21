@@ -83,7 +83,7 @@ export default function MessagesPage() {
                       )}
                       <Text type="secondary">{fmt(m.time)}</Text>
                     </Space>
-                    <Paragraph className="user-msg-text" style={{ margin: '6px 0 0' }}>
+                    <Paragraph className="user-msg-text user-msg-paragraph">
                       {m.msg}
                     </Paragraph>
                   </div>

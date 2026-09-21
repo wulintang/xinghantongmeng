@@ -37,11 +37,11 @@ const JumpPage: React.FC = () => {
             <PageHeader title="离开本站提示" crumbs={[{ label: '首页', to: '/' }]} />
             <Card>
                 <Flex vertical gap={16} align="center">
-                    <Title level={4} style={{ margin: 0 }}>
+                    <Title level={4} className="jump-title-no-margin">
                         {safe ? '即将离开本站' : '链接无效'}
                     </Title>
                     {safe ? (
-                        <Paragraph type="secondary" style={{ textAlign: 'center' }}>
+                        <Paragraph type="secondary" className="text-center">
                             你即将访问站外地址，点击「继续访问」后将以新页面打开：
                         </Paragraph>
                     ) : (

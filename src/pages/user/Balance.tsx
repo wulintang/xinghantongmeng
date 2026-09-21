@@ -100,9 +100,9 @@ export default function BalancePage() {
         okText="去支付"
         confirmLoading={paying}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" className="balance-pay-space">
           <InputNumber
-            style={{ width: '100%' }}
+            className="balance-amount-input"
             min={0.01}
             step={1}
             precision={2}

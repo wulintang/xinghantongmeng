@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Col, Form, Input, List, Row, Space, Switch, Tag, Typography, message } from 'antd';
+import { Button, Card, Form, Input, List, Space, Switch, Tag, Typography, message } from 'antd';
 import { addSite, captchaUrl, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -85,11 +85,11 @@ export default function LinksPage() {
             ) : (
                 <Space size={[12, 12]} wrap className="mt-16">
                     {friendLinks.map((l) => (
-                        <Tag key={l.id} color="blue" style={{ fontSize: 'var(--fs-base)', padding: '4px 10px' }}>
-                            <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
-                                {l.name}
-                            </a>
-                        </Tag>
+                    <Tag key={l.id} color="blue" className="link-tag">
+                        <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
+                            {l.name}
+                        </a>
+                    </Tag>
                     ))}
                 </Space>
             )}
@@ -98,25 +98,23 @@ export default function LinksPage() {
 
     if (!isLogin) {
         return (
-            <Row className="container site-content links-page">
-                <Col xs={24}>
-                    {friendCard}
-                    <Card className="mt-24" style={{ textAlign: 'center', marginTop: 24 }}>
-                        <Title level={5}>申请友链</Title>
-                        <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
-                        <Button type="primary" onClick={() => navigate('/login')}>
-                            登录后申请友链
-                        </Button>
-                    </Card>
-                </Col>
-            </Row>
+            <div className="container site-content links-page">
+                {friendCard}
+                <Card className="links-center-card mt-24">
+                    <Title level={5}>申请友链</Title>
+                    <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
+                    <Button type="primary" onClick={() => navigate('/login')}>
+                        登录后申请友链
+                    </Button>
+                </Card>
+            </div>
         );
     }
 
     return (
-        <Row gutter={[24, 24]} className="container site-content links-page">
-            <Col xs={24}>{friendCard}</Col>
-            <Col xs={24} lg={12}>
+        <div className="container site-content links-page">
+            {friendCard}
+            <div className="links-grid">
                 <Card>
                     <Title level={5}>申请友链</Title>
                     <Paragraph type="secondary">
@@ -157,13 +155,13 @@ export default function LinksPage() {
                             name="code"
                             rules={[{ required: true, message: '请输入图形验证码' }]}
                         >
-                            <Space.Compact style={{ width: '100%' }}>
+                            <Space.Compact className="captcha-compact">
                                 <Input placeholder="请输入右侧验证码" />
                                 <img
                                     src={codeSrc}
                                     alt="验证码"
                                     title="点击刷新"
-                                    style={{ height: 32, cursor: 'pointer', marginLeft: 8 }}
+                                    className="captcha-img"
                                     onClick={refreshCode}
                                 />
                             </Space.Compact>
@@ -175,9 +173,7 @@ export default function LinksPage() {
                         </Form.Item>
                     </Form>
                 </Card>
-            </Col>
 
-            <Col xs={24} lg={12}>
                 <Card>
                     <Title level={5}>我的友链</Title>
                     <Paragraph type="secondary">你提交的友链申请及审核状态（仅本人可见）。</Paragraph>
@@ -216,7 +212,7 @@ export default function LinksPage() {
                         />
                     )}
                 </Card>
-            </Col>
-        </Row>
+            </div>
+        </div>
     );
 }

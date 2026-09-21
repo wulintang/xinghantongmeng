@@ -271,6 +271,10 @@ export interface SiteConfig {
   author: string;
   beian: string;
   gonganbei: string;
+  /** 友链申请费用（元），后台 my_set pay.l_rmb */
+  l_rmb: number;
+  /** 网址收录费用（元），后台 my_set pay.w_rmb */
+  w_rmb: number;
 }
 
 export interface CateItem {

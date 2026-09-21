@@ -11,6 +11,12 @@ export function apiBase(): string {
     return (process.env.BOYOUQUAN_API_ADDRESS || '').replace(/\/+$/, '');
 }
 
+/** 跳转好道原生支付宝收银台（Pay::alipay($uid) 按 uid+amount 建单并跳支付宝） */
+export function openAlipayPay(uid: number, amount: number) {
+    const base = apiBase();
+    window.open(`${base}/index.php/pay/alipay.html?uid=${uid}&amount=${Number(amount)}`, '_blank');
+}
+
 function extractJson(text: string): any {
     const trimmed = text.trim();
     try {

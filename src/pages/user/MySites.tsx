@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Table, Tag, Space, Popconfirm, Modal, Form, Input, Switch, Upload, message, Typography } from 'antd';
+import { Button, Card, Tag, Space, Popconfirm, Modal, Form, Input, Switch, Upload, message, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { getMySites, editMySite, delMySite, uploadFile } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import CardTable from '@components/common/CardTable';
 import type { WebsiteItem } from '@/services/userCenter';
 
 const { Title, Text } = Typography;
@@ -163,14 +164,12 @@ export default function MySitesPage() {
     <Card className="user-center-card">
       <Title level={4}>我的站点</Title>
       <Text type="secondary">认领/提交的站点会出现在这里，可编辑资料或删除。待审核的站点由管理员收录后对外展示。</Text>
-      <Table<WebsiteItem>
-        className="mt-16 user-center-table"
+      <CardTable<WebsiteItem>
+        className="mt-16"
         rowKey="id"
         loading={loading}
         columns={columns}
         dataSource={list}
-        pagination={false}
-        scroll={{ x: 'max-content' }}
       />
 
       <Modal

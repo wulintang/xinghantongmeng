@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, InputNumber, Modal, Space, Tag, Table, Statistic, Spin, Typography, message } from 'antd';
+import { Button, Card, InputNumber, Modal, Space, Tag, Statistic, Spin, Typography, message } from 'antd';
 import { getBalance, getUserProfile, type BalanceItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import CardTable from '@components/common/CardTable';
 
 const { Title } = Typography;
 
@@ -72,12 +73,11 @@ export default function BalancePage() {
             充值
           </Button>
         </Space>
-        <Table<BalanceItem>
+        <CardTable<BalanceItem>
           className="user-center-table"
           dataSource={list}
           rowKey="id"
-          pagination={false}
-          scroll={{ x: 'max-content' }}
+          loading={loading}
           columns={[
             { title: '名称', dataIndex: 'title' },
             {

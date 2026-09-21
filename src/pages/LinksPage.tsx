@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Form, Input, List, Space, Switch, Tag, Typography, message } from 'antd';
-import { addSite, captchaUrl, getMyLinks, type MyLinkItem } from '@/services/userCenter';
+import { Button, Card, Form, Input, InputNumber, List, Modal, Space, Switch, Tag, Typography, message } from 'antd';
+import { addSite, getBalance, getUserProfile, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
+import { sanitizeHtml } from '@/utils/CommonUtil';
+import { openAlipayPay } from '@/utils/request';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -19,7 +21,7 @@ function linkStatus(open: number) {
 export default function LinksPage() {
     usePageMeta({ title: '友情链接' });
     const navigate = useNavigate();
-    const { friendLinks } = useSite();
+    const { friendLinks, site } = useSite();
     const [codeSrc, setCodeSrc] = useState(() => captchaUrl());
     const [submitting, setSubmitting] = useState(false);
     const [form] = Form.useForm();
@@ -27,6 +29,16 @@ export default function LinksPage() {
 
     const [myLinks, setMyLinks] = useState<MyLinkItem[]>([]);
     const [myLoading, setMyLoading] = useState(false);
+
+    const [danTitle, setDanTitle] = useState('');
+    const [danContent, setDanContent] = useState('');
+
+    const [uid, setUid] = useState(0);
+    const [payOpen, setPayOpen] = useState(false);
+    const [payFee, setPayFee] = useState(0);
+    const [payBalance, setPayBalance] = useState(0);
+
+    const linkFee = Number(site?.l_rmb || 0);
 
     const refreshCode = () => setCodeSrc(captchaUrl());
 
@@ -43,9 +55,38 @@ export default function LinksPage() {
     };
 
     useEffect(() => {
+        let alive = true;
         setIsLogin(!!getToken());
         loadMyLinks();
+        const key = getToken();
+        getDan('links', 0, key || '')
+            .then((r: any) => {
+                if (alive && r.code === 1 && r.data) {
+                    setDanTitle(r.data.title || '友链说明');
+                    setDanContent(r.data.content || '');
+                }
+            })
+            .catch(() => {});
+        if (key) {
+            getUserProfile(key)
+                .then((r: any) => {
+                    if (alive && r.code === 1) setUid(r.data.id);
+                })
+                .catch(() => {});
+        }
+        return () => {
+            alive = false;
+        };
     }, []);
+
+    const onPay = () => {
+        if (!uid) {
+            message.error('用户信息加载中，请稍后再试');
+            return;
+        }
+        setPayOpen(false);
+        openAlipayPay(uid, payFee);
+    };
 
     const onFinish = (values: { name: string; url: string; code: string; nofollow?: boolean; xin?: boolean }) => {
         const key = getToken();
@@ -54,24 +95,35 @@ export default function LinksPage() {
             return;
         }
         setSubmitting(true);
-        addSite(key, {
-            type: 'link',
-            name: values.name,
-            url: values.url,
-            code: values.code,
-            nofollow: values.nofollow ? 1 : 0,
-            xin: values.xin ? 1 : 0,
-        })
+        getBalance(key)
             .then((r: any) => {
-                if (r.code === 1) {
-                    message.success(r.msg || '申请提交成功，等待审核');
-                    form.resetFields();
-                    refreshCode();
-                    loadMyLinks();
-                } else {
-                    message.error(r.msg || '提交失败');
-                    refreshCode();
+                const balance = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
+                if (linkFee > 0 && balance < linkFee) {
+                    setPayFee(linkFee);
+                    setPayBalance(balance);
+                    setPayOpen(true);
+                    return;
                 }
+                return addSite(key, {
+                    type: 'link',
+                    name: values.name,
+                    url: values.url,
+                    code: values.code,
+                    nofollow: values.nofollow ? 1 : 0,
+                    xin: values.xin ? 1 : 0,
+                })
+                    .then((r: any) => {
+                        if (r.code === 1) {
+                            message.success(r.msg || '申请提交成功，等待审核');
+                            form.resetFields();
+                            refreshCode();
+                            loadMyLinks();
+                        } else {
+                            message.error(r.msg || '提交失败');
+                            refreshCode();
+                        }
+                    })
+                    .catch(() => message.error('提交失败，请稍后重试'));
             })
             .catch(() => message.error('提交失败，请稍后重试'))
             .finally(() => setSubmitting(false));
@@ -96,10 +148,26 @@ export default function LinksPage() {
         </Card>
     );
 
+    const descCard = danContent ? (
+        <Card className="links-desc-card mt-24">
+            <Title level={5}>{danTitle}</Title>
+            {(() => {
+                const raw = danContent || '';
+                const isHtml = /<[a-z][\s\S]*>/i.test(raw);
+                return isHtml ? (
+                    <div className="detail-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }} />
+                ) : (
+                    <Paragraph className="detail-content detail-plain">{raw}</Paragraph>
+                );
+            })()}
+        </Card>
+    ) : null;
+
     if (!isLogin) {
         return (
             <div className="container site-content links-page">
                 {friendCard}
+                {descCard}
                 <Card className="links-center-card mt-24">
                     <Title level={5}>申请友链</Title>
                     <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
@@ -114,12 +182,18 @@ export default function LinksPage() {
     return (
         <div className="container site-content links-page">
             {friendCard}
+            {descCard}
             <div className="links-grid">
                 <Card>
                     <Title level={5}>申请友链</Title>
                     <Paragraph type="secondary">
                         填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
                     </Paragraph>
+                    {linkFee > 0 && (
+                        <Paragraph type="secondary">
+                            提交友链申请将扣除 ¥{linkFee}（余额不足请先充值）。
+                        </Paragraph>
+                    )}
                     <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
                         <Form.Item
                             label="站点名称"
@@ -213,6 +287,27 @@ export default function LinksPage() {
                     )}
                 </Card>
             </div>
+            <Modal
+                title="余额不足，请先充值"
+                open={payOpen}
+                onCancel={() => setPayOpen(false)}
+                onOk={onPay}
+                okText="去支付宝充值"
+            >
+                <Paragraph>
+                    友链申请需 ¥{payFee}，当前余额 ¥{payBalance}，请先充值后再提交。
+                </Paragraph>
+                <InputNumber
+                    className="balance-amount-input"
+                    min={0.01}
+                    step={1}
+                    precision={2}
+                    value={payFee}
+                    onChange={(v) => setPayFee(Number(v) || 0)}
+                    addonBefore="¥"
+                    placeholder="请输入充值金额"
+                />
+            </Modal>
         </div>
     );
 }

@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Select, Space, Spin, Typography, Upload, message } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { addSite, captchaUrl, getWebsiteCates, uploadFile, type CateItem } from '@/services/userCenter';
+import { addSite, captchaUrl, getBalance, getWebsiteCates, getUserProfile, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSite } from '@/context/SiteContext';
+import { openAlipayPay } from '@/utils/request';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 /** 提交站点：分类=后台真实网站分类（my_website_cate），图标/截图直接上传，feed 填订阅地址 */
 const SubmitSite: React.FC = () => {
     usePageMeta({ title: '提交站点' });
+    const { site } = useSite();
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
     const [cates, setCates] = useState<CateItem[]>([]);
@@ -19,6 +22,13 @@ const SubmitSite: React.FC = () => {
     const [ico, setIco] = useState('');
     const [pic, setPic] = useState('');
     const [uploading, setUploading] = useState<'ico' | 'pic' | null>(null);
+
+    const [uid, setUid] = useState(0);
+    const [payOpen, setPayOpen] = useState(false);
+    const [payFee, setPayFee] = useState(0);
+    const [payBalance, setPayBalance] = useState(0);
+
+    const siteFee = Number(site?.w_rmb || 0);
 
     const refreshCode = () => setCodeSrc(captchaUrl());
 
@@ -30,6 +40,14 @@ const SubmitSite: React.FC = () => {
             })
             .catch(() => {})
             .finally(() => alive && setCatesLoading(false));
+        const key = getToken();
+        if (key) {
+            getUserProfile(key)
+                .then((r) => {
+                    if (alive && r.code === 1) setUid(r.data.id);
+                })
+                .catch(() => {});
+        }
         return () => {
             alive = false;
         };
@@ -56,6 +74,15 @@ const SubmitSite: React.FC = () => {
             .finally(() => setUploading(null));
     };
 
+    const onPay = () => {
+        if (!uid) {
+            message.error('用户信息加载中，请稍后再试');
+            return;
+        }
+        setPayOpen(false);
+        openAlipayPay(uid, payFee);
+    };
+
     const onFinish = (values: { name: string; url: string; cate?: number; feed_url?: string; code: string }) => {
         const key = getToken();
         if (!key) {
@@ -63,27 +90,38 @@ const SubmitSite: React.FC = () => {
             return;
         }
         setSubmitting(true);
-        addSite(key, {
-            name: values.name,
-            url: values.url,
-            cate: values.cate,
-            ico,
-            pic,
-            feed_url: values.feed_url,
-            type: 'website',
-            code: values.code,
-        })
-            .then((r) => {
-                if (r.code === 1) {
-                    message.success(r.msg || '提交成功，等待审核');
-                    form.resetFields();
-                    setIco('');
-                    setPic('');
-                    refreshCode();
-                } else {
-                    message.error(r.msg || '提交失败');
-                    refreshCode();
+        getBalance(key)
+            .then((r: any) => {
+                const balance = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
+                if (siteFee > 0 && balance < siteFee) {
+                    setPayFee(siteFee);
+                    setPayBalance(balance);
+                    setPayOpen(true);
+                    return;
                 }
+                return addSite(key, {
+                    name: values.name,
+                    url: values.url,
+                    cate: values.cate,
+                    ico,
+                    pic,
+                    feed_url: values.feed_url,
+                    type: 'website',
+                    code: values.code,
+                })
+                    .then((r) => {
+                        if (r.code === 1) {
+                            message.success(r.msg || '提交成功，等待审核');
+                            form.resetFields();
+                            setIco('');
+                            setPic('');
+                            refreshCode();
+                        } else {
+                            message.error(r.msg || '提交失败');
+                            refreshCode();
+                        }
+                    })
+                    .catch(() => message.error('提交失败，请稍后重试'));
             })
             .catch(() => message.error('提交失败，请稍后重试'))
             .finally(() => setSubmitting(false));
@@ -108,6 +146,9 @@ const SubmitSite: React.FC = () => {
         <Card className="user-center-card">
             <Title level={4}>提交站点</Title>
             <Text type="secondary">填写你的站点信息并上传图标/截图，提交后由管理员审核收录。</Text>
+            {siteFee > 0 && (
+                <Text type="secondary">提交站点收录将扣除 ¥{siteFee}（余额不足请先充值）。</Text>
+            )}
             <Spin spinning={catesLoading}>
                 <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
                     <Form.Item
@@ -190,6 +231,27 @@ const SubmitSite: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Spin>
+            <Modal
+                title="余额不足，请先充值"
+                open={payOpen}
+                onCancel={() => setPayOpen(false)}
+                onOk={onPay}
+                okText="去支付宝充值"
+            >
+                <Paragraph>
+                    站点收录需 ¥{payFee}，当前余额 ¥{payBalance}，请先充值后再提交。
+                </Paragraph>
+                <InputNumber
+                    className="balance-amount-input"
+                    min={0.01}
+                    step={1}
+                    precision={2}
+                    value={payFee}
+                    onChange={(v) => setPayFee(Number(v) || 0)}
+                    addonBefore="¥"
+                    placeholder="请输入充值金额"
+                />
+            </Modal>
         </Card>
     );
 };

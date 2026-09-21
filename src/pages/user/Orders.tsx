@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Table, Tag, Spin } from 'antd';
+import { Card, Typography, Tag, Spin } from 'antd';
 import { getOrders, type OrderItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import CardTable from '@components/common/CardTable';
 
 const { Title } = Typography;
 
@@ -36,12 +37,10 @@ export default function OrdersPage() {
     <Card className="user-center-card">
       <Title level={4}>我的订单</Title>
       <Spin spinning={loading}>
-        <Table<OrderItem>
-          className="user-center-table"
+        <CardTable<OrderItem>
           dataSource={list}
           rowKey="id"
-          pagination={false}
-          scroll={{ x: 'max-content' }}
+          loading={false}
           columns={[
             { title: '订单号', dataIndex: 'id' },
             { title: '名称', dataIndex: 'title' },

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Empty, Table, Tag, Typography, message } from 'antd';
+import { Card, Empty, Tag, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { ReportsSkeleton } from '@components/common/skeleton';
+import CardTable from '@components/common/CardTable';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getReports, type ReportItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
@@ -53,12 +54,10 @@ const ReportsPage: React.FC = () => {
             ) : list.length === 0 ? (
                 <Empty description="暂无举报记录" />
             ) : (
-                <Table<ReportItem>
-                    className="user-center-table"
+                <CardTable<ReportItem>
                     dataSource={list}
                     rowKey="id"
-                    pagination={false}
-                    scroll={{ x: 'max-content' }}
+                    loading={false}
                     expandable={{
                         expandedRowRender: (item: any) => (
                             <div className="report-detail">

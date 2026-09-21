@@ -51,7 +51,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="user-card user-card-480">
+    <Card className="user-center-card">
       <Title level={3}>注册</Title>
       <Text type="secondary">手机号 + 短信验证码、邮箱 + 邮箱验证码，两者都需验证。</Text>
       <Form form={form} layout="vertical" onFinish={onFinish} className="mt-16">

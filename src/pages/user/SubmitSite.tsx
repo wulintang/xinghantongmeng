@@ -105,7 +105,7 @@ const SubmitSite: React.FC = () => {
     );
 
     return (
-        <Card className="user-card">
+        <Card className="user-center-card">
             <Title level={4}>提交站点</Title>
             <Text type="secondary">填写你的站点信息并上传图标/截图，提交后由管理员审核收录。</Text>
             <Spin spinning={catesLoading}>

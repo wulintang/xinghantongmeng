@@ -63,7 +63,7 @@ export default function BalancePage() {
   };
 
   return (
-    <Card className="user-card user-card-760">
+    <Card className="user-center-card">
       <Title level={4}>余额明细</Title>
       <Spin spinning={loading}>
         <Space className="mb-16" align="center">
@@ -73,10 +73,10 @@ export default function BalancePage() {
           </Button>
         </Space>
         <Table<BalanceItem>
+          className="user-center-table"
           dataSource={list}
           rowKey="id"
           pagination={false}
-          scroll={{ x: 'max-content' }}
           columns={[
             { title: '名称', dataIndex: 'title' },
             {

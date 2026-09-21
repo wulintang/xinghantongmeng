@@ -33,14 +33,14 @@ export default function OrdersPage() {
   useEffect(load, [navigate]);
 
   return (
-    <Card className="user-card user-card-760">
+    <Card className="user-center-card">
       <Title level={4}>我的订单</Title>
       <Spin spinning={loading}>
         <Table<OrderItem>
+          className="user-center-table"
           dataSource={list}
           rowKey="id"
           pagination={false}
-          scroll={{ x: 'max-content' }}
           columns={[
             { title: '订单号', dataIndex: 'id' },
             { title: '名称', dataIndex: 'title' },

@@ -48,7 +48,7 @@ export default function CheckinPage() {
   };
 
   return (
-    <Card className="user-card user-card-560">
+    <Card className="user-center-card">
       <Title level={4}>每日签到</Title>
       <Spin spinning={loading}>
         <Space size="large" className="mb-16">

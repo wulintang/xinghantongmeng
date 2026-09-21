@@ -20,7 +20,7 @@ import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, submitReport, toggleFavorite, toggleLike, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
@@ -61,9 +61,9 @@ const MoreIcon = () => (
     </svg>
 );
 
-const HeartIcon = () => (
+const ShareIcon = () => (
     <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M923 283.6c-13.4-31.1-32.6-58.9-56.9-82.8-24.3-23.8-52.5-42.4-84-55.5-32.5-13.5-64.3-20.3-97.4-20.3-36.5 0-68.7 8.3-98.4 24.3-29.7 16-53.5 37.3-72 63.2-4.6 6.2-8.8 12.4-12.7 18.9-3.9-6.5-8.1-12.7-12.7-18.9-18.5-25.9-42.3-47.2-72-63.2-29.7-16-61.9-24.3-98.4-24.3-33.1 0-64.9 6.8-97.4 20.3-31.5 13.1-59.7 31.7-84 55.5-24.3 23.9-43.5 51.7-56.9 82.8-13.4 31-20.3 64.2-20.3 99.1 0 35 8.3 68.2 24.3 98.4 16 29.7 37.3 53.5 63.2 72 6.2 4.6 12.4 8.8 18.9 12.7 6.5 3.9 12.7 8.1 18.9 12.7 25.9 18.5 47.2 42.3 63.2 72 16 30.2 24.3 63.4 24.3 98.4 0 34.9-6.9 68.1-20.3 99.1z" />
+        <path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V882c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z" />
     </svg>
 );
 
@@ -99,30 +99,6 @@ const BlogsPage: React.FC = () => {
 
     // 举报弹窗
     const [reportPost, setReportPost] = useState<PostData | null>(null);
-    const onFavFeed = (p: PostData) => {
-        const key = getToken();
-        if (!key) { message.warning('请先登录后再收藏'); navigate('/login'); return; }
-        toggleFavorite(key, Number(p.id), 'feed')
-            .then((r) => { if (r.code === 1) message.success(r.data?.faved === 1 ? '已收藏' : '已取消收藏'); else message.error(r.msg || '操作失败'); })
-            .catch((e) => message.error(e?.message || '网络错误'));
-    };
-
-    const [likedIds, setLikedIds] = useState<number[]>([]);
-    const onLikeFeed = (p: PostData) => {
-        const key = getToken();
-        if (!key) { message.warning('请先登录后再点赞'); navigate('/login'); return; }
-        toggleLike(key, Number(p.id), 'feed')
-            .then((r) => {
-                if (r.code === 1) {
-                    message.success(r.data?.liked === 1 ? '已点赞' : '已取消点赞');
-                    setLikedIds((ids) => {
-                        const n = Number(p.id);
-                        return r.data?.liked === 1 ? (ids.includes(n) ? ids : [...ids, n]) : ids.filter((x) => x !== n);
-                    });
-                } else message.error(r.msg || '操作失败');
-            })
-            .catch((e) => message.error(e?.message || '网络错误'));
-    };
     const [reportContent, setReportContent] = useState('');
     const [reporting, setReporting] = useState(false);
 
@@ -340,21 +316,16 @@ const BlogsPage: React.FC = () => {
                                                     {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
-                                                    <Tooltip title="点赞">
-                                                        <span
-                                                            className={"feed-bubble-action feed-bubble-icon-only" + (likedIds.includes(Number(p.id)) ? " liked" : "")}
-                                                            onClick={(e) => { e.stopPropagation(); onLikeFeed(p); }}
-                                                        >
-                                                            <HeartIcon />
-                                                        </span>
-                                                    </Tooltip>
-                                                    <Tooltip title="收藏">
-                                                        <span
+                                                    <Tooltip title="进入原文">
+                                                        <a
                                                             className="feed-bubble-action feed-bubble-icon-only"
-                                                            onClick={(e) => { e.stopPropagation(); onFavFeed(p); }}
+                                                            href={jumpUrl(p.link)}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
-                                                            <StarIcon />
-                                                        </span>
+                                                            <ShareIcon />
+                                                        </a>
                                                     </Tooltip>
                                                     <Tooltip title="举报">
                                                         <span

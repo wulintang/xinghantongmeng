@@ -143,11 +143,19 @@ export function updateUserProfile(key: string, data: Record<string, any>) {
 export function getFavorites(key: string) {
   return request<ApiResp<FavoriteItem[]>>(`${USER}/favorites.html?key=${encodeURIComponent(key)}`);
 }
-export function toggleFavorite(key: string, tid: number, m = 'website') {
-  return post<ApiResp<{ faved: number }>>('/favoriteToggle.html', { key, tid, m }, USER);
+export function toggleFavorite(key: string, tid: number, m = 'website'): Promise<ApiResp<{ faved: number }>> {
+  return post<any>('/getCollection.html', { m, id: tid }, API).then((r: any) => ({
+    code: r.code,
+    msg: r.msg,
+    data: { faved: r.name === '已收藏' ? 1 : 0 },
+  }));
 }
-export function toggleLike(key: string, tid: number, m = 'website') {
-  return post<ApiResp<{ liked: number; zan: number }>>('/likeToggle.html', { key, tid, m }, USER);
+export function toggleLike(key: string, tid: number, m = 'website'): Promise<ApiResp<{ liked: number; zan?: number }>> {
+  return post<any>('/getLike.html', { m, id: tid }, API).then((r: any) => ({
+    code: r.code,
+    msg: r.msg,
+    data: { liked: 1, zan: typeof r.zan === 'number' ? r.zan : undefined },
+  }));
 }
 // 认领站点（my_website.uid，仅未认领的站可认领）
 export function claimWebsite(key: string, tid: number) {

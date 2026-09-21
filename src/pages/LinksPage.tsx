@@ -78,7 +78,7 @@ export default function LinksPage() {
     };
 
     const friendCard = (
-        <Card className="user-card">
+        <Card className="user-center-card">
             <Title level={4}>友情链接</Title>
             {friendLinks.length === 0 ? (
                 <Text type="secondary">暂无友情链接</Text>
@@ -117,7 +117,7 @@ export default function LinksPage() {
         <Row gutter={[24, 24]} className="container site-content links-page">
             <Col xs={24}>{friendCard}</Col>
             <Col xs={24} lg={12}>
-                <Card className="user-card">
+                <Card className="user-center-card">
                     <Title level={5}>申请友链</Title>
                     <Paragraph type="secondary">
                         填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
@@ -178,7 +178,7 @@ export default function LinksPage() {
             </Col>
 
             <Col xs={24} lg={12}>
-                <Card className="user-card">
+                <Card className="user-center-card">
                     <Title level={5}>我的友链</Title>
                     <Paragraph type="secondary">你提交的友链申请及审核状态（仅本人可见）。</Paragraph>
                     {myLoading ? (

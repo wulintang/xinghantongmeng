@@ -46,18 +46,18 @@ const ReportsPage: React.FC = () => {
     useEffect(load, [navigate]);
 
     return (
-        <Card className="user-card">
-            <Title level={4}>我的举报</Title>
+    <Card className="user-center-card">
+      <Title level={4}>我的举报</Title>
             {loading ? (
                 <ReportsSkeleton />
             ) : list.length === 0 ? (
                 <Empty description="暂无举报记录" />
             ) : (
                 <Table<ReportItem>
+                    className="user-center-table"
                     dataSource={list}
                     rowKey="id"
                     pagination={false}
-                    scroll={{ x: 'max-content' }}
                     expandable={{
                         expandedRowRender: (item: any) => (
                             <div className="report-detail">

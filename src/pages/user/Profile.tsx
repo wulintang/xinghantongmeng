@@ -100,7 +100,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <Card className="user-card user-card-560">
+    <Card className="user-center-card">
       <Space align="center" className="mb-16">
         <Upload
           accept="image/*"

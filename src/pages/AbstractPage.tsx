@@ -276,17 +276,6 @@ const AbstractPage: React.FC = () => {
                                 {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                             </Space>
                             <Space size={12} className="feed-bubble-actions">
-                                <Tooltip title="原文">
-                                    <a
-                                        className="feed-bubble-action feed-bubble-icon-only"
-                                        href={jumpUrl(p.link)}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <ShareIcon />
-                                    </a>
-                                </Tooltip>
                                 <Tooltip title="点赞">
                                     <span
                                         className={liked ? 'feed-bubble-action feed-bubble-icon-only liked' : 'feed-bubble-action feed-bubble-icon-only'}
@@ -308,6 +297,17 @@ const AbstractPage: React.FC = () => {
                                     >
                                         <StarIcon />
                                     </span>
+                                </Tooltip>
+                                <Tooltip title="原文">
+                                    <a
+                                        className="feed-bubble-action feed-bubble-icon-only"
+                                        href={jumpUrl(p.link)}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <ShareIcon />
+                                    </a>
                                 </Tooltip>
                                 <Tooltip title="举报">
                                     <span

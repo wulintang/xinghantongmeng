@@ -145,7 +145,7 @@ export default function MySitesPage() {
     {
       title: '操作',
       render: (_: any, row: WebsiteItem) => (
-        <Space>
+        <Space direction="vertical" style={{ width: '100%' }}>
           <Button size="small" onClick={() => openEdit(row)}>
             编辑
           </Button>
@@ -160,14 +160,13 @@ export default function MySitesPage() {
   ];
 
   return (
-    <Card className="user-card">
+    <Card className="user-center-card">
       <Title level={4}>我的站点</Title>
       <Text type="secondary">认领/提交的站点会出现在这里，可编辑资料或删除。待审核的站点由管理员收录后对外展示。</Text>
       <Table<WebsiteItem>
-        className="mt-16"
+        className="mt-16 user-center-table"
         rowKey="id"
         loading={loading}
-        scroll={{ x: 'max-content' }}
         columns={columns}
         dataSource={list}
         pagination={false}

@@ -51,7 +51,7 @@ export default function MessagesPage() {
   };
 
   return (
-    <Card className="user-card user-card-760">
+    <Card className="user-center-card">
       <Title level={4}>消息中心</Title>
       <div className="msg-toolbar">
         <Checkbox checked={allChecked} onChange={(e) => setAllChecked(e.target.checked)}>全选</Checkbox>
@@ -74,16 +74,20 @@ export default function MessagesPage() {
             >
               <List.Item.Meta
                 title={
-                  <Space>
-                    {m.open ? (
-                      <Tag color="default">已读</Tag>
-                    ) : (
-                      <Tag color="blue">未读</Tag>
-                    )}
-                    <Text type="secondary">{fmt(m.time)}</Text>
-                  </Space>
+                  <div>
+                    <Space size={8}>
+                      {m.open ? (
+                        <Tag color="default">已读</Tag>
+                      ) : (
+                        <Tag color="blue">未读</Tag>
+                      )}
+                      <Text type="secondary">{fmt(m.time)}</Text>
+                    </Space>
+                    <Paragraph className="user-msg-text" style={{ margin: '6px 0 0' }}>
+                      {m.msg}
+                    </Paragraph>
+                  </div>
                 }
-                description={<Paragraph className="user-msg-text">{m.msg}</Paragraph>}
               />
             </List.Item>
           )}

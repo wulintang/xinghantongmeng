@@ -665,25 +665,17 @@ body {
 .user-main {
   flex: 1;
   min-width: 0;
-  overflow-x: hidden;
 }
 
-/* 用户中心内的卡片铺满内容列，不再各自限宽 */
-.user-card {
-  margin: 0;
+.user-center-card {
+  margin: 0 auto;
   width: 100%;
+  max-width: 760px;
 }
 
-.user-card-560,
-.user-card-720,
-.user-card-760 {
-  max-width: none;
-}
-
-/* 登录/注册独立页保持居中限宽 */
-.user-card-480 {
-  max-width: 480px;
-  margin: 24px auto;
+.user-center-table .ant-table-cell {
+  white-space: normal;
+  word-break: break-word;
 }
 
 @media (max-width: 768px) {
@@ -692,7 +684,14 @@ body {
   }
 
   .user-sider {
-    display: none;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .user-center-card {
+    max-width: 100%;
   }
 }
 

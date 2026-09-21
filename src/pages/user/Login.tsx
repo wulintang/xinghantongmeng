@@ -65,7 +65,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="user-card user-card-480">
+    <Card className="user-center-card">
       <Title level={3}>登录</Title>
       <Radio.Group
         value={mode}

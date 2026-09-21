@@ -44,7 +44,7 @@ export default function FavoritesPage() {
   const labelOf = (m: string) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', feed: '动态' }[m] || '内容');
 
   return (
-    <Card className="user-card user-card-720">
+    <Card className="user-center-card">
       <Title level={4}>我的收藏</Title>
       {loading ? (
         <FavoritesSkeleton />

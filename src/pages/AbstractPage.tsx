@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Avatar, Button, Divider, Dropdown, Flex, Input, Menu, Modal, Space, Tag, Typography, message } from 'antd';
+import { Alert, Avatar, Button, Divider, Flex, Input, Modal, Space, Tag, Tooltip, Typography, message } from 'antd';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -74,8 +74,8 @@ const AbstractPage: React.FC = () => {
     const [reporting, setReporting] = useState(false);
 
     usePageMeta({
-        title: '分享文章',
-        description: '兴汉同盟 Feed 广场文章分享页。',
+        title: '文章详情',
+        description: '兴汉同盟 Feed 广场文章详情页。',
     });
 
     useEffect(() => {
@@ -144,7 +144,7 @@ const AbstractPage: React.FC = () => {
     if (loading) {
         return (
             <Flex vertical gap={20}>
-                <PageHeader title="分享文章" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '分享' }]} />
+                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]} />
                 <BlogsSkeleton />
             </Flex>
         );
@@ -153,7 +153,7 @@ const AbstractPage: React.FC = () => {
     if (error || !p) {
         return (
             <Flex vertical gap={20}>
-                <PageHeader title="分享文章" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '分享' }]} />
+                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]} />
                 <Alert type="warning" showIcon message={error || '文章不存在'} />
                 <div>
                     <Button onClick={() => navigate('/feed')}>返回 Feed 广场</Button>
@@ -169,8 +169,8 @@ const AbstractPage: React.FC = () => {
     return (
         <Flex vertical gap={20} className="abstract-page">
             <PageHeader
-                title="分享文章"
-                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '分享' }]}
+                title="文章详情"
+                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]}
                 extra={
                     <Space>
                         <Button onClick={() => navigate('/feed')}>返回 Feed 广场</Button>
@@ -229,34 +229,28 @@ const AbstractPage: React.FC = () => {
                                 {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                             </Space>
                             <Space size={12} className="feed-bubble-actions">
-                                <span
-                                    className="feed-bubble-action"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigator.clipboard?.writeText(window.location.href).then(() => message.success('链接已复制'));
-                                    }}
-                                >
-                                    <ShareIcon /> 复制链接
-                                </span>
-                                <Dropdown
-                                    overlay={
-                                        <Menu
-                                            items={[
-                                                {
-                                                    key: 'report',
-                                                    label: '举报',
-                                                    onClick: () => setReportOpen(true),
-                                                },
-                                            ]}
-                                        />
-                                    }
-                                    placement="bottomRight"
-                                    trigger={['click']}
-                                >
-                                    <span className="feed-bubble-action feed-bubble-more" onClick={(e) => e.stopPropagation()}>
+                                <Tooltip title="原文">
+                                    <a
+                                        className="feed-bubble-action feed-bubble-icon-only"
+                                        href={jumpUrl(p.link)}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <ShareIcon />
+                                    </a>
+                                </Tooltip>
+                                <Tooltip title="举报">
+                                    <span
+                                        className="feed-bubble-action feed-bubble-icon-only feed-bubble-more"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setReportOpen(true);
+                                        }}
+                                    >
                                         <MoreIcon />
                                     </span>
-                                </Dropdown>
+                                </Tooltip>
                             </Space>
                         </div>
                     </div>

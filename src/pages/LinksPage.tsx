@@ -84,7 +84,7 @@ export default function LinksPage() {
             ) : (
                 <Space size={[12, 12]} wrap className="mt-16">
                     {friendLinks.map((l) => (
-                        <Tag key={l.id} color="blue" style={{ fontSize: 14, padding: '4px 10px' }}>
+                        <Tag key={l.id} color="blue" style={{ fontSize: 'var(--fs-base)', padding: '4px 10px' }}>
                             <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
                                 {l.name}
                             </a>

@@ -2,15 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
     Avatar,
     Divider,
-    Dropdown,
     Flex,
     Input,
-    Menu,
     Modal,
     Pagination,
     Segmented,
     Space,
     Tag,
+    Tooltip,
     Typography,
     message,
 } from 'antd';
@@ -257,33 +256,30 @@ const BlogsPage: React.FC = () => {
                             const icon =
                                 siteIcons[normalizeDomain(domain)] ||
                                 assetUrl(p.blogAdminLargeImageURL || p.blogAdminMediumImageURL || '');
+                            const abstractRoute = `/abstract?link=${encodeURIComponent(p.link)}`;
                             const domainRoute = `/${domain}`;
                             return (
                                 <div className="feed-timeline-item" key={p.link || `${domain}-${p.title}`}>
-                                    <div className="feed-author-col">
-                                        <Link to={domainRoute}>
-                                            <Avatar
-                                                className="feed-author-avatar"
-                                                shape="circle"
-                                                src={icon || undefined}
-                                            >
-                                                {(p.blogName || domain || '?').slice(0, 1)}
-                                            </Avatar>
-                                        </Link>
-                                        <Link to={domainRoute} className="feed-author-name">
-                                            {p.blogName || domain}
-                                        </Link>
+                                    <Link to={domainRoute} className="feed-author-col">
+                                        <Avatar
+                                            className="feed-author-avatar"
+                                            shape="circle"
+                                            src={icon || undefined}
+                                        >
+                                            {(p.blogName || domain || '?').slice(0, 1)}
+                                        </Avatar>
+                                        <span className="feed-author-name">{p.blogName || domain}</span>
                                         {p.blogJoinYears ? (
-                                            <div className="feed-author-meta feed-author-meta-blue">
+                                            <span className="feed-author-meta feed-author-meta-blue">
                                                 <StarIcon /> 已履约 {p.blogJoinYears} 年
-                                            </div>
+                                            </span>
                                         ) : null}
                                         {p.blogTotalAccessCount ? (
-                                            <div className="feed-author-meta feed-author-meta-blue">
+                                            <span className="feed-author-meta feed-author-meta-blue">
                                                 <EyeIcon /> {p.blogTotalAccessCount}
-                                            </div>
+                                            </span>
                                         ) : null}
-                                    </div>
+                                    </Link>
 
                                     <div
                                         className="feed-bubble"
@@ -319,35 +315,26 @@ const BlogsPage: React.FC = () => {
                                                     {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
-                                                    <Link
-                                                        className="feed-bubble-action"
-                                                        to={`/abstract?link=${encodeURIComponent(p.link)}`}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <ShareIcon /> 分享
-                                                    </Link>
-                                                    <Dropdown
-                                                        overlay={
-                                                            <Menu
-                                                                items={[
-                                                                    {
-                                                                        key: 'report',
-                                                                        label: '举报',
-                                                                        onClick: () => setReportPost(p),
-                                                                    },
-                                                                ]}
-                                                            />
-                                                        }
-                                                        placement="bottomRight"
-                                                        trigger={['click']}
-                                                    >
-                                                        <span
-                                                            className="feed-bubble-action feed-bubble-more"
+                                                    <Tooltip title="分享">
+                                                        <Link
+                                                            className="feed-bubble-action feed-bubble-icon-only"
+                                                            to={`/abstract?link=${encodeURIComponent(p.link)}`}
                                                             onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            <ShareIcon />
+                                                        </Link>
+                                                    </Tooltip>
+                                                    <Tooltip title="举报">
+                                                        <span
+                                                            className="feed-bubble-action feed-bubble-icon-only feed-bubble-more"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setReportPost(p);
+                                                            }}
                                                         >
                                                             <MoreIcon />
                                                         </span>
-                                                    </Dropdown>
+                                                    </Tooltip>
                                                 </Space>
                                             </div>
                                         </div>

@@ -665,6 +665,7 @@ body {
 .user-main {
   flex: 1;
   min-width: 0;
+  overflow-x: hidden;
 }
 
 /* 用户中心内的卡片铺满内容列，不再各自限宽 */
@@ -691,8 +692,7 @@ body {
   }
 
   .user-sider {
-    flex: none;
-    width: 100%;
+    display: none;
   }
 }
 
@@ -765,12 +765,16 @@ body {
   font-size: var(--fs-xs);
   color: var(--c-text-3);
 }
-.report-reply {
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-top: 4px;
+.report-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+.report-detail-line {
+  font-size: var(--fs-base);
+  color: var(--c-text-2);
+  line-height: var(--lh-base);
 }
 
 /* ===================== Feed 广场：竖向时间线（作者居左 + 右侧气泡卡片带左箭头） ===================== */
@@ -967,27 +971,6 @@ body {
   text-align: center;
   padding: 60px;
   color: var(--c-text-3);
-}
-
-@media (max-width: 768px) {
-  .feed-timeline-item {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .feed-author-col {
-    width: 100%;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top: 0;
-    gap: 8px;
-  }
-
-  .feed-author-name {
-    max-width: none;
-    text-align: left;
-  }
 }
 
 /* 弹窗内 TextArea 计数提示（ant-input-data-count）不被底部按钮覆盖 */

@@ -33,9 +33,10 @@ export interface ApiResp<T = any> {
 export interface FavoriteItem {
   fav_id: number;
   tid: number;
+  m: string;
   time: number;
-  site_name: string;
-  domain: string;
+  name: string;
+  url: string;
   feed_url: string;
 }
 export interface CheckinStatus {

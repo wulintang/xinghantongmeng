@@ -40,6 +40,7 @@ export default function OrdersPage() {
           dataSource={list}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 'max-content' }}
           columns={[
             { title: '订单号', dataIndex: 'id' },
             { title: '名称', dataIndex: 'title' },

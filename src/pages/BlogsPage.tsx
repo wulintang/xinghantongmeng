@@ -20,7 +20,7 @@ import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, submitReport, toggleFavorite, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, submitReport, toggleFavorite, toggleLike, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
@@ -55,14 +55,15 @@ const ClockIcon = () => (
         <path d="M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z" />
     </svg>
 );
-const ShareIcon = () => (
-    <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M752 664c-28.5 0-54.8 10-75.4 26.7L469.4 540.8a160.68 160.68 0 000-57.6l207.2-149.9C697.2 350 723.5 360 752 360c66.2 0 120-53.8 120-120s-53.8-120-120-120-120 53.8-120 120c0 11.6 1.6 22.7 4.7 33.3L439.9 415.8C410.7 377.1 364.3 352 312 352c-88.4 0-160 71.6-160 160s71.6 160 160 160c52.3 0 98.7-25.1 127.9-63.8l196.8 142.5c-3.1 10.6-4.7 21.8-4.7 33.3 0 66.2 53.8 120 120 120s120-53.8 120-120-53.8-120-120-120zm0-476c28.7 0 52 23.3 52 52s-23.3 52-52 52-52-23.3-52-52 23.3-52 52-52zM312 600c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88zm440 236c-28.7 0-52-23.3-52-52s23.3-52 52-52 52 23.3 52 52-23.3 52-52 52z" />
-    </svg>
-);
 const MoreIcon = () => (
     <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
         <path d="M456 231a56 56 0 10112 0 56 56 0 10-112 0zm0 280a56 56 0 10112 0 56 56 0 10-112 0zm0 280a56 56 0 10112 0 56 56 0 10-112 0z" />
+    </svg>
+);
+
+const HeartIcon = () => (
+    <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+        <path d="M923 283.6c-13.4-31.1-32.6-58.9-56.9-82.8-24.3-23.8-52.5-42.4-84-55.5-32.5-13.5-64.3-20.3-97.4-20.3-36.5 0-68.7 8.3-98.4 24.3-29.7 16-53.5 37.3-72 63.2-4.6 6.2-8.8 12.4-12.7 18.9-3.9-6.5-8.1-12.7-12.7-18.9-18.5-25.9-42.3-47.2-72-63.2-29.7-16-61.9-24.3-98.4-24.3-33.1 0-64.9 6.8-97.4 20.3-31.5 13.1-59.7 31.7-84 55.5-24.3 23.9-43.5 51.7-56.9 82.8-13.4 31-20.3 64.2-20.3 99.1 0 35 8.3 68.2 24.3 98.4 16 29.7 37.3 53.5 63.2 72 6.2 4.6 12.4 8.8 18.9 12.7 6.5 3.9 12.7 8.1 18.9 12.7 25.9 18.5 47.2 42.3 63.2 72 16 30.2 24.3 63.4 24.3 98.4 0 34.9-6.9 68.1-20.3 99.1z" />
     </svg>
 );
 
@@ -103,6 +104,23 @@ const BlogsPage: React.FC = () => {
         if (!key) { message.warning('请先登录后再收藏'); navigate('/login'); return; }
         toggleFavorite(key, Number(p.id), 'feed')
             .then((r) => { if (r.code === 1) message.success(r.data?.faved === 1 ? '已收藏' : '已取消收藏'); else message.error(r.msg || '操作失败'); })
+            .catch((e) => message.error(e?.message || '网络错误'));
+    };
+
+    const [likedIds, setLikedIds] = useState<number[]>([]);
+    const onLikeFeed = (p: PostData) => {
+        const key = getToken();
+        if (!key) { message.warning('请先登录后再点赞'); navigate('/login'); return; }
+        toggleLike(key, Number(p.id), 'feed')
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.data?.liked === 1 ? '已点赞' : '已取消点赞');
+                    setLikedIds((ids) => {
+                        const n = Number(p.id);
+                        return r.data?.liked === 1 ? (ids.includes(n) ? ids : [...ids, n]) : ids.filter((x) => x !== n);
+                    });
+                } else message.error(r.msg || '操作失败');
+            })
             .catch((e) => message.error(e?.message || '网络错误'));
     };
     const [reportContent, setReportContent] = useState('');
@@ -322,14 +340,13 @@ const BlogsPage: React.FC = () => {
                                                     {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
-                                                    <Tooltip title="分享">
-                                                        <Link
-                                                            className="feed-bubble-action feed-bubble-icon-only"
-                                                            to={`/abstract?link=${encodeURIComponent(p.link)}`}
-                                                            onClick={(e) => e.stopPropagation()}
+                                                    <Tooltip title="点赞">
+                                                        <span
+                                                            className={"feed-bubble-action feed-bubble-icon-only" + (likedIds.includes(Number(p.id)) ? " liked" : "")}
+                                                            onClick={(e) => { e.stopPropagation(); onLikeFeed(p); }}
                                                         >
-                                                            <ShareIcon />
-                                                        </Link>
+                                                            <HeartIcon />
+                                                        </span>
                                                     </Tooltip>
                                                     <Tooltip title="收藏">
                                                         <span

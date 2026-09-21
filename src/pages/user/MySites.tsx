@@ -167,6 +167,7 @@ export default function MySitesPage() {
         className="mt-16"
         rowKey="id"
         loading={loading}
+        scroll={{ x: 'max-content' }}
         columns={columns}
         dataSource={list}
         pagination={false}

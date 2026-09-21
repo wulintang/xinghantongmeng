@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Empty, List, Tag, Typography, message, Popconfirm, Button, Space } from 'antd';
+import { Card, Empty, Table, Tag, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -9,9 +9,16 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getReports, type ReportItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
-/** 我的举报：卡片纵向排布（状态行独立一行，杜绝文字重叠），显示后台审核回复 */
+const typeName = (m: any) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', ziti: '字库' }[m] || '内容');
+const statusOf = (v: any) => {
+    const n = Number(v);
+    if (n === 1) return { color: 'green', text: '已处理' };
+    if (n === 9) return { color: 'red', text: '已拒绝' };
+    return { color: 'orange', text: '待审核' };
+};
+
 const ReportsPage: React.FC = () => {
     const navigate = useNavigate();
     const [list, setList] = useState<ReportItem[]>([]);
@@ -38,14 +45,6 @@ const ReportsPage: React.FC = () => {
 
     useEffect(load, [navigate]);
 
-    const statusOf = (v: any) => {
-        const n = Number(v);
-        if (n === 1) return { color: 'green', text: '已处理' };
-        if (n === 9) return { color: 'red', text: '已拒绝' };
-        return { color: 'orange', text: '待审核' };
-    };
-    const typeName = (m: any) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', ziti: '字库' }[m] || '内容');
-
     return (
         <Card className="user-card">
             <Title level={4}>我的举报</Title>
@@ -54,39 +53,60 @@ const ReportsPage: React.FC = () => {
             ) : list.length === 0 ? (
                 <Empty description="暂无举报记录" />
             ) : (
-                <List
+                <Table<ReportItem>
                     dataSource={list}
-                    renderItem={(item: any) => {
-                        const st = statusOf(item.status);
-                        return (
-                            <List.Item className="report-item">
-                                <div className="report-line report-head">
-                                    <Text strong>{item.title || `举报 #${item.id}`}</Text>
-                                    <Space>
-                                        <Tag color="default">{typeName(item.m)}</Tag>
-                                        <Tag color={st.color}>{st.text}</Tag>
-                                    </Space>
-                                </div>
-                                <div className="report-line report-meta">
-                                    <Text type="secondary">
-                                        {item.time ? dayjs.unix(Number(item.time)).format('YYYY-MM-DD HH:mm') : ''}
-                                        {item.tag ? `　分类：${item.tag}` : ''}
-                                    </Text>
-                                </div>
+                    rowKey="id"
+                    pagination={false}
+                    scroll={{ x: 'max-content' }}
+                    expandable={{
+                        expandedRowRender: (item: any) => (
+                            <div className="report-detail">
                                 {item.content ? (
-                                    <Paragraph type="secondary" className="report-line" style={{ marginBottom: 0 }}>
-                                        举报内容：{item.content}
-                                    </Paragraph>
+                                    <div className="report-detail-line">
+                                        <Text type="secondary">举报内容：</Text>
+                                        <span>{item.content}</span>
+                                    </div>
+                                ) : null}
+                                {item.tag ? (
+                                    <div className="report-detail-line">
+                                        <Text type="secondary">分类：</Text>
+                                        <span>{item.tag}</span>
+                                    </div>
                                 ) : null}
                                 {item.huifu ? (
-                                    <Paragraph className="report-line report-reply" style={{ marginBottom: 0 }}>
-                                        <Text type="warning">官方回复：</Text>
-                                        {item.huifu}
-                                    </Paragraph>
+                                    <div className="report-detail-line">
+                                        <Text type="secondary">官方回复：</Text>
+                                        <span>{item.huifu}</span>
+                                    </div>
                                 ) : null}
-                            </List.Item>
-                        );
+                            </div>
+                        ),
                     }}
+                    columns={[
+                        {
+                            title: '标题',
+                            dataIndex: 'title',
+                            render: (v: any, item: any) => v || `举报 #${item.id}`,
+                        },
+                        {
+                            title: '类型',
+                            dataIndex: 'm',
+                            render: (m: any) => <Tag color="default">{typeName(m)}</Tag>,
+                        },
+                        {
+                            title: '状态',
+                            dataIndex: 'status',
+                            render: (v: any) => {
+                                const s = statusOf(v);
+                                return <Tag color={s.color}>{s.text}</Tag>;
+                            },
+                        },
+                        {
+                            title: '时间',
+                            dataIndex: 'time',
+                            render: (t: any) => (t ? dayjs.unix(Number(t)).format('YYYY-MM-DD HH:mm') : ''),
+                        },
+                    ]}
                 />
             )}
         </Card>

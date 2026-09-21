@@ -76,6 +76,7 @@ export default function BalancePage() {
           dataSource={list}
           rowKey="id"
           pagination={false}
+          scroll={{ x: 'max-content' }}
           columns={[
             { title: '名称', dataIndex: 'title' },
             {

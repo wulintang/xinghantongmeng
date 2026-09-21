@@ -31,6 +31,18 @@ export default function FavoritesPage() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
+  const linkOf = (it: any): string => {
+    switch (it.m) {
+      case 'website': return it.url ? `https://${it.url}` : '#';
+      case 'article': return it.tid ? `/articles/${it.tid}` : '#';
+      case 'tool': return it.tid ? `/tools/${it.tid}` : '#';
+      case 'dan': return it.url ? `/dan/${it.url}` : '#';
+      case 'feed': return it.url ? `/abstract?link=${encodeURIComponent(it.url)}` : '#';
+      default: return '#';
+    }
+  };
+  const labelOf = (m: string) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', feed: '动态' }[m] || '内容');
+
   return (
     <Card className="user-card user-card-720">
       <Title level={4}>我的收藏</Title>
@@ -44,11 +56,17 @@ export default function FavoritesPage() {
           renderItem={(it) => (
             <List.Item>
               <List.Item.Meta
-                title={<a href={`https://${it.domain}`} target="_blank" rel="noreferrer">{it.site_name}</a>}
+                title={
+                  (() => {
+                    const href = linkOf(it as any);
+                    const label = it.name || `收藏 #${it.tid}`;
+                    return href === '#' ? <span>{label}</span> : <a href={href} target={it.m === 'website' ? '_blank' : undefined} rel={it.m === 'website' ? 'noreferrer' : undefined}>{label}</a>;
+                  })()
+                }
                 description={
                   <>
-                    <Tag>{it.domain}</Tag>
-                    {it.feed_url ? <Tag color="green">有 feed</Tag> : <Tag>无 feed</Tag>}
+                    <Tag>{labelOf(it.m)}</Tag>
+                    {it.feed_url ? <Tag color="green">有 feed</Tag> : null}
                     <span className="color-secondary-12">{dayjs(it.time * 1000).format('YYYY-MM-DD')}</span>
                   </>
                 }

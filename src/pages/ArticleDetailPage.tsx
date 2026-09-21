@@ -8,6 +8,7 @@ import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticle, submitReport, toggleLike, toggleFavorite, readFaved, type ArticleItem } from '@/services/userCenter';
 import { stripHtmlSuffix } from '@/utils/route';
+import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph } = Typography;
@@ -192,7 +193,14 @@ const ArticleDetailPage: React.FC = () => {
                 {item.description ? (
                     <Alert type="info" showIcon message={item.description} className="article-lead" />
                 ) : null}
-                <Paragraph className="detail-content">{item.content || '暂无正文'}</Paragraph>
+                {item.content ? (
+                    <div
+                        className="detail-content md-content"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content)) }}
+                    />
+                ) : (
+                    <Paragraph className="detail-content">暂无正文</Paragraph>
+                )}
             </Card>
 
             <div>

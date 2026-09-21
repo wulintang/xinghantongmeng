@@ -7,7 +7,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
-import { sanitizeHtml } from '@/utils/CommonUtil';
+import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { openAlipayPay } from '@/utils/request';
 
 const { Title, Text, Paragraph } = Typography;
@@ -130,7 +130,7 @@ export default function LinksPage() {
     };
 
     const friendCard = (
-        <Card>
+        <Card className="links-friend-card">
             <Title level={4}>友情链接</Title>
             {friendLinks.length === 0 ? (
                 <Text type="secondary">暂无友情链接</Text>
@@ -150,14 +150,14 @@ export default function LinksPage() {
 
     const descCard = danContent ? (
         <Card className="links-desc-card mt-24">
-            <Title level={5}>{danTitle}</Title>
+            <Title level={4}>申请友链情况说明</Title>
             {(() => {
                 const raw = danContent || '';
                 const isHtml = /<[a-z][\s\S]*>/i.test(raw);
                 return isHtml ? (
                     <div className="detail-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }} />
                 ) : (
-                    <Paragraph className="detail-content detail-plain">{raw}</Paragraph>
+                    <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(raw)) }} />
                 );
             })()}
         </Card>
@@ -169,7 +169,7 @@ export default function LinksPage() {
                 {friendCard}
                 {descCard}
                 <Card className="links-center-card mt-24">
-                    <Title level={5}>申请友链</Title>
+                    <Title level={4}>申请友链</Title>
                     <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
                     <Button type="primary" onClick={() => navigate('/login')}>
                         登录后申请友链
@@ -185,7 +185,7 @@ export default function LinksPage() {
             {descCard}
             <div className="links-grid">
                 <Card>
-                    <Title level={5}>申请友链</Title>
+                    <Title level={4}>申请友链</Title>
                     <Paragraph type="secondary">
                         填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
                     </Paragraph>
@@ -249,7 +249,7 @@ export default function LinksPage() {
                 </Card>
 
                 <Card>
-                    <Title level={5}>我的友链</Title>
+                    <Title level={4}>我的友链</Title>
                     <Paragraph type="secondary">你提交的友链申请及审核状态（仅本人可见）。</Paragraph>
                     {myLoading ? (
                         <LinksSkeleton />

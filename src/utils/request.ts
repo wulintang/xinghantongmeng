@@ -59,6 +59,7 @@ export async function request<T>(url: string, options?: RequestInit): Promise<T>
     try {
         const res = await fetch(base + url, {
             ...options,
+            credentials: 'include',
             signal: controller ? controller.signal : undefined,
         });
         if (!res.ok) throw new Error(`请求异常（HTTP ${res.status}）`);

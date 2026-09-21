@@ -172,6 +172,9 @@ export function getMessages(key: string) {
 export function readMessage(key: string, id: number | 'all' | number[]) {
   return post<ApiResp>('/readMsg.html', { key, id }, USER);
 }
+export function deleteMessage(key: string, id: number | number[]) {
+  return post<ApiResp>('/delMsg.html', { key, id }, USER);
+}
 export function getBalance(key: string) {
   return request<ApiResp<{ list: BalanceItem[]; total: number }>>(
     `${USER}/balance.html?key=${encodeURIComponent(key)}`
@@ -214,6 +217,11 @@ export function getMyLinks(key: string, type = 'link') {
   return request<ApiResp<MyLinkItem[]>>(
     `${USER}/tijiaoList.html?key=${encodeURIComponent(key)}&type=${encodeURIComponent(type)}`
   );
+}
+
+/** Feed 文章点击计数（后端 /index.php/feed/index/click.html） */
+export function feedClick(link: string) {
+  return request<ApiResp>(`/index.php/feed/index/click.html?link=${encodeURIComponent(link)}`);
 }
 
 /** 图形验证码图片地址（api 应用 generate，session 存 captcha；img 标签加载自带 cookie） */

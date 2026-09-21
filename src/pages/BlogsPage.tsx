@@ -36,6 +36,7 @@ const sortOptions = [
     { label: '最新', value: 'latest' },
     { label: '最早', value: 'earliest' },
     { label: '按站点', value: 'site' },
+    { label: '按点击', value: 'clicks' },
 ];
 
 // 内联 SVG 图标（项目未安装 @ant-design/icons，直接用车截图的 path 还原）
@@ -188,6 +189,8 @@ const BlogsPage: React.FC = () => {
             arr = [...arr].sort((a, b) => (a.publishedAt || '').localeCompare(b.publishedAt || ''));
         } else if (sort === 'site') {
             arr = [...arr].sort((a, b) => (a.blogName || '').localeCompare(b.blogName || '', 'zh-CN'));
+        } else if (sort === 'clicks') {
+            arr = [...arr].sort((a, b) => (b.linkAccessCount || 0) - (a.linkAccessCount || 0));
         }
         return arr;
     }, [posts, keyword, sort]);

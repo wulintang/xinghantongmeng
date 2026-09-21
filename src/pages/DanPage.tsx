@@ -7,7 +7,7 @@ import { PageHeader } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getDan, submitReport, toggleFavorite, readFaved, type DanItem } from '@/services/userCenter';
-import { sanitizeHtml } from '@/utils/CommonUtil';
+import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { normalizeAlias } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
@@ -136,8 +136,10 @@ const DanPage: React.FC = () => {
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }}
                     />
                 ) : (
-                    // 后端单页正文是纯文本（含换行），按 pre-wrap 原样呈现
-                    <Paragraph className="detail-content detail-plain">{raw || '暂无内容'}</Paragraph>
+                    <div
+                        className="detail-content md-content"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(raw || '')) }}
+                    />
                 )}
             </Card>
 

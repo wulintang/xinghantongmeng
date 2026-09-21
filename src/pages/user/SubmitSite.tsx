@@ -215,13 +215,13 @@ const SubmitSite: React.FC = () => {
                     >
                         <Space.Compact className="captcha-compact">
                             <Input placeholder="请输入右侧验证码" />
-                            <img
-                                src={codeSrc}
-                                alt="验证码"
-                                title="点击刷新"
-                                className="captcha-img"
-                                onClick={refreshCode}
-                            />
+                                <img
+                                    src={codeSrc}
+                                    alt="验证码"
+                                    title="点击刷新"
+                                    className="captcha-img"
+                                    onClick={refreshCode}
+                                />
                         </Space.Compact>
                     </Form.Item>
                     <Form.Item>

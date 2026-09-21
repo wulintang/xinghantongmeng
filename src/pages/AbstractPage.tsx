@@ -7,7 +7,7 @@ import { PageHeader } from '@components/common';
 import { AbstractSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
+import { feedClick, getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
@@ -110,6 +110,13 @@ const AbstractPage: React.FC = () => {
 
     const p = useMemo(() => posts.find((x) => x.link === link), [posts, link]);
 
+    const bumpClick = () => {
+        if (!p || !p.link) return;
+        feedClick(p.link).then(() => {
+            setPosts((prev) => prev.map((x) => (x.link === p.link ? { ...x, linkAccessCount: (x.linkAccessCount || 0) + 1 } : x)));
+        }).catch(() => {});
+    };
+
     const onReport = () => {
         const key = getToken();
         if (!key) {
@@ -200,7 +207,7 @@ const AbstractPage: React.FC = () => {
                     ) : null}
                 </div>
 
-                <div className="feed-bubble" onClick={() => window.open(jumpUrl(p.link), '_blank')}>
+                <div className="feed-bubble" onClick={() => { bumpClick(); window.open(jumpUrl(p.link), '_blank'); }}>
                     <div className="feed-bubble-arrow feed-bubble-arrow-border" />
                     <div className="feed-bubble-arrow feed-bubble-arrow-fill" />
                     <div className="feed-bubble-inner">
@@ -209,7 +216,7 @@ const AbstractPage: React.FC = () => {
                             href={jumpUrl(p.link)}
                             target="_blank"
                             rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => { e.stopPropagation(); bumpClick(); }}
                         >
                             {p.title || '无标题'}
                         </a>
@@ -235,7 +242,7 @@ const AbstractPage: React.FC = () => {
                                         href={jumpUrl(p.link)}
                                         target="_blank"
                                         rel="noreferrer"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(e) => { e.stopPropagation(); bumpClick(); }}
                                     >
                                         <ShareIcon />
                                     </a>

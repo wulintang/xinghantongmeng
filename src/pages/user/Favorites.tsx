@@ -51,7 +51,15 @@ export default function FavoritesPage() {
     }
   };
   const labelOf = (m: string) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', feed: '动态' }[m] || '内容');
-  const nameOf = (it: FavoriteItem) => it.name || it.url || `收藏 #${it.tid}`;
+  const nameOf = (it: FavoriteItem) => it.name || (it.m === 'website' && it.url ? it.url : '') || it.url || `#${it.tid}`;
+  const displayUrl = (it: FavoriteItem) => {
+    if (it.m === 'website' && it.url) return it.url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+    if (it.m === 'dan' && it.url) return `/dan/${it.url}`;
+    if (it.m === 'feed' && it.url) return it.url;
+    if (it.m === 'article' && it.tid) return `/articles/${it.tid}`;
+    if (it.m === 'tool' && it.tid) return `/tools/${it.tid}`;
+    return '';
+  };
 
   const allChecked = list.length > 0 && checkedIds.length === list.length;
 
@@ -151,6 +159,9 @@ export default function FavoritesPage() {
                   description={
                     <Space size={8} wrap>
                       <Tag>{labelOf(it.m)}</Tag>
+                      {displayUrl(it) ? (
+                        <span className="color-secondary-12 fav-url">{displayUrl(it)}</span>
+                      ) : null}
                       {it.feed_url ? <Tag color="green">有 feed</Tag> : null}
                       <span className="color-secondary-12">{dayjs(it.time * 1000).format('YYYY-MM-DD')}</span>
                     </Space>

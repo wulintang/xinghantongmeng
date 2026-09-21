@@ -73,13 +73,13 @@ export default function LinksPage() {
             return;
         }
         setSubmitting(true);
-        const hide = message.loading('查询余额中...');
+        message.open({ key: 'pay', type: 'loading', content: '查询余额中…', duration: 0 });
         getBalance(key)
             .then((r: any) => {
                 const balance = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
                 if (linkFee > 0 && balance < linkFee) {
-                    message.error(`余额不足，友链申请需 ¥${linkFee}，请先充值`);
-                    navigate('/user/balance');
+                    message.open({ key: 'pay', type: 'error', content: `余额不足，友链申请需 ¥${linkFee}，请先充值`, duration: 2.5 });
+                    setTimeout(() => navigate('/user/balance'), 1000);
                     return;
                 }
                 return addSite(key, {
@@ -92,22 +92,19 @@ export default function LinksPage() {
                 })
                     .then((r: any) => {
                         if (r.code === 1) {
-                            message.success(linkFee > 0 ? `申请成功，已扣除 ¥${linkFee}` : (r.msg || '申请提交成功，等待审核'));
+                            message.open({ key: 'pay', type: 'success', content: linkFee > 0 ? `申请成功，已扣除 ¥${linkFee}` : (r.msg || '申请提交成功，等待审核'), duration: 3 });
                             form.resetFields();
                             refreshCode();
                             loadMyLinks();
                         } else {
-                            message.error(r.msg || '提交失败');
+                            message.open({ key: 'pay', type: 'error', content: r.msg || '提交失败', duration: 3 });
                             refreshCode();
                         }
                     })
-                    .catch(() => message.error('提交失败，请稍后重试'));
+                    .catch(() => message.open({ key: 'pay', type: 'error', content: '提交失败，请稍后重试', duration: 3 }));
             })
-            .catch(() => message.error('提交失败，请稍后重试'))
-            .finally(() => {
-                hide();
-                setSubmitting(false);
-            });
+            .catch(() => message.open({ key: 'pay', type: 'error', content: '提交失败，请稍后重试', duration: 3 }))
+            .finally(() => setSubmitting(false));
     };
 
     const friendCard = (
@@ -170,11 +167,11 @@ export default function LinksPage() {
                     <Paragraph type="secondary">
                         填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
                     </Paragraph>
-                    {linkFee > 0 && (
-                        <Paragraph type="secondary">
-                            提交友链申请将扣除 ¥{linkFee}；余额充足则申请成功并扣费，余额不足将跳转至充值页。
-                        </Paragraph>
-                    )}
+                    <Paragraph type="secondary">
+                        {linkFee > 0
+                            ? `提交友链申请将扣除 ¥${linkFee}；余额充足则申请成功并扣费，余额不足将跳转至充值页。`
+                            : `本次友链申请免费，提交后等待审核。`}
+                    </Paragraph>
                     <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
                         <Form.Item
                             label="站点名称"

@@ -69,13 +69,13 @@ const SubmitSite: React.FC = () => {
             return;
         }
         setSubmitting(true);
-        const hide = message.loading('查询余额中...');
+        message.open({ key: 'pay', type: 'loading', content: '查询余额中…', duration: 0 });
         getBalance(key)
             .then((r: any) => {
                 const balance = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
                 if (siteFee > 0 && balance < siteFee) {
-                    message.error(`余额不足，站点收录需 ¥${siteFee}，请先充值`);
-                    navigate('/user/balance');
+                    message.open({ key: 'pay', type: 'error', content: `余额不足，站点收录需 ¥${siteFee}，请先充值`, duration: 2.5 });
+                    setTimeout(() => navigate('/user/balance'), 1000);
                     return;
                 }
                 return addSite(key, {
@@ -90,23 +90,20 @@ const SubmitSite: React.FC = () => {
                 })
                     .then((r) => {
                         if (r.code === 1) {
-                            message.success(siteFee > 0 ? `提交成功，已扣除 ¥${siteFee}` : (r.msg || '提交成功，等待审核'));
+                            message.open({ key: 'pay', type: 'success', content: siteFee > 0 ? `提交成功，已扣除 ¥${siteFee}` : (r.msg || '提交成功，等待审核'), duration: 3 });
                             form.resetFields();
                             setIco('');
                             setPic('');
                             refreshCode();
                         } else {
-                            message.error(r.msg || '提交失败');
+                            message.open({ key: 'pay', type: 'error', content: r.msg || '提交失败', duration: 3 });
                             refreshCode();
                         }
                     })
-                    .catch(() => message.error('提交失败，请稍后重试'));
+                    .catch(() => message.open({ key: 'pay', type: 'error', content: '提交失败，请稍后重试', duration: 3 }));
             })
-            .catch(() => message.error('提交失败，请稍后重试'))
-            .finally(() => {
-                hide();
-                setSubmitting(false);
-            });
+            .catch(() => message.open({ key: 'pay', type: 'error', content: '提交失败，请稍后重试', duration: 3 }))
+            .finally(() => setSubmitting(false));
     };
 
     const uploadButton = (target: 'ico' | 'pic', done: string) => (
@@ -128,9 +125,11 @@ const SubmitSite: React.FC = () => {
         <Card className="user-center-card">
             <Title level={4}>提交站点</Title>
             <Text type="secondary">填写你的站点信息并上传图标/截图，提交后由管理员审核收录。</Text>
-            {siteFee > 0 && (
-                <Text type="secondary">提交站点收录将扣除 ¥{siteFee}；余额充足则申请成功并扣费，余额不足将跳转至充值页。</Text>
-            )}
+            <Text type="secondary">
+                {siteFee > 0
+                    ? `提交站点收录将扣除 ¥${siteFee}；余额充足则申请成功并扣费，余额不足将跳转至充值页。`
+                    : `本次站点收录免费，提交后等待审核。`}
+            </Text>
             <Spin spinning={catesLoading}>
                 <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
                     <Form.Item

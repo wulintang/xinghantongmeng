@@ -23,57 +23,12 @@ export async function request<T>(url: string, options?: RequestInit): Promise<T>
         });
         if (!res.ok) throw new Error(`请求异常（HTTP ${res.status}）`);
         const text = await res.text();
-        const parsed = extractJson(text);
-        if (parsed === null) throw new Error('接口返回的不是合法 JSON');
-        return parsed as T;
+        try {
+            return JSON.parse(text) as T;
+        } catch {
+            throw new Error('接口返回的不是合法 JSON');
+        }
     } finally {
         if (timer) clearTimeout(timer);
     }
-}
-
-/**
- * 提取响应体中的第一个可解析的 JSON 对象/数组。
- * 部分后端应用（verify/user）开 debug 时会在 JSON 前后附加 trace HTML、PHP Notice、JS/CSS 大括号等，
- * 简单用 indexOf('{') 定位会被干扰。这里枚举所有 '{' 候选起点，用字符串感知 + 花括号计数找到闭合，
- * 逐个尝试 JSON.parse，第一个成功的即为真实接口返回。
- */
-function extractJson(text: string): unknown {
-    let searchFrom = 0;
-    while (true) {
-        const start = text.indexOf('{', searchFrom);
-        if (start < 0) break;
-        let depth = 0;
-        let inStr = false;
-        let esc = false;
-        let end = -1;
-        for (let i = start; i < text.length; i++) {
-            const ch = text[i];
-            if (inStr) {
-                if (esc) esc = false;
-                else if (ch === '\\') esc = true;
-                else if (ch === '"') inStr = false;
-                continue;
-            }
-            if (ch === '"') inStr = true;
-            else if (ch === '{') depth++;
-            else if (ch === '}') {
-                depth--;
-                if (depth === 0) {
-                    end = i;
-                    break;
-                }
-            }
-        }
-        if (end >= 0) {
-            try {
-                const candidate = text.slice(start, end + 1);
-                const parsed = JSON.parse(candidate);
-                if (parsed && typeof parsed === 'object') return parsed;
-            } catch {
-                /* 不是合法 JSON，尝试下一个候选 */
-            }
-        }
-        searchFrom = start + 1;
-    }
-    return null;
 }

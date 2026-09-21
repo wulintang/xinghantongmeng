@@ -74,6 +74,17 @@ export interface ReportItem {
   time: number;
 }
 
+/** 我的友链/站点申请记录（my_tijiao，按 uid 过滤） */
+export interface MyLinkItem {
+  id: number;
+  type: string;
+  name: string;
+  url: string;
+  /** 审核状态：0 待审核 / 1 通过 / 9 拒绝 */
+  open: number;
+  time: number;
+}
+
 function post<T>(path: string, data: Record<string, any> = {}, base = API): Promise<T> {
   const body = new URLSearchParams();
   Object.keys(data).forEach((k) => {
@@ -84,9 +95,6 @@ function post<T>(path: string, data: Record<string, any> = {}, base = API): Prom
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
-    // user 应用后端 CORS 是 echo Origin + Allow-Credentials:true，
-    // 带 cookie 才能让图形验证码 session 生效（captcha 存在 api 域 session）
-    credentials: base === USER ? 'include' : undefined,
   });
 }
 
@@ -106,7 +114,7 @@ export function userRegister(data: {
   sms_code: string;
   email_code: string;
 }) {
-  return post<ApiResp<{ key: string }>>('/reg.html', data, API, { credentials: 'include' });
+  return post<ApiResp<{ key: string }>>('/reg.html', data);
 }
 
 // 登录（好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码）
@@ -117,7 +125,7 @@ export function userLogin(data: {
   sms_code?: string;
   email_code?: string;
 }) {
-  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data, API, { credentials: 'include' });
+  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data);
 }
 
 export function userLogout() {
@@ -193,6 +201,13 @@ export function addSite(
   return post<ApiResp>('/addSite.html', { key, ...data }, USER);
 }
 
+// 我的友链/站点申请列表（my_tijiao，按 uid 过滤；type=link 仅友链）
+export function getMyLinks(key: string, type = 'link') {
+  return request<ApiResp<MyLinkItem[]>>(
+    `${USER}/tijiaoList.html?key=${encodeURIComponent(key)}&type=${encodeURIComponent(type)}`
+  );
+}
+
 /** 图形验证码图片地址（api 应用 generate，session 存 captcha；img 标签加载自带 cookie） */
 export function captchaUrl(): string {
   return `${apiBase()}/index.php/api/generate.html?t=${Date.now()}`;
@@ -207,7 +222,6 @@ export function uploadFile(key: string, file: File, forAvatar = false) {
   return request<ApiResp<{ url: string }>>(`${USER}/upload.html`, {
     method: 'POST',
     body,
-    credentials: 'include',
   });
 }
 

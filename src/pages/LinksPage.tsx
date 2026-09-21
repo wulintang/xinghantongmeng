@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Form, Input, InputNumber, List, Modal, Space, Switch, Tag, Typography, message } from 'antd';
-import { addSite, captchaUrl, getBalance, getUserProfile, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
+import { Button, Card, Form, Input, List, Space, Switch, Tag, Typography, message } from 'antd';
+import { addSite, captchaUrl, getBalance, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
-import { openAlipayPay } from '@/utils/request';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -32,11 +31,6 @@ export default function LinksPage() {
 
     const [danTitle, setDanTitle] = useState('');
     const [danContent, setDanContent] = useState('');
-
-    const [uid, setUid] = useState(0);
-    const [payOpen, setPayOpen] = useState(false);
-    const [payFee, setPayFee] = useState(0);
-    const [payBalance, setPayBalance] = useState(0);
 
     const linkFee = Number(site?.l_rmb || 0);
 
@@ -67,26 +61,10 @@ export default function LinksPage() {
                 }
             })
             .catch(() => {});
-        if (key) {
-            getUserProfile(key)
-                .then((r: any) => {
-                    if (alive && r.code === 1) setUid(r.data.id);
-                })
-                .catch(() => {});
-        }
         return () => {
             alive = false;
         };
     }, []);
-
-    const onPay = () => {
-        if (!uid) {
-            message.error('用户信息加载中，请稍后再试');
-            return;
-        }
-        setPayOpen(false);
-        openAlipayPay(uid, payFee);
-    };
 
     const onFinish = (values: { name: string; url: string; code: string; nofollow?: boolean; xin?: boolean }) => {
         const key = getToken();
@@ -95,13 +73,13 @@ export default function LinksPage() {
             return;
         }
         setSubmitting(true);
+        const hide = message.loading('查询余额中...');
         getBalance(key)
             .then((r: any) => {
                 const balance = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
                 if (linkFee > 0 && balance < linkFee) {
-                    setPayFee(linkFee);
-                    setPayBalance(balance);
-                    setPayOpen(true);
+                    message.error(`余额不足，友链申请需 ¥${linkFee}，请先充值`);
+                    navigate('/user/balance');
                     return;
                 }
                 return addSite(key, {
@@ -114,7 +92,7 @@ export default function LinksPage() {
                 })
                     .then((r: any) => {
                         if (r.code === 1) {
-                            message.success(r.msg || '申请提交成功，等待审核');
+                            message.success(linkFee > 0 ? `申请成功，已扣除 ¥${linkFee}` : (r.msg || '申请提交成功，等待审核'));
                             form.resetFields();
                             refreshCode();
                             loadMyLinks();
@@ -126,7 +104,10 @@ export default function LinksPage() {
                     .catch(() => message.error('提交失败，请稍后重试'));
             })
             .catch(() => message.error('提交失败，请稍后重试'))
-            .finally(() => setSubmitting(false));
+            .finally(() => {
+                hide();
+                setSubmitting(false);
+            });
     };
 
     const friendCard = (
@@ -191,7 +172,7 @@ export default function LinksPage() {
                     </Paragraph>
                     {linkFee > 0 && (
                         <Paragraph type="secondary">
-                            提交友链申请将扣除 ¥{linkFee}（余额不足请先充值）。
+                            提交友链申请将扣除 ¥{linkFee}；余额充足则申请成功并扣费，余额不足将跳转至充值页。
                         </Paragraph>
                     )}
                     <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
@@ -287,27 +268,6 @@ export default function LinksPage() {
                     )}
                 </Card>
             </div>
-            <Modal
-                title="余额不足，请先充值"
-                open={payOpen}
-                onCancel={() => setPayOpen(false)}
-                onOk={onPay}
-                okText="去支付宝充值"
-            >
-                <Paragraph>
-                    友链申请需 ¥{payFee}，当前余额 ¥{payBalance}，请先充值后再提交。
-                </Paragraph>
-                <InputNumber
-                    className="balance-amount-input"
-                    min={0.01}
-                    step={1}
-                    precision={2}
-                    value={payFee}
-                    onChange={(v) => setPayFee(Number(v) || 0)}
-                    addonBefore="¥"
-                    placeholder="请输入充值金额"
-                />
-            </Modal>
         </div>
     );
 }

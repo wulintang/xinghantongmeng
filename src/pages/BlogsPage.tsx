@@ -1,16 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Avatar, Divider, Flex, Pagination, Segmented, Space, Tag, Typography } from 'antd';
-import { Link, useSearchParams } from 'react-router-dom';
+import {
+    Avatar,
+    Divider,
+    Dropdown,
+    Flex,
+    Input,
+    Menu,
+    Modal,
+    Pagination,
+    Segmented,
+    Space,
+    Tag,
+    Typography,
+    message,
+} from 'antd';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader, SearchBox } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
-import { getWebsiteByDomain, getWebsites, type WebsiteItem } from '@/services/userCenter';
+import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
 import { assetUrl, domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { htmlToText } from '@/utils/CommonUtil';
+import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph } = Typography;
 
@@ -71,6 +86,7 @@ function timeAgo(t?: string): string {
 }
 
 const BlogsPage: React.FC = () => {
+    const navigate = useNavigate();
     const [params, setParams] = useSearchParams();
     const keyword = params.get('keyword') || '';
     const sort = (params.get('sort') as SortKey) || 'latest';
@@ -80,6 +96,11 @@ const BlogsPage: React.FC = () => {
     const [posts, setPosts] = useState<PostData[]>([]);
     /** 域名 -> 站点头像（用网站数据 API 的 ico/pic，提交时上传、不可能为空） */
     const [siteIcons, setSiteIcons] = useState<Record<string, string>>({});
+
+    // 举报弹窗
+    const [reportPost, setReportPost] = useState<PostData | null>(null);
+    const [reportContent, setReportContent] = useState('');
+    const [reporting, setReporting] = useState(false);
 
     usePageMeta({
         title: 'Feed广场',
@@ -174,6 +195,37 @@ const BlogsPage: React.FC = () => {
     const pageList = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const siteCount = useMemo(() => new Set(posts.map((p) => domainOf(p))).size, [posts]);
 
+    const onReport = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再举报');
+            navigate('/login');
+            return;
+        }
+        if (!reportPost || !reportContent.trim()) {
+            message.warning('请填写举报内容');
+            return;
+        }
+        setReporting(true);
+        submitReport(key, {
+            tid: String(reportPost.blogId || ''),
+            m: 'article',
+            title: reportPost.title || '',
+            content: reportContent.trim(),
+        })
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '举报已提交');
+                    setReportPost(null);
+                    setReportContent('');
+                } else {
+                    message.error(r.msg || '提交失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setReporting(false));
+    };
+
     return (
         <Flex vertical gap={20}>
             <PageHeader
@@ -233,7 +285,10 @@ const BlogsPage: React.FC = () => {
                                         ) : null}
                                     </div>
 
-                                    <div className="feed-bubble">
+                                    <div
+                                        className="feed-bubble"
+                                        onClick={() => window.open(jumpUrl(p.link), '_blank')}
+                                    >
                                         <div className="feed-bubble-arrow feed-bubble-arrow-border" />
                                         <div className="feed-bubble-arrow feed-bubble-arrow-fill" />
                                         <div className="feed-bubble-inner">
@@ -242,6 +297,7 @@ const BlogsPage: React.FC = () => {
                                                 href={jumpUrl(p.link)}
                                                 target="_blank"
                                                 rel="noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
                                             >
                                                 {p.title || '无标题'}
                                             </a>
@@ -263,15 +319,35 @@ const BlogsPage: React.FC = () => {
                                                     {p.pinned ? <Tag color="orange">置顶</Tag> : null}
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
-                                                    <a
+                                                    <Link
                                                         className="feed-bubble-action"
-                                                        href={`/abstract?link=${encodeURIComponent(p.link)}`}
+                                                        to={`/abstract?link=${encodeURIComponent(p.link)}`}
+                                                        onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <ShareIcon /> 分享
-                                                    </a>
-                                                    <span className="feed-bubble-action feed-bubble-more">
-                                                        <MoreIcon />
-                                                    </span>
+                                                    </Link>
+                                                    <Dropdown
+                                                        overlay={
+                                                            <Menu
+                                                                items={[
+                                                                    {
+                                                                        key: 'report',
+                                                                        label: '举报',
+                                                                        onClick: () => setReportPost(p),
+                                                                    },
+                                                                ]}
+                                                            />
+                                                        }
+                                                        placement="bottomRight"
+                                                        trigger={['click']}
+                                                    >
+                                                        <span
+                                                            className="feed-bubble-action feed-bubble-more"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            <MoreIcon />
+                                                        </span>
+                                                    </Dropdown>
                                                 </Space>
                                             </div>
                                         </div>
@@ -293,6 +369,27 @@ const BlogsPage: React.FC = () => {
                     ) : null}
                 </>
             )}
+
+            <Modal
+                title="举报文章"
+                open={!!reportPost}
+                onCancel={() => {
+                    setReportPost(null);
+                    setReportContent('');
+                }}
+                onOk={onReport}
+                okText="提交举报"
+                confirmLoading={reporting}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder="请描述该文章的违规情况（如：虚假内容、侵权、垃圾信息等）"
+                    maxLength={500}
+                    showCount
+                />
+            </Modal>
         </Flex>
     );
 };

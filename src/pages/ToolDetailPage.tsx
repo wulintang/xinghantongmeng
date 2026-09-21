@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Descriptions, Flex, Space, Tag, Typography } from 'antd';
+import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getTool, type ToolItem } from '@/services/userCenter';
+import { getTool, submitReport, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix, toolPageUrl } from '@/utils/route';
+import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -19,6 +20,9 @@ const ToolDetailPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState<ToolItem | null>(null);
     const [error, setError] = useState('');
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportContent, setReportContent] = useState('');
+    const [reporting, setReporting] = useState(false);
 
     usePageMeta({
         title: item?.title || '工具详情',
@@ -46,6 +50,37 @@ const ToolDetailPage: React.FC = () => {
             alive = false;
         };
     }, [toolId]);
+
+    const onReport = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再举报');
+            navigate('/login');
+            return;
+        }
+        if (!item || !reportContent.trim()) {
+            message.warning('请填写举报内容');
+            return;
+        }
+        setReporting(true);
+        submitReport(key, {
+            tid: String(item.id),
+            m: 'tool',
+            title: item.title || '',
+            content: reportContent.trim(),
+        })
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '举报已提交');
+                    setReportOpen(false);
+                    setReportContent('');
+                } else {
+                    message.error(r.msg || '提交失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setReporting(false));
+    };
 
     if (loading) return <ToolDetailSkeleton />;
 
@@ -76,6 +111,7 @@ const ToolDetailPage: React.FC = () => {
                 extra={
                     <Space>
                         <Button onClick={() => navigate('/tools')}>返回列表</Button>
+                        <Button onClick={() => setReportOpen(true)}>举报</Button>
                         <Button type="primary" href={toolPageUrl(item.alias)} target="_blank" rel="noreferrer">
                             打开工具
                         </Button>
@@ -132,6 +168,27 @@ const ToolDetailPage: React.FC = () => {
                     </Flex>
                 }
             />
+
+            <Modal
+                title={`举报「${item?.title || '工具'}」`}
+                open={reportOpen}
+                onCancel={() => {
+                    setReportOpen(false);
+                    setReportContent('');
+                }}
+                onOk={onReport}
+                okText="提交举报"
+                confirmLoading={reporting}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder="请描述该工具的违规情况（如：虚假信息、恶意代码、诈骗等）"
+                    maxLength={500}
+                    showCount
+                />
+            </Modal>
         </Flex>
     );
 };

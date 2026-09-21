@@ -4,6 +4,7 @@ import { Button, Card, Col, Form, Input, List, Row, Space, Spin, Switch, Tag, Ty
 import { addSite, captchaUrl, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
@@ -16,10 +17,12 @@ function linkStatus(open: number) {
 
 export default function LinksPage() {
     usePageMeta({ title: '友情链接' });
+    const navigate = useNavigate();
     const { friendLinks } = useSite();
     const [codeSrc, setCodeSrc] = useState(() => captchaUrl());
     const [submitting, setSubmitting] = useState(false);
     const [form] = Form.useForm();
+    const [isLogin, setIsLogin] = useState(!!getToken());
 
     const [myLinks, setMyLinks] = useState<MyLinkItem[]>([]);
     const [myLoading, setMyLoading] = useState(false);
@@ -38,7 +41,10 @@ export default function LinksPage() {
             .finally(() => setMyLoading(false));
     };
 
-    useEffect(loadMyLinks, []);
+    useEffect(() => {
+        setIsLogin(!!getToken());
+        loadMyLinks();
+    }, []);
 
     const onFinish = (values: { name: string; url: string; code: string; nofollow?: boolean; xin?: boolean }) => {
         const key = getToken();
@@ -70,30 +76,50 @@ export default function LinksPage() {
             .finally(() => setSubmitting(false));
     };
 
+    const friendCard = (
+        <Card className="user-card">
+            <Title level={4}>友情链接</Title>
+            {friendLinks.length === 0 ? (
+                <Text type="secondary">暂无友情链接</Text>
+            ) : (
+                <Space size={[12, 12]} wrap className="mt-16">
+                    {friendLinks.map((l) => (
+                        <Tag key={l.id} color="blue" style={{ fontSize: 14, padding: '4px 10px' }}>
+                            <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
+                                {l.name}
+                            </a>
+                        </Tag>
+                    ))}
+                </Space>
+            )}
+        </Card>
+    );
+
+    if (!isLogin) {
+        return (
+            <Row className="container site-content links-page">
+                <Col xs={24}>
+                    {friendCard}
+                    <Card className="user-card mt-24" style={{ textAlign: 'center', marginTop: 24 }}>
+                        <Title level={5}>申请友链</Title>
+                        <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
+                        <Button type="primary" onClick={() => navigate('/login')}>
+                            登录后申请友链
+                        </Button>
+                    </Card>
+                </Col>
+            </Row>
+        );
+    }
+
     return (
         <Row gutter={[24, 24]} className="container site-content links-page">
+            <Col xs={24}>{friendCard}</Col>
             <Col xs={24} lg={12}>
                 <Card className="user-card">
-                    <Title level={4}>友情链接</Title>
-                    {friendLinks.length === 0 ? (
-                        <Text type="secondary">暂无友情链接</Text>
-                    ) : (
-                        <Space size={[12, 12]} wrap className="mt-16">
-                            {friendLinks.map((l) => (
-                                <Tag key={l.id} color="blue" style={{ fontSize: 14, padding: '4px 10px' }}>
-                                    <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
-                                        {l.name}
-                                    </a>
-                                </Tag>
-                            ))}
-                        </Space>
-                    )}
-
-                    <div className="mt-24" style={{ borderTop: '1px solid #f0f0f0', margin: '20px 0' }} />
-
                     <Title level={5}>申请友链</Title>
                     <Paragraph type="secondary">
-                        登录后填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
+                        填写下方表单申请友链，审核通过后会出现在上方列表与全站底部。
                     </Paragraph>
                     <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
                         <Form.Item

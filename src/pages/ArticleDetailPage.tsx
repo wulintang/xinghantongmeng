@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Divider, Flex, Space, Typography, message } from 'antd';
+import { Alert, Button, Card, Divider, Flex, Input, Modal, Space, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getArticle, toggleLike, type ArticleItem } from '@/services/userCenter';
+import { getArticle, submitReport, toggleLike, type ArticleItem } from '@/services/userCenter';
 import { stripHtmlSuffix } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
@@ -23,6 +23,9 @@ const ArticleDetailPage: React.FC = () => {
     const [liked, setLiked] = useState(false);
     const [zan, setZan] = useState(0);
     const [liking, setLiking] = useState(false);
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportContent, setReportContent] = useState('');
+    const [reporting, setReporting] = useState(false);
 
     usePageMeta({
         title: item?.title || '文章详情',
@@ -71,12 +74,44 @@ const ArticleDetailPage: React.FC = () => {
                     // 后端同步了业务表 zan 字段，直接用后端返回的最新值
                     if (typeof r.data?.zan === 'number') setZan(r.data.zan);
                     else setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                    message.success(now ? '点赞成功' : '已取消点赞');
                 } else {
                     message.error(r.msg || '操作失败');
                 }
             })
             .catch((e) => message.error(e?.message || '网络错误'))
             .finally(() => setLiking(false));
+    };
+
+    const onReport = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再举报');
+            navigate('/login');
+            return;
+        }
+        if (!item || !reportContent.trim()) {
+            message.warning('请填写举报内容');
+            return;
+        }
+        setReporting(true);
+        submitReport(key, {
+            tid: String(item.id),
+            m: 'article',
+            title: item.title || '',
+            content: reportContent.trim(),
+        })
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '举报已提交');
+                    setReportOpen(false);
+                    setReportContent('');
+                } else {
+                    message.error(r.msg || '提交失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setReporting(false));
     };
 
     if (loading) return <ArticleDetailSkeleton />;
@@ -115,6 +150,7 @@ const ArticleDetailPage: React.FC = () => {
                         >
                             点赞 {zan}
                         </Button>
+                        <Button onClick={() => setReportOpen(true)}>举报</Button>
                         <Button onClick={() => navigate('/articles')}>返回列表</Button>
                     </Space>
                 }
@@ -136,6 +172,27 @@ const ArticleDetailPage: React.FC = () => {
             <div>
                 <Button onClick={() => navigate('/articles')}>返回文章资讯</Button>
             </div>
+
+            <Modal
+                title={`举报「${item.title}」`}
+                open={reportOpen}
+                onCancel={() => {
+                    setReportOpen(false);
+                    setReportContent('');
+                }}
+                onOk={onReport}
+                okText="提交举报"
+                confirmLoading={reporting}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder="请描述该文章的违规情况（如：虚假内容、侵权、垃圾信息等）"
+                    maxLength={500}
+                    showCount
+                />
+            </Modal>
         </Flex>
     );
 };

@@ -112,6 +112,7 @@ const WebsiteDetailPage: React.FC = () => {
                     // 后端同步了业务表 zan 字段，直接用后端返回的最新值
                     if (typeof r.data?.zan === 'number') setZan(r.data.zan);
                     else setZan((v) => (now ? v + 1 : Math.max(0, v - 1)));
+                    message.success(now ? '点赞成功' : '已取消点赞');
                 } else {
                     message.error(r.msg || '操作失败');
                 }
@@ -254,7 +255,6 @@ const WebsiteDetailPage: React.FC = () => {
                     <Descriptions.Item label="域名">{item.domain || item.www || '-'}</Descriptions.Item>
                     <Descriptions.Item label="站长">{claimed ? item.owner || '-' : '未认领'}</Descriptions.Item>
                     <Descriptions.Item label="浏览">{item.view}</Descriptions.Item>
-                    <Descriptions.Item label="点赞">{item.zan}</Descriptions.Item>
                     <Descriptions.Item label="收录时间">
                         {item.time ? dayjs.unix(item.time).format('YYYY-MM-DD HH:mm') : '-'}
                     </Descriptions.Item>
@@ -311,13 +311,23 @@ const WebsiteDetailPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {related.map((r) => (
                             <Col key={r.id} xs={24} sm={12} md={8}>
-                                <List.Item>
-                                    <List.Item.Meta
-                                        avatar={<Avatar shape="square" src={r.ico || r.pic || undefined} />}
-                                        title={<Link to={`/${domainOf(r)}`}>{r.title || r.name}</Link>}
-                                        description={<Text type="secondary">{r.domain || r.www}</Text>}
-                                    />
-                                </List.Item>
+                                <Link to={`/${domainOf(r)}`} className="related-site-card">
+                                    <Avatar
+                                        shape="square"
+                                        size={48}
+                                        src={r.ico || r.pic || undefined}
+                                        className="related-site-avatar"
+                                    >
+                                        {(r.title || r.name || '?').slice(0, 1)}
+                                    </Avatar>
+                                    <div className="related-site-body">
+                                        <div className="related-site-title">{r.title || r.name}</div>
+                                        <div className="related-site-desc">
+                                            {r.content ? r.content.replace(/<[^>]+>/g, '').slice(0, 60) + '……' : '暂无描述'}
+                                        </div>
+                                        <div className="related-site-url">{r.domain || r.www || r.url}</div>
+                                    </div>
+                                </Link>
                             </Col>
                         ))}
                     </Row>

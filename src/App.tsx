@@ -17,6 +17,7 @@ import NotFoundPage from '@pages/NotFoundPage';
 import LoginPage_ from '@pages/user/Login';
 import RegisterPage from '@pages/user/Register';
 import JumpPage from '@pages/JumpPage';
+import AbstractPage from '@pages/AbstractPage';
 import UserLayout from '@pages/user/UserLayout';
 import ProfilePage from '@pages/user/Profile';
 import FavoritesPage from '@pages/user/Favorites';
@@ -66,6 +67,8 @@ const App: React.FC = () => {
                             <Route path="/feed" element={<BlogsPage />} />
 
                             <Route path="/links" element={<LinksPage />} />
+
+                            <Route path="/abstract" element={<AbstractPage />} />
 
                             <Route path="/dan/:alias" element={<DanPage />} />
 

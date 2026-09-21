@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Flex, Space, Typography } from 'antd';
+import { Alert, Button, Card, Flex, Input, Modal, Space, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getDan, type DanItem } from '@/services/userCenter';
+import { getDan, submitReport, type DanItem } from '@/services/userCenter';
 import { sanitizeHtml } from '@/utils/CommonUtil';
 import { normalizeAlias } from '@/utils/route';
+import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph } = Typography;
 
@@ -21,6 +22,9 @@ const DanPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [dan, setDan] = useState<DanItem | null>(null);
     const [error, setError] = useState('');
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportContent, setReportContent] = useState('');
+    const [reporting, setReporting] = useState(false);
 
     usePageMeta({ title: dan?.title || '单页' });
 
@@ -46,6 +50,37 @@ const DanPage: React.FC = () => {
         };
     }, [key]);
 
+    const onReport = () => {
+        const key = getToken();
+        if (!key) {
+            message.warning('请先登录后再举报');
+            navigate('/login');
+            return;
+        }
+        if (!dan || !reportContent.trim()) {
+            message.warning('请填写举报内容');
+            return;
+        }
+        setReporting(true);
+        submitReport(key, {
+            tid: String(dan.id),
+            m: 'dan',
+            title: dan.title || '',
+            content: reportContent.trim(),
+        })
+            .then((r) => {
+                if (r.code === 1) {
+                    message.success(r.msg || '举报已提交');
+                    setReportOpen(false);
+                    setReportContent('');
+                } else {
+                    message.error(r.msg || '提交失败');
+                }
+            })
+            .catch((e) => message.error(e?.message || '网络错误'))
+            .finally(() => setReporting(false));
+    };
+
     if (loading) return <DanSkeleton />;
 
     if (error || !dan) {
@@ -68,6 +103,11 @@ const DanPage: React.FC = () => {
             <PageHeader
                 title={dan.title || key}
                 crumbs={[{ label: '首页', to: '/' }, { label: dan.title || key }]}
+                extra={
+                    <Space>
+                        <Button onClick={() => setReportOpen(true)}>举报</Button>
+                    </Space>
+                }
             />
 
             <Space split="·" wrap className="detail-meta">
@@ -92,6 +132,27 @@ const DanPage: React.FC = () => {
             <div>
                 <Button onClick={() => navigate('/')}>返回首页</Button>
             </div>
+
+            <Modal
+                title={`举报「${dan?.title || '单页'}」`}
+                open={reportOpen}
+                onCancel={() => {
+                    setReportOpen(false);
+                    setReportContent('');
+                }}
+                onOk={onReport}
+                okText="提交举报"
+                confirmLoading={reporting}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder="请描述该页面的违规情况（如：虚假内容、侵权、垃圾信息等）"
+                    maxLength={500}
+                    showCount
+                />
+            </Modal>
         </Flex>
     );
 };

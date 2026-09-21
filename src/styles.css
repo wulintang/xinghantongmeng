@@ -865,6 +865,18 @@ body {
   gap: 12px;
   margin-bottom: 12px;
 }
+
+.fav-item-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.fav-item-wrap .ant-checkbox-wrapper {
+  margin-top: 4px;
+  flex: 0 0 auto;
+}
 .user-msg-text {
   white-space: pre-wrap;
   margin: 0;

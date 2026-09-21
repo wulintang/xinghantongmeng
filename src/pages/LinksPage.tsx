@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
 import { Button, Card, Form, Input, InputNumber, List, Modal, Space, Switch, Tag, Typography, message } from 'antd';
-import { addSite, getBalance, getUserProfile, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
+import { addSite, captchaUrl, getBalance, getUserProfile, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';

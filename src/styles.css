@@ -1238,10 +1238,11 @@ body {
   margin-bottom: 0;
 }
 .md-content img {
+  display: block;
   max-width: 100%;
   height: auto;
   border-radius: var(--radius, 4px);
-  margin: 12px 0;
+  margin: 12px auto;
 }
 .md-content a {
   color: var(--c-link);

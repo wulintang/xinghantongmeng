@@ -90,7 +90,12 @@ function post<T>(path: string, data: Record<string, any> = {}, base = API): Prom
   const body = new URLSearchParams();
   Object.keys(data).forEach((k) => {
     const v = data[k];
-    if (v !== undefined && v !== null && v !== '') body.append(k, String(v));
+    if (v === undefined || v === null || v === '') return;
+    if (Array.isArray(v)) {
+      v.forEach((item) => body.append(`${k}[]`, String(item)));
+    } else {
+      body.append(k, String(v));
+    }
   });
   return request<T>(`${base}${path}`, {
     method: 'POST',
@@ -209,7 +214,7 @@ export function addSite(
     xin?: number;
   }
 ) {
-  return post<ApiResp>('/addSite.html', { key, ...data }, USER);
+  return post<ApiResp>('/addSite.html', { key, sid: getCaptchaSid(), ...data }, USER);
 }
 
 // 我的友链/站点申请列表（my_tijiao，按 uid 过滤；type=link 仅友链）
@@ -224,9 +229,20 @@ export function feedClick(link: string) {
   return request<ApiResp>(`/index.php/feed/index/click.html?link=${encodeURIComponent(link)}`);
 }
 
-/** 图形验证码图片地址（api 应用 generate，session 存 captcha；img 标签加载自带 cookie） */
+/** 跨域下 session cookie 不共享，用持久 sid 让 generate/addSite 复用同一验证码（不依赖 cookie） */
+function getCaptchaSid(): string {
+  const key = 'boyouquan_captcha_sid';
+  let sid = localStorage.getItem(key);
+  if (!sid) {
+    sid = 'c' + Date.now() + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem(key, sid);
+  }
+  return sid;
+}
+
+/** 图形验证码图片地址（api 应用 generate；跨域用 sid 同步验证码，避免依赖 cookie/session） */
 export function captchaUrl(): string {
-  return `${apiBase()}/index.php/api/generate.html?t=${Date.now()}`;
+  return `${apiBase()}/index.php/api/generate.html?t=${Date.now()}&sid=${encodeURIComponent(getCaptchaSid())}`;
 }
 
 // 通用图片上传（user 插件 upload：七牛/本地与后台同款策略；for=avatar 时同时更新头像）

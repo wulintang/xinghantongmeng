@@ -48,20 +48,10 @@ export default function MessagesPage() {
     setCheckedIds((ids) => (checked ? [...new Set([...ids, id])] : ids.filter((x) => x !== id)));
   };
 
-  const openUrl = (url: string) => {
-    if (!url) return;
-    if (/^https?:\/\//i.test(url)) {
-      window.open(url, '_blank');
-    } else {
-      navigate(url);
-    }
-  };
-
   const onRead = (m: MessageItem) => {
     readMessage(getToken() || '', m.id)
       .then(() => setList((l) => l.map((x) => (x.id === m.id ? { ...x, open: 1 } : x))))
       .catch((e) => message.error(e?.message || '标记已读失败'));
-    openUrl(m.url);
   };
 
   const onDelete = (m: MessageItem) => {
@@ -120,9 +110,11 @@ export default function MessagesPage() {
           renderItem={(m) => (
             <List.Item
               actions={[
-                <Button key="read" size="small" onClick={() => onRead(m)}>
-                  {m.open ? '查看' : '标记已读'}
-                </Button>,
+                m.open ? null : (
+                  <Button key="read" size="small" onClick={() => onRead(m)}>
+                    标记已读
+                  </Button>
+                ),
                 <Popconfirm key="del" title="确认删除这条消息？" onConfirm={() => onDelete(m)} okText="删除" cancelText="取消">
                   <Button size="small" danger>删除</Button>
                 </Popconfirm>,

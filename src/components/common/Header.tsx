@@ -46,30 +46,41 @@ export default function Header(): React.JSX.Element {
     const [checkinDone, setCheckinDone] = useState<boolean | null>(null);
     const [unread, setUnread] = useState(0);
 
-    // 登录后拉取头像、签到状态、未读消息数（路径变化时也刷新，保证登录/退出后立即同步）
+    // 登录态/头像/签到/未读消息：路径变化时重读 token 并刷新；每 15s 轮询，确保同页操作产生新消息后 badge 实时更新
     useEffect(() => {
-        if (!token) {
-            setMe(null);
-            setCheckinDone(null);
-            setUnread(0);
-            return;
-        }
-        getUserProfile(token)
-            .then((r: any) => {
-                if (r.code === 1) setMe(r.data);
-            })
-            .catch(() => {});
-        getCheckin(token)
-            .then((r: any) => {
-                if (r.code === 1) setCheckinDone(r.data.today_done === 1);
-            })
-            .catch(() => {});
-        getMessages(token)
-            .then((r: any) => {
-                if (r.code === 1) setUnread((r.data || []).filter((m: any) => !m.open).length);
-            })
-            .catch(() => {});
-    }, [token, location.pathname]);
+        let alive = true;
+        const refresh = () => {
+            const tk = getToken();
+            setToken(tk);
+            if (!tk) {
+                setMe(null);
+                setCheckinDone(null);
+                setUnread(0);
+                return;
+            }
+            getUserProfile(tk)
+                .then((r: any) => {
+                    if (alive && r.code === 1) setMe(r.data);
+                })
+                .catch(() => {});
+            getCheckin(tk)
+                .then((r: any) => {
+                    if (alive && r.code === 1) setCheckinDone(r.data.today_done === 1);
+                })
+                .catch(() => {});
+            getMessages(tk)
+                .then((r: any) => {
+                    if (alive && r.code === 1) setUnread((r.data || []).filter((m: any) => !m.open).length);
+                })
+                .catch(() => {});
+        };
+        refresh();
+        const timer = setInterval(refresh, 15000);
+        return () => {
+            alive = false;
+            clearInterval(timer);
+        };
+    }, [location.pathname]);
 
     const onCheckin = () => {
         if (!token) return;

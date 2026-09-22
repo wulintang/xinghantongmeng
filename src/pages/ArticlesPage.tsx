@@ -107,7 +107,6 @@ const ArticlesPage: React.FC = () => {
                             rowKey={(a) => a.id}
                             renderItem={(a, idx) => (
                                 <React.Fragment key={a.id}>
-                                    {idx === 8 ? <AdSlotSkeleton /> : null}
                                     <List.Item
                                         actions={[
                                             <Text type="secondary" key="time">

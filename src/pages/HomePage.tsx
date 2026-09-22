@@ -141,8 +141,6 @@ const HomePage: React.FC = () => {
                 )}
             </section>
 
-            <AdSlotSkeleton />
-
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
@@ -225,6 +223,8 @@ const HomePage: React.FC = () => {
                 message="特别声明"
                 description="包含政治、色情、赌博、暴力以及全 AI 生成内容的站点，一经发现将被永久移出收录名单。"
             />
+
+            <AdSlotSkeleton variant="grid" label="广告位（格子）" />
         </Flex>
     );
 };

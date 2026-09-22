@@ -22,6 +22,8 @@
   --lh-relaxed: 1.7; /* 描述 / 气泡 */
   --lh-loose: 1.9;   /* 长文正文 */
   --lh-none: 1;
+
+  --page-gap: 24px;
 }
 
 body {
@@ -46,7 +48,7 @@ body {
 }
 
 .site-content {
-  padding: 24px 0 40px;
+  padding: var(--page-gap) 0;
   min-height: calc(100vh - 260px);
 }
 
@@ -55,6 +57,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 120px;
+  margin: var(--page-gap) 0;
   border: 1px dashed rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.02);
@@ -70,7 +73,7 @@ body {
   }
 
   .site-content {
-    padding: 16px 0 28px;
+    padding: 16px 0;
   }
 }
 
@@ -136,8 +139,8 @@ body {
    页脚
    ============================================================ */
 .site-footer {
-  margin-top: 24px;
-  padding: 40px 0 24px;
+  margin-top: var(--page-gap);
+  padding: var(--page-gap) 0;
   background: #fafafa;
   border-top: 1px solid #f0f0f0;
 }
@@ -168,7 +171,7 @@ body {
 }
 
 .site-footer-divider {
-  margin: 28px 0 16px;
+  margin: var(--page-gap) 0;
 }
 
 .site-footer-bottom {
@@ -177,7 +180,7 @@ body {
 
 @media (max-width: 768px) {
   .site-footer {
-    padding: 28px 0 20px;
+    padding: 16px 0;
   }
 
   .site-footer-bottom {
@@ -229,7 +232,7 @@ body {
    ============================================================ */
 .home-hero {
   text-align: center;
-  padding: 28px 0 8px;
+  padding: var(--page-gap) 0;
 }
 
 .home-hero-title {
@@ -1182,7 +1185,6 @@ body {
 .submit-site-form {
   margin-top: 16px;
   width: 100%;
-  max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1193,18 +1195,18 @@ body {
 }
 
 .links-friend-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--page-gap);
 }
 
 .links-desc-card {
-  margin-bottom: 24px;
+  margin-bottom: var(--page-gap);
 }
 
 .links-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 @media (max-width: 768px) {
@@ -1215,7 +1217,7 @@ body {
 
 .links-center-card {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 0;
 }
 
 .link-tag {

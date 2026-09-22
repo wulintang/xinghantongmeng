@@ -266,7 +266,6 @@ const BlogsPage: React.FC = () => {
                             const domainRoute = `/${domain}`;
                             return (
                                 <>
-                                {idx === 8 ? <AdSlotSkeleton key="ad-mid" /> : null}
                                 <div className="feed-timeline-item" key={p.link || `${domain}-${p.title}`}>
                                     <Link to={domainRoute} className="feed-author-col">
                                         <Avatar

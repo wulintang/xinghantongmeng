@@ -96,11 +96,6 @@ const ToolsPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {list.map((t, i) => (
                             <React.Fragment key={t.id}>
-                                {i === 8 ? (
-                                    <Col xs={24}>
-                                        <AdSlotSkeleton />
-                                    </Col>
-                                ) : null}
                                 <Col xs={12} sm={8} md={6}>
                                 <Card
                                     className="tool-card"

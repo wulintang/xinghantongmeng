@@ -114,11 +114,6 @@ const WebsitesPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {list.map((w, i) => (
                             <React.Fragment key={w.id}>
-                                {i === 8 ? (
-                                    <Col xs={24}>
-                                        <AdSlotSkeleton />
-                                    </Col>
-                                ) : null}
                                 <Col xs={24} sm={12} md={8}>
                                 <Card className="site-card">
                                     <Flex vertical gap={12}>

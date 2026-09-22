@@ -7,7 +7,6 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
-import { AdSlotSkeleton } from '@components/common';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 
 const { Title, Text, Paragraph } = Typography;
@@ -128,7 +127,7 @@ export default function LinksPage() {
     );
 
     const descCard = danContent ? (
-        <Card className="links-desc-card mt-24">
+        <Card className="links-desc-card">
             <Title level={4}>申请友链情况说明</Title>
             {(() => {
                 const raw = danContent || '';
@@ -147,7 +146,7 @@ export default function LinksPage() {
             <div className="container site-content links-page">
                 {friendCard}
                 {descCard}
-                <Card className="links-center-card mt-24">
+                <Card className="links-center-card">
                     <Title level={4}>申请友链</Title>
                     <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
                     <Button type="primary" onClick={() => navigate('/login')}>
@@ -160,7 +159,6 @@ export default function LinksPage() {
 
     return (
         <div className="container site-content links-page">
-            <AdSlotSkeleton />
             {friendCard}
             {descCard}
             <div className="links-grid">

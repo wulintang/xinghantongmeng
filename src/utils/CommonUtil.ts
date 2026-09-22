@@ -98,7 +98,7 @@ export function markdownToHtml(md: string): string {
 
   html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, href) => {
     const safeHref = href.replace(/"/g, '&quot;');
-    return `<a href="${safeHref}" target="_blank" rel="noreferrer noopener">${text}</a>`;
+    return `<a href="${safeHref}" target="_blank" rel="noreferrer noopener" title="${escapeHtml(text)}">${text}</a>`;
   });
 
   html = html.replace(/^\s{0,3}(#{1,6})\s+(.+)$/gm, (_, hashes, text) => {

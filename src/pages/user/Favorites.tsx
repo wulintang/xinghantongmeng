@@ -153,7 +153,7 @@ export default function FavoritesPage() {
                     (() => {
                       const href = linkOf(it);
                       const label = nameOf(it);
-                      return href === '#' ? <span>{label}</span> : <a href={href} target={it.m === 'website' ? '_blank' : undefined} rel={it.m === 'website' ? 'noreferrer' : undefined}>{label}</a>;
+                      return href === '#' ? <span>{label}</span> : <a href={href} target={it.m === 'website' ? '_blank' : undefined} rel={it.m === 'website' ? 'noreferrer' : undefined} title={label}>{label}</a>;
                     })()
                   }
                   description={

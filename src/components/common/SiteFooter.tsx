@@ -16,7 +16,7 @@ function FooterLink({ item }: { item: LinkItem }): React.JSX.Element {
 
     if (target.external) {
         return (
-            <a href={target.href} target="_blank" rel="noreferrer noopener">
+            <a href={target.href} target="_blank" rel="noreferrer noopener" title={item.name}>
                 {item.name}
             </a>
         );
@@ -111,7 +111,7 @@ export default function SiteFooter(): React.JSX.Element {
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (
-                            <a className="site-footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
+                            <a className="site-footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" title="ICP备案查询">
                                 {site.beian}
                             </a>
                         ) : null}

@@ -123,7 +123,7 @@ export default function Header(): React.JSX.Element {
 
     const renderNavLabel = (item: NavItem): React.ReactNode =>
         item.external ? (
-            <a href={item.href} target="_blank" rel="noreferrer noopener">
+            <a href={item.href} target="_blank" rel="noreferrer noopener" title={item.name}>
                 {item.name}
             </a>
         ) : (

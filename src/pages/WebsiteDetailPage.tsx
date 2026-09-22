@@ -291,7 +291,7 @@ const WebsiteDetailPage: React.FC = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="RSS" span={2}>
                         {item.feed_url ? (
-                            <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer">
+                            <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer" title="RSS 订阅">
                                 {item.feed_url}
                             </a>
                         ) : (
@@ -318,7 +318,7 @@ const WebsiteDetailPage: React.FC = () => {
                             <List.Item>
                                 <List.Item.Meta
                                     title={
-                                        <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
+                                        <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer" title={p.title}>
                                             {p.title || '无标题'}
                                         </a>
                                     }

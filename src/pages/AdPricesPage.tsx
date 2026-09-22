@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Spin, Table, Typography, message } from 'antd';
+import { Card, Spin, Typography, message } from 'antd';
 import { getPrices, type AdPayPosition, type AdPayGridConfig } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import CardTable from '@/components/common/CardTable';
 
 const { Title, Paragraph } = Typography;
 
@@ -27,6 +28,21 @@ export default function AdPricesPage(): React.JSX.Element {
 
   if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
 
+  const posColumns = [
+    { title: '广告位', dataIndex: 'name' },
+    { title: '页面/位置', render: (_: any, r: AdPayPosition) => `${r.page} / ${r.location}` },
+    { title: '日价', dataIndex: 'price_day', render: (v: string) => `¥${v}` },
+    { title: '周价', dataIndex: 'price_week', render: (v: string) => `¥${v}` },
+    { title: '月价', dataIndex: 'price_month', render: (v: string) => `¥${v}` },
+    { title: '季价', dataIndex: 'price_quarter', render: (v: string) => `¥${v}` },
+    { title: '年价', dataIndex: 'price_year', render: (v: string) => `¥${v}` },
+  ];
+  const gridColumns = [
+    { title: '页面', dataIndex: 'page', render: (v: string) => (v === 'home' ? '首页底部' : '格子单页') },
+    { title: '画布(列×行)', render: (_: any, r: AdPayGridConfig) => `${r.cols}×${r.rows}` },
+    { title: '每格月价', dataIndex: 'price_per_cell', render: (v: string) => `¥${v}` },
+  ];
+
   return (
     <div className="ad-prices-page">
       <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
@@ -37,34 +53,20 @@ export default function AdPricesPage(): React.JSX.Element {
       </Paragraph>
 
       <Card title="系统广告位" style={{ marginBottom: 'var(--page-gap)' }}>
-        <Table<AdPayPosition>
+        <CardTable<AdPayPosition>
           rowKey="pkey"
           dataSource={positions}
-          pagination={false}
+          columns={posColumns}
           locale={{ emptyText: '暂无广告位' }}
-          columns={[
-            { title: '广告位', dataIndex: 'name' },
-            { title: '页面/位置', render: (_: any, r: AdPayPosition) => `${r.page} / ${r.location}` },
-            { title: '日价', dataIndex: 'price_day', render: (v: string) => `¥${v}` },
-            { title: '周价', dataIndex: 'price_week', render: (v: string) => `¥${v}` },
-            { title: '月价', dataIndex: 'price_month', render: (v: string) => `¥${v}` },
-            { title: '季价', dataIndex: 'price_quarter', render: (v: string) => `¥${v}` },
-            { title: '年价', dataIndex: 'price_year', render: (v: string) => `¥${v}` },
-          ]}
         />
       </Card>
 
       <Card title="格子广告">
-        <Table<AdPayGridConfig>
+        <CardTable<AdPayGridConfig>
           rowKey="page"
           dataSource={grids}
-          pagination={false}
+          columns={gridColumns}
           locale={{ emptyText: '暂无格子广告' }}
-          columns={[
-            { title: '页面', dataIndex: 'page', render: (v: string) => (v === 'home' ? '首页底部' : '格子单页') },
-            { title: '画布(列×行)', render: (_: any, r: AdPayGridConfig) => `${r.cols}×${r.rows}` },
-            { title: '每格月价', dataIndex: 'price_per_cell', render: (v: string) => `¥${v}` },
-          ]}
         />
       </Card>
     </div>

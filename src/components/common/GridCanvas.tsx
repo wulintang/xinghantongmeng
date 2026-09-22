@@ -34,18 +34,23 @@ function RectView({ r }: { r: AdPayGridRect }): React.ReactNode {
     width: r.w * CELL_PX,
     height: r.h * CELL_PX,
   };
+  const title = r.title || '广告';
   return (
-    <div className={`grid-rect${r.mine ? ' grid-rect-mine' : ''}`} style={style}>
+    <div
+      className={`grid-rect${r.mine ? ' grid-rect-mine' : ''}`}
+      style={style}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
       {r.img ? (
         r.link ? (
-          <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link">
-            <img src={r.img} alt="" className="grid-rect-img" />
+          <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link" title={title}>
+            <img src={r.img} alt={title} className="grid-rect-img" />
           </a>
         ) : (
-          <img src={r.img} alt="" className="grid-rect-img" />
+          <img src={r.img} alt={title} className="grid-rect-img" />
         )
       ) : (
-        <span className="grid-rect-text">{r.link || '广告'}</span>
+        <span className="grid-rect-text">{title}</span>
       )}
     </div>
   );
@@ -94,6 +99,7 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
   }
 
   const onDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
     if (!selectable) {
       onEmptyClick?.();
       return;

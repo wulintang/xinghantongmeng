@@ -244,6 +244,7 @@ const AbstractPage: React.FC = () => {
                                         href={jumpUrl(p.link)}
                                         target="_blank"
                                         rel="noreferrer"
+                                        title="原文"
                                         onClick={(e) => { e.stopPropagation(); bumpClick(); }}
                                     >
                                         <ShareIcon />

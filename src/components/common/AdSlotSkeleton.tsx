@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sanitizeHtml } from '@/utils/CommonUtil';
-import { getAd, getGrid, applyGrid, type AdPayAd, type AdPayGrid } from '@/services/adpay';
+import { getAds, getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
 import AdImgUpload from './AdImgUpload';
@@ -12,21 +12,13 @@ const { Text } = Typography;
 interface Props {
   label?: string;
   variant?: 'banner' | 'grid';
-  /** 系统广告位标识（与后端 position.pkey 一致）；传入则拉取并渲染该位广告 */
   slot?: string;
-  /** 格子广告页：home=首页底部 / grid=单页；传入则渲染格子画布 */
   page?: 'home' | 'grid';
 }
 
-/**
- * 广告位组件（广告增强插件 adpay 对接）
- * - 传 slot：拉取该位广告，登录用户优先展示自己的，否则随机；无广告时显示骨架，点击进入「我的广告」申请
- * - 传 page（格子）：渲染该页格子画布，拖拽框选后弹出申请表单（仅图片+链接）
- * - 都不传：纯静态骨架（兼容历史用法）
- */
 export default function AdSlotSkeleton({ label = '广告位', variant = 'banner', slot, page }: Props): React.JSX.Element {
   const navigate = useNavigate();
-  const [ad, setAd] = useState<AdPayAd | null>(null);
+  const [ad, setAd] = useState<{ content: string } | null>(null);
   const [adReady, setAdReady] = useState(false);
   const [grid, setGrid] = useState<AdPayGrid | null>(null);
   const [rect, setRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -39,9 +31,9 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     if (!slot) return;
     let alive = true;
     setAdReady(false);
-    getAd(slot)
+    getAds(slot)
       .then((r) => {
-        if (alive && r.code === 1) setAd(r.data || null);
+        if (alive && r.code === 1) setAd(r.data && r.data.length ? r.data[0] : null);
       })
       .catch(() => {})
       .finally(() => {
@@ -65,7 +57,6 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     };
   }, [variant, page]);
 
-  // 格子模式：渲染画布 + 框选弹申请表单
   if (variant === 'grid' && page) {
     const cellsCount = rect ? rect.w * rect.h : 0;
     const pricePerCell = grid?.price_per_cell || 0;
@@ -158,7 +149,6 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     );
   }
 
-  // 系统广告位：已拉到广告则渲染，否则骨架 + 申请入口（进入「我的广告」）
   if (slot) {
     if (adReady && ad) {
       return (
@@ -187,7 +177,6 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     );
   }
 
-  // 纯静态骨架（无 slot）
   return (
     <div className={`ad-slot-skeleton ad-slot-skeleton-${variant}`} style={{ margin: 'var(--page-gap) 0' }}>
       <span className="ad-slot-skeleton-label">{label}</span>

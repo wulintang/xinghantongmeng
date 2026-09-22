@@ -6,27 +6,18 @@ import { getToken } from '@/utils/auth';
 import { uploadAdImg } from '@/services/adpay';
 
 interface Props {
-  /** 当前图片 URL（受控值，由 Form 注入） */
   value?: string;
-  /** 上传完成/移除时回传新 URL（空串表示已移除） */
   onChange?: (url: string) => void;
-  /** 提示文案 */
   hint?: string;
 }
 
-/**
- * 广告图片上传组件（受控）。
- * - 点击/拖拽选择图片后直接调后端上传接口，拿到 URL 回传，不直接发 FormData 到业务接口。
- * - 支持 GIF / JPG / PNG 等常见图片格式；单图，重复选择覆盖。
- * - 与 antd Form.Item 配合：name="img" + 本组件即可，value/onChange 自动桥接。
- */
 export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX.Element {
   const [list, setList] = useState<UploadFile[]>(
     value ? [{ uid: '-1', name: 'ad-img', status: 'done', url: value }] : []
   );
   const [loading, setLoading] = useState(false);
 
-  const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+  const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
     const key = getToken();
     if (!key) {
       message.error('请先登录');
@@ -34,7 +25,24 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
     }
     const isImg = (file as File).type.startsWith('image/');
     if (!isImg) {
-      message.error('只能上传图片文件（支持 GIF/JPG/PNG）');
+      message.error('只能上传图片文件（支持 webp/jpg/png/gif）');
+      return false;
+    }
+    const size = await new Promise<{ w: number; h: number }>((resolve) => {
+      const url = URL.createObjectURL(file as File);
+      const img = new Image();
+      img.onload = () => {
+        resolve({ w: img.naturalWidth, h: img.naturalHeight });
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => {
+        resolve({ w: 0, h: 0 });
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+    if (size.w !== 1200 || size.h !== 120) {
+      message.error(`广告图片必须为 1200×120 像素（当前 ${size.w}×${size.h}），请调整后上传`);
       return false;
     }
     setLoading(true);
@@ -50,7 +58,6 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
       })
       .catch((e) => message.error(e?.message || '上传失败'))
       .finally(() => setLoading(false));
-    // 阻止 antd 默认上传（我们自己走接口）
     return false;
   };
 
@@ -61,6 +68,9 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
 
   return (
     <div>
+      <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginBottom: 8, lineHeight: 'var(--lh-tight)' }}>
+        广告图片须为 1200×120 像素，优先 webp 格式；尺寸不符无法上传。
+      </div>
       <Upload
         listType="picture-card"
         fileList={list}

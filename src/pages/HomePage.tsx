@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         title={
-                                            <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
+                                            <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer" title={p.title}>
                                                 {p.title}
                                             </a>
                                         }

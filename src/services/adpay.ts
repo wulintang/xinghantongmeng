@@ -239,3 +239,38 @@ export const AD_STATUS_TEXT: Record<number, string> = {
   3: '已到期',
   4: '已退款',
 };
+
+/** 删除/下线自己的系统广告申请（用户自主） */
+export function deleteApply(id: number) {
+  const key = getToken();
+  const body = new URLSearchParams();
+  body.append('key', key);
+  body.append('id', String(id));
+  return request<{ code: number; msg: string }>(`${ADP}/applyDelete.html`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
+}
+
+/** 删除/下线自己的格子广告申请（用户自主） */
+export function deleteGridApply(id: number) {
+  const key = getToken();
+  const body = new URLSearchParams();
+  body.append('key', key);
+  body.append('id', String(id));
+  return request<{ code: number; msg: string }>(`${ADP}/gridApplyDelete.html`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
+}
+
+/** 系统广告位读取（好道原生 my_ad 链路：按 alias 取启用且未过期的广告） */
+export function getAds(alias: string) {
+  return request<{
+    code: number;
+    msg: string;
+    data: Array<{ id: number; name: string; alias: string; content: string; px: number; times: string; muban: string }>;
+  }>(`/index.php/api/ads.html` + qs({ alias }));
+}

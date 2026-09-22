@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Menu, Spin, Typography } from 'antd';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
@@ -41,6 +41,7 @@ const TITLE_MAP: Record<string, string> = {
   '/user/submit': '提交站点',
   '/user/mysites': '我的站点',
   '/user/ad/my': '我的广告',
+  '/user/ad/buy': '申请广告位',
   '/user/favorites': '我的收藏',
   '/user/orders': '我的订单',
   '/user/reports': '我的举报',
@@ -79,7 +80,10 @@ export default function UserLayout() {
     navigate('/login');
   };
 
-  const selected = MENU_KEYS.includes(location.pathname) ? location.pathname : '/user';
+  const selected = useMemo(() => {
+    if (location.pathname.startsWith('/user/ad/')) return '/user/ad/my';
+    return MENU_KEYS.includes(location.pathname) ? location.pathname : '/user';
+  }, [location.pathname]);
 
   if (loading) {
     return (

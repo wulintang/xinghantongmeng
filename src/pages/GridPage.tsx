@@ -4,6 +4,7 @@ import { Alert, Button, Form, Input, InputNumber, Modal, Spin, Typography, messa
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import GridCanvas from '@components/common/GridCanvas';
+import AdImgUpload from '@/components/common/AdImgUpload';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -107,8 +108,8 @@ export default function GridPage(): React.JSX.Element {
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
-          <Form.Item label="广告图片 URL" name="img" rules={[{ required: true, message: '请填写图片地址' }]}>
-            <Input placeholder="图片地址（支持 GIF 等，仅图片+链接）" />
+          <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+            <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
           </Form.Item>
           <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />

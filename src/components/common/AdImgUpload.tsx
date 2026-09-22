@@ -77,7 +77,7 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
         )}
       </Upload>
       {hint ? (
-        <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: -8 }}>{hint}</div>
+        <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 8, lineHeight: 'var(--lh-tight)' }}>{hint}</div>
       ) : null}
     </div>
   );

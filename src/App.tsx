@@ -31,6 +31,7 @@ import MySitesPage from '@pages/user/MySites';
 import AdBuyPage from '@pages/user/AdBuyPage';
 import AdMyPage from '@pages/user/AdMyPage';
 import GridPage from '@pages/GridPage';
+import AdPricesPage from '@pages/AdPricesPage';
 import LinksPage from '@pages/LinksPage';
 import { SiteProvider } from '@/context/SiteContext';
 
@@ -72,6 +73,7 @@ const App: React.FC = () => {
                             <Route path="/links" element={<LinksPage />} />
 
                             <Route path="/grid" element={<GridPage />} />
+                            <Route path="/dan/ad" element={<AdPricesPage />} />
 
                             <Route path="/abstract" element={<AbstractPage />} />
 

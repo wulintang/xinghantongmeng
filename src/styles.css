@@ -92,63 +92,71 @@ body {
   font-size: var(--fs-xs);
 }
 
-/* 格子广告画布 */
+/* 格子广告画布：虚拟 1×1 单元格，统一 1200×1000，响应式绝对 1:1 等比缩放不变形 */
 .grid-canvas {
   display: grid;
-  gap: 6px;
   width: 100%;
+  max-width: 1200px;
+  aspect-ratio: 1200 / 1000;
+  gap: 0;
+  position: relative;
+  margin: 0 auto;
+  background: var(--c-border);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
 }
 .grid-cell {
-  border: 1px solid var(--c-border);
-  border-radius: 6px;
-  min-height: 48px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.02);
-  position: relative;
-}
-.grid-cell-empty {
-  cursor: pointer;
-  color: var(--c-text-3);
-  font-size: var(--fs-xs);
-}
-.grid-cell-empty:hover {
-  border-color: var(--c-link);
-}
-.grid-cell-filled {
   background: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px var(--c-border); /* 网格线，不占布局，保证矩形与单元格严格对齐 */
+  transition: background 0.12s;
 }
-.grid-cell-mine {
+.grid-cell:hover {
+  background: rgba(22, 119, 255, 0.06);
+}
+.grid-cell-preview {
+  background: rgba(22, 119, 255, 0.18);
+  box-shadow: 0 0 0 1px var(--c-link);
+}
+/* 已购且在期的广告矩形（绝对定位叠加在网格之上） */
+.grid-rect {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 4px;
   box-shadow: 0 0 0 2px var(--c-link) inset;
+  pointer-events: none;
 }
-.grid-cell-selected {
-  background: rgba(22, 119, 255, 0.08);
-  border-color: var(--c-link);
+.grid-rect-mine {
+  box-shadow: 0 0 0 2px #52c41a inset;
 }
-.grid-cell-reserved {
-  background: rgba(0, 0, 0, 0.06);
+.grid-rect-preview {
+  background: rgba(22, 119, 255, 0.18);
+  box-shadow: none;
 }
-.grid-cell-html {
-  width: 100%;
-  height: 100%;
-}
-.grid-cell-html img,
-.grid-cell img {
+.grid-rect-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.grid-cell-link {
-  color: var(--c-link);
+.grid-rect-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.grid-rect-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   font-size: var(--fs-xs);
+  color: var(--c-link);
   padding: 4px;
   text-align: center;
-}
-.grid-cell-tip {
-  opacity: 0.7;
 }
 .grid-canvas-empty {
   color: var(--c-text-3);

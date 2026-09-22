@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Alert, Button, Card, Form, Input, InputNumber, Spin, Typography, message } from 'antd';
+import { Alert, Button, Form, Input, InputNumber, Modal, Spin, Typography, message } from 'antd';
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import GridCanvas from '@components/common/GridCanvas';
 
 const { Title, Paragraph, Text } = Typography;
+
+type Rect = { x: number; y: number; w: number; h: number };
 
 export default function GridPage(): React.JSX.Element {
   const navigate = useNavigate();
@@ -13,7 +15,8 @@ export default function GridPage(): React.JSX.Element {
   const page = params.get('page') || 'grid';
   const [grid, setGrid] = useState<AdPayGrid | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [rect, setRect] = useState<Rect | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
   const loggedIn = !!getToken();
@@ -24,24 +27,32 @@ export default function GridPage(): React.JSX.Element {
         if (r.code === 1) setGrid(r.data || null);
         else message.error(r.msg || '加载失败');
       })
-      .catch(() => message.error('加载失败'))
+      .catch((e) => message.error(e?.message || '加载失败'))
       .finally(() => setLoading(false));
   }, [page]);
 
-  const toggle = (id: number) => {
-    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
-  };
-
-  const onFinish = (values: any) => {
-    if (!selected.length) {
-      message.error('请先选择格子');
+  const openModal = (r: Rect) => {
+    if (!loggedIn) {
+      message.warning('请先登录');
+      navigate('/login');
       return;
     }
+    setRect(r);
+    setModalOpen(true);
+  };
+
+  const cellsCount = rect ? rect.w * rect.h : 0;
+  const pricePerCell = grid?.price_per_cell || 0;
+
+  const onFinish = (values: any) => {
+    if (!rect) return;
     setSubmitting(true);
     applyGrid({
       page,
-      cells: selected,
-      content: values.content,
+      x: rect.x,
+      y: rect.y,
+      w: rect.w,
+      h: rect.h,
       img: values.img,
       link: values.link,
       duration_month: values.duration_month || 1,
@@ -49,8 +60,10 @@ export default function GridPage(): React.JSX.Element {
       .then((r) => {
         if (r.code === 1) {
           message.success('申请提交成功，等待审核');
-          setSelected([]);
+          setModalOpen(false);
+          setRect(null);
           form.resetFields();
+          getGrid(page).then((res) => res.code === 1 && setGrid(res.data || null));
         } else {
           message.error(r.msg || '提交失败');
         }
@@ -61,24 +74,19 @@ export default function GridPage(): React.JSX.Element {
 
   if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
 
-  const totalPrice = (grid?.cells || [])
-    .filter((c) => selected.includes(c.id))
-    .reduce((sum, c) => sum + parseFloat(c.price || '0'), 0) * (form.getFieldValue('duration_month') || 1);
-
   return (
     <div className="grid-page">
       <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
         {page === 'home' ? '首页底部格子广告' : '格子广告'}
       </Title>
       <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-        点击空闲格子框选投放区域，每格独立定价，所选格子总价 = 单价之和 × 投放月数。提交即从余额扣费，审核通过后展示。
+        在下方画布拖拽框选投放区域（每格 ¥{pricePerCell}/月）。框选后弹出申请表单，提交即从余额扣费，审核通过后展示。
       </Paragraph>
 
       <GridCanvas
         grid={grid}
         selectable={loggedIn}
-        selected={selected}
-        onToggle={toggle}
+        onSelectRect={openModal}
         onEmptyClick={() => {
           if (!loggedIn) {
             message.warning('请先登录');
@@ -87,34 +95,40 @@ export default function GridPage(): React.JSX.Element {
         }}
       />
 
-      {!loggedIn ? (
-        <Alert style={{ marginTop: 'var(--page-gap)' }} type="info" message="登录后可框选格子并提交广告申请" />
-      ) : (
-        <Card title={`投放申请（已选 ${selected.length} 格）`} style={{ marginTop: 'var(--page-gap)' }}>
-          <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
-            <Form.Item label="广告图片 URL" name="img">
-              <Input placeholder="图片地址（填写后优先展示图片）" />
-            </Form.Item>
-            <Form.Item label="跳转链接" name="link">
-              <Input placeholder="https://..." />
-            </Form.Item>
-            <Form.Item label="广告代码（可选）" name="content">
-              <Input.TextArea rows={3} placeholder="自定义 HTML 广告代码" />
-            </Form.Item>
-            <Form.Item label="投放月数" name="duration_month" rules={[{ required: true }]}>
-              <InputNumber min={1} max={12} style={{ width: 160 }} />
-            </Form.Item>
-            <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-              预计扣费：¥{totalPrice.toFixed(2)}（含所选格子 {selected.length} 格）
-            </Text>
-            <div style={{ marginTop: 12 }}>
-              <Button type="primary" htmlType="submit" loading={submitting} disabled={!selected.length}>
-                提交申请并支付
-              </Button>
-            </div>
-          </Form>
-        </Card>
-      )}
+      {!loggedIn ? <Alert style={{ marginTop: 'var(--page-gap)' }} type="info" message="登录后可框选格子并提交广告申请" /> : null}
+
+      <Modal
+        title={`格子广告申请（${cellsCount} 格）`}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onOk={() => form.submit()}
+        confirmLoading={submitting}
+        okText="提交并支付"
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
+          <Form.Item label="广告图片 URL" name="img" rules={[{ required: true, message: '请填写图片地址' }]}>
+            <Input placeholder="图片地址（支持 GIF 等，仅图片+链接）" />
+          </Form.Item>
+          <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
+            <Input placeholder="https://..." />
+          </Form.Item>
+          <Form.Item label="投放月数" name="duration_month" rules={[{ required: true }]}>
+            <InputNumber min={1} max={12} style={{ width: 160 }} />
+          </Form.Item>
+          <Form.Item noStyle shouldUpdate>
+            {() => {
+              const m = form.getFieldValue('duration_month') || 1;
+              const t = cellsCount * pricePerCell * m;
+              return (
+                <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                  每格 ¥{pricePerCell}/月 × {cellsCount} 格 × {m} 月 = ¥{t.toFixed(2)}
+                </Text>
+              );
+            }}
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

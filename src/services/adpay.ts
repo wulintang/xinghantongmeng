@@ -48,30 +48,69 @@ export interface AdPayApply {
   position_name: string;
 }
 
-export interface AdPayGridCell {
+/** 已购且在期的格子矩形 */
+export interface AdPayGridRect {
   id: number;
+  uid: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  cells_count: number;
+  img: string;
+  link: string;
+  duration_month: number;
+  amount: string;
+  status: number;
+  start_time: number;
+  end_time: number;
+  mine: number;
+}
+
+/** 格子画布（虚拟 1×1 单元格） */
+export interface AdPayGrid {
+  page: string;
+  cols: number;
+  rows: number;
+  price_per_cell: number;
+  open: number;
+  rects: AdPayGridRect[];
+}
+
+/** 格子配置（每页一行） */
+export interface AdPayGridConfig {
+  id: number;
+  page: string;
+  cols: number;
+  rows: number;
+  price_per_cell: string;
+  open: number;
+  sort: number;
+}
+
+export interface AdPayGridApply {
+  id: number;
+  uid: number;
   page: string;
   x: number;
   y: number;
   w: number;
   h: number;
-  price: string;
-  status: number; // 0空闲 1已售 2预留
-  uid: number;
-  content: string;
+  cells_count: number;
   img: string;
   link: string;
+  duration_month: number;
+  amount: string;
+  status: number;
+  refuse_reason: string | null;
   start_time: number;
   end_time: number;
-  mine: number;
-  active: number;
+  create_time: number;
 }
 
-export interface AdPayGrid {
-  page: string;
-  cols: number;
-  rows: number;
-  cells: AdPayGridCell[];
+export interface AdPayPriceResp {
+  positions: AdPayPosition[];
+  grids: AdPayGridConfig[];
 }
 
 function qs(params: Record<string, any>): string {
@@ -97,6 +136,11 @@ export function getPosition(pkey: string) {
   return request<{ code: number; msg: string; data: AdPayPosition | null }>(`${ADP}/position.html` + qs({ pkey }));
 }
 
+/** 广告价格单（前端 /dan/ad 价格单页）：所有广告位 + 格子配置 */
+export function getPrices() {
+  return request<{ code: number; msg: string; data: AdPayPriceResp | null }>(`${ADP}/prices.html`);
+}
+
 /** 提交系统广告申请（先付费后审核） */
 export function applyAd(data: { pkey: string; plan: string; title?: string; link?: string; img?: string; content?: string }) {
   const key = getToken();
@@ -119,7 +163,7 @@ export function getMyAds() {
   return request<{
     code: number;
     msg: string;
-    data?: { applies: AdPayApply[]; gridApplies: any[] };
+    data?: { applies: AdPayApply[]; gridApplies: AdPayGridApply[] };
   }>(`${ADP}/my.html` + qs({ key }));
 }
 
@@ -129,15 +173,20 @@ export function getGrid(page: string) {
   return request<{ code: number; msg: string; data: AdPayGrid | null }>(`${ADP}/grid.html` + qs({ page, key }));
 }
 
-/** 提交格子广告申请（框选面积计费） */
-export function applyGrid(data: { page: string; cells: number[]; content?: string; img?: string; link?: string; duration_month: number }) {
+/**
+ * 提交格子广告申请（框选矩形计费：每格月价 × 格子数 × 月数）
+ * 格子广告仅允许图片 + 链接，不允许自定义代码
+ */
+export function applyGrid(data: { page: string; x: number; y: number; w: number; h: number; img?: string; link?: string; duration_month: number }) {
   const key = getToken();
   const body = new URLSearchParams();
   body.append('key', key);
   body.append('page', data.page);
-  body.append('cells', JSON.stringify(data.cells));
+  body.append('x', String(data.x));
+  body.append('y', String(data.y));
+  body.append('w', String(data.w));
+  body.append('h', String(data.h));
   body.append('duration_month', String(data.duration_month));
-  if (data.content) body.append('content', data.content);
   if (data.img) body.append('img', data.img);
   if (data.link) body.append('link', data.link);
   return request<{ code: number; msg: string; data?: any }>(`${ADP}/gridApply.html`, {

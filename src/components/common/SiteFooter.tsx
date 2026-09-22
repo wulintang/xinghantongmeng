@@ -59,7 +59,13 @@ export default function SiteFooter(): React.JSX.Element {
     const { site, footLinks, friendLinks } = useSite();
 
     // 站内导航 = 后台配置的底部导航（不再并入顶部导航，避免上下重复）
-    const siteNav = useMemo(() => footLinks, [footLinks]);
+    // 广告价格单为硬编码入口（与 Header 的 GRID_ENTRY 同理，后端 my_link 无此条目）
+    const adPriceEntry: LinkItem = { id: -2, name: '广告价格', lianjie: '/dan/ad', xin: 0 } as LinkItem;
+    const siteNav = useMemo<LinkItem[]>(() => {
+        const list = footLinks.slice();
+        if (!list.some((l) => (l.lianjie || '').startsWith('/dan/ad'))) list.push(adPriceEntry);
+        return list;
+    }, [footLinks]);
     // 友情链接：底部展示前 4 条真实友链，「更多」入口永远显示（独立 /links 页展示全部）
     const friendPreview = useMemo<LinkItem[]>(() => [
         ...friendLinks.slice(0, 4),

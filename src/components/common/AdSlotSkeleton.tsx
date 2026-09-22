@@ -87,6 +87,7 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
         y: rect.y,
         w: rect.w,
         h: rect.h,
+        title: values.title,
         img: values.img,
         link: values.link,
         duration_month: values.duration_month || 1,

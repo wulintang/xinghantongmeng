@@ -153,7 +153,11 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
               width: previewRect.w * CELL_PX,
               height: previewRect.h * CELL_PX,
             }}
-          />
+          >
+            <span className="grid-rect-preview-label">
+              {previewRect.w}×{previewRect.h}（{previewRect.w * previewRect.h}格）
+            </span>
+          </div>
         )}
       </div>
     </div>

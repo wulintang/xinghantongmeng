@@ -50,16 +50,17 @@ export default function GridPage(): React.JSX.Element {
   const onFinish = (values: any) => {
     if (!rect) return;
     setSubmitting(true);
-    applyGrid({
-      page,
-      x: rect.x,
-      y: rect.y,
-      w: rect.w,
-      h: rect.h,
-      img: values.img,
-      link: values.link,
-      duration_month: values.duration_month || 1,
-    })
+      applyGrid({
+        page,
+        x: rect.x,
+        y: rect.y,
+        w: rect.w,
+        h: rect.h,
+        title: values.title,
+        img: values.img,
+        link: values.link,
+        duration_month: values.duration_month || 1,
+      })
       .then((r) => {
         if (r.code === 1) {
           message.success('申请提交成功，等待审核');

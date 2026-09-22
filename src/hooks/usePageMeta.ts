@@ -25,7 +25,7 @@ function setMetaTag(name: string, content?: string): void {
  */
 export function usePageMeta(meta: PageMeta = {}): void {
     const { site } = useSite();
-    const siteName = (site?.title || '').trim();
+    const siteName = (site?.titles || site?.title || '').trim();
     const { title, keywords, description } = meta;
 
     useEffect(() => {

@@ -71,13 +71,13 @@ export default function AdBuyPage(): React.JSX.Element {
 
   return (
     <div className="ad-buy-page">
-      <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
-        申请广告位：{pos.name}
-      </Title>
-      <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-        提交即从余额扣费（¥{price || 0}），审核不通过将自动退款到余额。同一广告位允许多位用户投放，展示时登录用户优先看到自己的广告。
-      </Paragraph>
       <Card>
+        <Title level={3} style={{ fontSize: 'var(--fs-xl)', marginTop: 0 }}>
+          申请广告位：{pos.name}
+        </Title>
+        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+          提交即从余额扣费（¥{price || 0}），审核不通过将自动退款到余额。同一广告位允许多位用户投放，展示时登录用户优先看到自己的广告。
+        </Paragraph>
         <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ plan: 'month' }}>
           <Form.Item label="投放时长" name="plan" rules={[{ required: true }]}>
             <Select

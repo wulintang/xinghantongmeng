@@ -128,6 +128,9 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
           destroyOnClose
         >
           <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
+            <Form.Item label="广告标题" name="title" rules={[{ required: true, message: '请输入广告标题' }]}>
+              <Input placeholder="如：兴汉同盟官网" maxLength={60} />
+            </Form.Item>
             <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
               <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
             </Form.Item>

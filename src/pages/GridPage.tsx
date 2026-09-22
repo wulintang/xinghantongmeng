@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Button, Form, Input, InputNumber, Modal, Spin, Typography, message } from 'antd';
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import GridCanvas from '@components/common/GridCanvas';
 import AdImgUpload from '@/components/common/AdImgUpload';
 
@@ -21,6 +22,7 @@ export default function GridPage(): React.JSX.Element {
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
   const loggedIn = !!getToken();
+  usePageMeta({ title: '格子广告' });
 
   useEffect(() => {
     getGrid(page)
@@ -107,10 +109,13 @@ export default function GridPage(): React.JSX.Element {
         okText="提交并支付"
         destroyOnClose
       >
-        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
-          <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
-            <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
-          </Form.Item>
+          <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
+            <Form.Item label="广告标题" name="title" rules={[{ required: true, message: '请输入广告标题' }]}>
+              <Input placeholder="如：兴汉同盟官网" maxLength={60} />
+            </Form.Item>
+            <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
+            </Form.Item>
           <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />
           </Form.Item>

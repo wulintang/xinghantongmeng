@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Spin, Table, Typography, message } from 'antd';
 import { getPrices, type AdPayPosition, type AdPayGridConfig } from '@/services/adpay';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title, Paragraph } = Typography;
 
 export default function AdPricesPage(): React.JSX.Element {
+  usePageMeta({ title: '广告价格单' });
   const [loading, setLoading] = useState(true);
   const [positions, setPositions] = useState<AdPayPosition[]>([]);
   const [grids, setGrids] = useState<AdPayGridConfig[]>([]);

@@ -97,6 +97,7 @@ export interface AdPayGridApply {
   w: number;
   h: number;
   cells_count: number;
+  title: string;
   img: string;
   link: string;
   duration_month: number;
@@ -177,7 +178,7 @@ export function getGrid(page: string) {
  * 提交格子广告申请（框选矩形计费：每格月价 × 格子数 × 月数）
  * 格子广告仅允许图片 + 链接，不允许自定义代码
  */
-export function applyGrid(data: { page: string; x: number; y: number; w: number; h: number; img?: string; link?: string; duration_month: number }) {
+export function applyGrid(data: { page: string; x: number; y: number; w: number; h: number; title?: string; img?: string; link?: string; duration_month: number }) {
   const key = getToken();
   const body = new URLSearchParams();
   body.append('key', key);
@@ -187,6 +188,7 @@ export function applyGrid(data: { page: string; x: number; y: number; w: number;
   body.append('w', String(data.w));
   body.append('h', String(data.h));
   body.append('duration_month', String(data.duration_month));
+  if (data.title) body.append('title', data.title);
   if (data.img) body.append('img', data.img);
   if (data.link) body.append('link', data.link);
   return request<{ code: number; msg: string; data?: any }>(`${ADP}/gridApply.html`, {

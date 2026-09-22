@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Table, Tag, Typography, message } from 'antd';
+import { Button, Card, Spin, Table, Tag, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {
@@ -10,8 +10,6 @@ import {
   type AdPayGridApply,
   type AdPayPosition,
 } from '@/services/adpay';
-
-const { Title } = Typography;
 
 const STATUS_COLOR: Record<number, string> = {
   0: 'orange',
@@ -52,10 +50,6 @@ export default function AdMyPage(): React.JSX.Element {
 
   return (
     <div className="ad-my-page">
-      <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
-        我的广告
-      </Title>
-
       <Card title="可申请广告位" style={{ marginBottom: 'var(--page-gap)' }}>
         <Table<AdPayPosition>
           rowKey="id"
@@ -107,6 +101,7 @@ export default function AdMyPage(): React.JSX.Element {
           locale={{ emptyText: '暂无申请' }}
           columns={[
             { title: '页面', dataIndex: 'page' },
+            { title: '标题', dataIndex: 'title' },
             {
               title: '区域',
               render: (_: any, r: AdPayGridApply) => `(${r.x},${r.y}) 起 ${r.w}×${r.h}（${r.cells_count}格）`,

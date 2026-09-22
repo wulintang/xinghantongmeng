@@ -19,8 +19,9 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader } from '@components/common';
+import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
+import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
     claimWebsite,
@@ -36,7 +37,7 @@ import type { PostData } from '@/types/post';
 import { domainOf, jumpUrl, normalizeDomain } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
-const { Text, Paragraph, Title } = Typography;
+const { Text, Title } = Typography;
 
 const WebsiteDetailPage: React.FC = () => {
     const navigate = useNavigate();
@@ -245,6 +246,8 @@ const WebsiteDetailPage: React.FC = () => {
                 }
             />
 
+            <AdSlotSkeleton />
+
             <Card>
                 <Flex gap={20} align="flex-start" wrap>
                     <Avatar shape="square" size={72} src={item.ico || item.pic || undefined}>
@@ -267,9 +270,7 @@ const WebsiteDetailPage: React.FC = () => {
                                 ))}
                             </Space>
                         ) : null}
-                        <Paragraph className="detail-content">
-                            {item.content || '暂无站点简介'}
-                        </Paragraph>
+                        <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content || '')) }} />
                     </Flex>
                     {item.pic ? (
                         <img src={item.pic} alt={item.title || item.name} className="detail-shot-side" />
@@ -360,6 +361,8 @@ const WebsiteDetailPage: React.FC = () => {
                     </Row>
                 </Card>
             ) : null}
+
+            <AdSlotSkeleton />
 
             <div>
                 <Button onClick={() => navigate('/websites')}>返回网址导航</Button>

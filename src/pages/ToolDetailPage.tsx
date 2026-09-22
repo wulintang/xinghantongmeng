@@ -3,14 +3,15 @@ import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typo
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader } from '@components/common';
+import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getTool, submitReport, toggleFavorite, readFaved, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix, toolPageUrl } from '@/utils/route';
+import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { getToken } from '@/utils/auth';
 
-const { Text, Paragraph, Title } = Typography;
+const { Text, Title } = Typography;
 
 const ToolDetailPage: React.FC = () => {
     const navigate = useNavigate();
@@ -131,6 +132,8 @@ const ToolDetailPage: React.FC = () => {
                 }
             />
 
+            <AdSlotSkeleton />
+
             <Card>
                 <Flex gap={20} align="flex-start" wrap>
                     {item.pic ? <img src={assetUrl(item.pic)} alt={item.title} className="tool-detail-ico" /> : null}
@@ -143,7 +146,7 @@ const ToolDetailPage: React.FC = () => {
                         <Title level={5} className="detail-subtitle">
                             工具说明
                         </Title>
-                        <Paragraph className="detail-content">{item.content || '暂无说明'}</Paragraph>
+                        <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content || '')) }} />
                     </Flex>
                 </Flex>
             </Card>
@@ -180,6 +183,8 @@ const ToolDetailPage: React.FC = () => {
                     </Flex>
                 }
             />
+
+            <AdSlotSkeleton />
 
             <Modal
                 title={`举报「${item?.title || '工具'}」`}

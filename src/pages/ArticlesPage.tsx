@@ -3,7 +3,7 @@ import { Alert, Card, Flex, List, Pagination, Tag, Typography } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { CateFilter, PageHeader, SearchBox } from '@components/common';
+import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { ArticlesSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticleCates, getArticles, type ArticleItem, type CateItem } from '@/services/userCenter';
@@ -87,6 +87,8 @@ const ArticlesPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '文章资讯' }]}
             />
 
+            <AdSlotSkeleton />
+
             <SearchBox placeholder="搜索文章标题" gotoPage="/articles" />
 
             <CateFilter cates={cates} value={cate} onChange={(v) => updateParam({ cate: v, page: undefined })} />
@@ -103,32 +105,34 @@ const ArticlesPage: React.FC = () => {
                             itemLayout="vertical"
                             dataSource={list}
                             rowKey={(a) => a.id}
-                            renderItem={(a) => (
-                                <List.Item
-                                    key={a.id}
-                                    actions={[
-                                        <Text type="secondary" key="time">
-                                            {dayjs.unix(a.time).format('YYYY-MM-DD HH:mm')}
-                                        </Text>,
-                                        <Text type="secondary" key="view">
-                                            浏览 {a.view}
-                                        </Text>,
-                                        <Text type="secondary" key="zan">
-                                            点赞 {a.zan}
-                                        </Text>,
-                                    ]}
-                                >
-                                    <List.Item.Meta
-                                        title={<Link to={`/articles/${a.id}`}>{a.title}</Link>}
-                                        description={
-                                            a.description ? (
-                                                <Text type="secondary">{a.description}</Text>
-                                            ) : (
-                                                <Tag>资讯</Tag>
-                                            )
-                                        }
-                                    />
-                                </List.Item>
+                            renderItem={(a, idx) => (
+                                <React.Fragment key={a.id}>
+                                    {idx === 8 ? <AdSlotSkeleton /> : null}
+                                    <List.Item
+                                        actions={[
+                                            <Text type="secondary" key="time">
+                                                {dayjs.unix(a.time).format('YYYY-MM-DD HH:mm')}
+                                            </Text>,
+                                            <Text type="secondary" key="view">
+                                                浏览 {a.view}
+                                            </Text>,
+                                            <Text type="secondary" key="zan">
+                                                点赞 {a.zan}
+                                            </Text>,
+                                        ]}
+                                    >
+                                        <List.Item.Meta
+                                            title={<Link to={`/articles/${a.id}`}>{a.title}</Link>}
+                                            description={
+                                                a.description ? (
+                                                    <Text type="secondary">{a.description}</Text>
+                                                ) : (
+                                                    <Tag>资讯</Tag>
+                                                )
+                                            }
+                                        />
+                                    </List.Item>
+                                </React.Fragment>
                             )}
                         />
                     </Card>

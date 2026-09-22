@@ -50,6 +50,20 @@ body {
   min-height: calc(100vh - 260px);
 }
 
+.ad-slot-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+}
+.ad-slot-skeleton-label {
+  color: var(--c-text-3);
+  font-size: var(--fs-sm);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 12px;

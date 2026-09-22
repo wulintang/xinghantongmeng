@@ -7,6 +7,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
+import { AdSlotSkeleton } from '@components/common';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 
 const { Title, Text, Paragraph } = Typography;
@@ -159,6 +160,7 @@ export default function LinksPage() {
 
     return (
         <div className="container site-content links-page">
+            <AdSlotSkeleton />
             {friendCard}
             {descCard}
             <div className="links-grid">

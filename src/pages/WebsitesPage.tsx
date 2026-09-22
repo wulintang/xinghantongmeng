@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Typography } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 
-import { CateFilter, PageHeader, SearchBox } from '@components/common';
+import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { WebsitesSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getWebsiteCates, getWebsites, type CateItem, type WebsiteItem } from '@/services/userCenter';
@@ -87,6 +87,8 @@ const WebsitesPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '网址导航' }]}
             />
 
+            <AdSlotSkeleton />
+
             <SearchBox placeholder="搜索站点名称、关键词、域名" gotoPage="/websites" />
 
             <CateFilter
@@ -110,8 +112,14 @@ const WebsitesPage: React.FC = () => {
                         <Text type="secondary">共 {total} 个站点</Text>
                     </Flex>
                     <Row gutter={[16, 16]}>
-                        {list.map((w) => (
-                            <Col key={w.id} xs={24} sm={12} md={8}>
+                        {list.map((w, i) => (
+                            <React.Fragment key={w.id}>
+                                {i === 8 ? (
+                                    <Col xs={24}>
+                                        <AdSlotSkeleton />
+                                    </Col>
+                                ) : null}
+                                <Col xs={24} sm={12} md={8}>
                                 <Card className="site-card">
                                     <Flex vertical gap={12}>
                                         <Flex align="center" gap={12}>
@@ -147,6 +155,7 @@ const WebsitesPage: React.FC = () => {
                                     </Flex>
                                 </Card>
                             </Col>
+                            </React.Fragment>
                         ))}
                     </Row>
                     {total > PAGE_SIZE ? (

@@ -3,7 +3,7 @@ import { Alert, Avatar, Button, Divider, Flex, Input, Modal, Space, Tag, Tooltip
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader } from '@components/common';
+import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { AbstractSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
@@ -185,6 +185,8 @@ const AbstractPage: React.FC = () => {
                 }
             />
 
+            <AdSlotSkeleton />
+
             <div className="feed-timeline-item abstract-timeline-item">
                 <div className="feed-author-col">
                     <Link to={domainRoute}>
@@ -263,6 +265,8 @@ const AbstractPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            <AdSlotSkeleton />
 
             <Modal
                 title="举报文章"

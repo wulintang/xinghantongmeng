@@ -3,7 +3,7 @@ import { Alert, Button, Card, Flex, Input, Modal, Space, Typography, message } f
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader } from '@components/common';
+import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getDan, submitReport, toggleFavorite, readFaved, type DanItem } from '@/services/userCenter';
@@ -122,6 +122,8 @@ const DanPage: React.FC = () => {
                 }
             />
 
+            <AdSlotSkeleton />
+
             <Space split="·" wrap className="detail-meta">
                 <Text type="secondary">浏览 {dan.view}</Text>
                 <Text type="secondary">
@@ -142,6 +144,8 @@ const DanPage: React.FC = () => {
                     />
                 )}
             </Card>
+
+            <AdSlotSkeleton />
 
             <div>
                 <Button onClick={() => navigate('/')}>返回首页</Button>

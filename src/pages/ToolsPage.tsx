@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Card, Col, Flex, Row, Tag, Typography } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { CateFilter, PageHeader } from '@components/common';
+import { CateFilter, PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getToolCates, getTools, type CateItem, type ToolItem } from '@/services/userCenter';
@@ -82,6 +82,8 @@ const ToolsPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '常用工具' }]}
             />
 
+            <AdSlotSkeleton />
+
             <CateFilter cates={cates} value={cate} onChange={changeCate} />
 
             {loading ? (
@@ -92,8 +94,14 @@ const ToolsPage: React.FC = () => {
                 <>
                     <Text type="secondary">共 {total} 个工具</Text>
                     <Row gutter={[16, 16]}>
-                        {list.map((t) => (
-                            <Col key={t.id} xs={12} sm={8} md={6}>
+                        {list.map((t, i) => (
+                            <React.Fragment key={t.id}>
+                                {i === 8 ? (
+                                    <Col xs={24}>
+                                        <AdSlotSkeleton />
+                                    </Col>
+                                ) : null}
+                                <Col xs={12} sm={8} md={6}>
                                 <Card
                                     className="tool-card"
                                     hoverable
@@ -121,6 +129,7 @@ const ToolsPage: React.FC = () => {
                                     </Flex>
                                 </Card>
                             </Col>
+                            </React.Fragment>
                         ))}
                     </Row>
                 </>

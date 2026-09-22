@@ -15,7 +15,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { AdSlot, SearchBox } from '@components/common';
+import { AdSlot, SearchBox, AdSlotSkeleton } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -91,6 +91,8 @@ const HomePage: React.FC = () => {
                 ) : null}
             </div>
 
+            <AdSlotSkeleton />
+
             <section>
                 <Flex className="section-head" justify="space-between" align="center">
                     <Title level={4} className="section-title">
@@ -138,6 +140,8 @@ const HomePage: React.FC = () => {
                     </Row>
                 )}
             </section>
+
+            <AdSlotSkeleton />
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={12}>

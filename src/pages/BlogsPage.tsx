@@ -16,7 +16,7 @@ import {
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader, SearchBox } from '@components/common';
+import { PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getPosts } from '@/services/postService';
@@ -237,6 +237,8 @@ const BlogsPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场' }]}
             />
 
+            <AdSlotSkeleton />
+
             <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/feed" />
 
             <Flex justify="space-between" align="center" wrap gap={12}>
@@ -255,7 +257,7 @@ const BlogsPage: React.FC = () => {
             ) : (
                 <>
                     <div className="feed-timeline">
-                        {pageList.map((p) => {
+                        {pageList.map((p, idx) => {
                             const domain = domainOf(p);
                             const icon =
                                 siteIcons[normalizeDomain(domain)] ||
@@ -263,6 +265,8 @@ const BlogsPage: React.FC = () => {
                             const abstractRoute = `/abstract?link=${encodeURIComponent(p.link)}`;
                             const domainRoute = `/${domain}`;
                             return (
+                                <>
+                                {idx === 8 ? <AdSlotSkeleton key="ad-mid" /> : null}
                                 <div className="feed-timeline-item" key={p.link || `${domain}-${p.title}`}>
                                     <Link to={domainRoute} className="feed-author-col">
                                         <Avatar
@@ -332,6 +336,7 @@ const BlogsPage: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
+                                </>
                             );
                         })}
                     </div>

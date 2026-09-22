@@ -3,7 +3,7 @@ import { Alert, Button, Card, Divider, Flex, Input, Modal, Space, Typography, me
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader } from '@components/common';
+import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticle, submitReport, toggleLike, toggleFavorite, readFaved, type ArticleItem } from '@/services/userCenter';
@@ -183,6 +183,8 @@ const ArticleDetailPage: React.FC = () => {
                 }
             />
 
+            <AdSlotSkeleton />
+
             <Space split={<Divider type="vertical" />} wrap className="detail-meta">
                 <Text type="secondary">{dayjs.unix(item.time).format('YYYY-MM-DD HH:mm')}</Text>
                 <Text type="secondary">浏览 {item.view}</Text>
@@ -202,6 +204,8 @@ const ArticleDetailPage: React.FC = () => {
                     <Paragraph className="detail-content">暂无正文</Paragraph>
                 )}
             </Card>
+
+            <AdSlotSkeleton />
 
             <div>
                 <Button onClick={() => navigate('/articles')}>返回文章资讯</Button>

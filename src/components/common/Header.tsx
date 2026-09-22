@@ -127,7 +127,7 @@ export default function Header(): React.JSX.Element {
                 {item.name}
             </a>
         ) : (
-            <Link to={item.to || '/'}>{item.name}</Link>
+            <Link to={item.to || '/'} title={item.name}>{item.name}</Link>
         );
 
     const logout = () => {
@@ -184,7 +184,7 @@ export default function Header(): React.JSX.Element {
     return (
         <header className="site-header">
             <div className="container site-header-inner">
-                <Link to="/" className="site-logo">
+                <Link to="/" className="site-logo" title={site?.title || '首页'}>
                     {site?.logo ? (
                         <img src={site.logo} alt={site.title || ''} className="site-logo-img" />
                     ) : (

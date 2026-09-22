@@ -122,7 +122,7 @@ const WebsitesPage: React.FC = () => {
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
                                             <Flex vertical gap={2} className="site-card-body">
-                                            <Link to={`/${domainOf(w)}`} className="site-card-name">
+                                            <Link to={`/${domainOf(w)}`} className="site-card-name" title={w.title || w.name}>
                                                 {w.title || w.name}
                                             </Link>
                                                 <Text type="secondary" className="site-card-domain">
@@ -139,7 +139,7 @@ const WebsitesPage: React.FC = () => {
                                             </Text>
                                             <Flex gap={4}>
                                                 {w.url ? (
-                                                    <Link to={`/${domainOf(w)}`}>
+                                                    <Link to={`/${domainOf(w)}`} title={w.title || w.name}>
                                                         <Button type="link" size="small">
                                                             {w.feed_url ? '查看文章' : '访问'}
                                                         </Button>

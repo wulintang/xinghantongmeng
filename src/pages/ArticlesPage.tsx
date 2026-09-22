@@ -121,7 +121,7 @@ const ArticlesPage: React.FC = () => {
                                         ]}
                                     >
                                         <List.Item.Meta
-                                            title={<Link to={`/articles/${a.id}`}>{a.title}</Link>}
+                                            title={<Link to={`/articles/${a.id}`} title={a.title}>{a.title}</Link>}
                                             description={
                                                 a.description ? (
                                                     <Text type="secondary">{a.description}</Text>

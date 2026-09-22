@@ -83,7 +83,7 @@ const HomePage: React.FC = () => {
                     <Space size={[8, 8]} wrap className="home-hero-cates">
                         <Text type="secondary">网址分类：</Text>
                         {cates.map((c) => (
-                            <Link key={c.id} to={`/websites?cate=${c.id}`}>
+                            <Link key={c.id} to={`/websites?cate=${c.id}`} title={c.name}>
                                 <Tag color="processing">{c.name}</Tag>
                             </Link>
                         ))}
@@ -114,7 +114,7 @@ const HomePage: React.FC = () => {
                                             <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
-                                            <Link to={`/${domainOf(w)}`} className="site-card-name">
+                                            <Link to={`/${domainOf(w)}`} className="site-card-name" title={w.title || w.name}>
                                                 {w.title || w.name}
                                             </Link>
                                         </Flex>
@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
                                                 浏览 {w.view} · 点赞 {w.zan}
                                             </Text>
                                             {w.url ? (
-                                                <Link to={`/${domainOf(w)}`} className="site-card-visit">
+                                                <Link to={`/${domainOf(w)}`} className="site-card-visit" title={w.title || w.name || '访问'}>
                                                     <Button type="link" size="small">
                                                         访问
                                                     </Button>
@@ -162,7 +162,7 @@ const HomePage: React.FC = () => {
                             renderItem={(a) => (
                                 <List.Item>
                                     <List.Item.Meta
-                                        title={<Link to={`/articles/${a.id}`}>{a.title}</Link>}
+                                        title={<Link to={`/articles/${a.id}`} title={a.title}>{a.title}</Link>}
                                         description={
                                             <Text type="secondary">
                                                 {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
@@ -202,7 +202,7 @@ const HomePage: React.FC = () => {
                                         }
                                         description={
                                             <Text type="secondary">
-                                                <Link to={`/${domainOf(p)}`}>
+                                                <Link to={`/${domainOf(p)}`} title={p.blogName || domainOf(p)}>
                                                     {p.blogName || domainOf(p)}
                                                 </Link>
                                                 {' · '}
@@ -231,7 +231,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
                 <div className="home-grid-footer">
-                    <Link to="/grid" className="home-grid-more">查看更多格子广告 &raquo;</Link>
+                    <Link to="/grid" className="home-grid-more" title="查看更多格子广告">查看更多格子广告 &raquo;</Link>
                 </div>
             </section>
         </Flex>

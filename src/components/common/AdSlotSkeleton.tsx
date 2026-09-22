@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { sanitizeHtml } from '@/utils/CommonUtil';
-import { getAds, getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
+import { getAd, getGrid, applyGrid, type AdPayGrid, type AdPayAd } from '@/services/adpay';
 import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
 import AdImgUpload from './AdImgUpload';
@@ -18,7 +18,7 @@ interface Props {
 
 export default function AdSlotSkeleton({ label = '广告位', variant = 'banner', slot, page }: Props): React.JSX.Element {
   const navigate = useNavigate();
-  const [ad, setAd] = useState<{ content: string } | null>(null);
+  const [ad, setAd] = useState<AdPayAd | null>(null);
   const [adReady, setAdReady] = useState(false);
   const [grid, setGrid] = useState<AdPayGrid | null>(null);
   const [rect, setRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -31,9 +31,9 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     if (!slot) return;
     let alive = true;
     setAdReady(false);
-    getAds(slot)
+    getAd(slot)
       .then((r) => {
-        if (alive && r.code === 1) setAd(r.data && r.data.length ? r.data[0] : null);
+        if (alive && r.code === 1) setAd(r.data || null);
       })
       .catch(() => {})
       .finally(() => {
@@ -98,7 +98,7 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
         .finally(() => setSubmitting(false));
     };
     return (
-      <div className="ad-slot-skeleton ad-slot-skeleton-grid" style={{ margin: 'var(--page-gap) 0' }}>
+      <div className="ad-slot-skeleton ad-slot-skeleton-grid">
         <GridCanvas
           grid={grid}
           selectable={loggedIn}
@@ -124,20 +124,20 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
               <Input placeholder="如：兴汉同盟官网" maxLength={60} />
             </Form.Item>
             <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
-              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
+              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" strictSize={false} />
             </Form.Item>
             <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
               <Input placeholder="https://..." />
             </Form.Item>
             <Form.Item label="投放月数" name="duration_month" rules={[{ required: true }]}>
-              <InputNumber min={1} max={12} style={{ width: 160 }} />
+              <InputNumber min={1} max={12} className="ad-month-input" />
             </Form.Item>
             <Form.Item noStyle shouldUpdate>
               {() => {
                 const m = form.getFieldValue('duration_month') || 1;
                 const t = cellsCount * pricePerCell * m;
                 return (
-                  <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                  <Text type="secondary" className="ad-slot-price-hint">
                     {`每格 ¥${pricePerCell}/月 × ${cellsCount} 格 × ${m} 月 = ¥${t.toFixed(2)}`}
                   </Text>
                 );
@@ -152,7 +152,7 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
   if (slot) {
     if (adReady && ad) {
       return (
-        <div className="ad-slot-filled" style={{ margin: 'var(--page-gap) 0' }}>
+        <div className="ad-slot-filled">
           <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
         </div>
       );
@@ -161,7 +161,6 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
       return (
         <div
           className="ad-slot-skeleton ad-slot-skeleton-banner ad-slot-apply"
-          style={{ margin: 'var(--page-gap) 0' }}
           onClick={() => navigate('/user/ad/my')}
           role="button"
         >
@@ -171,14 +170,14 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
       );
     }
     return (
-      <div className="ad-slot-skeleton ad-slot-skeleton-banner" style={{ margin: 'var(--page-gap) 0' }}>
+      <div className="ad-slot-skeleton ad-slot-skeleton-banner">
         <span className="ad-slot-skeleton-label">{label}</span>
       </div>
     );
   }
 
   return (
-    <div className={`ad-slot-skeleton ad-slot-skeleton-${variant}`} style={{ margin: 'var(--page-gap) 0' }}>
+    <div className={`ad-slot-skeleton ad-slot-skeleton-${variant}`}>
       <span className="ad-slot-skeleton-label">{label}</span>
     </div>
   );

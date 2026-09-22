@@ -339,7 +339,7 @@ const WebsiteDetailPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {related.map((r) => (
                             <Col key={r.id} xs={24} sm={12} md={8}>
-                                <Link to={`/${domainOf(r)}`} className="related-site-card">
+                                <Link to={`/${domainOf(r)}`} className="related-site-card" title={r.name || r.title}>
                                     <Avatar
                                         shape="square"
                                         size={48}

@@ -189,12 +189,12 @@ const AbstractPage: React.FC = () => {
 
             <div className="feed-timeline-item abstract-timeline-item">
                 <div className="feed-author-col">
-                    <Link to={domainRoute}>
+                    <Link to={domainRoute} title={p.blogName || domain}>
                         <Avatar className="feed-author-avatar" shape="circle" src={icon || undefined}>
                             {(p.blogName || domain || '?').slice(0, 1)}
                         </Avatar>
                     </Link>
-                    <Link to={domainRoute} className="feed-author-name">
+                    <Link to={domainRoute} className="feed-author-name" title={p.blogName || domain}>
                         {p.blogName || domain}
                     </Link>
                     {p.blogJoinYears ? (

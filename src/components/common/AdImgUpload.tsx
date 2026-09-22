@@ -9,9 +9,10 @@ interface Props {
   value?: string;
   onChange?: (url: string) => void;
   hint?: string;
+  strictSize?: boolean;
 }
 
-export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX.Element {
+export default function AdImgUpload({ value, onChange, hint, strictSize = true }: Props): React.JSX.Element {
   const [list, setList] = useState<UploadFile[]>(
     value ? [{ uid: '-1', name: 'ad-img', status: 'done', url: value }] : []
   );
@@ -28,22 +29,24 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
       message.error('只能上传图片文件（支持 webp/jpg/png/gif）');
       return false;
     }
-    const size = await new Promise<{ w: number; h: number }>((resolve) => {
-      const url = URL.createObjectURL(file as File);
-      const img = new Image();
-      img.onload = () => {
-        resolve({ w: img.naturalWidth, h: img.naturalHeight });
-        URL.revokeObjectURL(url);
-      };
-      img.onerror = () => {
-        resolve({ w: 0, h: 0 });
-        URL.revokeObjectURL(url);
-      };
-      img.src = url;
-    });
-    if (size.w !== 1200 || size.h !== 120) {
-      message.error(`广告图片必须为 1200×120 像素（当前 ${size.w}×${size.h}），请调整后上传`);
-      return false;
+    if (strictSize) {
+      const size = await new Promise<{ w: number; h: number }>((resolve) => {
+        const url = URL.createObjectURL(file as File);
+        const img = new Image();
+        img.onload = () => {
+          resolve({ w: img.naturalWidth, h: img.naturalHeight });
+          URL.revokeObjectURL(url);
+        };
+        img.onerror = () => {
+          resolve({ w: 0, h: 0 });
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      });
+      if (size.w !== 1200 || size.h !== 120) {
+        message.error(`广告图片必须为 1200×120 像素（当前 ${size.w}×${size.h}），请调整后上传`);
+        return false;
+      }
     }
     setLoading(true);
     uploadAdImg(key, file as File)
@@ -68,8 +71,8 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
 
   return (
     <div>
-      <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginBottom: 8, lineHeight: 'var(--lh-tight)' }}>
-        广告图片须为 1200×120 像素，优先 webp 格式；尺寸不符无法上传。
+      <div className="ad-upload-tip">
+        {strictSize ? '广告图片须为 1200×120 像素，优先 webp 格式；尺寸不符无法上传。' : '建议上传与广告位尺寸匹配的图片，优先 webp 格式。'}
       </div>
       <Upload
         listType="picture-card"
@@ -82,13 +85,11 @@ export default function AdImgUpload({ value, onChange, hint }: Props): React.JSX
         {list.length >= 1 ? null : (
           <div>
             {loading ? <UploadOutlined /> : <PlusOutlined />}
-            <div style={{ marginTop: 8, fontSize: 'var(--fs-sm)' }}>{loading ? '上传中' : '上传图片'}</div>
+            <div className="ad-upload-label">{loading ? '上传中' : '上传图片'}</div>
           </div>
         )}
       </Upload>
-      {hint ? (
-        <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 8, lineHeight: 'var(--lh-tight)' }}>{hint}</div>
-      ) : null}
+      {hint ? <div className="ad-upload-hint">{hint}</div> : null}
     </div>
   );
 }

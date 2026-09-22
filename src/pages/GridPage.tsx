@@ -115,20 +115,20 @@ export default function GridPage(): React.JSX.Element {
               <Input placeholder="如：兴汉同盟官网" maxLength={60} />
             </Form.Item>
             <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
-              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
+              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" strictSize={false} />
             </Form.Item>
           <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />
           </Form.Item>
           <Form.Item label="投放月数" name="duration_month" rules={[{ required: true }]}>
-            <InputNumber min={1} max={12} style={{ width: 160 }} />
+            <InputNumber min={1} max={12} className="ad-month-input" />
           </Form.Item>
           <Form.Item noStyle shouldUpdate>
             {() => {
               const m = form.getFieldValue('duration_month') || 1;
               const t = cellsCount * pricePerCell * m;
               return (
-                <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                <Text type="secondary" className="ad-slot-price-hint">
                   每格 ¥{pricePerCell}/月 × {cellsCount} 格 × {m} 月 = ¥{t.toFixed(2)}
                 </Text>
               );

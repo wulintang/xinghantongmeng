@@ -23,7 +23,7 @@ export default function PageHeader({ title, description, crumbs, extra }: PageHe
             {crumbs && crumbs.length > 0 ? (
                 <Breadcrumb
                     items={crumbs.map((c) => ({
-                        title: c.to ? <Link to={c.to}>{c.label}</Link> : c.label,
+                        title: c.to ? <Link to={c.to} title={c.label}>{c.label}</Link> : c.label,
                     }))}
                 />
             ) : null}

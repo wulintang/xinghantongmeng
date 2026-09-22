@@ -266,11 +266,36 @@ export function deleteGridApply(id: number) {
   });
 }
 
-/** 系统广告位读取（好道原生 my_ad 链路：按 alias 取启用且未过期的广告） */
-export function getAds(alias: string) {
-  return request<{
-    code: number;
-    msg: string;
-    data: Array<{ id: number; name: string; alias: string; content: string; px: number; times: string; muban: string }>;
-  }>(`/index.php/api/ads.html` + qs({ alias }));
+/** 编辑自己的系统广告申请 */
+export function updateApply(id: number, data: { title?: string; link?: string; img?: string; content?: string }) {
+  const key = getToken();
+  const body = new URLSearchParams();
+  body.append('key', key);
+  body.append('id', String(id));
+  Object.keys(data).forEach((k) => {
+    const v = (data as any)[k];
+    if (v !== undefined && v !== null && v !== '') body.append(k, String(v));
+  });
+  return request<{ code: number; msg: string }>(`${ADP}/applyEdit.html`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
+}
+
+/** 编辑自己的格子广告申请 */
+export function updateGridApply(id: number, data: { title?: string; link?: string; img?: string }) {
+  const key = getToken();
+  const body = new URLSearchParams();
+  body.append('key', key);
+  body.append('id', String(id));
+  Object.keys(data).forEach((k) => {
+    const v = (data as any)[k];
+    if (v !== undefined && v !== null && v !== '') body.append(k, String(v));
+  });
+  return request<{ code: number; msg: string }>(`${ADP}/gridApplyEdit.html`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
 }

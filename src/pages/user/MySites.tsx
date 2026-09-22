@@ -130,7 +130,7 @@ export default function MySitesPage() {
       render: (v: string, row: WebsiteItem) => (
         <Space>
           {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
-          <Link to={`/${row.www || row.domain}`}>{v}</Link>
+          <Link to={`/${row.www || row.domain}`} title={row.title || row.www || row.domain || v}>{v}</Link>
         </Space>
       ),
     },

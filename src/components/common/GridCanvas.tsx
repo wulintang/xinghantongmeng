@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { AdPayGrid, AdPayGridRect } from '@/services/adpay';
 
 interface Props {
@@ -58,8 +58,6 @@ function RectView({ r }: { r: AdPayGridRect }): React.ReactNode {
 
 export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClick }: Props): React.JSX.Element {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
   const dragging = useRef(false);
   const [drag, setDrag] = useState<Coord | null>(null);
   const [cur, setCur] = useState<Coord | null>(null);
@@ -67,21 +65,7 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
   const cols = grid?.cols || 0;
   const rows = grid?.rows || 0;
   const rects = grid?.rects || [];
-  const innerWidth = cols * CELL_PX;
-  const innerHeight = rows * CELL_PX;
-
-  useEffect(() => {
-    if (innerWidth < 1) return;
-    function resize() {
-      const wrap = wrapRef.current;
-      if (!wrap) return;
-      const w = wrap.clientWidth;
-      setScale(w / innerWidth);
-    }
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
-  }, [innerWidth]);
+  const pageCls = grid?.page === 'grid' ? 'grid-canvas-inner-grid' : 'grid-canvas-inner-home';
 
   if (!grid || grid.cols < 1 || grid.rows < 1) {
     return <div className="grid-canvas-empty">该页格子广告尚未配置，请到后台「格子广告配置」开启并设置单价。</div>;
@@ -93,8 +77,8 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
     const wrap = wrapRef.current;
     if (!wrap) return { x: 0, y: 0 };
     const rect = wrap.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / scale / CELL_PX);
-    const y = Math.floor((e.clientY - rect.top) / scale / CELL_PX);
+    const x = Math.floor((e.clientX - rect.left + wrap.scrollLeft) / CELL_PX);
+    const y = Math.floor((e.clientY - rect.top) / CELL_PX);
     return { x: clamp(x, 0, cols - 1), y: clamp(y, 0, rows - 1) };
   }
 
@@ -130,23 +114,8 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
     <div
       ref={wrapRef}
       className="grid-canvas-wrap"
-      style={{ width: '100%', maxWidth: innerWidth, height: innerHeight * scale }}
     >
-      <div
-        ref={innerRef}
-        className="grid-canvas-inner"
-        style={{
-          width: innerWidth,
-          height: innerHeight,
-          transform: `scale(${scale})`,
-          transformOrigin: 'top left',
-          backgroundSize: `${CELL_PX}px ${CELL_PX}px`,
-        }}
-        onMouseDown={onDown}
-        onMouseMove={onMove}
-        onMouseUp={onUp}
-        onMouseLeave={() => onUp()}
-      >
+      <div className={`grid-canvas-inner ${pageCls}`}>
         {rects.map((r) => (
           <RectView key={`r-${r.id}`} r={r} />
         ))}

@@ -108,6 +108,35 @@ body {
   color: var(--c-link);
   font-size: var(--fs-xs);
 }
+.ad-slot-price-hint {
+  font-size: var(--fs-sm);
+}
+.ad-my-section {
+  margin-bottom: var(--page-gap);
+}
+.ad-upload-tip,
+.ad-upload-hint {
+  color: var(--c-text-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-tight);
+}
+.ad-upload-tip {
+  margin-bottom: 8px;
+}
+.ad-upload-hint {
+  margin-top: 8px;
+}
+.ad-upload-label {
+  margin-top: 8px;
+  font-size: var(--fs-sm);
+}
+.page-spin {
+  display: block;
+  margin: 40px auto;
+}
+.ad-month-input {
+  width: 160px;
+}
 
 /* 格子广告画布：固定 10px/格，home=1200×120(120列×12行)，grid=1200×3600(120列×360行) */
 .grid-canvas-wrap {
@@ -115,12 +144,13 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  overflow: hidden;
+  overflow-x: auto;
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   background: #fff;
   user-select: none;
   touch-action: none;
+  -webkit-overflow-scrolling: touch;
 }
 .grid-canvas-inner {
   position: relative;
@@ -129,6 +159,15 @@ body {
   background-image:
     linear-gradient(to right, rgba(0, 0, 0, 0.25) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+.grid-canvas-inner-home {
+  width: 1200px;
+  height: 120px;
+}
+.grid-canvas-inner-grid {
+  width: 1200px;
+  height: 3600px;
 }
 /* 已购且在期的广告矩形（绝对定位叠加在网格之上） */
 .grid-rect {

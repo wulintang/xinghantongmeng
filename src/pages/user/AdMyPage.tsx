@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Tag, Tabs, Popconfirm, message } from 'antd';
+import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {
@@ -7,12 +7,16 @@ import {
   getPrices,
   deleteApply,
   deleteGridApply,
+  updateApply,
+  updateGridApply,
   AD_STATUS_TEXT,
   type AdPayApply,
   type AdPayGridApply,
   type AdPayPosition,
+  type AdPayGridConfig,
 } from '@/services/adpay';
 import CardTable from '@/components/common/CardTable';
+import AdImgUpload from '@/components/common/AdImgUpload';
 
 const STATUS_COLOR: Record<number, string> = {
   0: 'orange',
@@ -28,6 +32,12 @@ export default function AdMyPage(): React.JSX.Element {
   const [applies, setApplies] = useState<AdPayApply[]>([]);
   const [gridApplies, setGridApplies] = useState<AdPayGridApply[]>([]);
   const [positions, setPositions] = useState<AdPayPosition[]>([]);
+  const [grids, setGrids] = useState<AdPayGridConfig[]>([]);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editGrid, setEditGrid] = useState(false);
+  const [editRecord, setEditRecord] = useState<AdPayApply | AdPayGridApply | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [form] = Form.useForm();
 
   const load = () => {
     if (!getToken()) {
@@ -38,19 +48,20 @@ export default function AdMyPage(): React.JSX.Element {
     Promise.all([getMyAds(), getPrices()])
       .then(([my, prices]) => {
         if (my.code === 1 && my.data) {
-          setApplies(my.data.applies || []);
-          setGridApplies(my.data.gridApplies || []);
+          setApplies((my.data.applies || []).filter((a) => a.status !== 4));
+          setGridApplies((my.data.gridApplies || []).filter((g) => g.status !== 4));
         } else if (my.code !== 1) {
           message.error(my.msg || '加载失败');
         }
-        if (prices.code === 1 && prices.data) setPositions(prices.data.positions || []);
+        if (prices.code === 1 && prices.data) {
+          setPositions(prices.data.positions || []);
+          setGrids(prices.data.grids || []);
+        }
       })
-      .catch(() => message.error('加载失败'))
+      .catch((e) => message.error(e?.message || '加载失败'))
       .finally(() => setLoading(false));
   };
   useEffect(load, []);
-
-  if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
 
   const onDeleteApply = (id: number) => {
     deleteApply(id)
@@ -77,6 +88,54 @@ export default function AdMyPage(): React.JSX.Element {
       .catch((e) => message.error(e?.message || '删除失败'));
   };
 
+  const openEdit = (r: AdPayApply) => {
+    setEditRecord(r);
+    setEditGrid(false);
+    form.setFieldsValue({
+      title: r.title,
+      link: r.link,
+      img: r.img,
+      formType: r.content ? 'code' : 'image',
+      content: r.content,
+    });
+    setEditOpen(true);
+  };
+  const openEditGrid = (r: AdPayGridApply) => {
+    setEditRecord(r);
+    setEditGrid(true);
+    form.setFieldsValue({ title: r.title, link: r.link, img: r.img });
+    setEditOpen(true);
+  };
+  const onEditOk = () => {
+    form.submit();
+  };
+  const onEditFinish = (values: any) => {
+    if (!editRecord) return;
+    setEditLoading(true);
+    const payload = editGrid
+      ? { title: values.title, link: values.link, img: values.img }
+      : {
+          title: values.title,
+          link: values.link,
+          img: values.formType === 'image' ? values.img : '',
+          content: values.formType === 'code' ? values.content : '',
+        };
+    const p = editGrid
+      ? updateGridApply(editRecord.id, payload)
+      : updateApply(editRecord.id, payload);
+    p.then((r) => {
+        if (r.code === 1) {
+          message.success('已保存');
+          setEditOpen(false);
+          load();
+        } else {
+          message.error(r.msg || '保存失败');
+        }
+      })
+      .catch((e) => message.error(e?.message || '保存失败'))
+      .finally(() => setEditLoading(false));
+  };
+
   const sysColumns = [
     { title: '广告位', dataIndex: 'position_name' },
     { title: '标题', dataIndex: 'title' },
@@ -91,16 +150,21 @@ export default function AdMyPage(): React.JSX.Element {
     {
       title: '操作',
       render: (_: any, r: AdPayApply) => (
-        <Popconfirm title="确认删除该广告申请？" onConfirm={() => onDeleteApply(r.id)} okText="删除" cancelText="取消">
-          <Button danger size="small">
-            删除
+        <>
+          <Button type="link" size="small" onClick={() => openEdit(r)}>
+            编辑
           </Button>
-        </Popconfirm>
+          <Popconfirm title="确认删除该广告申请？" onConfirm={() => onDeleteApply(r.id)} okText="删除" cancelText="取消">
+            <Button danger size="small">
+              删除
+            </Button>
+          </Popconfirm>
+        </>
       ),
     },
   ];
   const gridColumns = [
-    { title: '页面', dataIndex: 'page', render: (v: string) => (v === 'home' ? '首页底部' : '格子单页') },
+    { title: '页面', dataIndex: 'page', render: (v: string) => (v === 'home' ? '首页底部' : '单页格子') },
     { title: '标题', dataIndex: 'title' },
     {
       title: '区域',
@@ -117,30 +181,41 @@ export default function AdMyPage(): React.JSX.Element {
     {
       title: '操作',
       render: (_: any, r: AdPayGridApply) => (
-        <Popconfirm title="确认删除该格子广告申请？" onConfirm={() => onDeleteGrid(r.id)} okText="删除" cancelText="取消">
-          <Button danger size="small">
-            删除
+        <>
+          <Button type="link" size="small" onClick={() => openEditGrid(r)}>
+            编辑
           </Button>
-        </Popconfirm>
+          <Popconfirm title="确认删除该格子广告申请？" onConfirm={() => onDeleteGrid(r.id)} okText="删除" cancelText="取消">
+            <Button danger size="small">
+              删除
+            </Button>
+          </Popconfirm>
+        </>
       ),
     },
   ];
-  const posColumns = [
+  const applyList = [
+    ...positions.map((p) => ({ key: `sys-${p.pkey}`, kind: 'sys', name: p.name, loc: `${p.page} / ${p.location}`, price: `¥${p.price_month}`, pkey: p.pkey })),
+    ...grids.map((g) => ({ key: `grid-${g.page}`, kind: 'grid', name: g.page === 'home' ? '首页底部格子广告' : '单页格子广告', loc: '格子广告画布', price: `¥${g.price_per_cell}/格`, pkey: g.page })),
+  ];
+  const applyColumns = [
     { title: '广告位', dataIndex: 'name' },
-    { title: '页面/位置', render: (_: any, r: AdPayPosition) => `${r.page} / ${r.location}` },
-    { title: '月价', dataIndex: 'price_month', render: (v: string) => `¥${v}` },
+    { title: '页面/位置', dataIndex: 'loc' },
+    { title: '月价', dataIndex: 'price' },
     {
       title: '操作',
-      render: (_: any, r: AdPayPosition) => (
-        <Button type="link" onClick={() => navigate(`/user/ad/buy?slot=${r.pkey}`)}>
-          申请
+      render: (_: any, r: any) => (
+        <Button type="link" onClick={() => navigate(r.kind === 'sys' ? `/user/ad/buy?slot=${r.pkey}` : '/grid')}>
+          {r.kind === 'sys' ? '申请' : '申请格子广告'}
         </Button>
       ),
     },
   ];
 
+  if (loading) return <Spin className="page-spin" />;
+
   return (
-    <div className="ad-my-page">
+    <Card className="user-center-card">
       <Tabs
         items={[
           {
@@ -148,7 +223,7 @@ export default function AdMyPage(): React.JSX.Element {
             label: '我的广告位列表',
             children: (
               <>
-                <Card title="系统广告" style={{ marginBottom: 'var(--page-gap)' }}>
+                <Card title="系统广告" className="ad-my-section">
                   <CardTable<AdPayApply>
                     rowKey="id"
                     dataSource={applies}
@@ -175,20 +250,58 @@ export default function AdMyPage(): React.JSX.Element {
             label: '可申请广告位',
             children: (
               <Card title="可申请广告位">
-                <CardTable<AdPayPosition>
-                  rowKey="pkey"
-                  dataSource={positions}
-                  columns={posColumns}
+                <CardTable
+                  rowKey="key"
+                  dataSource={applyList}
+                  columns={applyColumns}
                   locale={{ emptyText: '暂无可申请广告位' }}
                 />
-                <Button type="link" style={{ paddingLeft: 0, marginTop: 8 }} onClick={() => navigate('/grid')}>
-                  进入格子广告单页申请 →
-                </Button>
               </Card>
             ),
           },
         ]}
       />
-    </div>
+      <Modal
+        title={editGrid ? '编辑格子广告' : '编辑系统广告'}
+        open={editOpen}
+        onOk={onEditOk}
+        onCancel={() => setEditOpen(false)}
+        confirmLoading={editLoading}
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical" onFinish={onEditFinish}>
+          <Form.Item label="广告标题" name="title" rules={[{ required: true, message: '请输入广告标题' }]}>
+            <Input placeholder="如：兴汉同盟官网" maxLength={60} />
+          </Form.Item>
+          <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
+            <Input placeholder="https://..." />
+          </Form.Item>
+          {!editGrid && (
+            <Form.Item label="内容形式" name="formType">
+              <Radio.Group>
+                <Radio value="image">图片广告</Radio>
+                <Radio value="code">自定义代码</Radio>
+              </Radio.Group>
+            </Form.Item>
+          )}
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.formType !== cur.formType || editGrid}>
+            {({ getFieldValue }) => {
+              if (editGrid || getFieldValue('formType') === 'image') {
+                return (
+                  <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+                    <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" strictSize={!editGrid} />
+                  </Form.Item>
+                );
+              }
+              return (
+                <Form.Item label="自定义代码" name="content" rules={[{ required: true, message: '请输入广告代码' }]}>
+                  <Input.TextArea rows={4} placeholder="支持 HTML/JS" />
+                </Form.Item>
+              );
+            }}
+          </Form.Item>
+        </Form>
+      </Modal>
+    </Card>
   );
 }

@@ -117,7 +117,7 @@ export default function RegisterPage() {
         </Form.Item>
       </Form>
       <Text>
-        已有账号？<Link to="/login">去登录</Link>
+        已有账号？<Link to="/login" title="去登录">去登录</Link>
       </Text>
     </Card>
   );

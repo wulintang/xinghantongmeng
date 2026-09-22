@@ -139,7 +139,7 @@ export default function LoginPage() {
         </Form.Item>
       </Form>
       <Text>
-        还没有账号？<Link to="/register">去注册</Link>
+        还没有账号？<Link to="/register" title="去注册">去注册</Link>
       </Text>
     </Card>
   );

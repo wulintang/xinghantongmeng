@@ -4,6 +4,7 @@ import { Button, Card, InputNumber, Modal, Space, Tag, Statistic, Spin, Typograp
 import { getBalance, getUserProfile, type BalanceItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import dayjs from 'dayjs';
 import CardTable from '@components/common/CardTable';
 
 const { Title } = Typography;
@@ -88,7 +89,7 @@ export default function BalancePage() {
                 return <Tag color={n >= 0 ? 'green' : 'red'}>{v}</Tag>;
               },
             },
-            { title: '时间', dataIndex: 'time' },
+            { title: '时间', dataIndex: 'time', render: (t: any) => (typeof t === 'number' ? dayjs(t * 1000).format('YYYY-MM-DD HH:mm') : (t || '-')) },
           ]}
         />
       </Spin>

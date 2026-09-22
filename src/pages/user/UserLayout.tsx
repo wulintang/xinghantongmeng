@@ -8,26 +8,26 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 const { Text } = Typography;
 
 const MENU = [
-  { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
+  { key: '/user/submit', label: <Link to="/user/submit" title="提交站点">提交站点</Link> },
   {
     type: 'group' as const,
     label: '我的',
     children: [
-      { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
-      { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
-      { key: '/user/ad/my', label: <Link to="/user/ad/my">我的广告</Link> },
-      { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
-      { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
+      { key: '/user/mysites', label: <Link to="/user/mysites" title="我的站点">我的站点</Link> },
+      { key: '/user/favorites', label: <Link to="/user/favorites" title="我的收藏">我的收藏</Link> },
+      { key: '/user/ad/my', label: <Link to="/user/ad/my" title="我的广告">我的广告</Link> },
+      { key: '/user/orders', label: <Link to="/user/orders" title="我的订单">我的订单</Link> },
+      { key: '/user/reports', label: <Link to="/user/reports" title="我的举报">我的举报</Link> },
     ],
   },
   {
     type: 'group' as const,
     label: '账户',
     children: [
-      { key: '/user', label: <Link to="/user">个人资料</Link> },
-      { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
-      { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
-      { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },
+      { key: '/user', label: <Link to="/user" title="个人资料">个人资料</Link> },
+      { key: '/user/checkin', label: <Link to="/user/checkin" title="每日签到">每日签到</Link> },
+      { key: '/user/messages', label: <Link to="/user/messages" title="消息中心">消息中心</Link> },
+      { key: '/user/balance', label: <Link to="/user/balance" title="余额明细">余额明细</Link> },
     ],
   },
 ];

@@ -22,7 +22,7 @@ function FooterLink({ item }: { item: LinkItem }): React.JSX.Element {
         );
     }
     return (
-        <Link to={target.to || '/'} {...(external ? { target: '_blank' } : {})}>
+        <Link to={target.to || '/'} {...(external ? { target: '_blank' } : {})} title={item.name}>
             {item.name}
         </Link>
     );

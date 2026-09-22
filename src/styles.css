@@ -92,49 +92,48 @@ body {
   font-size: var(--fs-xs);
 }
 
-/* 格子广告画布：虚拟 1×1 单元格，统一 1200×1000，响应式绝对 1:1 等比缩放不变形 */
-.grid-canvas {
-  display: grid;
+/* 格子广告画布：固定 10px/格，home=1200×120(120列×12行)，grid=1200×3600(120列×360行) */
+.grid-canvas-wrap {
+  position: relative;
   width: 100%;
   max-width: 1200px;
-  aspect-ratio: 1200 / 1000;
-  gap: 0;
-  position: relative;
   margin: 0 auto;
-  background: var(--c-border);
-  border: 1px solid var(--c-border);
-  border-radius: 8px;
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  background: #fff;
   user-select: none;
   touch-action: none;
 }
-.grid-cell {
+.grid-canvas-inner {
+  position: relative;
   background: #fff;
-  cursor: pointer;
-  box-shadow: 0 0 0 1px var(--c-border); /* 网格线，不占布局，保证矩形与单元格严格对齐 */
-  transition: background 0.12s;
+  cursor: crosshair;
 }
-.grid-cell:hover {
-  background: rgba(22, 119, 255, 0.06);
-}
-.grid-cell-preview {
-  background: rgba(22, 119, 255, 0.18);
-  box-shadow: 0 0 0 1px var(--c-link);
+.grid-svg line {
+  stroke: rgba(0, 0, 0, 0.25);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
 }
 /* 已购且在期的广告矩形（绝对定位叠加在网格之上） */
 .grid-rect {
   position: absolute;
+  z-index: 2;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 2px;
   box-shadow: 0 0 0 2px var(--c-link) inset;
-  pointer-events: none;
+  pointer-events: auto;
+  background: rgba(22, 119, 255, 0.04);
 }
 .grid-rect-mine {
   box-shadow: 0 0 0 2px #52c41a inset;
+  background: rgba(82, 196, 26, 0.06);
 }
 .grid-rect-preview {
+  z-index: 3;
   background: rgba(22, 119, 255, 0.18);
-  box-shadow: none;
+  box-shadow: 0 0 0 1px var(--c-link) inset;
+  pointer-events: none;
 }
 .grid-rect-img {
   width: 100%;
@@ -153,16 +152,44 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: var(--fs-xs);
+  font-size: 10px;
   color: var(--c-link);
-  padding: 4px;
+  padding: 2px;
   text-align: center;
+  overflow: hidden;
+  word-break: break-all;
 }
 .grid-canvas-empty {
   color: var(--c-text-3);
   font-size: var(--fs-sm);
   padding: var(--page-gap) 0;
   text-align: center;
+}
+
+/* 首页底部格子区域 */
+.ad-slot-skeleton-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.grid-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.grid-section-meta {
+  color: var(--c-text-3);
+  font-size: var(--fs-xs);
+}
+.grid-section-footer {
+  text-align: right;
+}
+.grid-more-link {
+  color: var(--c-link);
+  font-size: var(--fs-sm);
+}
+.grid-more-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

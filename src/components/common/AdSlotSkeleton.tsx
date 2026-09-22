@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { sanitizeHtml } from '@/utils/CommonUtil';
 import { getAd, getGrid, applyGrid, type AdPayAd, type AdPayGrid } from '@/services/adpay';
 import { getToken } from '@/utils/auth';
@@ -106,6 +106,12 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     };
     return (
       <div className="ad-slot-skeleton ad-slot-skeleton-grid" style={{ margin: 'var(--page-gap) 0' }}>
+        {page === 'home' && (
+          <div className="grid-section-header">
+            <span className="ad-slot-skeleton-label">格子广告</span>
+            <span className="grid-section-meta">120 × 12 格，每格 10 px，框选申请</span>
+          </div>
+        )}
         <GridCanvas
           grid={grid}
           selectable={loggedIn}
@@ -117,6 +123,11 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
             }
           }}
         />
+        {page === 'home' && (
+          <div className="grid-section-footer">
+            <Link to="/grid" className="grid-more-link">查看更多格子广告 &raquo;</Link>
+          </div>
+        )}
         <Modal
           title={`格子广告申请（${cellsCount} 格）`}
           open={modalOpen}

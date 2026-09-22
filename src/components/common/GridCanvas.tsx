@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { AdPayGrid, AdPayGridRect } from '@/services/adpay';
 
 interface Props {
@@ -13,14 +13,7 @@ interface Props {
 
 type Coord = { x: number; y: number };
 
-function rectStyle(r: { x: number; y: number; w: number; h: number }, cols: number, rows: number): React.CSSProperties {
-  return {
-    left: `${(r.x / cols) * 100}%`,
-    top: `${(r.y / rows) * 100}%`,
-    width: `${(r.w / cols) * 100}%`,
-    height: `${(r.h / rows) * 100}%`,
-  };
-}
+const CELL_PX = 10;
 
 function normRect(a: Coord, b: Coord) {
   const x = Math.min(a.x, b.x);
@@ -30,9 +23,19 @@ function normRect(a: Coord, b: Coord) {
   return { x, y, w, h };
 }
 
-function RectView({ r, cols, rows }: { r: AdPayGridRect; cols: number; rows: number }): React.ReactNode {
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function RectView({ r }: { r: AdPayGridRect }): React.ReactNode {
+  const style: React.CSSProperties = {
+    left: r.x * CELL_PX,
+    top: r.y * CELL_PX,
+    width: r.w * CELL_PX,
+    height: r.h * CELL_PX,
+  };
   return (
-    <div className={`grid-rect${r.mine ? ' grid-rect-mine' : ''}`} style={rectStyle(r, cols, rows)}>
+    <div className={`grid-rect${r.mine ? ' grid-rect-mine' : ''}`} style={style}>
       {r.img ? (
         r.link ? (
           <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link">
@@ -49,64 +52,123 @@ function RectView({ r, cols, rows }: { r: AdPayGridRect; cols: number; rows: num
 }
 
 export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClick }: Props): React.JSX.Element {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
   const dragging = useRef(false);
   const [drag, setDrag] = useState<Coord | null>(null);
   const [cur, setCur] = useState<Coord | null>(null);
 
-  if (!grid || grid.cols < 1 || grid.rows < 1) {
-    return <div className="grid-canvas-empty">该页格子广告尚未配置，请到后台「格子广告配置」开启并设行列。</div>;
-  }
-  const { cols, rows, rects } = grid;
+  const cols = grid?.cols || 0;
+  const rows = grid?.rows || 0;
+  const rects = grid?.rects || [];
+  const innerWidth = cols * CELL_PX;
+  const innerHeight = rows * CELL_PX;
 
-  const cells: Coord[] = [];
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) cells.push({ x, y });
+  useEffect(() => {
+    if (innerWidth < 1) return;
+    function resize() {
+      const wrap = wrapRef.current;
+      if (!wrap) return;
+      const w = wrap.clientWidth;
+      setScale(w / innerWidth);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, [innerWidth]);
+
+  if (!grid || grid.cols < 1 || grid.rows < 1) {
+    return <div className="grid-canvas-empty">该页格子广告尚未配置，请到后台「格子广告配置」开启并设置单价。</div>;
+  }
 
   const previewRect = drag && cur ? normRect(drag, cur) : null;
 
-  const onDown = (c: Coord) => {
+  function eventToCell(e: React.MouseEvent): Coord {
+    const wrap = wrapRef.current;
+    if (!wrap) return { x: 0, y: 0 };
+    const rect = wrap.getBoundingClientRect();
+    const x = Math.floor((e.clientX - rect.left) / scale / CELL_PX);
+    const y = Math.floor((e.clientY - rect.top) / scale / CELL_PX);
+    return { x: clamp(x, 0, cols - 1), y: clamp(y, 0, rows - 1) };
+  }
+
+  const onDown = (e: React.MouseEvent) => {
     if (!selectable) {
       onEmptyClick?.();
       return;
     }
+    e.preventDefault();
+    const c = eventToCell(e);
     dragging.current = true;
     setDrag(c);
     setCur(c);
   };
-  const onEnter = (c: Coord) => {
+  const onMove = (e: React.MouseEvent) => {
     if (!selectable || !dragging.current) return;
-    setCur(c);
+    setCur(eventToCell(e));
   };
-  const onUp = () => {
+  const onUp = (e?: React.MouseEvent) => {
     if (!selectable || !dragging.current) return;
     dragging.current = false;
-    if (drag && cur) onSelectRect?.(normRect(drag, cur));
+    const c = e ? eventToCell(e) : cur;
+    if (drag && c) {
+      const r = normRect(drag, c);
+      if (r.w > 0 && r.h > 0) onSelectRect?.(r);
+    }
     setDrag(null);
     setCur(null);
   };
 
+  // 生成网格线（用 SVG，避免 4 万+ div）
+  const lines: React.ReactNode[] = [];
+  const stroke = 'rgba(0,0,0,0.25)';
+  const strokeWidth = 1;
+  for (let x = 0; x <= cols; x++) {
+    lines.push(<line key={`v-${x}`} x1={x * CELL_PX} y1={0} x2={x * CELL_PX} y2={innerHeight} stroke={stroke} strokeWidth={strokeWidth} />);
+  }
+  for (let y = 0; y <= rows; y++) {
+    lines.push(<line key={`h-${y}`} x1={0} y1={y * CELL_PX} x2={innerWidth} y2={y * CELL_PX} stroke={stroke} strokeWidth={strokeWidth} />);
+  }
+
   return (
     <div
-      className="grid-canvas"
-      style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, gridTemplateRows: `repeat(${rows}, 1fr)` }}
-      onMouseLeave={onUp}
+      ref={wrapRef}
+      className="grid-canvas-wrap"
+      style={{ width: '100%', maxWidth: innerWidth, height: innerHeight * scale }}
     >
-      {cells.map((c) => {
-        const inPreview =
-          previewRect && c.x >= previewRect.x && c.x < previewRect.x + previewRect.w && c.y >= previewRect.y && c.y < previewRect.y + previewRect.h;
-        return (
+      <div
+        ref={innerRef}
+        className="grid-canvas-inner"
+        style={{
+          width: innerWidth,
+          height: innerHeight,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+        onMouseDown={onDown}
+        onMouseMove={onMove}
+        onMouseUp={onUp}
+        onMouseLeave={() => onUp()}
+      >
+        <svg className="grid-svg" width={innerWidth} height={innerHeight} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
+          {lines}
+        </svg>
+        {rects.map((r) => (
+          <RectView key={`r-${r.id}`} r={r} />
+        ))}
+        {previewRect && (
           <div
-            key={`${c.x}-${c.y}`}
-            className={`grid-cell${inPreview ? ' grid-cell-preview' : ''}`}
-            onMouseDown={() => onDown(c)}
-            onMouseEnter={() => onEnter(c)}
-            onMouseUp={onUp}
+            className="grid-rect grid-rect-preview"
+            style={{
+              left: previewRect.x * CELL_PX,
+              top: previewRect.y * CELL_PX,
+              width: previewRect.w * CELL_PX,
+              height: previewRect.h * CELL_PX,
+            }}
           />
-        );
-      })}
-      {rects.map((r) => (
-        <RectView key={`r-${r.id}`} r={r} cols={cols} rows={rows} />
-      ))}
-      {previewRect && <div className="grid-rect grid-rect-preview" style={rectStyle(previewRect, cols, rows)} />}
+        )}
+      </div>
     </div>
   );
 }

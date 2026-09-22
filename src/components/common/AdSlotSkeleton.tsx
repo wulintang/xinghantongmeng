@@ -4,6 +4,7 @@ import { sanitizeHtml } from '@/utils/CommonUtil';
 import { getAd, getGrid, applyGrid, type AdPayAd, type AdPayGrid } from '@/services/adpay';
 import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
+import AdImgUpload from './AdImgUpload';
 import { Form, Input, InputNumber, Modal, Typography, message } from 'antd';
 
 const { Text } = Typography;
@@ -127,8 +128,8 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
           destroyOnClose
         >
           <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ duration_month: 1 }}>
-            <Form.Item label="广告图片 URL" name="img" rules={[{ required: true, message: '请填写图片地址' }]}>
-              <Input placeholder="图片地址（支持 GIF 等，仅图片+链接）" />
+            <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+              <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" />
             </Form.Item>
             <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
               <Input placeholder="https://..." />

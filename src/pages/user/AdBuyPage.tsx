@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Button, Card, Form, Input, Select, Spin, Typography, message } from 'antd';
 import { getToken } from '@/utils/auth';
 import { getPosition, applyAd, AD_PLANS, planPrice, type AdPayPosition } from '@/services/adpay';
+import AdImgUpload from '@/components/common/AdImgUpload';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -93,8 +94,8 @@ export default function AdBuyPage(): React.JSX.Element {
           <Form.Item label="跳转链接" name="link">
             <Input placeholder="https://..." />
           </Form.Item>
-          <Form.Item label="广告图片 URL" name="img">
-            <Input placeholder="图片地址（填写后优先展示图片）" />
+          <Form.Item label="广告图片" name="img">
+            <AdImgUpload hint="上传后优先展示图片（可选）" />
           </Form.Item>
           <Form.Item label="广告代码（可选，图片为空时生效）" name="content">
             <Input.TextArea rows={4} placeholder="可填写自定义 HTML 广告代码" />

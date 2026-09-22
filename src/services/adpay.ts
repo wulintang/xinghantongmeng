@@ -205,6 +205,20 @@ export const AD_PLANS = [
   { key: 'year', label: '年', days: 365 },
 ] as const;
 
+/**
+ * 上传广告图片到后端（复用 user 插件通用上传接口 /index.php/user/index/upload.html）
+ * 返回 { code, msg, data: { url } }，业务接口只存 url 字符串。
+ */
+export function uploadAdImg(key: string, file: File) {
+  const body = new FormData();
+  body.append('key', key);
+  body.append('file', file);
+  return request<{ code: number; msg: string; data?: { url: string } }>(
+    '/index.php/user/index/upload.html',
+    { method: 'POST', body }
+  );
+}
+
 export function planPrice(pos: AdPayPosition, planKey: string): number {
   const map: Record<string, string> = {
     day: 'price_day',

@@ -122,7 +122,7 @@ const DanPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_dan_top" />
 
             <Space split="·" wrap className="detail-meta">
                 <Text type="secondary">浏览 {dan.view}</Text>
@@ -145,7 +145,7 @@ const DanPage: React.FC = () => {
                 )}
             </Card>
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_dan_bottom" />
 
             <div>
                 <Button onClick={() => navigate('/')}>返回首页</Button>

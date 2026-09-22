@@ -15,7 +15,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { AdSlot, SearchBox, AdSlotSkeleton } from '@components/common';
+import { SearchBox, AdSlotSkeleton } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
                 ) : null}
             </div>
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="home_top" />
 
             <section>
                 <Flex className="section-head" justify="space-between" align="center">
@@ -224,7 +224,7 @@ const HomePage: React.FC = () => {
                 description="包含政治、色情、赌博、暴力以及全 AI 生成内容的站点，一经发现将被永久移出收录名单。"
             />
 
-            <AdSlotSkeleton variant="grid" label="广告位（格子）" />
+            <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
         </Flex>
     );
 };

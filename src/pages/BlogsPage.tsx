@@ -237,7 +237,7 @@ const BlogsPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场' }]}
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="list_blog_top" />
 
             <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/feed" />
 

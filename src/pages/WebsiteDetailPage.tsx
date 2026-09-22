@@ -246,7 +246,7 @@ const WebsiteDetailPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_website_top" />
 
             <Card>
                 <Flex gap={20} align="flex-start" wrap>
@@ -362,7 +362,7 @@ const WebsiteDetailPage: React.FC = () => {
                 </Card>
             ) : null}
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_website_bottom" />
 
             <div>
                 <Button onClick={() => navigate('/websites')}>返回网址导航</Button>

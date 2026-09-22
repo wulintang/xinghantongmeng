@@ -87,7 +87,7 @@ const ArticlesPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '文章资讯' }]}
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="list_article_top" />
 
             <SearchBox placeholder="搜索文章标题" gotoPage="/articles" />
 

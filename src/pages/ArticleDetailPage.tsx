@@ -183,7 +183,7 @@ const ArticleDetailPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_article_top" />
 
             <Space split={<Divider type="vertical" />} wrap className="detail-meta">
                 <Text type="secondary">{dayjs.unix(item.time).format('YYYY-MM-DD HH:mm')}</Text>
@@ -205,7 +205,7 @@ const ArticleDetailPage: React.FC = () => {
                 )}
             </Card>
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_article_bottom" />
 
             <div>
                 <Button onClick={() => navigate('/articles')}>返回文章资讯</Button>

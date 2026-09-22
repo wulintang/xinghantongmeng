@@ -28,6 +28,9 @@ import OrdersPage from '@pages/user/Orders';
 import ReportsPage from '@pages/user/Reports';
 import SubmitSitePage from '@pages/user/SubmitSite';
 import MySitesPage from '@pages/user/MySites';
+import AdBuyPage from '@pages/user/AdBuyPage';
+import AdMyPage from '@pages/user/AdMyPage';
+import GridPage from '@pages/GridPage';
 import LinksPage from '@pages/LinksPage';
 import { SiteProvider } from '@/context/SiteContext';
 
@@ -68,6 +71,8 @@ const App: React.FC = () => {
 
                             <Route path="/links" element={<LinksPage />} />
 
+                            <Route path="/grid" element={<GridPage />} />
+
                             <Route path="/abstract" element={<AbstractPage />} />
 
                             <Route path="/dan/:alias" element={<DanPage />} />
@@ -83,8 +88,10 @@ const App: React.FC = () => {
                                 <Route path="orders" element={<OrdersPage />} />
                                 <Route path="reports" element={<ReportsPage />} />
                                 <Route path="submit" element={<SubmitSitePage />} />
-                                <Route path="mysites" element={<MySitesPage />} />
-                            </Route>
+                            <Route path="mysites" element={<MySitesPage />} />
+                            <Route path="ad/buy" element={<AdBuyPage />} />
+                            <Route path="ad/my" element={<AdMyPage />} />
+                        </Route>
 
                             {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
                             <Route path="/jump" element={<JumpPage />} />

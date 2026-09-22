@@ -132,7 +132,7 @@ const ToolDetailPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_tool_top" />
 
             <Card>
                 <Flex gap={20} align="flex-start" wrap>
@@ -184,7 +184,7 @@ const ToolDetailPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_tool_bottom" />
 
             <Modal
                 title={`举报「${item?.title || '工具'}」`}

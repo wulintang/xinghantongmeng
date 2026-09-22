@@ -25,6 +25,8 @@ interface NavItem {
 
 /** feed 是独立插件，它的入口不在后台导航表 my_link 里，这里固定补一个入口 */
 const BLOG_ENTRY: NavItem = { key: 'feed', name: 'Feed广场', external: false, to: '/feed' };
+/** 格子广告单页（广告增强插件 adpay），固定入口 */
+const GRID_ENTRY: NavItem = { key: 'grid', name: '格子广告', external: false, to: '/grid' };
 
 /** 当前路径是否命中该导航项 */
 function isActive(pathname: string, to?: string): boolean {
@@ -110,6 +112,7 @@ export default function Header(): React.JSX.Element {
             };
         });
         if (!list.some((n) => n.to && n.to.startsWith('/feed'))) list.push(BLOG_ENTRY);
+        if (!list.some((n) => n.to && n.to.startsWith('/grid'))) list.push(GRID_ENTRY);
         return list;
     }, [topLinks]);
 

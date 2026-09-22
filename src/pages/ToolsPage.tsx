@@ -82,7 +82,7 @@ const ToolsPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '常用工具' }]}
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="list_tool_top" />
 
             <CateFilter cates={cates} value={cate} onChange={changeCate} />
 

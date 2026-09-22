@@ -67,6 +67,96 @@ body {
   font-size: var(--fs-sm);
 }
 
+/* 系统广告位：已拉到广告 */
+.ad-banner {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.ad-banner img {
+  max-width: 100%;
+  display: block;
+}
+
+/* 申请入口（无广告时） */
+.ad-slot-apply {
+  cursor: pointer;
+  flex-direction: column;
+  gap: 6px;
+}
+.ad-slot-apply:hover {
+  border-color: var(--c-link);
+}
+.ad-slot-apply-tip {
+  color: var(--c-link);
+  font-size: var(--fs-xs);
+}
+
+/* 格子广告画布 */
+.grid-canvas {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+.grid-cell {
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  min-height: 48px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+  position: relative;
+}
+.grid-cell-empty {
+  cursor: pointer;
+  color: var(--c-text-3);
+  font-size: var(--fs-xs);
+}
+.grid-cell-empty:hover {
+  border-color: var(--c-link);
+}
+.grid-cell-filled {
+  background: #fff;
+}
+.grid-cell-mine {
+  box-shadow: 0 0 0 2px var(--c-link) inset;
+}
+.grid-cell-selected {
+  background: rgba(22, 119, 255, 0.08);
+  border-color: var(--c-link);
+}
+.grid-cell-reserved {
+  background: rgba(0, 0, 0, 0.06);
+}
+.grid-cell-html {
+  width: 100%;
+  height: 100%;
+}
+.grid-cell-html img,
+.grid-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.grid-cell-link {
+  color: var(--c-link);
+  font-size: var(--fs-xs);
+  padding: 4px;
+  text-align: center;
+}
+.grid-cell-tip {
+  opacity: 0.7;
+}
+.grid-canvas-empty {
+  color: var(--c-text-3);
+  font-size: var(--fs-sm);
+  padding: var(--page-gap) 0;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 12px;

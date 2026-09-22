@@ -185,7 +185,7 @@ const AbstractPage: React.FC = () => {
                 }
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_abstract_top" />
 
             <div className="feed-timeline-item abstract-timeline-item">
                 <div className="feed-author-col">
@@ -266,7 +266,7 @@ const AbstractPage: React.FC = () => {
                 </div>
             </div>
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="detail_abstract_bottom" />
 
             <Modal
                 title="举报文章"

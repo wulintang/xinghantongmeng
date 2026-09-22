@@ -87,7 +87,7 @@ const WebsitesPage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '网址导航' }]}
             />
 
-            <AdSlotSkeleton />
+            <AdSlotSkeleton slot="list_website_top" />
 
             <SearchBox placeholder="搜索站点名称、关键词、域名" gotoPage="/websites" />
 

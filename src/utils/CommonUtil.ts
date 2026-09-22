@@ -59,6 +59,18 @@ export function sanitizeHtml(html: string): string {
     .replace(/<!--[\s\S]*?-->/g, '');
 }
 
+export function setFavicon(href?: string | null): void {
+  if (!href) return;
+  let el = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null;
+  if (!el) {
+    el = document.createElement('link');
+    el.rel = 'icon';
+    el.type = 'image/x-icon';
+    document.head.appendChild(el);
+  }
+  el.href = href;
+}
+
 export function markdownToHtml(md: string): string {
   if (!md) return '';
   const escapeHtml = (s: string) =>

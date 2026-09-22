@@ -8,6 +8,7 @@ import {
     type LinkItem,
     type SiteConfig,
 } from '@/services/userCenter';
+import { setFavicon } from '@/utils/CommonUtil';
 
 interface SiteContextValue {
     /** 站点配置（my_set alias=set） */
@@ -50,6 +51,7 @@ export function SiteProvider({ children }: { children: React.ReactNode }): React
                 setSite(r.data.site || null);
                 setLinks(r.data.links || EMPTY_LINK_GROUPS);
                 setCates(Array.isArray(r.data.cates) ? r.data.cates : []);
+                if (r.data.site?.ico) setFavicon(r.data.site.ico);
             })
             .catch(() => {})
             .finally(() => {

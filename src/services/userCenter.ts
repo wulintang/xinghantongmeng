@@ -299,6 +299,8 @@ export interface SiteConfig {
   l_rmb: number;
   /** 网址收录费用（元），后台 my_set pay.w_rmb */
   w_rmb: number;
+  /** 站点图标（favicon）绝对地址 */
+  ico?: string;
 }
 
 export interface CateItem {

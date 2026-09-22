@@ -224,7 +224,16 @@ const HomePage: React.FC = () => {
                 description="包含政治、色情、赌博、暴力以及全 AI 生成内容的站点，一经发现将被永久移出收录名单。"
             />
 
-            <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
+            <section className="home-grid-section">
+                <div className="home-grid-header">
+                    <span className="home-grid-title">格子广告</span>
+                    <span className="home-grid-meta">120 × 12 格，每格 10 px，框选申请</span>
+                </div>
+                <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
+                <div className="home-grid-footer">
+                    <Link to="/grid" className="home-grid-more">查看更多格子广告 &raquo;</Link>
+                </div>
+            </section>
         </Flex>
     );
 };

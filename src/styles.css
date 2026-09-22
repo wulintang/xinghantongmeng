@@ -109,11 +109,9 @@ body {
   position: relative;
   background: #fff;
   cursor: crosshair;
-}
-.grid-svg line {
-  stroke: rgba(0, 0, 0, 0.25);
-  stroke-width: 1;
-  shape-rendering: crispEdges;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 1px, transparent 1px);
 }
 /* 已购且在期的广告矩形（绝对定位叠加在网格之上） */
 .grid-rect {
@@ -166,29 +164,34 @@ body {
   text-align: center;
 }
 
-/* 首页底部格子区域 */
-.ad-slot-skeleton-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* 首页底部格子区域（标题/查看更多放在 AdSlotSkeleton 外部，避免改变 1200×120 尺寸） */
+.home-grid-section {
+  margin: var(--page-gap) 0;
 }
-.grid-section-header {
+.home-grid-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 8px;
 }
-.grid-section-meta {
+.home-grid-title {
+  color: var(--c-text);
+  font-size: var(--fs-base);
+  font-weight: 500;
+}
+.home-grid-meta {
   color: var(--c-text-3);
   font-size: var(--fs-xs);
 }
-.grid-section-footer {
+.home-grid-footer {
   text-align: right;
+  margin-top: 8px;
 }
-.grid-more-link {
+.home-grid-more {
   color: var(--c-link);
   font-size: var(--fs-sm);
 }
-.grid-more-link:hover {
+.home-grid-more:hover {
   text-decoration: underline;
 }
 

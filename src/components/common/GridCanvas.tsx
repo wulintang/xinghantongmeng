@@ -120,17 +120,6 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
     setCur(null);
   };
 
-  // 生成网格线（用 SVG，避免 4 万+ div）
-  const lines: React.ReactNode[] = [];
-  const stroke = 'rgba(0,0,0,0.25)';
-  const strokeWidth = 1;
-  for (let x = 0; x <= cols; x++) {
-    lines.push(<line key={`v-${x}`} x1={x * CELL_PX} y1={0} x2={x * CELL_PX} y2={innerHeight} stroke={stroke} strokeWidth={strokeWidth} />);
-  }
-  for (let y = 0; y <= rows; y++) {
-    lines.push(<line key={`h-${y}`} x1={0} y1={y * CELL_PX} x2={innerWidth} y2={y * CELL_PX} stroke={stroke} strokeWidth={strokeWidth} />);
-  }
-
   return (
     <div
       ref={wrapRef}
@@ -145,15 +134,13 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
           height: innerHeight,
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
+          backgroundSize: `${CELL_PX}px ${CELL_PX}px`,
         }}
         onMouseDown={onDown}
         onMouseMove={onMove}
         onMouseUp={onUp}
         onMouseLeave={() => onUp()}
       >
-        <svg className="grid-svg" width={innerWidth} height={innerHeight} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
-          {lines}
-        </svg>
         {rects.map((r) => (
           <RectView key={`r-${r.id}`} r={r} />
         ))}

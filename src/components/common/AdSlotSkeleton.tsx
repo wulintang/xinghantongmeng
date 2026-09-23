@@ -5,7 +5,7 @@ import { getAd, getGrid, applyGrid, type AdPayGrid, type AdPayAd } from '@/servi
 import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
 import AdImgUpload from './AdImgUpload';
-import { Form, Input, InputNumber, Modal, Typography, message } from 'antd';
+import { Form, Input, InputNumber, Modal, Tooltip, Typography, message } from 'antd';
 
 const { Text } = Typography;
 
@@ -164,21 +164,29 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
           onClick={() => navigate('/user/ad/my')}
           role="button"
         >
-          <span className="ad-slot-skeleton-label">{label}</span>
-          <span className="ad-slot-apply-tip">点击申请投放广告</span>
+          <Tooltip title={label}>
+            <span className="ad-slot-skeleton-label">{label}</span>
+          </Tooltip>
+          <Tooltip title="点击申请投放广告">
+            <span className="ad-slot-apply-tip">点击申请投放广告</span>
+          </Tooltip>
         </div>
       );
     }
     return (
       <div className="ad-slot-skeleton ad-slot-skeleton-banner">
-        <span className="ad-slot-skeleton-label">{label}</span>
+        <Tooltip title={label}>
+          <span className="ad-slot-skeleton-label">{label}</span>
+        </Tooltip>
       </div>
     );
   }
 
   return (
     <div className={`ad-slot-skeleton ad-slot-skeleton-${variant}`}>
-      <span className="ad-slot-skeleton-label">{label}</span>
+      <Tooltip title={label}>
+        <span className="ad-slot-skeleton-label">{label}</span>
+      </Tooltip>
     </div>
   );
 }

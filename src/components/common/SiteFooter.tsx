@@ -49,7 +49,7 @@ function LinkColumn({
             {items.length === 0 ? (
                 <Text type="secondary">{emptyText || '暂无'}</Text>
             ) : (
-                <Flex vertical gap={8}>
+                <Flex vertical gap={8} align="flex-start">
                     {items.map((l) => (
                         <FooterLink key={l.id} item={l} />
                     ))}

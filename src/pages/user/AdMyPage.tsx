@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input } from 'antd';
+import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Tooltip, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {
@@ -131,19 +131,30 @@ export default function AdMyPage(): React.JSX.Element {
 
   const sysColumns = [
     { title: '广告位', dataIndex: 'position_name' },
-    { title: '标题', dataIndex: 'title' },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      ellipsis: { showTitle: false },
+      render: (v: string) => (
+        <Tooltip title={v}>
+          <Typography.Text ellipsis>{v}</Typography.Text>
+        </Tooltip>
+      ),
+    },
     { title: '时长(天)', dataIndex: 'duration_day' },
     { title: '金额', dataIndex: 'amount', render: (v: string) => `¥${v}` },
-    { title: '状态', dataIndex: 'status', render: (s: number) => <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag> },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      render: (s: number, r: AdPayApply) => {
+        const tag = <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag>;
+        return s === 2 && r.refuse_reason ? <Tooltip title={r.refuse_reason}>{tag}</Tooltip> : tag;
+      },
+    },
     {
       title: '到期',
       dataIndex: 'end_time',
       render: (t: number) => (t ? new Date(t * 1000).toLocaleDateString() : '-'),
-    },
-    {
-      title: '拒绝原因',
-      dataIndex: 'refuse_reason',
-      render: (v: string, r: AdPayApply) => (r.status === 2 && v ? v : '-'),
     },
     {
       title: '操作',
@@ -163,23 +174,34 @@ export default function AdMyPage(): React.JSX.Element {
   ];
   const gridColumns = [
     { title: '页面', dataIndex: 'page', render: (v: string) => (v === 'home' ? '首页底部' : '单页格子') },
-    { title: '标题', dataIndex: 'title' },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      ellipsis: { showTitle: false },
+      render: (v: string) => (
+        <Tooltip title={v}>
+          <Typography.Text ellipsis>{v}</Typography.Text>
+        </Tooltip>
+      ),
+    },
     {
       title: '区域',
       render: (_: any, r: AdPayGridApply) => `(${r.x},${r.y}) 起 ${r.w}×${r.h}（${r.cells_count}格）`,
     },
     { title: '月数', dataIndex: 'duration_month' },
     { title: '金额', dataIndex: 'amount', render: (v: string) => `¥${v}` },
-    { title: '状态', dataIndex: 'status', render: (s: number) => <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag> },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      render: (s: number, r: AdPayGridApply) => {
+        const tag = <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag>;
+        return s === 2 && r.refuse_reason ? <Tooltip title={r.refuse_reason}>{tag}</Tooltip> : tag;
+      },
+    },
     {
       title: '到期',
       dataIndex: 'end_time',
       render: (t: number) => (t ? new Date(t * 1000).toLocaleDateString() : '-'),
-    },
-    {
-      title: '拒绝原因',
-      dataIndex: 'refuse_reason',
-      render: (v: string, r: AdPayGridApply) => (r.status === 2 && v ? v : '-'),
     },
     {
       title: '操作',
@@ -231,6 +253,7 @@ export default function AdMyPage(): React.JSX.Element {
                     rowKey="id"
                     dataSource={applies}
                     columns={sysColumns}
+                    pagination={false}
                     locale={{ emptyText: '暂无申请' }}
                   />
                 </Card>
@@ -242,6 +265,7 @@ export default function AdMyPage(): React.JSX.Element {
                     rowKey="id"
                     dataSource={gridApplies}
                     columns={gridColumns}
+                    pagination={false}
                     locale={{ emptyText: '暂无申请' }}
                   />
                 </Card>

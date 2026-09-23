@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Avatar, Badge, Button, Drawer, Dropdown, Flex, Grid, Menu, Space, Tag, Tooltip, Typography, message } from 'antd';
+import { Avatar, Badge, Button, Drawer, Dropdown, Flex, Grid, Menu, Space, Tag, Typography, message } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useSite } from '@/context/SiteContext';
@@ -123,13 +123,11 @@ export default function Header(): React.JSX.Element {
 
     const renderNavLabel = (item: NavItem): React.ReactNode =>
         item.external ? (
-            <Tooltip title={item.name}>
-                <a href={item.href} target="_blank" rel="noreferrer noopener">
-                    {item.name}
-                </a>
-            </Tooltip>
+            <a href={item.href} target="_blank" rel="noreferrer noopener">
+                {item.name}
+            </a>
         ) : (
-            <Tooltip title={item.name}><Link to={item.to || '/'}>{item.name}</Link></Tooltip>
+            <Link to={item.to || '/'}>{item.name}</Link>
         );
 
     const logout = () => {
@@ -186,17 +184,15 @@ export default function Header(): React.JSX.Element {
     return (
         <header className="site-header">
             <div className="container site-header-inner">
-                <Tooltip title={site?.title || '首页'}>
-                    <Link to="/" className="site-logo">
-                        {site?.logo ? (
-                            <img src={site.logo} alt={site.title || ''} className="site-logo-img" />
-                        ) : (
-                            <Text strong className="site-logo-text">
-                                {site?.title || '兴汉同盟'}
-                            </Text>
-                        )}
-                    </Link>
-                </Tooltip>
+                <Link to="/" className="site-logo">
+                    {site?.logo ? (
+                        <img src={site.logo} alt={site.title || ''} className="site-logo-img" />
+                    ) : (
+                        <Text strong className="site-logo-text">
+                            {site?.title || '兴汉同盟'}
+                        </Text>
+                    )}
+                </Link>
 
                 {isMobile ? (
                     <Button onClick={() => setDrawerOpen(true)}>导航</Button>

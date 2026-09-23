@@ -1590,11 +1590,3 @@ body {
   background: #000;
   box-shadow: none;
 }
-.site-footer .ant-tooltip {
-  display: inline-flex;
-  align-items: center;
-}
-.site-header .ant-menu-title-content {
-  display: inline-flex;
-  align-items: center;
-}

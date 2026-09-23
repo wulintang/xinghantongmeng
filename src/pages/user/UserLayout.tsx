@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, Button, Menu, Spin, Typography, Tooltip } from 'antd';
+import { Avatar, Button, Menu, Spin, Typography } from 'antd';
 import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -8,26 +8,26 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 const { Text } = Typography;
 
 const MENU = [
-  { key: '/user/submit', label: <Tooltip title="提交站点"><Link to="/user/submit">提交站点</Link></Tooltip> },
+  { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
   {
     type: 'group' as const,
     label: '我的',
     children: [
-      { key: '/user/mysites', label: <Tooltip title="我的站点"><Link to="/user/mysites">我的站点</Link></Tooltip> },
-      { key: '/user/favorites', label: <Tooltip title="我的收藏"><Link to="/user/favorites">我的收藏</Link></Tooltip> },
-      { key: '/user/ad/my', label: <Tooltip title="我的广告"><Link to="/user/ad/my">我的广告</Link></Tooltip> },
-      { key: '/user/orders', label: <Tooltip title="我的订单"><Link to="/user/orders">我的订单</Link></Tooltip> },
-      { key: '/user/reports', label: <Tooltip title="我的举报"><Link to="/user/reports">我的举报</Link></Tooltip> },
+      { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
+      { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
+      { key: '/user/ad/my', label: <Link to="/user/ad/my">我的广告</Link> },
+      { key: '/user/orders', label: <Link to="/user/orders">我的订单</Link> },
+      { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
     ],
   },
   {
     type: 'group' as const,
     label: '账户',
     children: [
-      { key: '/user', label: <Tooltip title="个人资料"><Link to="/user">个人资料</Link></Tooltip> },
-      { key: '/user/checkin', label: <Tooltip title="每日签到"><Link to="/user/checkin">每日签到</Link></Tooltip> },
-      { key: '/user/messages', label: <Tooltip title="消息中心"><Link to="/user/messages">消息中心</Link></Tooltip> },
-      { key: '/user/balance', label: <Tooltip title="余额明细"><Link to="/user/balance">余额明细</Link></Tooltip> },
+      { key: '/user', label: <Link to="/user">个人资料</Link> },
+      { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
+      { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
+      { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },
     ],
   },
 ];

@@ -41,6 +41,7 @@ export default function OrdersPage() {
           dataSource={list}
           rowKey="id"
           loading={false}
+          pagination={false}
           columns={[
             { title: '订单号', dataIndex: 'id' },
             { title: '名称', dataIndex: 'title' },

@@ -168,6 +168,7 @@ export default function MySitesPage() {
         className="mt-16"
         rowKey="id"
         loading={loading}
+        pagination={false}
         columns={columns}
         dataSource={list}
       />

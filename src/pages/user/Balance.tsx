@@ -94,6 +94,7 @@ export default function BalancePage() {
                   dataSource={list}
                   rowKey="id"
                   loading={loading}
+                  pagination={false}
                   columns={[
                     { title: '名称', dataIndex: 'title' },
                     {
@@ -118,6 +119,7 @@ export default function BalancePage() {
                 dataSource={orders}
                 rowKey="id"
                 loading={ordersLoading}
+                pagination={false}
                 columns={[
                   { title: '订单号', dataIndex: 'id' },
                   { title: '名称', dataIndex: 'title' },

@@ -97,6 +97,12 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           await loadScript(assetUrl('/app/toolbox/view/public/javascript/jquery.min.js'));
         }
 
+        let html = rewritePaths(config || '', base);
+        if (ai === 1) {
+          html = `<input type="hidden" id="toolId" value="${toolId}">` + html;
+        }
+        container.innerHTML = html;
+
         const srcRe = /<script\s+src=["']([^"']+)["']/g;
         let srcM: RegExpExecArray | null;
         const ordered = new Set<string>();
@@ -107,19 +113,12 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
         }
         for (const u of ordered) {
           await loadScript(u);
+          if ((window as any).ace && (window as any).ace.config && typeof (window as any).ace.config.set === 'function') {
+            try { (window as any).ace.config.set('useStrictCSP', true); } catch (e) {}
+          }
         }
 
-        if ((window as any).ace && (window as any).ace.config) {
-          (window as any).ace.config.set('useStrictCSP', true);
-        }
-
-        let html = rewritePaths(config || '', base);
-        if (ai === 1) {
-          html = `<input type="hidden" id="toolId" value="${toolId}">` + html;
-        }
-        container.innerHTML = html;
-
-        const inlines = Array.from(container.querySelectorAll('script')) as HTMLScriptElement[];
+        const inlines = Array.from(container.querySelectorAll('script:not([src])')) as HTMLScriptElement[];
         inlines.forEach((old) => {
           const neo = document.createElement('script');
           neo.textContent = old.textContent || '';

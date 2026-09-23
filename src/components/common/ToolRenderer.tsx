@@ -83,6 +83,19 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
     const boot = async () => {
       if (!alive || !container) return;
       try {
+        const NativeWorker = (window as any).Worker;
+        if (NativeWorker) {
+          (window as any).Worker = class extends NativeWorker {
+            constructor(url: any, opts?: any) {
+              super(url, opts);
+              const u = String(url || '');
+              if (u.includes('worker-') || u.includes('/app/toolbox/')) {
+                this.addEventListener('error', () => {}, false);
+              }
+            }
+          };
+        }
+
         if (ai === 1) {
           const hl = document.createElement('link');
           hl.rel = 'stylesheet';
@@ -113,8 +126,9 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
         }
         for (const u of ordered) {
           await loadScript(u);
-          if ((window as any).ace && (window as any).ace.config && typeof (window as any).ace.config.set === 'function') {
-            try { (window as any).ace.config.set('useStrictCSP', true); } catch (e) {}
+          const ace = (window as any).ace;
+          if (ace && ace.EditSession && ace.EditSession.prototype) {
+            try { ace.EditSession.prototype.createWorker = function () { return null; }; } catch (e) {}
           }
         }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List } from 'antd';
+import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List, Table } from 'antd';
 import dayjs from 'dayjs';
 import { getCheckin, doCheckin, getCheckinList } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
@@ -90,8 +90,31 @@ export default function CheckinPage() {
         </div>
         <Divider />
         <Title level={5}>我的签到记录</Title>
+        <Table
+          className="hidden-mobile"
+          size="small"
+          pagination={false}
+          rowKey="id"
+          dataSource={list}
+          columns={[
+            {
+              title: '签到日期',
+              dataIndex: 'time',
+              key: 'time',
+              render: (t: number) => dayjs(t * 1000).format('YYYY-MM-DD HH:mm'),
+            },
+            { title: '连续天数', dataIndex: 'day', key: 'day' },
+            {
+              title: '奖励金额',
+              dataIndex: 'rmb',
+              key: 'rmb',
+              render: (v: number) => `¥${v}`,
+            },
+          ]}
+        />
         <List
-          grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
+          className="hidden-desktop"
+          grid={{ gutter: 16, xs: 1 }}
           dataSource={list}
           rowKey="id"
           renderItem={(item: CheckinRecord) => (

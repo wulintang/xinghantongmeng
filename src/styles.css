@@ -1590,3 +1590,16 @@ body {
   background: #000;
   box-shadow: none;
 }
+
+/* 响应式显隐：桌面 / 移动端互斥展示 */
+@media (min-width: 768px) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}

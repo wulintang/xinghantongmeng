@@ -153,7 +153,13 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
     if (adReady && ad) {
       return (
         <div className="ad-slot-filled">
-          <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+          {ad.title ? (
+            <Tooltip title={ad.title}>
+              <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+            </Tooltip>
+          ) : (
+            <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+          )}
         </div>
       );
     }

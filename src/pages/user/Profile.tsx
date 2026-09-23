@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin, Upload } from 'antd';
+import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin, Upload, List, Modal } from 'antd';
 import { getUserProfile, updateUserProfile, userLogout, uploadFile, sendCode, bindPhone, changeMail } from '@/services/userCenter';
 import { getToken, clearToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
@@ -99,6 +99,7 @@ export default function ProfilePage() {
   const [mailCode, setMailCode] = useState('');
   const [cdMail, setCdMail] = useState(0);
   const [sendingMail, setSendingMail] = useState(false);
+  const [editType, setEditType] = useState<'phone' | 'mail' | null>(null);
   const timerPhone = useRef<number | null>(null);
   const timerMail = useRef<number | null>(null);
   useEffect(() => () => {
@@ -136,7 +137,7 @@ export default function ProfilePage() {
     setSaving(true);
     bindPhone(newPhone, phoneCode)
       .then((r: any) => {
-        if (r.code === 1) { message.success('手机号已更新'); setInfo((p) => (p ? { ...p, phone: newPhone } : p)); setNewPhone(''); setPhoneCode(''); }
+        if (r.code === 1) { message.success('手机号已更新'); setInfo((p) => (p ? { ...p, phone: newPhone } : p)); setNewPhone(''); setPhoneCode(''); setEditType(null); }
         else message.error(r.msg || '修改失败');
       })
       .catch(() => message.error('网络错误'))
@@ -155,7 +156,7 @@ export default function ProfilePage() {
     setSaving(true);
     changeMail(newMail, mailCode)
       .then((r: any) => {
-        if (r.code === 1) { message.success('邮箱已更新'); setInfo((p) => (p ? { ...p, mail: newMail } : p)); setNewMail(''); setMailCode(''); }
+        if (r.code === 1) { message.success('邮箱已更新'); setInfo((p) => (p ? { ...p, mail: newMail } : p)); setNewMail(''); setMailCode(''); setEditType(null); }
         else message.error(r.msg || '修改失败');
       })
       .catch(() => message.error('网络错误'))
@@ -221,28 +222,92 @@ export default function ProfilePage() {
       </Form>
       <div style={{ marginTop: 16 }}>
         <Title level={5}>账号安全</Title>
-        <div className="mb-16">
-          <Text type="secondary">当前手机号：{info?.phone || '—'}</Text>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-            <Input placeholder="新手机号" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} style={{ width: 160 }} maxLength={11} />
-            <Button disabled={cdPhone > 0} loading={sendingPhone} onClick={sendPhone}>{cdPhone > 0 ? `${cdPhone}s` : '获取验证码'}</Button>
-            <Input placeholder="短信验证码" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)} style={{ width: 120 }} />
-            <Button type="primary" loading={saving} onClick={submitPhone}>修改手机号</Button>
-          </div>
-        </div>
-        <div>
-          <Text type="secondary">当前邮箱：{info?.mail || '—'}</Text>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-            <Input placeholder="新邮箱" value={newMail} onChange={(e) => setNewMail(e.target.value)} style={{ width: 220 }} />
-            <Button disabled={cdMail > 0} loading={sendingMail} onClick={sendMail}>{cdMail > 0 ? `${cdMail}s` : '获取验证码'}</Button>
-            <Input placeholder="邮箱验证码" value={mailCode} onChange={(e) => setMailCode(e.target.value)} style={{ width: 120 }} />
-            <Button type="primary" loading={saving} onClick={submitMail}>修改邮箱</Button>
-          </div>
-        </div>
+        <List bordered>
+          <List.Item
+            actions={[
+              <Button key="phone" type="link" onClick={() => setEditType('phone')}>修改</Button>,
+            ]}
+          >
+            当前手机号：{info?.phone || '—'}
+          </List.Item>
+          <List.Item
+            actions={[
+              <Button key="mail" type="link" onClick={() => setEditType('mail')}>修改</Button>,
+            ]}
+          >
+            当前邮箱：{info?.mail || '—'}
+          </List.Item>
+        </List>
       </div>
-      <Text type="secondary">邮箱：{info?.mail || '—'}</Text>
-      <br />
-      <Text type="secondary">手机：{info?.phone || '—'}</Text>
+
+      <Modal
+        title="修改手机号"
+        open={editType === 'phone'}
+        onCancel={() => { setEditType(null); setNewPhone(''); setPhoneCode(''); }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form layout="vertical">
+          <Form.Item label="当前手机号">
+            <Text>{info?.phone || '—'}</Text>
+          </Form.Item>
+          <Form.Item label="新手机号">
+            <Input
+              placeholder="请输入新手机号"
+              value={newPhone}
+              onChange={(e) => setNewPhone(e.target.value)}
+              maxLength={11}
+            />
+          </Form.Item>
+          <Form.Item label="短信验证码">
+            <Space.Compact style={{ width: '100%' }}>
+              <Input
+                placeholder="短信验证码"
+                value={phoneCode}
+                onChange={(e) => setPhoneCode(e.target.value)}
+              />
+              <Button disabled={cdPhone > 0} loading={sendingPhone} onClick={sendPhone}>
+                {cdPhone > 0 ? `${cdPhone}s` : '获取验证码'}
+              </Button>
+            </Space.Compact>
+          </Form.Item>
+          <Button type="primary" block loading={saving} onClick={submitPhone}>修改手机号</Button>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="修改邮箱"
+        open={editType === 'mail'}
+        onCancel={() => { setEditType(null); setNewMail(''); setMailCode(''); }}
+        footer={null}
+        destroyOnClose
+      >
+        <Form layout="vertical">
+          <Form.Item label="当前邮箱">
+            <Text>{info?.mail || '—'}</Text>
+          </Form.Item>
+          <Form.Item label="新邮箱">
+            <Input
+              placeholder="请输入新邮箱"
+              value={newMail}
+              onChange={(e) => setNewMail(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="邮箱验证码">
+            <Space.Compact style={{ width: '100%' }}>
+              <Input
+                placeholder="邮箱验证码"
+                value={mailCode}
+                onChange={(e) => setMailCode(e.target.value)}
+              />
+              <Button disabled={cdMail > 0} loading={sendingMail} onClick={sendMail}>
+                {cdMail > 0 ? `${cdMail}s` : '获取验证码'}
+              </Button>
+            </Space.Compact>
+          </Form.Item>
+          <Button type="primary" block loading={saving} onClick={submitMail}>修改邮箱</Button>
+        </Form>
+      </Modal>
     </Card>
   );
 }

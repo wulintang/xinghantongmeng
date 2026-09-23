@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { Tooltip } from 'antd';
 import type { AdPayGrid, AdPayGridRect } from '@/services/adpay';
 
 interface Props {
@@ -27,12 +28,12 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
-function RectView({ r }: { r: AdPayGridRect }): React.ReactNode {
+function RectView({ r, cols, rows }: { r: AdPayGridRect; cols: number; rows: number }): React.ReactNode {
   const style: React.CSSProperties = {
-    left: r.x * CELL_PX,
-    top: r.y * CELL_PX,
-    width: r.w * CELL_PX,
-    height: r.h * CELL_PX,
+    left: `${(r.x / cols) * 100}%`,
+    top: `${(r.y / rows) * 100}%`,
+    width: `${(r.w / cols) * 100}%`,
+    height: `${(r.h / rows) * 100}%`,
   };
   const title = r.title || '广告';
   return (
@@ -43,9 +44,11 @@ function RectView({ r }: { r: AdPayGridRect }): React.ReactNode {
     >
       {r.img ? (
         r.link ? (
-          <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link" title={title}>
-            <img src={r.img} alt={title} className="grid-rect-img" />
-          </a>
+          <Tooltip title={title}>
+            <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link">
+              <img src={r.img} alt={title} className="grid-rect-img" />
+            </a>
+          </Tooltip>
         ) : (
           <img src={r.img} alt={title} className="grid-rect-img" />
         )
@@ -77,8 +80,11 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
     const wrap = wrapRef.current;
     if (!wrap) return { x: 0, y: 0 };
     const rect = wrap.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left + wrap.scrollLeft) / CELL_PX);
-    const y = Math.floor((e.clientY - rect.top) / CELL_PX);
+    const inner = wrap.firstElementChild as HTMLElement | null;
+    const cellW = inner ? inner.offsetWidth / cols : CELL_PX;
+    const cellH = inner ? inner.offsetHeight / rows : CELL_PX;
+    const x = Math.floor((e.clientX - rect.left + wrap.scrollLeft) / cellW);
+    const y = Math.floor((e.clientY - rect.top) / cellH);
     return { x: clamp(x, 0, cols - 1), y: clamp(y, 0, rows - 1) };
   }
 
@@ -115,18 +121,21 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
       ref={wrapRef}
       className="grid-canvas-wrap"
     >
-      <div className={`grid-canvas-inner ${pageCls}`}>
+      <div
+        className={`grid-canvas-inner ${pageCls}`}
+        style={{ '--grid-cols': cols, '--grid-rows': rows } as React.CSSProperties}
+      >
         {rects.map((r) => (
-          <RectView key={`r-${r.id}`} r={r} />
+          <RectView key={`r-${r.id}`} r={r} cols={cols} rows={rows} />
         ))}
         {previewRect && (
           <div
             className="grid-rect grid-rect-preview"
             style={{
-              left: previewRect.x * CELL_PX,
-              top: previewRect.y * CELL_PX,
-              width: previewRect.w * CELL_PX,
-              height: previewRect.h * CELL_PX,
+              left: `${(previewRect.x / cols) * 100}%`,
+              top: `${(previewRect.y / rows) * 100}%`,
+              width: `${(previewRect.w / cols) * 100}%`,
+              height: `${(previewRect.h / rows) * 100}%`,
             }}
           >
             <span className="grid-rect-preview-label">

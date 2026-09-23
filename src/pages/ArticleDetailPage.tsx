@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Divider, Flex, Input, Modal, Space, Typography, message } from 'antd';
+import { Alert, Button, Card, Divider, Flex, Input, Modal, Space, Tooltip, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -177,7 +177,9 @@ const ArticleDetailPage: React.FC = () => {
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>
                             {faved ? '★' : '☆'} 收藏
                         </Button>
-                        <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        <Tooltip title="举报">
+                            <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        </Tooltip>
                         <Button onClick={() => navigate('/articles')}>返回列表</Button>
                     </Space>
                 }

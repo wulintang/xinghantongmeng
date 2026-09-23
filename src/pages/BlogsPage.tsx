@@ -267,7 +267,8 @@ const BlogsPage: React.FC = () => {
                             return (
                                 <>
                                 <div className="feed-timeline-item" key={p.link || `${domain}-${p.title}`}>
-                                    <Link to={domainRoute} className="feed-author-col" title={p.blogName || domain}>
+                                    <Tooltip title={p.blogName || domain}>
+                                        <Link to={domainRoute} className="feed-author-col">
                                         <Avatar
                                             className="feed-author-avatar"
                                             shape="circle"
@@ -287,6 +288,7 @@ const BlogsPage: React.FC = () => {
                                             </span>
                                         ) : null}
                                     </Link>
+                                    </Tooltip>
 
                                     <div
                                         className="feed-bubble"
@@ -295,8 +297,10 @@ const BlogsPage: React.FC = () => {
                                         <div className="feed-bubble-arrow feed-bubble-arrow-border" />
                                         <div className="feed-bubble-arrow feed-bubble-arrow-fill" />
                                         <div className="feed-bubble-inner">
-                                            <Link to={abstractRoute} className="feed-bubble-title" title={p.title || '无标题'} onClick={(e) => e.stopPropagation()}>
-                                                {p.title || '无标题'}</Link>
+                                            <Tooltip title={p.title || '无标题'}>
+                                                <Link to={abstractRoute} className="feed-bubble-title" onClick={(e) => e.stopPropagation()}>
+                                                    {p.title || '无标题'}</Link>
+                                            </Tooltip>
                                             {p.description ? (
                                                 <div className="feed-bubble-desc">
                                                     {htmlToText(p.description, 140)}
@@ -316,7 +320,7 @@ const BlogsPage: React.FC = () => {
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
                                                     <Tooltip title="进入原文">
-                                                        <Link to={abstractRoute} className="feed-bubble-action feed-bubble-icon-only" title={p.title || '进入原文'} onClick={(e) => e.stopPropagation()}>
+                                                        <Link to={abstractRoute} className="feed-bubble-action feed-bubble-icon-only" onClick={(e) => e.stopPropagation()}>
                                                             <ShareIcon /></Link>
                                                     </Tooltip>
                                                     <Tooltip title="举报">

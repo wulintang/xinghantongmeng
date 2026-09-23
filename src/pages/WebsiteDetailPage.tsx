@@ -13,6 +13,7 @@ import {
     Row,
     Space,
     Tag,
+    Tooltip,
     Typography,
     message,
 } from 'antd';
@@ -241,7 +242,9 @@ const WebsiteDetailPage: React.FC = () => {
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>
                             {faved ? '★' : '☆'} 收藏
                         </Button>
-                        <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        <Tooltip title="举报">
+                            <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        </Tooltip>
                     </Space>
                 }
             />
@@ -291,9 +294,11 @@ const WebsiteDetailPage: React.FC = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="RSS" span={2}>
                         {item.feed_url ? (
-                            <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer" title="RSS 订阅">
-                                {item.feed_url}
-                            </a>
+                            <Tooltip title="RSS 订阅">
+                                <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer">
+                                    {item.feed_url}
+                                </a>
+                            </Tooltip>
                         ) : (
                             '未提供'
                         )}
@@ -318,9 +323,11 @@ const WebsiteDetailPage: React.FC = () => {
                             <List.Item>
                                 <List.Item.Meta
                                     title={
-                                        <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer" title={p.title}>
-                                            {p.title || '无标题'}
-                                        </a>
+                                        <Tooltip title={p.title}>
+                                            <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
+                                                {p.title || '无标题'}
+                                            </a>
+                                        </Tooltip>
                                     }
                                     description={
                                         <Text type="secondary">
@@ -339,7 +346,8 @@ const WebsiteDetailPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {related.map((r) => (
                             <Col key={r.id} xs={24} sm={12} md={8}>
-                                <Link to={`/${domainOf(r)}`} className="related-site-card" title={r.name || r.title}>
+                                <Tooltip title={r.name || r.title}>
+                                    <Link to={`/${domainOf(r)}`} className="related-site-card">
                                     <Avatar
                                         shape="square"
                                         size={48}
@@ -356,6 +364,7 @@ const WebsiteDetailPage: React.FC = () => {
                                         <div className="related-site-url">{r.domain || r.www || r.url}</div>
                                     </div>
                                 </Link>
+                                </Tooltip>
                             </Col>
                         ))}
                     </Row>

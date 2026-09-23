@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Select, Space, Spin, Typography, Upload, message } from 'antd';
+import { Button, Card, Form, Input, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { addSite, captchaUrl, getBalance, getWebsiteCates, uploadFile, type CateItem } from '@/services/userCenter';
@@ -196,13 +196,14 @@ const SubmitSite: React.FC = () => {
                     >
                         <Space.Compact className="captcha-compact">
                             <Input placeholder="请输入右侧验证码" />
-                                <img
-                                    src={codeSrc}
-                                    alt="验证码"
-                                    title="点击刷新"
-                                    className="captcha-img"
-                                    onClick={refreshCode}
-                                />
+                                <Tooltip title="点击刷新">
+                                    <img
+                                        src={codeSrc}
+                                        alt="验证码"
+                                        className="captcha-img"
+                                        onClick={refreshCode}
+                                    />
+                                </Tooltip>
                         </Space.Compact>
                     </Form.Item>
                     <Form.Item>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Typography } from 'antd';
+import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Tooltip, Typography } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
@@ -122,9 +122,11 @@ const WebsitesPage: React.FC = () => {
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
                                             <Flex vertical gap={2} className="site-card-body">
-                                            <Link to={`/${domainOf(w)}`} className="site-card-name" title={w.title || w.name}>
-                                                {w.title || w.name}
-                                            </Link>
+                                            <Tooltip title={w.title || w.name}>
+                                                <Link to={`/${domainOf(w)}`} className="site-card-name">
+                                                    {w.title || w.name}
+                                                </Link>
+                                            </Tooltip>
                                                 <Text type="secondary" className="site-card-domain">
                                                     {w.domain || w.www}
                                                 </Text>
@@ -139,11 +141,13 @@ const WebsitesPage: React.FC = () => {
                                             </Text>
                                             <Flex gap={4}>
                                                 {w.url ? (
-                                                    <Link to={`/${domainOf(w)}`} title={w.title || w.name}>
+                                                    <Tooltip title={w.title || w.name}>
+                                                    <Link to={`/${domainOf(w)}`}>
                                                         <Button type="link" size="small">
                                                             {w.feed_url ? '查看文章' : '访问'}
                                                         </Button>
                                                     </Link>
+                                                </Tooltip>
                                                 ) : null}
                                             </Flex>
                                         </Flex>

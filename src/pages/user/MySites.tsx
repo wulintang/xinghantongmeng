@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Tag, Space, Popconfirm, Modal, Form, Input, Switch, Upload, message, Typography } from 'antd';
+import { Button, Card, Tag, Space, Popconfirm, Modal, Form, Input, Switch, Upload, message, Typography, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -130,7 +130,7 @@ export default function MySitesPage() {
       render: (v: string, row: WebsiteItem) => (
         <Space>
           {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
-          <Link to={`/${row.www || row.domain}`} title={row.title || row.www || row.domain || v}>{v}</Link>
+          <Tooltip title={row.title || row.www || row.domain || v}><Link to={`/${row.www || row.domain}`}>{v}</Link></Tooltip>
         </Space>
       ),
     },

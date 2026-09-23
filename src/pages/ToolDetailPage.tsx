@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd';
+import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Tooltip, Typography, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -124,7 +124,9 @@ const ToolDetailPage: React.FC = () => {
                     <Space>
                         <Button onClick={() => navigate('/tools')}>返回列表</Button>
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>{faved ? '★' : '☆'} 收藏</Button>
-                        <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        <Tooltip title="举报">
+                            <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        </Tooltip>
                         <Button type="primary" href={toolPageUrl(item.alias)} target="_blank" rel="noreferrer">
                             打开工具
                         </Button>

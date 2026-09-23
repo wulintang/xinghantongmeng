@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Col, Divider, Flex, Row, Space, Typography } from 'antd';
+import { Col, Divider, Flex, Row, Space, Tooltip, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 
 import { useSite } from '@/context/SiteContext';
@@ -16,15 +16,19 @@ function FooterLink({ item }: { item: LinkItem }): React.JSX.Element {
 
     if (target.external) {
         return (
-            <a href={target.href} target="_blank" rel="noreferrer noopener" title={item.name}>
-                {item.name}
-            </a>
+            <Tooltip title={item.name}>
+                <a href={target.href} target="_blank" rel="noreferrer noopener">
+                    {item.name}
+                </a>
+            </Tooltip>
         );
     }
     return (
-        <Link to={target.to || '/'} {...(external ? { target: '_blank' } : {})} title={item.name}>
-            {item.name}
-        </Link>
+        <Tooltip title={item.name}>
+            <Link to={target.to || '/'} {...(external ? { target: '_blank' } : {})}>
+                {item.name}
+            </Link>
+        </Tooltip>
     );
 }
 
@@ -111,9 +115,11 @@ export default function SiteFooter(): React.JSX.Element {
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (
-                            <a className="site-footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" title="ICP备案查询">
-                                {site.beian}
-                            </a>
+                            <Tooltip title="ICP备案查询">
+                                <a className="site-footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
+                                    {site.beian}
+                                </a>
+                            </Tooltip>
                         ) : null}
                         {gonganHtml ? <span dangerouslySetInnerHTML={{ __html: gonganHtml }} /> : null}
                     </Space>

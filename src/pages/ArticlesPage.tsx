@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Card, Flex, List, Pagination, Tag, Typography } from 'antd';
+import { Alert, Card, Flex, List, Pagination, Tag, Tooltip, Typography } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -121,7 +121,7 @@ const ArticlesPage: React.FC = () => {
                                         ]}
                                     >
                                         <List.Item.Meta
-                                            title={<Link to={`/articles/${a.id}`} title={a.title}>{a.title}</Link>}
+                                            title={<Tooltip title={a.title}><Link to={`/articles/${a.id}`}>{a.title}</Link></Tooltip>}
                                             description={
                                                 a.description ? (
                                                     <Text type="secondary">{a.description}</Text>

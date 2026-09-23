@@ -10,6 +10,7 @@ import {
     Row,
     Space,
     Tag,
+    Tooltip,
     Typography,
 } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
@@ -83,9 +84,11 @@ const HomePage: React.FC = () => {
                     <Space size={[8, 8]} wrap className="home-hero-cates">
                         <Text type="secondary">网址分类：</Text>
                         {cates.map((c) => (
-                            <Link key={c.id} to={`/websites?cate=${c.id}`} title={c.name}>
-                                <Tag color="processing">{c.name}</Tag>
-                            </Link>
+                            <Tooltip title={c.name}>
+                                <Link key={c.id} to={`/websites?cate=${c.id}`}>
+                                    <Tag color="processing">{c.name}</Tag>
+                                </Link>
+                            </Tooltip>
                         ))}
                     </Space>
                 ) : null}
@@ -114,9 +117,11 @@ const HomePage: React.FC = () => {
                                             <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
-                                            <Link to={`/${domainOf(w)}`} className="site-card-name" title={w.title || w.name}>
-                                                {w.title || w.name}
-                                            </Link>
+                                            <Tooltip title={w.title || w.name}>
+                                                <Link to={`/${domainOf(w)}`} className="site-card-name">
+                                                    {w.title || w.name}
+                                                </Link>
+                                            </Tooltip>
                                         </Flex>
                                         <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
                                             {w.keywords || w.content || w.domain}
@@ -126,11 +131,13 @@ const HomePage: React.FC = () => {
                                                 浏览 {w.view} · 点赞 {w.zan}
                                             </Text>
                                             {w.url ? (
-                                                <Link to={`/${domainOf(w)}`} className="site-card-visit" title={w.title || w.name || '访问'}>
-                                                    <Button type="link" size="small">
-                                                        访问
-                                                    </Button>
-                                                </Link>
+                                                <Tooltip title={w.title || w.name || '访问'}>
+                                                    <Link to={`/${domainOf(w)}`} className="site-card-visit">
+                                                        <Button type="link" size="small">
+                                                            访问
+                                                        </Button>
+                                                    </Link>
+                                                </Tooltip>
                                             ) : null}
                                         </Flex>
                                     </Flex>
@@ -162,7 +169,7 @@ const HomePage: React.FC = () => {
                             renderItem={(a) => (
                                 <List.Item>
                                     <List.Item.Meta
-                                        title={<Link to={`/articles/${a.id}`} title={a.title}>{a.title}</Link>}
+                                        title={<Tooltip title={a.title}><Link to={`/articles/${a.id}`}>{a.title}</Link></Tooltip>}
                                         description={
                                             <Text type="secondary">
                                                 {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
@@ -196,15 +203,19 @@ const HomePage: React.FC = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         title={
-                                            <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer" title={p.title}>
-                                                {p.title}
-                                            </a>
+                                                <Tooltip title={p.title}>
+                                                    <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
+                                                        {p.title}
+                                                    </a>
+                                                </Tooltip>
                                         }
                                         description={
                                             <Text type="secondary">
-                                                <Link to={`/${domainOf(p)}`} title={p.blogName || domainOf(p)}>
-                                                    {p.blogName || domainOf(p)}
-                                                </Link>
+                                                    <Tooltip title={p.blogName || domainOf(p)}>
+                                                        <Link to={`/${domainOf(p)}`}>
+                                                            {p.blogName || domainOf(p)}
+                                                        </Link>
+                                                    </Tooltip>
                                                 {' · '}
                                                 {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD') : ''}
                                             </Text>
@@ -231,7 +242,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
                 <div className="home-grid-footer">
-                    <Link to="/grid" className="home-grid-more" title="查看更多格子广告">查看更多格子广告 &raquo;</Link>
+                    <Tooltip title="查看更多格子广告"><Link to="/grid" className="home-grid-more">查看更多格子广告 &raquo;</Link></Tooltip>
                 </div>
             </section>
         </Flex>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Form, Input, List, Space, Switch, Tag, Typography, message } from 'antd';
+import { Button, Card, Form, Input, List, Space, Switch, Tag, Tooltip, Typography, message } from 'antd';
 import { addSite, captchaUrl, getBalance, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -116,9 +116,11 @@ export default function LinksPage() {
                 <Space size={[12, 12]} wrap className="mt-16">
                     {friendLinks.map((l) => (
                     <Tag key={l.id} color="blue" className="link-tag">
-                        <a href={l.lianjie} target="_blank" rel="noreferrer noopener" title={l.name}>
-                            {l.name}
-                        </a>
+                        <Tooltip title={l.name}>
+                            <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
+                                {l.name}
+                            </a>
+                        </Tooltip>
                     </Tag>
                     ))}
                 </Space>
@@ -209,13 +211,14 @@ export default function LinksPage() {
                         >
                             <Space.Compact className="captcha-compact">
                                 <Input placeholder="请输入右侧验证码" />
-                                <img
-                                    src={codeSrc}
-                                    alt="验证码"
-                                    title="点击刷新"
-                                    className="captcha-img"
-                                    onClick={refreshCode}
-                                />
+                                <Tooltip title="点击刷新">
+                                    <img
+                                        src={codeSrc}
+                                        alt="验证码"
+                                        className="captcha-img"
+                                        onClick={refreshCode}
+                                    />
+                                </Tooltip>
                             </Space.Compact>
                         </Form.Item>
                         <Form.Item>
@@ -246,15 +249,16 @@ export default function LinksPage() {
                                             <Tag color={st.color}>{st.text}</Tag>
                                         </div>
                                         <div className="mylink-line">
-                                            <a
-                                                href={l.url}
-                                                target="_blank"
-                                                rel="noreferrer noopener"
-                                                className="mylink-url"
-                                                title={l.name}
-                                            >
-                                                {l.url}
-                                            </a>
+                                            <Tooltip title={l.name}>
+                                                <a
+                                                    href={l.url}
+                                                    target="_blank"
+                                                    rel="noreferrer noopener"
+                                                    className="mylink-url"
+                                                >
+                                                    {l.url}
+                                                </a>
+                                            </Tooltip>
                                         </div>
                                         <div className="mylink-line mylink-time">
                                             {l.time ? dayjs.unix(Number(l.time)).format('YYYY-MM-DD HH:mm') : ''}

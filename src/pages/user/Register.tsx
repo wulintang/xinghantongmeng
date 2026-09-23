@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Space, message } from 'antd';
+import { Form, Input, Button, Card, Typography, Space, message, Tooltip } from 'antd';
 import { sendCode, userRegister } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 
@@ -117,7 +117,7 @@ export default function RegisterPage() {
         </Form.Item>
       </Form>
       <Text>
-        已有账号？<Link to="/login" title="去登录">去登录</Link>
+        已有账号？<Tooltip title="去登录"><Link to="/login">去登录</Link></Tooltip>
       </Text>
     </Card>
   );

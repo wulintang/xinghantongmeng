@@ -189,14 +189,18 @@ const AbstractPage: React.FC = () => {
 
             <div className="feed-timeline-item abstract-timeline-item">
                 <div className="feed-author-col">
-                    <Link to={domainRoute} title={p.blogName || domain}>
-                        <Avatar className="feed-author-avatar" shape="circle" src={icon || undefined}>
-                            {(p.blogName || domain || '?').slice(0, 1)}
-                        </Avatar>
-                    </Link>
-                    <Link to={domainRoute} className="feed-author-name" title={p.blogName || domain}>
-                        {p.blogName || domain}
-                    </Link>
+                    <Tooltip title={p.blogName || domain}>
+                        <Link to={domainRoute}>
+                            <Avatar className="feed-author-avatar" shape="circle" src={icon || undefined}>
+                                {(p.blogName || domain || '?').slice(0, 1)}
+                            </Avatar>
+                        </Link>
+                    </Tooltip>
+                    <Tooltip title={p.blogName || domain}>
+                        <Link to={domainRoute} className="feed-author-name">
+                            {p.blogName || domain}
+                        </Link>
+                    </Tooltip>
                     {p.blogJoinYears ? (
                         <div className="feed-author-meta feed-author-meta-blue">
                             <StarIcon /> 已履约 {p.blogJoinYears} 年
@@ -244,7 +248,6 @@ const AbstractPage: React.FC = () => {
                                         href={jumpUrl(p.link)}
                                         target="_blank"
                                         rel="noreferrer"
-                                        title="原文"
                                         onClick={(e) => { e.stopPropagation(); bumpClick(); }}
                                     >
                                         <ShareIcon />

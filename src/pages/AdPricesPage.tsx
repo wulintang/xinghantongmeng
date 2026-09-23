@@ -57,6 +57,7 @@ export default function AdPricesPage(): React.JSX.Element {
           rowKey="pkey"
           dataSource={positions}
           columns={posColumns}
+          pagination={false}
           locale={{ emptyText: '暂无广告位' }}
         />
       </Card>
@@ -66,6 +67,7 @@ export default function AdPricesPage(): React.JSX.Element {
           rowKey="page"
           dataSource={grids}
           columns={gridColumns}
+          pagination={false}
           locale={{ emptyText: '暂无格子广告' }}
         />
       </Card>

@@ -124,6 +124,9 @@ export default function GridCanvas({ grid, selectable, onSelectRect, onEmptyClic
       <div
         className={`grid-canvas-inner ${pageCls}`}
         style={{ '--grid-cols': cols, '--grid-rows': rows } as React.CSSProperties}
+        onMouseDown={onDown}
+        onMouseMove={onMove}
+        onMouseUp={onUp}
       >
         {rects.map((r) => (
           <RectView key={`r-${r.id}`} r={r} cols={cols} rows={rows} />

@@ -1570,3 +1570,20 @@ body {
 /* Feed/详情操作图标激活态：点赞红、收藏蓝，与详情页按钮一致 */
 .feed-bubble-action.liked { color: #ff4d4f; }
 .feed-bubble-action.faved { color: #1677ff; }
+
+/* ===================== Tooltip 黑色气泡：箭头与气泡无缝、去除多余分隔线 ===================== */
+.ant-tooltip .ant-tooltip-inner {
+  border: none;
+}
+.ant-tooltip .ant-tooltip-arrow {
+  border: none;
+  box-shadow: none;
+}
+.ant-tooltip .ant-tooltip-arrow::before,
+.ant-tooltip .ant-tooltip-arrow::after {
+  background: #000;
+}
+.ant-tooltip .ant-tooltip-inner a {
+  color: #fff;
+  text-decoration: none;
+}

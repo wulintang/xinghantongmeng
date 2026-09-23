@@ -254,6 +254,7 @@ export default function AdMyPage(): React.JSX.Element {
                   rowKey="key"
                   dataSource={applyList}
                   columns={applyColumns}
+                  pagination={false}
                   locale={{ emptyText: '暂无可申请广告位' }}
                 />
               </Card>

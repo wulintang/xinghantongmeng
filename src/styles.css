@@ -1571,19 +1571,30 @@ body {
 .feed-bubble-action.liked { color: #ff4d4f; }
 .feed-bubble-action.faved { color: #1677ff; }
 
-/* ===================== Tooltip 黑色气泡：箭头与气泡无缝、去除多余分隔线 ===================== */
+.ant-tooltip {
+  --antd-arrow-background-color: #000;
+}
 .ant-tooltip .ant-tooltip-inner {
+  background-color: #000;
   border: none;
-}
-.ant-tooltip .ant-tooltip-arrow {
-  border: none;
-  box-shadow: none;
-}
-.ant-tooltip .ant-tooltip-arrow::before,
-.ant-tooltip .ant-tooltip-arrow::after {
-  background: #000;
+  color: #fff;
 }
 .ant-tooltip .ant-tooltip-inner a {
   color: #fff;
   text-decoration: none;
+}
+.ant-tooltip .ant-tooltip-arrow::before {
+  background: #000;
+}
+.ant-tooltip .ant-tooltip-arrow::after {
+  background: #000;
+  box-shadow: none;
+}
+.site-footer .ant-tooltip {
+  display: inline-flex;
+  align-items: center;
+}
+.site-header .ant-menu-title-content {
+  display: inline-flex;
+  align-items: center;
 }

@@ -43,7 +43,7 @@ export default function AdBuyPage(): React.JSX.Element {
       return;
     }
     setSubmitting(true);
-    applyAd({ pkey: pos.pkey, plan, title: values.title, link: values.link, img: values.img, content: values.content })
+    applyAd({ pkey: pos.pkey, plan, title: values.title, link: values.link, img: values.img })
       .then((r) => {
         if (r.code === 1) {
           message.success('申请提交成功，等待审核');
@@ -76,7 +76,7 @@ export default function AdBuyPage(): React.JSX.Element {
           申请广告位：{pos.name}
         </Title>
         <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-          提交即从余额扣费（¥{price || 0}），审核不通过将自动退款到余额。同一广告位允许多位用户投放，展示时登录用户优先看到自己的广告。
+          提交即从余额扣费（¥{price || 0}）。审核不通过自动退款；未到期自主删除或到期自动删除概不退费。同一广告位允许多位用户投放，展示时登录用户优先看到自己的广告。
         </Paragraph>
         <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ plan: 'month' }}>
           <Form.Item label="投放时长" name="plan" rules={[{ required: true }]}>
@@ -91,14 +91,11 @@ export default function AdBuyPage(): React.JSX.Element {
           <Form.Item label="广告标题" name="title" rules={[{ required: true, message: '请输入广告标题' }]}>
             <Input placeholder="如：兴汉同盟官网" maxLength={60} />
           </Form.Item>
-          <Form.Item label="跳转链接" name="link">
+          <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />
           </Form.Item>
-          <Form.Item label="广告图片" name="img">
-            <AdImgUpload hint="上传后优先展示图片（可选）" />
-          </Form.Item>
-          <Form.Item label="广告代码（可选，图片为空时生效）" name="content">
-            <Input.TextArea rows={4} placeholder="可填写自定义 HTML 广告代码" />
+          <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+            <AdImgUpload hint="仅支持图片+链接，禁止自定义代码" strictSize />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={submitting}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Radio } from 'antd';
+import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {
@@ -95,8 +95,6 @@ export default function AdMyPage(): React.JSX.Element {
       title: r.title,
       link: r.link,
       img: r.img,
-      formType: r.content ? 'code' : 'image',
-      content: r.content,
     });
     setEditOpen(true);
   };
@@ -114,12 +112,7 @@ export default function AdMyPage(): React.JSX.Element {
     setEditLoading(true);
     const payload = editGrid
       ? { title: values.title, link: values.link, img: values.img }
-      : {
-          title: values.title,
-          link: values.link,
-          img: values.formType === 'image' ? values.img : '',
-          content: values.formType === 'code' ? values.content : '',
-        };
+      : { title: values.title, link: values.link, img: values.img, content: '' };
     const p = editGrid
       ? updateGridApply(editRecord.id, payload)
       : updateApply(editRecord.id, payload);
@@ -148,13 +141,18 @@ export default function AdMyPage(): React.JSX.Element {
       render: (t: number) => (t ? new Date(t * 1000).toLocaleDateString() : '-'),
     },
     {
+      title: '拒绝原因',
+      dataIndex: 'refuse_reason',
+      render: (v: string, r: AdPayApply) => (r.status === 2 && v ? v : '-'),
+    },
+    {
       title: '操作',
       render: (_: any, r: AdPayApply) => (
         <>
           <Button type="link" size="small" onClick={() => openEdit(r)}>
             编辑
           </Button>
-          <Popconfirm title="确认删除该广告申请？" onConfirm={() => onDeleteApply(r.id)} okText="删除" cancelText="取消">
+          <Popconfirm title="确认删除？未到期自主删除或到期自动删除概不退费" onConfirm={() => onDeleteApply(r.id)} okText="删除" cancelText="取消">
             <Button danger size="small">
               删除
             </Button>
@@ -179,13 +177,18 @@ export default function AdMyPage(): React.JSX.Element {
       render: (t: number) => (t ? new Date(t * 1000).toLocaleDateString() : '-'),
     },
     {
+      title: '拒绝原因',
+      dataIndex: 'refuse_reason',
+      render: (v: string, r: AdPayGridApply) => (r.status === 2 && v ? v : '-'),
+    },
+    {
       title: '操作',
       render: (_: any, r: AdPayGridApply) => (
         <>
           <Button type="link" size="small" onClick={() => openEditGrid(r)}>
             编辑
           </Button>
-          <Popconfirm title="确认删除该格子广告申请？" onConfirm={() => onDeleteGrid(r.id)} okText="删除" cancelText="取消">
+          <Popconfirm title="确认删除？未到期自主删除或到期自动删除概不退费" onConfirm={() => onDeleteGrid(r.id)} okText="删除" cancelText="取消">
             <Button danger size="small">
               删除
             </Button>
@@ -277,29 +280,8 @@ export default function AdMyPage(): React.JSX.Element {
           <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />
           </Form.Item>
-          {!editGrid && (
-            <Form.Item label="内容形式" name="formType">
-              <Radio.Group>
-                <Radio value="image">图片广告</Radio>
-                <Radio value="code">自定义代码</Radio>
-              </Radio.Group>
-            </Form.Item>
-          )}
-          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.formType !== cur.formType || editGrid}>
-            {({ getFieldValue }) => {
-              if (editGrid || getFieldValue('formType') === 'image') {
-                return (
-                  <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
-                    <AdImgUpload hint="支持 GIF/JPG/PNG 等，仅图片+链接" strictSize={!editGrid} />
-                  </Form.Item>
-                );
-              }
-              return (
-                <Form.Item label="自定义代码" name="content" rules={[{ required: true, message: '请输入广告代码' }]}>
-                  <Input.TextArea rows={4} placeholder="支持 HTML/JS" />
-                </Form.Item>
-              );
-            }}
+          <Form.Item label="广告图片" name="img" rules={[{ required: true, message: '请上传广告图片' }]}>
+            <AdImgUpload hint="仅图片+链接，禁止自定义代码" strictSize={!editGrid} />
           </Form.Item>
         </Form>
       </Modal>

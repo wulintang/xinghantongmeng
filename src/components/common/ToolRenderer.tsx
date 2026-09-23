@@ -85,14 +85,20 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
       try {
         const NativeWorker = (window as any).Worker;
         if (NativeWorker) {
-          (window as any).Worker = class extends NativeWorker {
-            constructor(url: any, opts?: any) {
-              super(url, opts);
-              const u = String(url || '');
-              if (u.includes('worker-') || u.includes('/app/toolbox/')) {
-                this.addEventListener('error', () => {}, false);
-              }
+          (window as any).Worker = function (url: any, opts?: any) {
+            const u = String(url || '');
+            if (u.includes('worker-') || u.includes('/app/toolbox/')) {
+              const noop = () => {};
+              return {
+                postMessage: noop,
+                terminate: noop,
+                addEventListener: noop,
+                removeEventListener: noop,
+                onmessage: null as any,
+                onerror: null as any,
+              };
             }
+            return new NativeWorker(url, opts);
           };
         }
 

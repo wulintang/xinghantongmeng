@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Row, Col, Table, Divider } from 'antd';
+import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List } from 'antd';
 import dayjs from 'dayjs';
 import { getCheckin, doCheckin, getCheckinList } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { CheckinStatus, CheckinRecord } from '@/services/userCenter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export default function CheckinPage() {
   const navigate = useNavigate();
@@ -60,10 +60,10 @@ export default function CheckinPage() {
 
   return (
     <Card className="user-center-card">
-      <Title level={5}>每日签到</Title>
       <Spin spinning={loading}>
-        <Row gutter={[24, 24]} align="top">
-          <Col xs={24} md={12}>
+        <div className="checkin-head" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 24 }}>
+          <div style={{ flex: 1, minWidth: 260 }}>
+            <Title level={5}>每日签到</Title>
             <Space size="large" className="mb-16">
               <Statistic title="连续签到(天)" value={data?.last_day ?? 0} />
               <Statistic title="累计签到(次)" value={data?.count ?? 0} />
@@ -77,46 +77,41 @@ export default function CheckinPage() {
                 </Button>
               )}
             </div>
-          </Col>
-          <Col xs={24} md={12}>
+          </div>
+          <div style={{ flex: 1, minWidth: 260 }}>
             <Title level={5}>规则</Title>
-            <Table
-              size="small"
-              pagination={false}
-              bordered
-              dataSource={[
-                { key: '1', day: `连续签到 < ${ruleDay} 天`, rmb: `¥${ruleRmb1}` },
-                { key: '2', day: `连续签到 ≥ ${ruleDay} 天`, rmb: `¥${ruleRmb2}` },
-              ]}
-              columns={[
-                { title: '签到天数', dataIndex: 'day', key: 'day' },
-                { title: '奖励金额', dataIndex: 'rmb', key: 'rmb' },
-              ]}
-            />
-          </Col>
-        </Row>
+            <div style={{ marginBottom: 8 }}>
+              <Text>连续签到 &lt; {ruleDay} 天：¥{ruleRmb1}</Text>
+            </div>
+            <div>
+              <Text>连续签到 ≥ {ruleDay} 天：¥{ruleRmb2}</Text>
+            </div>
+          </div>
+        </div>
         <Divider />
         <Title level={5}>我的签到记录</Title>
-        <Table
-          size="small"
-          pagination={false}
-          rowKey="id"
+        <List
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 3 }}
           dataSource={list}
-          columns={[
-            {
-              title: '签到日期',
-              dataIndex: 'time',
-              key: 'time',
-              render: (t: number) => dayjs(t * 1000).format('YYYY-MM-DD HH:mm'),
-            },
-            { title: '连续天数', dataIndex: 'day', key: 'day' },
-            {
-              title: '奖励金额',
-              dataIndex: 'rmb',
-              key: 'rmb',
-              render: (v: number) => `¥${v}`,
-            },
-          ]}
+          rowKey="id"
+          renderItem={(item: CheckinRecord) => (
+            <List.Item>
+              <Card size="small">
+                <div style={{ marginBottom: 8 }}>
+                  <Text type="secondary">签到日期</Text>
+                  <div>{dayjs(item.time * 1000).format('YYYY-MM-DD HH:mm')}</div>
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  <Text type="secondary">连续天数</Text>
+                  <div>{item.day}</div>
+                </div>
+                <div>
+                  <Text type="secondary">奖励金额</Text>
+                  <div>¥{item.rmb}</div>
+                </div>
+              </Card>
+            </List.Item>
+          )}
         />
       </Spin>
     </Card>

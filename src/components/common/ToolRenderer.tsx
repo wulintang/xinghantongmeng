@@ -48,9 +48,9 @@ function loadScript(src: string): Promise<void> {
 // 把 config 里指向后端根目录的资源路径，重写为后端绝对地址
 function rewritePaths(html: string, base: string): string {
   return (html || '')
-    .replaceAll('/app/toolbox/', `${base}/app/toolbox/`)
-    .replaceAll('/public/static/', `${base}/public/static/`)
-    .replaceAll('/public/', `${base}/public/`);
+    .replaceAll('/app/toolbox/view/public/', '___TB_PUB___/')
+    .replaceAll('/public/', `${base}/public/`)
+    .replaceAll('___TB_PUB___/', `${base}/app/toolbox/view/public/`);
 }
 
 const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }) => {

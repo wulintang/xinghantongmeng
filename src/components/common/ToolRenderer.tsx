@@ -78,7 +78,62 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
     const base = apiBase();
     (window as any).__TOOLBOX_API = base;
     (window as any).__TOOLBOX_TOKEN = token || '';
-    (window as any).layer = { msg: (m: string) => message.success(m) };
+    if (!(window as any).layer || typeof (window as any).layer.open !== 'function') {
+      const mods: any[] = [];
+      const layerClose = (idx: number) => {
+        const el = mods[idx];
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+        mods[idx] = null;
+      };
+      (window as any).layer = {
+        msg: (m: string) => message.success(m),
+        close: layerClose,
+        open: (opt: any) => {
+          const idx = mods.length + 1;
+          const overlay = document.createElement('div');
+          overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;';
+          const box = document.createElement('div');
+          const aw = Array.isArray(opt.area) ? opt.area[0] : '320px';
+          const ah = Array.isArray(opt.area) ? opt.area[1] : '';
+          box.style.cssText = `background:#fff;border-radius:8px;max-width:92vw;max-height:92vh;overflow:auto;width:${aw};${ah ? 'height:' + ah + ';' : ''}`;
+          const title = document.createElement('div');
+          title.style.cssText = 'padding:12px 16px;font-weight:600;border-bottom:1px solid #eee;';
+          title.textContent = opt.title || '';
+          const content = document.createElement('div');
+          content.style.cssText = 'padding:16px;';
+          content.innerHTML = opt.content || '';
+          const foot = document.createElement('div');
+          foot.style.cssText = 'padding:8px 16px;text-align:right;border-top:1px solid #eee;';
+          const btns = Array.isArray(opt.btn) ? opt.btn : [];
+          const jq = (window as any).jQuery;
+          btns.forEach((label: string, i: number) => {
+            const b = document.createElement('button');
+            b.textContent = label;
+            b.style.cssText = 'margin-left:8px;padding:4px 14px;cursor:pointer;border:1px solid #1677ff;background:#1677ff;color:#fff;border-radius:4px;';
+            b.onclick = () => {
+              if (i === 0 && typeof opt.yes === 'function') opt.yes(idx, jq ? jq(box) : box);
+              else if (i > 0 && typeof opt.cancel === 'function') opt.cancel(idx, jq ? jq(box) : box);
+              layerClose(idx);
+            };
+            foot.appendChild(b);
+          });
+          box.appendChild(title);
+          box.appendChild(content);
+          box.appendChild(foot);
+          overlay.appendChild(box);
+          overlay.onclick = (e: any) => {
+            if (e.target === overlay) {
+              if (typeof opt.cancel === 'function') opt.cancel(idx, jq ? jq(box) : box);
+              layerClose(idx);
+            }
+          };
+          document.body.appendChild(overlay);
+          mods[idx] = overlay;
+          if (typeof opt.success === 'function') opt.success(jq ? jq(box) : box, idx);
+          return idx;
+        },
+      };
+    }
 
     const boot = async () => {
       if (!alive || !container) return;

@@ -8,10 +8,11 @@ import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getTool, submitReport, toggleFavorite, readFaved, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix, toolPageUrl } from '@/utils/route';
+import ToolRenderer from '@/components/common/ToolRenderer';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { getToken } from '@/utils/auth';
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 const ToolDetailPage: React.FC = () => {
     const navigate = useNavigate();
@@ -168,23 +169,9 @@ const ToolDetailPage: React.FC = () => {
                 </Descriptions>
             </Card>
 
-            <Alert
-                type="info"
-                showIcon
-                message="工具在后台运行"
-                description={
-                    <Flex vertical gap={8}>
-                        <Text type="secondary">
-                            该工具的交互界面与运行脚本由后台工具箱提供，前端只做入口。点击「打开工具」在新窗口中使用。
-                        </Text>
-                        <div>
-                            <Button href={toolPageUrl(item.alias)} target="_blank" rel="noreferrer" type="link">
-                                {toolPageUrl(item.alias)}
-                            </Button>
-                        </div>
-                    </Flex>
-                }
-            />
+            <Card title="在线使用">
+                <ToolRenderer config={item.config || ''} ai={item.ai} toolId={Number(item.id)} token={getToken() || ''} />
+            </Card>
 
             <AdSlotSkeleton slot="detail_tool_bottom" />
 

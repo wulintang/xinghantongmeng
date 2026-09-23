@@ -45,6 +45,18 @@ function loadScript(src: string): Promise<void> {
   });
 }
 
+function loadCss(href: string): Promise<void> {
+  return new Promise((resolve) => {
+    if (document.querySelector(`link[href="${href}"]`)) { resolve(); return; }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.onload = () => resolve();
+    link.onerror = () => { console.error('工具样式加载失败:', href); resolve(); };
+    document.head.appendChild(link);
+  });
+}
+
 // 把 config 里指向后端根目录的资源路径，重写为后端绝对地址
 function rewritePaths(html: string, base: string): string {
   return (html || '')
@@ -187,6 +199,9 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
         }
         for (const u of ordered) {
           await loadScript(u);
+          if (u.includes('cropper.min.js')) {
+            await loadCss(u.replace(/\.js(\?.*)?$/, '.css'));
+          }
           const ace = (window as any).ace;
           if (ace && ace.EditSession && ace.EditSession.prototype) {
             try { ace.EditSession.prototype.createWorker = function () { return null; }; } catch (e) {}

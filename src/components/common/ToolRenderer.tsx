@@ -93,25 +93,28 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           await loadScript(assetUrl('/app/toolbox/view/public/js/chat.js'));
         }
 
-        const libRe = /<script\s+src=["'](\/app\/toolbox\/view\/public\/js\/[^"']+)["']/g;
-        let libMatch: RegExpExecArray | null;
-        while ((libMatch = libRe.exec(config || '')) !== null) {
-          await loadScript(assetUrl(libMatch[1]));
+        if (!(window as any).jQuery) {
+          await loadScript(assetUrl('/app/toolbox/view/public/javascript/jquery.min.js'));
+        }
+
+        const srcRe = /<script\s+src=["']([^"']+)["']/g;
+        let srcM: RegExpExecArray | null;
+        const ordered = new Set<string>();
+        while ((srcM = srcRe.exec(config || '')) !== null) {
+          const raw = srcM[1];
+          const full = /^https?:\/\//.test(raw) ? raw : rewritePaths(raw, base);
+          if (!ordered.has(full)) ordered.add(full);
+        }
+        for (const u of ordered) {
+          await loadScript(u);
         }
 
         let html = rewritePaths(config || '', base);
         if (ai === 1) {
-          // 后端 aiTool.html 模板提供 #toolId 隐藏域，内嵌时自行补上，否则 sendMessage 取不到 id
           html = `<input type="hidden" id="toolId" value="${toolId}">` + html;
         }
         container.innerHTML = html;
 
-        const ext = Array.from(container.querySelectorAll('script[src]')) as HTMLScriptElement[];
-        for (const s of ext) {
-          const src = s.getAttribute('src') || '';
-          if (src && !/\/app\/toolbox\/view\/public\/js\//.test(src)) await loadScript(src);
-        }
-        // 执行 config 内联脚本（innerHTML 注入的 script 不会自动执行，需重建）
         const inlines = Array.from(container.querySelectorAll('script')) as HTMLScriptElement[];
         inlines.forEach((old) => {
           const neo = document.createElement('script');

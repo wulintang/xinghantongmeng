@@ -109,6 +109,10 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           await loadScript(u);
         }
 
+        if ((window as any).ace && (window as any).ace.config) {
+          (window as any).ace.config.set('useStrictCSP', true);
+        }
+
         let html = rewritePaths(config || '', base);
         if (ai === 1) {
           html = `<input type="hidden" id="toolId" value="${toolId}">` + html;

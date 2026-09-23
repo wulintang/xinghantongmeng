@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import { Tooltip } from 'antd';
 import { getAd, type AdPayAd } from '@/services/adpay';
 import { sanitizeHtml } from '@/utils/CommonUtil';
 
@@ -32,7 +33,13 @@ export default function AdSlot({ alias }: { alias?: string }): React.JSX.Element
 
     return (
         <div className="ad-slot-filled">
-            <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+            {ad.title ? (
+                <Tooltip title={ad.title}>
+                    <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+                </Tooltip>
+            ) : (
+                <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
+            )}
         </div>
     );
 }

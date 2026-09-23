@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin, Upload } from 'antd';
-import { getUserProfile, updateUserProfile, userLogout, uploadFile } from '@/services/userCenter';
+import { getUserProfile, updateUserProfile, userLogout, uploadFile, sendCode, bindPhone, changeMail } from '@/services/userCenter';
 import { getToken, clearToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
 import { MemberInfo } from '@/services/userCenter';
@@ -91,6 +91,77 @@ export default function ProfilePage() {
     });
   };
 
+  const [newPhone, setNewPhone] = useState('');
+  const [phoneCode, setPhoneCode] = useState('');
+  const [cdPhone, setCdPhone] = useState(0);
+  const [sendingPhone, setSendingPhone] = useState(false);
+  const [newMail, setNewMail] = useState('');
+  const [mailCode, setMailCode] = useState('');
+  const [cdMail, setCdMail] = useState(0);
+  const [sendingMail, setSendingMail] = useState(false);
+  const timerPhone = useRef<number | null>(null);
+  const timerMail = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (timerPhone.current) clearInterval(timerPhone.current);
+    if (timerMail.current) clearInterval(timerMail.current);
+  }, []);
+  const startPhoneCd = () => {
+    setCdPhone(60);
+    timerPhone.current = window.setInterval(() => {
+      setCdPhone((c) => {
+        if (c <= 1 && timerPhone.current) { clearInterval(timerPhone.current); timerPhone.current = null; return 0; }
+        return c - 1;
+      });
+    }, 1000);
+  };
+  const startMailCd = () => {
+    setCdMail(60);
+    timerMail.current = window.setInterval(() => {
+      setCdMail((c) => {
+        if (c <= 1 && timerMail.current) { clearInterval(timerMail.current); timerMail.current = null; return 0; }
+        return c - 1;
+      });
+    }, 1000);
+  };
+  const sendPhone = () => {
+    if (!/^1[3-9]\d{9}$/.test(newPhone)) { message.error('请输入正确的手机号'); return; }
+    setSendingPhone(true);
+    sendCode('sms', newPhone, 'bind')
+      .then((r: any) => { if (r.code === 1) { message.success('验证码已发送'); startPhoneCd(); } else message.error(r.msg || '发送失败'); })
+      .catch(() => message.error('发送失败'))
+      .finally(() => setSendingPhone(false));
+  };
+  const submitPhone = () => {
+    if (!phoneCode) { message.error('请输入验证码'); return; }
+    setSaving(true);
+    bindPhone(newPhone, phoneCode)
+      .then((r: any) => {
+        if (r.code === 1) { message.success('手机号已更新'); setInfo((p) => (p ? { ...p, phone: newPhone } : p)); setNewPhone(''); setPhoneCode(''); }
+        else message.error(r.msg || '修改失败');
+      })
+      .catch(() => message.error('网络错误'))
+      .finally(() => setSaving(false));
+  };
+  const sendMail = () => {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newMail)) { message.error('请输入正确的邮箱'); return; }
+    setSendingMail(true);
+    sendCode('email', newMail, 'bindmail')
+      .then((r: any) => { if (r.code === 1) { message.success('验证码已发送'); startMailCd(); } else message.error(r.msg || '发送失败'); })
+      .catch(() => message.error('发送失败'))
+      .finally(() => setSendingMail(false));
+  };
+  const submitMail = () => {
+    if (!mailCode) { message.error('请输入验证码'); return; }
+    setSaving(true);
+    changeMail(newMail, mailCode)
+      .then((r: any) => {
+        if (r.code === 1) { message.success('邮箱已更新'); setInfo((p) => (p ? { ...p, mail: newMail } : p)); setNewMail(''); setMailCode(''); }
+        else message.error(r.msg || '修改失败');
+      })
+      .catch(() => message.error('网络错误'))
+      .finally(() => setSaving(false));
+  };
+
   if (loading) {
     return (
       <div className="center-pad-60">
@@ -148,9 +219,30 @@ export default function ProfilePage() {
           </Space>
         </Form.Item>
       </Form>
-      <Text type="secondary">邮箱：{info?.mail || '未绑定'}</Text>
+      <div style={{ marginTop: 16 }}>
+        <Title level={5}>账号安全</Title>
+        <div className="mb-16">
+          <Text type="secondary">当前手机号：{info?.phone || '—'}</Text>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+            <Input placeholder="新手机号" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} style={{ width: 160 }} maxLength={11} />
+            <Button disabled={cdPhone > 0} loading={sendingPhone} onClick={sendPhone}>{cdPhone > 0 ? `${cdPhone}s` : '获取验证码'}</Button>
+            <Input placeholder="短信验证码" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)} style={{ width: 120 }} />
+            <Button type="primary" loading={saving} onClick={submitPhone}>修改手机号</Button>
+          </div>
+        </div>
+        <div>
+          <Text type="secondary">当前邮箱：{info?.mail || '—'}</Text>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+            <Input placeholder="新邮箱" value={newMail} onChange={(e) => setNewMail(e.target.value)} style={{ width: 220 }} />
+            <Button disabled={cdMail > 0} loading={sendingMail} onClick={sendMail}>{cdMail > 0 ? `${cdMail}s` : '获取验证码'}</Button>
+            <Input placeholder="邮箱验证码" value={mailCode} onChange={(e) => setMailCode(e.target.value)} style={{ width: 120 }} />
+            <Button type="primary" loading={saving} onClick={submitMail}>修改邮箱</Button>
+          </div>
+        </div>
+      </div>
+      <Text type="secondary">邮箱：{info?.mail || '—'}</Text>
       <br />
-      <Text type="secondary">手机：{info?.phone || '未绑定'}</Text>
+      <Text type="secondary">手机：{info?.phone || '—'}</Text>
     </Card>
   );
 }

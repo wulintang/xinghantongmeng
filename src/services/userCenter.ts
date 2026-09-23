@@ -134,6 +134,15 @@ export function userLogin(data: {
   return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data);
 }
 
+// 换绑手机号（已绑定账号，校验短信验证码；scene=bind）
+export function bindPhone(phone: string, code: string) {
+  return post<ApiResp>('/bindPhone.html', { phone, code });
+}
+// 换绑邮箱（已绑定账号，校验邮箱验证码；scene=bindmail）
+export function changeMail(mail: string, code: string) {
+  return post<ApiResp>('/changeMail.html', { mail, code });
+}
+
 export function userLogout() {
   return post<ApiResp>('/logout.html');
 }

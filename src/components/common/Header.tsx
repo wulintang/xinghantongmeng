@@ -166,8 +166,13 @@ export default function Header(): React.JSX.Element {
                     消息
                 </Button>
             </Badge>
-            <Dropdown menu={userMenu} trigger={['click']} placement="bottomRight">
-                <Avatar src={assetUrl(me?.head) || undefined} className="site-user-avatar">
+            <Dropdown menu={userMenu} trigger={['hover']} placement="bottomRight">
+                <Avatar
+                    src={assetUrl(me?.head) || undefined}
+                    className="site-user-avatar"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate('/user')}
+                >
                     {me?.name?.slice(0, 1) || '我'}
                 </Avatar>
             </Dropdown>

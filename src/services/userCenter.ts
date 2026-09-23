@@ -43,6 +43,11 @@ export interface CheckinStatus {
   today_done: number;
   last_day: number;
   count: number;
+  rule?: {
+    day: number;
+    rmb1: number;
+    rmb2: number;
+  };
 }
 export interface MessageItem {
   id: number;

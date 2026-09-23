@@ -40,7 +40,7 @@ function loadScript(src: string): Promise<void> {
     s.src = src;
     s.async = false;
     s.onload = () => resolve();
-    s.onerror = () => resolve();
+    s.onerror = () => { console.error('工具依赖加载失败:', src); resolve(); };
     document.head.appendChild(s);
   });
 }
@@ -93,6 +93,12 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           await loadScript(assetUrl('/app/toolbox/view/public/js/chat.js'));
         }
 
+        const libRe = /<script\s+src=["'](\/app\/toolbox\/view\/public\/js\/[^"']+)["']/g;
+        let libMatch: RegExpExecArray | null;
+        while ((libMatch = libRe.exec(config || '')) !== null) {
+          await loadScript(assetUrl(libMatch[1]));
+        }
+
         let html = rewritePaths(config || '', base);
         if (ai === 1) {
           // 后端 aiTool.html 模板提供 #toolId 隐藏域，内嵌时自行补上，否则 sendMessage 取不到 id
@@ -100,11 +106,10 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
         }
         container.innerHTML = html;
 
-        // 加载 config 内声明的外部脚本（按顺序）
         const ext = Array.from(container.querySelectorAll('script[src]')) as HTMLScriptElement[];
         for (const s of ext) {
           const src = s.getAttribute('src') || '';
-          if (src) await loadScript(src);
+          if (src && !/\/app\/toolbox\/view\/public\/js\//.test(src)) await loadScript(src);
         }
         // 执行 config 内联脚本（innerHTML 注入的 script 不会自动执行，需重建）
         const inlines = Array.from(container.querySelectorAll('script')) as HTMLScriptElement[];

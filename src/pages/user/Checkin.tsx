@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Row, Col, Table } from 'antd';
-import { getCheckin, doCheckin } from '@/services/userCenter';
+import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Row, Col, Table, Divider } from 'antd';
+import dayjs from 'dayjs';
+import { getCheckin, doCheckin, getCheckinList } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
-import { CheckinStatus } from '@/services/userCenter';
+import { CheckinStatus, CheckinRecord } from '@/services/userCenter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title } = Typography;
@@ -14,6 +15,7 @@ export default function CheckinPage() {
   const [data, setData] = useState<CheckinStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [doing, setDoing] = useState(false);
+  const [list, setList] = useState<CheckinRecord[]>([]);
 
   const load = () => {
     const key = getToken();
@@ -28,6 +30,11 @@ export default function CheckinPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+    getCheckinList(key)
+      .then((r: any) => {
+        if (r.code === 1) setList(r.data || []);
+      })
+      .catch(() => {});
   };
 
   useEffect(load, [navigate]);
@@ -53,9 +60,9 @@ export default function CheckinPage() {
 
   return (
     <Card className="user-center-card">
-      <Title level={4}>每日签到</Title>
+      <Title level={5}>每日签到</Title>
       <Spin spinning={loading}>
-        <Row gutter={[24, 24]}>
+        <Row gutter={[24, 24]} align="top">
           <Col xs={24} md={12}>
             <Space size="large" className="mb-16">
               <Statistic title="连续签到(天)" value={data?.last_day ?? 0} />
@@ -82,12 +89,35 @@ export default function CheckinPage() {
                 { key: '2', day: `连续签到 ≥ ${ruleDay} 天`, rmb: `¥${ruleRmb2}` },
               ]}
               columns={[
-                { title: '签到次数', dataIndex: 'day', key: 'day' },
+                { title: '签到天数', dataIndex: 'day', key: 'day' },
                 { title: '奖励金额', dataIndex: 'rmb', key: 'rmb' },
               ]}
             />
           </Col>
         </Row>
+        <Divider />
+        <Title level={5}>我的签到记录</Title>
+        <Table
+          size="small"
+          pagination={false}
+          rowKey="id"
+          dataSource={list}
+          columns={[
+            {
+              title: '签到日期',
+              dataIndex: 'time',
+              key: 'time',
+              render: (t: number) => dayjs(t * 1000).format('YYYY-MM-DD HH:mm'),
+            },
+            { title: '连续天数', dataIndex: 'day', key: 'day' },
+            {
+              title: '奖励金额',
+              dataIndex: 'rmb',
+              key: 'rmb',
+              render: (v: number) => `¥${v}`,
+            },
+          ]}
+        />
       </Spin>
     </Card>
   );

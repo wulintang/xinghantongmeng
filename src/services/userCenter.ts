@@ -49,6 +49,13 @@ export interface CheckinStatus {
     rmb2: number;
   };
 }
+export interface CheckinRecord {
+  id: number;
+  day: number;
+  rmb: number;
+  time: number;
+  ip?: string;
+}
 export interface MessageItem {
   id: number;
   open: number;
@@ -181,6 +188,9 @@ export function claimWebsite(key: string, tid: number) {
 }
 export function getCheckin(key: string) {
   return request<ApiResp<CheckinStatus>>(`${USER}/checkin.html?key=${encodeURIComponent(key)}`);
+}
+export function getCheckinList(key: string) {
+  return request<ApiResp<CheckinRecord[]>>(`${USER}/checkinList.html?key=${encodeURIComponent(key)}`);
 }
 export function doCheckin(key: string) {
   return post<ApiResp<{ day: number; rmb: number }>>('/checkinDo.html', { key }, USER);

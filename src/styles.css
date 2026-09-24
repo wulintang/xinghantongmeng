@@ -1562,6 +1562,74 @@ body {
   white-space: nowrap;
 }
 
+/* ===================== 站点验证弹窗 ===================== */
+.verify-modal-body {
+  padding: 4px 0;
+}
+.verify-desc {
+  color: var(--c-text-2);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  margin: 0 0 16px;
+}
+.verify-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.verify-step-badge {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c-link);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+}
+.verify-step-title {
+  font-size: var(--fs-md);
+  color: var(--c-text);
+}
+.verify-step-desc {
+  font-size: var(--fs-sm);
+  color: var(--c-text-2);
+  margin-top: 2px;
+}
+.verify-code-block {
+  background: var(--c-bg-soft, #f6f8fa);
+  border: 1px solid var(--c-border, #f0f0f0);
+  border-left: 3px solid var(--c-link);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 6px 0 14px;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  word-break: break-all;
+}
+.verify-code-block .ant-typography-copy {
+  color: var(--c-link);
+}
+.verify-alert {
+  margin: 12px 0;
+}
+.verify-fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-border, #f0f0f0);
+  font-size: var(--fs-md);
+  color: var(--c-text);
+}
+.verify-fee-amount {
+  color: var(--c-link);
+  font-weight: 600;
+}
+
 /* ===================== Abstract 详情页 ===================== */
 .abstract-page .abstract-timeline-item {
   width: 100%;

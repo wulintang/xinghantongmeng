@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
+import { Alert, Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { addSite, captchaUrl, genVerifyToken, getBalance, getSiteFee, getWebsiteCates, uploadFile, verifyDomain, type CateItem } from '@/services/userCenter';
@@ -207,19 +207,22 @@ const SubmitSite: React.FC = () => {
   );
 
   const dotStyle = (active: boolean): React.CSSProperties => ({
-    width: 72,
-    height: 72,
-    borderRadius: '50%',
-    border: `1px solid ${active ? '#1677ff' : '#d9d9d9'}`,
-    color: active ? '#1677ff' : 'rgba(0,0,0,0.65)',
+    minWidth: 88,
+    padding: '14px 10px',
+    borderRadius: 12,
+    border: `1px solid ${active ? 'var(--c-link)' : 'var(--c-border, #f0f0f0)'}`,
+    color: active ? 'var(--c-link)' : 'var(--c-text-2)',
     display: 'inline-flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 4,
     cursor: 'pointer',
-    fontSize: 12,
+    fontSize: 'var(--fs-sm)',
     background: '#fff',
     userSelect: 'none',
+    transition: 'all .15s',
+    boxShadow: active ? '0 2px 8px rgba(22,119,255,0.12)' : 'none',
   });
 
   return (
@@ -285,10 +288,10 @@ const SubmitSite: React.FC = () => {
               ))}
             </Space>
             {!verifyType && (
-              <div style={{ marginTop: 8, color: 'rgba(0,0,0,0.45)', fontSize: 12 }}>请选择一种验证方式完成域名归属验证</div>
+              <div style={{ marginTop: 8, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请选择一种验证方式完成域名归属验证</div>
             )}
             {verifyType && (
-              <div style={{ marginTop: 8, color: '#52c41a', fontSize: 12 }}>已通过：{VERIFY_LABELS[verifyType]}</div>
+              <div style={{ marginTop: 8, color: 'var(--c-link)', fontSize: 'var(--fs-xs)' }}>已通过：{VERIFY_LABELS[verifyType]}</div>
             )}
           </Form.Item>
           {verifyType && (
@@ -309,64 +312,118 @@ const SubmitSite: React.FC = () => {
         </Form>
       </Spin>
 
-      <Modal open={activeModal !== ''} title={activeModal ? VERIFY_LABELS[activeModal] : ''} onCancel={() => setActiveModal('')} footer={null}>
+      <Modal open={activeModal !== ''} title={activeModal ? VERIFY_LABELS[activeModal] : ''} onCancel={() => setActiveModal('')} footer={null} width={480}>
         {activeModal === 'manual' ? (
-          <div>
-            <p>由管理员人工核对域名归属。提交后将自动进入人工审核流程。</p>
+          <div className="verify-modal-body">
+            <p className="verify-desc">由管理员人工核对域名归属，提交后将自动进入人工审核流程。</p>
             {feeLoading ? (
-              <p>加载中…</p>
+              <div style={{ padding: 24, textAlign: 'center' }}>
+                <Spin />
+              </div>
             ) : siteFee > 0 ? (
               <>
-                <p>
-                  人工验证费用：<strong>¥{siteFee}</strong>
-                </p>
-                <p>当前余额：¥{myBalance ?? 0}</p>
+                <div className="verify-fee-row">
+                  <span>人工验证费用</span>
+                  <span className="verify-fee-amount">¥{siteFee}</span>
+                </div>
+                <div className="verify-fee-row">
+                  <span>当前余额</span>
+                  <span>¥{myBalance ?? 0}</span>
+                </div>
                 {myBalance !== null && myBalance < siteFee ? (
-                  <Button type="primary" danger onClick={() => navigate('/user/recharge')}>
+                  <Button type="primary" danger block onClick={() => navigate('/user/recharge')} style={{ marginTop: 16 }}>
                     余额不足，去充值
                   </Button>
                 ) : (
-                  <Button type="primary" onClick={chooseManual}>
+                  <Button type="primary" block onClick={chooseManual} style={{ marginTop: 16 }}>
                     申请人工验证（支付 ¥{siteFee}）
                   </Button>
                 )}
               </>
             ) : (
-              <Button type="primary" onClick={chooseManual}>
+              <Button type="primary" block onClick={chooseManual} style={{ marginTop: 16 }}>
                 申请人工验证
               </Button>
             )}
           </div>
         ) : (
-          <div>
-            {fetching && <p>获取验证信息中…</p>}
-            {!fetching && vMsg && !vData && <p style={{ color: vMsg.ok ? '#52c41a' : '#ff4d4f' }}>{vMsg.text}</p>}
-            {!fetching && vData && activeModal === 'file' && (
-              <p>
-                将以下内容保存到：<br />
-                <code>https://{vData.domain}/{vData.domain}.txt</code>
-                <br />
-                文件内容仅包含：<br />
-                <code>{vData.token}</code>
-              </p>
+          <div className="verify-modal-body">
+            {fetching && (
+              <div style={{ padding: 24, textAlign: 'center' }}>
+                <Spin />
+              </div>
             )}
-            {!fetching && vData && activeModal === 'dns' && (
-              <p>
-                添加 TXT 记录：<br />
-                <code>_verify.{vData.domain}</code> TXT = <code>{vData.token}</code>
-              </p>
-            )}
-            {!fetching && vData && activeModal === 'meta' && (
-              <p>
-                在首页 &lt;head&gt; 中添加：<br />
-                <code>&lt;meta name="dao-verify" content="{vData.metaHash}" /&gt;</code>
-              </p>
-            )}
-            {!fetching && vData && vMsg && <p style={{ color: vMsg.ok ? '#52c41a' : '#ff4d4f' }}>{vMsg.text}</p>}
+            {!fetching && !vData && vMsg && <Alert type={vMsg.ok ? 'success' : 'error'} message={vMsg.text} showIcon />}
             {!fetching && vData && (
-              <Button type="primary" loading={verifying} onClick={runVerify} disabled={!!vMsg?.ok}>
-                验证
-              </Button>
+              <>
+                {activeModal === 'file' && (
+                  <>
+                    <p className="verify-desc">在您网站根目录创建验证文件，证明您拥有该域名的管理权限。</p>
+                    <div className="verify-step">
+                      <span className="verify-step-badge">1</span>
+                      <div>
+                        <div className="verify-step-title">创建文件</div>
+                        <div className="verify-step-desc">文件名为 <Typography.Text code>{vData.domain}.txt</Typography.Text></div>
+                      </div>
+                    </div>
+                    <Typography.Paragraph copyable={{ text: `https://${vData.domain}/${vData.domain}.txt` }} className="verify-code-block">
+                      https://{vData.domain}/{vData.domain}.txt
+                    </Typography.Paragraph>
+                    <div className="verify-step">
+                      <span className="verify-step-badge">2</span>
+                      <div>
+                        <div className="verify-step-title">文件内容</div>
+                        <div className="verify-step-desc">仅包含下方字符串，请勿添加多余内容</div>
+                      </div>
+                    </div>
+                    <Typography.Paragraph copyable={{ text: vData.token }} className="verify-code-block">
+                      {vData.token}
+                    </Typography.Paragraph>
+                  </>
+                )}
+                {activeModal === 'dns' && (
+                  <>
+                    <p className="verify-desc">在域名的 DNS 解析中添加一条 TXT 记录。</p>
+                    <div className="verify-step">
+                      <span className="verify-step-badge">1</span>
+                      <div>
+                        <div className="verify-step-title">主机记录</div>
+                        <div className="verify-step-desc">仅填写 <Typography.Text code>_verify</Typography.Text>，系统自动拼接为 <Typography.Text code>_verify.{vData.domain}</Typography.Text></div>
+                      </div>
+                    </div>
+                    <div className="verify-step">
+                      <span className="verify-step-badge">2</span>
+                      <div>
+                        <div className="verify-step-title">记录值</div>
+                        <div className="verify-step-desc">复制下方字符串填入</div>
+                      </div>
+                    </div>
+                    <Typography.Paragraph copyable={{ text: vData.token }} className="verify-code-block">
+                      {vData.token}
+                    </Typography.Paragraph>
+                    <Alert type="warning" showIcon message="DNS 记录生效通常需要几分钟，请稍后再点击验证。" className="verify-alert" />
+                  </>
+                )}
+                {activeModal === 'meta' && (
+                  <>
+                    <p className="verify-desc">在您网站首页 <Typography.Text code>&lt;head&gt;</Typography.Text> 中添加以下 meta 标签。</p>
+                    <div className="verify-step">
+                      <span className="verify-step-badge">1</span>
+                      <div>
+                        <div className="verify-step-title">添加 meta 标签</div>
+                        <div className="verify-step-desc">content 为 token 的哈希值，防止被模仿</div>
+                      </div>
+                    </div>
+                    <Typography.Paragraph copyable={{ text: `<meta name="dao-verify" content="${vData.metaHash}" />` }} className="verify-code-block">
+                      &lt;meta name="dao-verify" content="{vData.metaHash}" /&gt;
+                    </Typography.Paragraph>
+                  </>
+                )}
+                {vMsg && <Alert type={vMsg.ok ? 'success' : 'error'} message={vMsg.text} showIcon className="verify-alert" />}
+                <Button type="primary" block loading={verifying} onClick={runVerify} disabled={!!vMsg?.ok} style={{ marginTop: 16 }}>
+                  验证
+                </Button>
+              </>
             )}
           </div>
         )}

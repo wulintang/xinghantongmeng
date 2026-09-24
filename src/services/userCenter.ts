@@ -236,9 +236,28 @@ export function addSite(
     feed_url?: string;
     nofollow?: number;
     xin?: number;
+    verify_type?: string;
+    verify_token?: string;
   }
 ) {
   return post<ApiResp>('/addSite.html', { key, sid: getCaptchaSid(), ...data }, USER);
+}
+
+// 生成域名验证 token（文件/DNS 展示明文 token，meta 展示 token 的哈希值）
+export function genVerifyToken(key: string, domain: string) {
+  return post<ApiResp<{ domain: string; token: string; metaHash: string }>>(
+    '/genVerifyToken.html',
+    { key, domain },
+    USER
+  );
+}
+
+// 真实校验域名归属：file/dns/meta，成功 code=1（失败时 msg 含原因）
+export function verifyDomain(
+  key: string,
+  data: { type: 'file' | 'dns' | 'meta'; domain: string; value: string }
+) {
+  return post<ApiResp>('/verifyDomain.html', { key, ...data }, USER);
 }
 
 // 我的友链/站点申请列表（my_tijiao，按 uid 过滤；type=link 仅友链）

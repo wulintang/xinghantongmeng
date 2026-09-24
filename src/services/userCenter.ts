@@ -250,6 +250,15 @@ export function addSite(
   return post<ApiResp>('/addSite.html', { key, sid: getCaptchaSid(), ...data }, USER);
 }
 
+// 从站点链接自动获取标题/关键词/描述（mode=normal 普通抓取 / ai AI 生成）
+export function fetchSiteMeta(key: string, url: string, mode: 'normal' | 'ai') {
+  return post<ApiResp<{ title: string; keywords: string; content: string }>>(
+    '/getSiteMeta.html',
+    { key, url, mode },
+    USER
+  );
+}
+
 // 获取站点收录人工验证价格（w_rmb）
 export function getSiteFee() {
   return post<ApiResp<{ fee: number }>>('/getSiteFee.html', {}, USER);

@@ -8,6 +8,7 @@ import {
   captchaUrl,
   claimSite,
   editMySite,
+  fetchSiteMeta,
   genVerifyToken,
   getBalance,
   getSiteFee,
@@ -72,6 +73,8 @@ const SubmitSite: React.FC = () => {
   const [siteFee, setSiteFee] = useState(0);
   const [myBalance, setMyBalance] = useState<number | null>(null);
   const [feeLoading, setFeeLoading] = useState(false);
+  // 普通获取 / AI 获取站点信息
+  const [fetchingMeta, setFetchingMeta] = useState<'normal' | 'ai' | null>(null);
 
   // 编辑模式下域名/feed 默认锁定，点「编辑」解锁并唤出验证
   const [showVerify, setShowVerify] = useState(needVerifyAlways);
@@ -108,7 +111,6 @@ const SubmitSite: React.FC = () => {
               url: s.www,
               cate: s.tid ? Number(s.tid) : undefined,
               feed_url: s.feed_url,
-              tips: s.tips,
               keywords: s.keywords,
               content: s.content,
             });
@@ -148,6 +150,38 @@ const SubmitSite: React.FC = () => {
     const url = (form.getFieldValue('url') || '').trim();
     if (!url) return '';
     return url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
+  };
+
+  // 根据站点链接自动获取标题/关键词/描述：normal=抓取 meta，ai=后台 AI 生成
+  const fetchMeta = async (mode: 'normal' | 'ai') => {
+    const key = getToken();
+    if (!key) {
+      message.warning('请先登录');
+      return;
+    }
+    const url = (form.getFieldValue('url') || '').trim();
+    if (!url) {
+      message.warning('请先填写站点链接');
+      return;
+    }
+    setFetchingMeta(mode);
+    try {
+      const r = await fetchSiteMeta(key, url, mode);
+      if (r.code === 1 && r.data) {
+        form.setFieldsValue({
+          name: r.data.title || undefined,
+          keywords: r.data.keywords || undefined,
+          content: r.data.content || undefined,
+        });
+        message.success(mode === 'ai' ? 'AI 获取成功' : '已获取站点信息');
+      } else {
+        message.error(r.msg || '获取失败');
+      }
+    } catch {
+      message.error('获取失败，请重试');
+    } finally {
+      setFetchingMeta(null);
+    }
   };
 
   const openVerify = async (type: VerifyType) => {
@@ -229,7 +263,6 @@ const SubmitSite: React.FC = () => {
     url: string;
     cate?: number;
     feed_url?: string;
-    tips?: string;
     keywords?: string;
     content?: string;
     code?: string;
@@ -270,7 +303,6 @@ const SubmitSite: React.FC = () => {
         ico,
         pic,
         feed_url: values.feed_url,
-        tips: values.tips,
         keywords: values.keywords,
         content: values.content,
         verify_type: verifyType as string,
@@ -297,7 +329,6 @@ const SubmitSite: React.FC = () => {
       ico,
       pic,
       feed_url: values.feed_url,
-      tips: values.tips,
       keywords: values.keywords,
       content: values.content,
       type: 'website',
@@ -387,6 +418,12 @@ const SubmitSite: React.FC = () => {
                   编辑
                 </Button>
               )}
+              <Button size="small" loading={fetchingMeta === 'normal'} onClick={() => fetchMeta('normal')}>
+                普通获取
+              </Button>
+              <Button size="small" loading={fetchingMeta === 'ai'} onClick={() => fetchMeta('ai')}>
+                AI获取
+              </Button>
             </div>
           </Form.Item>
           <Form.Item label="网站分类" name="cate" rules={[{ required: true, message: '请选择网站分类' }]}>
@@ -423,9 +460,6 @@ const SubmitSite: React.FC = () => {
                 </Button>
               )}
             </div>
-          </Form.Item>
-          <Form.Item label="一句话简介" name="tips">
-            <Input placeholder="一句话介绍该站点" disabled={ro} />
           </Form.Item>
           <Form.Item label="关键词" name="keywords">
             <Input placeholder="关键词，逗号分隔" disabled={ro} />

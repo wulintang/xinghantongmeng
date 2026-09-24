@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, Button, Menu, Spin, Typography, Upload, message } from 'antd';
+import { Avatar, Button, Menu, Spin, Tooltip, Typography, Upload, message } from 'antd';
 import { userLogout, uploadFile } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -104,9 +104,11 @@ function UserLayoutInner() {
       <aside className="user-sider">
         <div className="user-sider-profile">
           <Upload accept="image/*" showUploadList={false} beforeUpload={onUploadAvatar}>
-            <Avatar src={info?.head} size={64} style={{ cursor: 'pointer' }}>
-              {info?.name?.slice(0, 1)}
-            </Avatar>
+            <Tooltip title="点击更换头像">
+              <Avatar src={info?.head} size={64} style={{ cursor: 'pointer' }}>
+                {info?.name?.slice(0, 1)}
+              </Avatar>
+            </Tooltip>
           </Upload>
           <div className="user-sider-name">
             <Text strong>{info?.name}</Text>

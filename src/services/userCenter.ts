@@ -193,6 +193,15 @@ export function bindPhone(phone: string, code: string) {
 export function changeMail(mail: string, code: string) {
   return post<ApiResp>('/changeMail.html', { mail, code });
 }
+// 修改登录密码（手机或邮箱二选一验证；vtype=mail 用已绑定邮箱 / vtype=phone 用已绑定手机，未绑定时可传 new_phone）
+export function changePassword(data: {
+  vtype: 'phone' | 'mail';
+  code: string;
+  password: string;
+  new_phone?: string;
+}) {
+  return post<ApiResp>('/changePwd.html', data);
+}
 
 export function userLogout() {
   return post<ApiResp>('/logout.html');

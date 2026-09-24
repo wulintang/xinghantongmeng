@@ -204,6 +204,10 @@ const SubmitSite: React.FC = () => {
       setVMsg({ ok: false, text: '请先在上方填写站点链接' });
       return;
     }
+    // 已为该域名取过 token 则三种验证方式共享同一组值，不再重新请求（避免关闭/切换弹窗时 token 变化）
+    if (vData && vData.domain === domain) {
+      return;
+    }
     setFetching(true);
     try {
       const r = await genVerifyToken(key, domain);

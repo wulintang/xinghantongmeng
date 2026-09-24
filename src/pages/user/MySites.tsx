@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, Tag, Space, Popconfirm, Tooltip, message, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 
-import { getMySites, delMySite } from '@/services/userCenter';
+import { getMySites, delMySite, delMySiteApply } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import CardTable from '@components/common/CardTable';
@@ -40,7 +40,8 @@ export default function MySitesPage() {
 
   const onDelete = (row: WebsiteItem) => {
     const key = getToken();
-    delMySite(key || '', row.id)
+    const api = row.pending ? delMySiteApply : delMySite;
+    api(key || '', row.id)
       .then((r: any) => {
         if (r.code === 1) {
           message.success('已删除');
@@ -59,9 +60,15 @@ export default function MySitesPage() {
       render: (v: string, row: WebsiteItem) => (
         <Space>
           {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
-          <Tooltip title={row.title || row.www || row.domain || v}>
-            <Link to={`/${row.www || row.domain}`}>{v}</Link>
-          </Tooltip>
+          {row.pending ? (
+            <Tooltip title={row.title || row.www || row.domain || v}>
+              <span>{v}</span>
+            </Tooltip>
+          ) : (
+            <Tooltip title={row.title || row.www || row.domain || v}>
+              <Link to={`/${row.www || row.domain}`}>{v}</Link>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -70,7 +77,13 @@ export default function MySitesPage() {
       title: '状态',
       dataIndex: 'open',
       render: (v: number) =>
-        Number(v) === 1 ? <Tag color="success">已收录</Tag> : <Tag color="warning">待审核</Tag>,
+        Number(v) === 1 ? (
+          <Tag color="success">已收录</Tag>
+        ) : Number(v) === 9 ? (
+          <Tag color="error">已拒绝</Tag>
+        ) : (
+          <Tag color="warning">待审核</Tag>
+        ),
     },
     { title: '浏览', dataIndex: 'view' },
     { title: '点赞', dataIndex: 'zan' },
@@ -78,12 +91,19 @@ export default function MySitesPage() {
       title: '操作',
       render: (_: any, row: WebsiteItem) => (
         <Space wrap className="mysite-actions">
-          <Button size="small" onClick={() => navigate(`/user/submit?mode=edit&siteId=${row.id}`)}>
-            编辑
-          </Button>
-          <Popconfirm title="确认删除该站点？" onConfirm={() => onDelete(row)} okText="删除" cancelText="取消">
+          {!row.pending && (
+            <Button size="small" onClick={() => navigate(`/user/submit?mode=edit&siteId=${row.id}`)}>
+              编辑
+            </Button>
+          )}
+          <Popconfirm
+            title={row.pending ? '确认撤回该申请？' : '确认删除该站点？'}
+            onConfirm={() => onDelete(row)}
+            okText="删除"
+            cancelText="取消"
+          >
             <Button size="small" danger>
-              删除
+              {row.pending ? '撤回' : '删除'}
             </Button>
           </Popconfirm>
         </Space>

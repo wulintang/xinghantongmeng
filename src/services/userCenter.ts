@@ -56,6 +56,13 @@ export interface CheckinRecord {
   time: number;
   ip?: string;
 }
+
+export interface CheckinRankItem {
+  rank: number;
+  uid: number;
+  name: string;
+  days: number;
+}
 export interface MessageItem {
   id: number;
   open: number;
@@ -199,6 +206,10 @@ export function getCheckin(key: string) {
 export function getCheckinList(key: string) {
   return request<ApiResp<CheckinRecord[]>>(`${USER}/checkinList.html?key=${encodeURIComponent(key)}`);
 }
+
+export function getCheckinRank(key: string) {
+  return request<ApiResp<CheckinRankItem[]>>(`${USER}/checkinRank.html?key=${encodeURIComponent(key)}`);
+}
 export function doCheckin(key: string) {
   return post<ApiResp<{ day: number; rmb: number }>>('/checkinDo.html', { key }, USER);
 }
@@ -333,6 +344,10 @@ export function editMySite(key: string, data: Record<string, any>) {
 export function delMySite(key: string, id: number | string) {
   return post<ApiResp>('/siteDel.html', { key, id }, USER);
 }
+// 删除我的站点申请（my_tijiao，仅待审核/已拒绝的 website 申请）
+export function delMySiteApply(key: string, id: number | string) {
+  return post<ApiResp>('/applyDel.html', { key, id }, USER);
+}
 
 // ===================== 站点展示数据（openapi 插件） =====================
 //   my_set(alias=set) 站点配置 / my_link 导航与友链(wz=1 顶部,2 底部,9 友链) / my_dan 单页
@@ -404,6 +419,8 @@ export interface WebsiteItem {
   owner?: string;
   /** 当前登录用户是否已赞（带 key 请求详情时返回） */
   liked?: number;
+  /** 来自 my_tijiao 申请记录（待审核/已拒绝），非 my_website 正式站点 */
+  pending?: boolean;
 }
 
 export interface ArticleItem {

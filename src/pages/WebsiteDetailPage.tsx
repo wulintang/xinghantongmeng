@@ -299,13 +299,13 @@ const WebsiteDetailPage: React.FC = () => {
                 </Descriptions>
             </Card>
 
-            <Card title="站点文章">
+            <Card title="最新文章">
                 {sitePosts.length === 0 ? (
                     <Alert type="info" showIcon message="该站点暂无聚合文章" />
                 ) : (
                     <List
                         size="small"
-                        dataSource={sitePosts.slice(0, 5)}
+                        dataSource={sitePosts.slice(0, 10)}
                         rowKey={(p) => p.link || p.title}
                         renderItem={(p) => (
                             <List.Item>

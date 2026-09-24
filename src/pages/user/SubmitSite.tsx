@@ -84,6 +84,23 @@ const SubmitSite: React.FC = () => {
 
   const refreshCode = () => setCodeSrc(captchaUrl());
 
+  // mode / siteId 变化（如从 ?mode=edit&siteId=46 跳回 /user/submit）整体重置，避免上个模式内容残留
+  useEffect(() => {
+    form.resetFields();
+    setIco('');
+    setPic('');
+    setVerifyType('');
+    setActiveModal('');
+    setVMsg(null);
+    setVData(null);
+    setShowVerify(needVerifyAlways);
+    setDomainLocked(isEdit);
+    setFeedLocked(isEdit);
+    setLoadingSite(isEdit || isClaim);
+    refreshCode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, siteId]);
+
   useEffect(() => {
     let alive = true;
     getWebsiteCates()
@@ -343,12 +360,7 @@ const SubmitSite: React.FC = () => {
       .then((r) => {
         if (r.code === 1) {
           message.success(r.msg || '提交成功，等待审核');
-          form.resetFields();
-          setIco('');
-          setPic('');
-          setVerifyType('');
-          setVData(null);
-          refreshCode();
+          navigate('/user/mysites');
         } else {
           message.error(r.msg || '提交失败');
           refreshCode();
@@ -585,7 +597,22 @@ const SubmitSite: React.FC = () => {
                       <span className="verify-step-badge">1</span>
                       <div>
                         <div className="verify-step-title">主机记录</div>
-                        <div className="verify-step-desc">仅填写 <Typography.Text code>_verify</Typography.Text>，系统自动拼接为 <Typography.Text code>_verify.{vData.domain}</Typography.Text></div>
+                        <div className="verify-step-desc">
+                          完整记录名：<Typography.Text code>_verify.{vData.domain}</Typography.Text>。
+                          {vData.domain.split('.').length > 2 && (
+                            <>
+                              <br />
+                              若你的解析域名为 <Typography.Text code>{vData.domain.split('.').slice(1).join('.')}</Typography.Text>，主机记录填 <Typography.Text code>{'_verify.' + vData.domain.split('.')[0]}</Typography.Text>；
+                              若你的解析域名为 <Typography.Text code>{vData.domain}</Typography.Text>，主机记录填 <Typography.Text code>_verify</Typography.Text>。
+                            </>
+                          )}
+                          {vData.domain.split('.').length <= 2 && (
+                            <>
+                              <br />
+                              主机记录填 <Typography.Text code>_verify</Typography.Text>。
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="verify-step">

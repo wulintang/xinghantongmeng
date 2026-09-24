@@ -7,7 +7,7 @@ import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getTool, submitReport, toggleFavorite, readFaved, type ToolItem } from '@/services/userCenter';
-import { assetUrl, stripHtmlSuffix, toolPageUrl } from '@/utils/route';
+import { assetUrl, stripHtmlSuffix } from '@/utils/route';
 import ToolRenderer from '@/components/common/ToolRenderer';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { getToken } from '@/utils/auth';
@@ -128,9 +128,6 @@ const ToolDetailPage: React.FC = () => {
                         <Tooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
                         </Tooltip>
-                        <Button type="primary" href={toolPageUrl(item.alias)} target="_blank" rel="noreferrer">
-                            打开工具
-                        </Button>
                     </Space>
                 }
             />

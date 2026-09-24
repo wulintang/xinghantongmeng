@@ -62,6 +62,7 @@ export interface CheckinRankItem {
   uid: number;
   name: string;
   days: number;
+  rmb: number;
 }
 export interface MessageItem {
   id: number;

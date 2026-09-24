@@ -148,18 +148,56 @@ export default function CheckinPage() {
   );
 
   const rankView = (
-    <Table
-      size="small"
-      pagination={false}
-      rowKey="uid"
-      loading={rankLoading}
-      dataSource={rankList}
-      columns={[
-        { title: '排名', dataIndex: 'rank', key: 'rank', width: 80 },
-        { title: '用户', dataIndex: 'name', key: 'name' },
-        { title: '累计签到天数', dataIndex: 'days', key: 'days' },
-      ]}
-    />
+    <>
+      <Table
+        className="hidden-mobile"
+        size="small"
+        pagination={false}
+        rowKey="uid"
+        loading={rankLoading}
+        dataSource={rankList}
+        columns={[
+          { title: '排名', dataIndex: 'rank', key: 'rank', width: 80 },
+          { title: '用户', dataIndex: 'name', key: 'name' },
+          { title: '累计签到天数', dataIndex: 'days', key: 'days' },
+          {
+            title: '累计奖励金额',
+            dataIndex: 'rmb',
+            key: 'rmb',
+            render: (v: number) => `¥${v}`,
+          },
+        ]}
+      />
+      <List
+        className="hidden-desktop"
+        grid={{ gutter: 16, xs: 1 }}
+        dataSource={rankList}
+        rowKey="uid"
+        loading={rankLoading}
+        renderItem={(item: CheckinRankItem) => (
+          <List.Item>
+            <Card size="small">
+              <div style={{ marginBottom: 8 }}>
+                <Text type="secondary">排名</Text>
+                <div>{item.rank}</div>
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <Text type="secondary">用户</Text>
+                <div>{item.name}</div>
+              </div>
+              <div style={{ marginBottom: 8 }}>
+                <Text type="secondary">累计签到天数</Text>
+                <div>{item.days}</div>
+              </div>
+              <div>
+                <Text type="secondary">累计奖励金额</Text>
+                <div>¥{item.rmb}</div>
+              </div>
+            </Card>
+          </List.Item>
+        )}
+      />
+    </>
   );
 
   return (

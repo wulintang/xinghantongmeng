@@ -20,7 +20,7 @@ export default function BalancePage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
-  const fmt = (t: number) => (t ? new Date(t * 1000).toLocaleString() : '');
+  const fmt = (t: any) => { const n = Number(t); return n ? new Date(n * 1000).toLocaleString() : ''; };
 
   const load = () => {
     const key = getToken();
@@ -105,7 +105,7 @@ export default function BalancePage() {
                         return <Tag color={n >= 0 ? 'green' : 'red'}>{v}</Tag>;
                       },
                     },
-                    { title: '时间', dataIndex: 'time', render: (t: any) => (typeof t === 'number' ? dayjs(t * 1000).format('YYYY-MM-DD HH:mm') : (t || '-')) },
+                    { title: '时间', dataIndex: 'time', render: (t: any) => { const n = Number(t); return n ? dayjs(n * 1000).format('YYYY-MM-DD HH:mm') : (t || '-'); } },
                   ]}
                 />
               </Spin>

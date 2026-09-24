@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, Button, Menu, Spin, Typography } from 'antd';
-import { getUserProfile, userLogout, type MemberInfo } from '@/services/userCenter';
+import { Avatar, Button, Menu, Spin, Typography, Upload, message } from 'antd';
+import { userLogout, uploadFile } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { MemberProvider, useMember } from '@/context/MemberContext';
 
 const { Text } = Typography;
 
@@ -48,34 +49,41 @@ const TITLE_MAP: Record<string, string> = {
   '/user/balance': '余额明细',
 };
 
-export default function UserLayout() {
+function UserLayoutInner() {
   const navigate = useNavigate();
   const location = useLocation();
   usePageMeta({ title: TITLE_MAP[location.pathname] || '用户中心' });
-  const [info, setInfo] = useState<MemberInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const load = () => {
-    const key = getToken();
-    if (!key) {
-      navigate('/login');
-      return;
-    }
-    getUserProfile(key)
-      .then((r: any) => {
-        if (r.code === 1) setInfo(r.data);
-        else navigate('/login');
-      })
-      .catch(() => navigate('/login'))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(load, [navigate]);
+  const { info, setInfo, loading } = useMember();
 
   const onLogout = () => {
     userLogout().catch(() => {});
     setToken('');
     navigate('/login');
+  };
+
+  const onUploadAvatar = (file: File) => {
+    const key = getToken();
+    if (!key) return false;
+    if (!/^image\//.test(file.type)) {
+      message.error('请选择图片文件');
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      message.error('图片不能超过 5MB');
+      return false;
+    }
+    uploadFile(key, file, true)
+      .then((r: any) => {
+        if (r.code === 1) {
+          const url = r.data?.url || '';
+          setInfo((prev) => (prev ? { ...prev, head: url } : prev));
+          message.success('头像已更新');
+        } else {
+          message.error(r.msg || '上传失败');
+        }
+      })
+      .catch(() => message.error('上传失败，请稍后重试'));
+    return false;
   };
 
   const selected = useMemo(() => {
@@ -95,9 +103,11 @@ export default function UserLayout() {
     <div className="user-layout-wrap">
       <aside className="user-sider">
         <div className="user-sider-profile">
-          <Avatar src={info?.head} size={64}>
-            {info?.name?.slice(0, 1)}
-          </Avatar>
+          <Upload accept="image/*" showUploadList={false} beforeUpload={onUploadAvatar}>
+            <Avatar src={info?.head} size={64} style={{ cursor: 'pointer' }}>
+              {info?.name?.slice(0, 1)}
+            </Avatar>
+          </Upload>
           <div className="user-sider-name">
             <Text strong>{info?.name}</Text>
           </div>
@@ -116,5 +126,13 @@ export default function UserLayout() {
         <Outlet />
       </section>
     </div>
+  );
+}
+
+export default function UserLayout() {
+  return (
+    <MemberProvider>
+      <UserLayoutInner />
+    </MemberProvider>
   );
 }

@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, Avatar, Space, message, Radio, Spin, Upload, List, Modal } from 'antd';
-import { getUserProfile, updateUserProfile, userLogout, uploadFile, sendCode, bindPhone, changeMail } from '@/services/userCenter';
+import { Form, Input, Button, Card, Typography, message, Radio, Spin, List, Modal, Space } from 'antd';
+import { updateUserProfile, userLogout, sendCode, bindPhone, changeMail } from '@/services/userCenter';
 import { getToken, clearToken } from '@/utils/auth';
-import { assetUrl } from '@/utils/route';
-import { MemberInfo } from '@/services/userCenter';
+import { useMember } from '@/context/MemberContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Title, Text } = Typography;
@@ -13,60 +12,28 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   usePageMeta({ title: '个人资料' });
   const [form] = Form.useForm();
-  const [info, setInfo] = useState<MemberInfo | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { info, setInfo, loading } = useMember();
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
-  // 头像上传：走 user 插件 upload（for=avatar 后端直接更新 my_member.head）
-  const onUploadAvatar = (file: File) => {
-    const key = getToken();
-    if (!key) return false;
-    if (!/^image\//.test(file.type)) {
-      message.error('请选择图片文件');
-      return false;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      message.error('图片不能超过 5MB');
-      return false;
-    }
-    setUploading(true);
-    uploadFile(key, file, true)
-      .then((r: any) => {
-        if (r.code === 1) {
-          const url = r.data?.url || '';
-          setInfo((prev) => (prev ? { ...prev, head: url } : prev));
-          message.success('头像已更新');
-        } else {
-          message.error(r.msg || '上传失败');
-        }
-      })
-      .catch(() => message.error('上传失败，请稍后重试'))
-      .finally(() => setUploading(false));
-    return false; // 阻止 antd 自动上传
-  };
-
+  // 用户名字段实时同步到侧边栏
+  const watchedName = Form.useWatch('name', form);
   useEffect(() => {
-    const key = getToken();
-    if (!key) {
-      message.warning('请先登录');
+    if (watchedName === undefined || watchedName === null) return;
+    setInfo((prev) => (prev ? { ...prev, name: watchedName } : prev));
+  }, [watchedName, setInfo]);
+
+  // 资料回填表单
+  useEffect(() => {
+    if (info) form.setFieldsValue(info);
+  }, [info, form]);
+
+  // 未登录或资料加载失败兜底
+  useEffect(() => {
+    if (!loading && !info && !getToken()) {
+      clearToken();
       navigate('/login');
-      return;
     }
-    getUserProfile(key)
-      .then((r: any) => {
-        if (r.code === 1 && r.data) {
-          setInfo(r.data);
-          form.setFieldsValue(r.data);
-        } else {
-          clearToken();
-          message.error(r.msg || '登录失效');
-          navigate('/login');
-        }
-      })
-      .catch(() => message.error('网络错误'))
-      .finally(() => setLoading(false));
-  }, [navigate, form]);
+  }, [loading, info, navigate]);
 
   const onSave = (values: any) => {
     setSaving(true);
@@ -173,36 +140,19 @@ export default function ProfilePage() {
 
   return (
     <Card className="user-center-card">
-      <Space align="center" className="mb-16">
-        <Upload
-          accept="image/*"
-          showUploadList={false}
-          beforeUpload={onUploadAvatar}
-          disabled={uploading}
-        >
-          <div className="user-avatar-upload">
-            <Avatar src={assetUrl(info?.head) || undefined} size={56}>
-              {info?.name?.charAt(0)}
-            </Avatar>
-            <span className="user-avatar-mask">{uploading ? '上传中' : '更换'}</span>
-          </div>
-        </Upload>
-        <Title level={4} className="user-profile-name">
-          {info?.name}
-        </Title>
-      </Space>
+      <Title level={5} style={{ marginBottom: 16 }}>个人资料</Title>
       <Form form={form} layout="vertical" onFinish={onSave}>
         <Form.Item name="name" label="用户名" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="简介">
-          <Input.TextArea rows={3} />
+        <Form.Item name="description" label="签名">
+          <Input.TextArea rows={2} maxLength={150} showCount placeholder="填写一句话签名，150字以内" />
         </Form.Item>
         <Form.Item name="qq" label="QQ">
-          <Input />
+          <Input placeholder="用于站内联系站长，留空则不展示" />
         </Form.Item>
         <Form.Item name="home" label="个人主页">
-          <Input />
+          <Input placeholder="https://example.com" />
         </Form.Item>
         <Form.Item name="sex" label="性别">
           <Radio.Group>

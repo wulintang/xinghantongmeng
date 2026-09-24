@@ -20,6 +20,7 @@ import JumpPage from '@pages/JumpPage';
 import AbstractPage from '@pages/AbstractPage';
 import UserLayout from '@pages/user/UserLayout';
 import ProfilePage from '@pages/user/Profile';
+import UserHomePage from '@pages/user/UserHomePage';
 import FavoritesPage from '@pages/user/Favorites';
 import CheckinPage from '@pages/user/Checkin';
 import MessagesPage from '@pages/user/Messages';
@@ -94,6 +95,9 @@ const App: React.FC = () => {
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>
+
+                            {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
+                            <Route path="/user/:id" element={<UserHomePage />} />
 
                             {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
                             <Route path="/jump" element={<JumpPage />} />

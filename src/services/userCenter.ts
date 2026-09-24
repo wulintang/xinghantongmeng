@@ -23,6 +23,37 @@ export interface MemberInfo {
   login_time: number;
 }
 
+/** 公开会员主页信息（/user/:id 用，脱敏，不含 mail/phone） */
+export interface MemberHomeInfo {
+  id: number;
+  name: string;
+  head: string;
+  sex: number;
+  home: string;
+  description: string;
+  qq: string;
+  regtime: number;
+  login_time: number;
+}
+
+/** 会员已收录的站点（会员主页「会员的站点」Tab） */
+export interface MemberSiteItem {
+  id: number;
+  tid: string;
+  title: string;
+  www: string;
+  domain: string;
+  url: string;
+  ico: string;
+  pic: string;
+  keywords: string;
+  view: number;
+  zan: number;
+  time: number;
+  content: string;
+  feed_url: string;
+}
+
 export interface ApiResp<T = any> {
   code: number;
   msg: string;
@@ -420,8 +451,10 @@ export interface WebsiteItem {
   owner?: string;
   /** 当前登录用户是否已赞（带 key 请求详情时返回） */
   liked?: number;
-  /** 来自 my_tijiao 申请记录（待审核/已拒绝），非 my_website 正式站点 */
+    /** 来自 my_tijiao 申请记录（待审核/已拒绝），非 my_website 正式站点 */
   pending?: boolean;
+  /** 站长 QQ（已认领时，供「联系站长」按钮使用） */
+  qq?: string;
 }
 
 export interface ArticleItem {
@@ -598,4 +631,13 @@ export function getTools(params: { cate?: string | number; keyword?: string; pag
 }
 export function getTool(id: number | string, key = '') {
   return request<ApiResp<ToolItem>>(`${OPEN}/tool.html` + qs({ id, key }));
+}
+
+// ===================== 公开会员主页（/user/:id） =====================
+//   user 插件 memberInfo / memberSites：无需登录，只读 my_member / my_website
+export function getMemberHome(id: number | string) {
+  return request<ApiResp<MemberHomeInfo>>(`${USER}/memberInfo.html?id=${encodeURIComponent(String(id))}`);
+}
+export function getMemberSites(id: number | string) {
+  return request<ApiResp<MemberSiteItem[]>>(`${USER}/memberSites.html?id=${encodeURIComponent(String(id))}`);
 }

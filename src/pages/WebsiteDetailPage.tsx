@@ -247,7 +247,24 @@ const WebsiteDetailPage: React.FC = () => {
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap>
                             <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
-                            {claimed && item.owner ? <Tag>站长：{item.owner}</Tag> : null}
+                            {claimed && item.owner ? (
+                                <Tag color="blue">
+                                    <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+                                        站长：{item.owner}
+                                    </Link>
+                                </Tag>
+                            ) : null}
+                            {claimed && item.qq ? (
+                                <Button
+                                    size="small"
+                                    type="link"
+                                    href={`tencent://Message/?uin=${item.qq}&Site=&Menu=yes`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    联系站长
+                                </Button>
+                            ) : null}
                             {!claimed ? (
                                 <Button size="small" type="link" loading={claiming} onClick={onClaim}>
                                     认领该站点
@@ -272,7 +289,9 @@ const WebsiteDetailPage: React.FC = () => {
             <Card title="站点信息">
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
                     <Descriptions.Item label="域名">{item.domain || item.www || '-'}</Descriptions.Item>
-                    <Descriptions.Item label="站长">{claimed ? item.owner || '-' : '未认领'}</Descriptions.Item>
+                    <Descriptions.Item label="站长">
+                        {claimed && item.owner ? <Link to={`/user/${item.uid}`}>{item.owner}</Link> : '未认领'}
+                    </Descriptions.Item>
                     <Descriptions.Item label="浏览">{item.view}</Descriptions.Item>
                     <Descriptions.Item label="收录时间">
                         {item.time ? dayjs.unix(item.time).format('YYYY-MM-DD HH:mm') : '-'}

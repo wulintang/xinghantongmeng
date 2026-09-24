@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List, Table, Tabs, TabPane } from 'antd';
 import dayjs from 'dayjs';
 import { getCheckin, doCheckin, getCheckinList, getCheckinRank } from '@/services/userCenter';
@@ -158,7 +158,12 @@ export default function CheckinPage() {
         dataSource={rankList}
         columns={[
           { title: '排名', dataIndex: 'rank', key: 'rank', width: 80 },
-          { title: '用户', dataIndex: 'name', key: 'name' },
+          {
+            title: '用户',
+            dataIndex: 'name',
+            key: 'name',
+            render: (name: string, row: CheckinRankItem) => <Link to={`/user/${row.uid}`}>{name}</Link>,
+          },
           { title: '累计签到天数', dataIndex: 'days', key: 'days' },
           {
             title: '累计奖励金额',
@@ -183,7 +188,9 @@ export default function CheckinPage() {
               </div>
               <div style={{ marginBottom: 8 }}>
                 <Text type="secondary">用户</Text>
-                <div>{item.name}</div>
+                <div>
+                  <Link to={`/user/${item.uid}`}>{item.name}</Link>
+                </div>
               </div>
               <div style={{ marginBottom: 8 }}>
                 <Text type="secondary">累计签到天数</Text>

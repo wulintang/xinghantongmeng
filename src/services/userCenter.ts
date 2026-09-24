@@ -186,6 +186,13 @@ export function readFaved(key: string, tid: number, m: string): Promise<boolean>
 export function claimWebsite(key: string, tid: number) {
   return post<ApiResp>('/claim.html', { key, tid }, USER);
 }
+// 认领站点（统一页用：需先完成域名归属验证；verify_type=file/dns/meta/manual，verify_token 为验证 token）
+export function claimSite(
+  key: string,
+  data: { tid: number; verify_type: string; verify_token: string }
+) {
+  return post<ApiResp>('/claim.html', { key, ...data }, USER);
+}
 export function getCheckin(key: string) {
   return request<ApiResp<CheckinStatus>>(`${USER}/checkin.html?key=${encodeURIComponent(key)}`);
 }
@@ -309,7 +316,7 @@ export function uploadFile(key: string, file: File, forAvatar = false) {
 export function getMySites(key: string) {
   return request<ApiResp<WebsiteItem[]>>(`${USER}/mySites.html?key=${encodeURIComponent(key)}`);
 }
-// 编辑我的站点（仅 title/www/tips/keywords/pic/ico/content 可改）
+// 编辑我的站点（title/www/tips/keywords/pic/ico/content/feed_url 可改；改域名或 feed 需带 verify_type/verify_token 重新验证）
 export function editMySite(key: string, data: Record<string, any>) {
   return post<ApiResp>('/siteEdit.html', { key, ...data }, USER);
 }

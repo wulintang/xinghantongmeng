@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Alert, Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
-import { addSite, captchaUrl, genVerifyToken, getBalance, getSiteFee, getWebsiteCates, uploadFile, verifyDomain, type CateItem } from '@/services/userCenter';
+import {
+  addSite,
+  captchaUrl,
+  claimSite,
+  editMySite,
+  genVerifyToken,
+  getBalance,
+  getSiteFee,
+  getWebsite,
+  getWebsiteCates,
+  uploadFile,
+  verifyDomain,
+  type CateItem,
+} from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
@@ -16,10 +30,31 @@ const VERIFY_LABELS: Record<VerifyType, string> = {
   meta: 'meta验证',
   manual: '人工验证',
 };
+const TITLE_MAP: Record<string, string> = {
+  submit: '提交站点',
+  claim: '认领站点',
+  edit: '编辑站点',
+};
+const DESC_MAP: Record<string, string> = {
+  submit: '填写站点信息，并通过一种方式验证域名归属后提交，由管理员审核收录。',
+  claim: '该站点尚未被认领，请通过一种方式验证域名归属，证明你是该站点的所有者。',
+  edit: '修改站点资料；仅当编辑「域名」或「Feed」时才需重新验证域名归属，其余资料可直接保存。',
+};
 
 const SubmitSite: React.FC = () => {
-  usePageMeta({ title: '提交站点' });
+  const [searchParams] = useSearchParams();
+  const mode = (searchParams.get('mode') as 'submit' | 'claim' | 'edit') || 'submit';
+  const siteId = searchParams.get('siteId') || '';
+  const isEdit = mode === 'edit';
+  const isClaim = mode === 'claim';
+  // 提交/认领：四项验证直接显示；编辑：仅当解锁域名或 feed 才显示
+  const needVerifyAlways = !isEdit;
+  const readOnly = isClaim; // 认领时不改站点资料，仅验证归属
+
+  usePageMeta({ title: TITLE_MAP[mode] || '提交站点' });
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+
   const [submitting, setSubmitting] = useState(false);
   const [cates, setCates] = useState<CateItem[]>([]);
   const [catesLoading, setCatesLoading] = useState(true);
@@ -38,7 +73,11 @@ const SubmitSite: React.FC = () => {
   const [myBalance, setMyBalance] = useState<number | null>(null);
   const [feeLoading, setFeeLoading] = useState(false);
 
-  const navigate = useNavigate();
+  // 编辑模式下域名/feed 默认锁定，点「编辑」解锁并唤出验证
+  const [showVerify, setShowVerify] = useState(needVerifyAlways);
+  const [domainLocked, setDomainLocked] = useState(isEdit);
+  const [feedLocked, setFeedLocked] = useState(isEdit);
+  const [loadingSite, setLoadingSite] = useState(isEdit || isClaim);
 
   const refreshCode = () => setCodeSrc(captchaUrl());
 
@@ -54,6 +93,35 @@ const SubmitSite: React.FC = () => {
       alive = false;
     };
   }, []);
+
+  // 认领/编辑：拉取站点原值预填
+  useEffect(() => {
+    if ((isEdit || isClaim) && siteId) {
+      const key = getToken();
+      setLoadingSite(true);
+      getWebsite(siteId, 0, key || '')
+        .then((r) => {
+          if (r.code === 1 && r.data) {
+            const s = r.data;
+            form.setFieldsValue({
+              name: s.title,
+              url: s.www,
+              cate: s.tid ? Number(s.tid) : undefined,
+              feed_url: s.feed_url,
+              tips: s.tips,
+              keywords: s.keywords,
+              content: s.content,
+            });
+            setIco(s.ico || '');
+            setPic(s.pic || '');
+          } else {
+            message.error(r.msg || '站点加载失败');
+          }
+        })
+        .catch(() => message.error('网络错误'))
+        .finally(() => setLoadingSite(false));
+    }
+  }, [siteId, isEdit, isClaim]);
 
   const doUpload = (file: File, target: 'ico' | 'pic') => {
     const key = getToken();
@@ -124,7 +192,11 @@ const SubmitSite: React.FC = () => {
     setVerifying(true);
     setVMsg(null);
     try {
-      const r = await verifyDomain(key, { type: type as 'file' | 'dns' | 'meta', domain: vData.domain, value: vData.token });
+      const r = await verifyDomain(key, {
+        type: type as 'file' | 'dns' | 'meta',
+        domain: vData.domain,
+        value: vData.token,
+      });
       if (r.code === 1) {
         setVMsg({ ok: true, text: '验证成功' });
         setVerifyType(type);
@@ -150,17 +222,74 @@ const SubmitSite: React.FC = () => {
     message.success(`已选择人工验证，提交时将扣除 ¥${siteFee}`);
   };
 
-  const onFinish = (values: { name: string; url: string; cate?: number; feed_url?: string; code: string }) => {
+  const requireVerify = needVerifyAlways || !domainLocked || !feedLocked;
+
+  const onFinish = (values: {
+    name: string;
+    url: string;
+    cate?: number;
+    feed_url?: string;
+    tips?: string;
+    keywords?: string;
+    content?: string;
+    code?: string;
+  }) => {
     const key = getToken();
     if (!key) {
       message.warning('请先登录');
       return;
     }
-    if (!verifyType) {
+    if (requireVerify && !verifyType) {
       message.warning('请先完成一项域名归属验证');
       return;
     }
     setSubmitting(true);
+    const done = () => setSubmitting(false);
+
+    if (isClaim) {
+      claimSite(key, { tid: Number(siteId), verify_type: verifyType as string, verify_token: vData?.token || '' })
+        .then((r) => {
+          if (r.code === 1) {
+            message.success(r.msg || '认领成功');
+            navigate('/user/mysites');
+          } else {
+            message.error(r.msg || '认领失败');
+          }
+        })
+        .catch(() => message.error('网络错误'))
+        .finally(done);
+      return;
+    }
+
+    if (isEdit) {
+      editMySite(key, {
+        id: Number(siteId),
+        title: values.name,
+        www: values.url,
+        cate: values.cate,
+        ico,
+        pic,
+        feed_url: values.feed_url,
+        tips: values.tips,
+        keywords: values.keywords,
+        content: values.content,
+        verify_type: verifyType as string,
+        verify_token: vData?.token || '',
+      })
+        .then((r) => {
+          if (r.code === 1) {
+            message.success(r.msg || '保存成功');
+            navigate('/user/mysites');
+          } else {
+            message.error(r.msg || '保存失败');
+          }
+        })
+        .catch(() => message.error('网络错误'))
+        .finally(done);
+      return;
+    }
+
+    // 新申请
     addSite(key, {
       name: values.name,
       url: values.url,
@@ -168,9 +297,12 @@ const SubmitSite: React.FC = () => {
       ico,
       pic,
       feed_url: values.feed_url,
+      tips: values.tips,
+      keywords: values.keywords,
+      content: values.content,
       type: 'website',
       code: values.code,
-      verify_type: verifyType,
+      verify_type: verifyType as string,
       verify_token: vData?.token || '',
     })
       .then((r) => {
@@ -188,13 +320,14 @@ const SubmitSite: React.FC = () => {
         }
       })
       .catch(() => message.error('提交失败，请稍后重试'))
-      .finally(() => setSubmitting(false));
+      .finally(done);
   };
 
   const uploadButton = (target: 'ico' | 'pic', done: string) => (
     <Upload
       accept="image/*"
       showUploadList={false}
+      disabled={readOnly}
       beforeUpload={(file) => {
         doUpload(file, target);
         return false;
@@ -207,51 +340,57 @@ const SubmitSite: React.FC = () => {
   );
 
   const dotStyle = (active: boolean): React.CSSProperties => ({
-    minWidth: 88,
-    padding: '14px 10px',
-    borderRadius: 12,
+    width: 76,
+    height: 76,
+    borderRadius: '50%',
     border: `1px solid ${active ? 'var(--c-link)' : 'var(--c-border, #f0f0f0)'}`,
     color: active ? 'var(--c-link)' : 'var(--c-text-2)',
     display: 'inline-flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 2,
     cursor: 'pointer',
-    fontSize: 'var(--fs-sm)',
+    fontSize: 'var(--fs-xs)',
     background: '#fff',
     userSelect: 'none',
     transition: 'all .15s',
     boxShadow: active ? '0 2px 8px rgba(22,119,255,0.12)' : 'none',
   });
 
+  const ro = readOnly;
+
   return (
     <Card className="user-center-card">
-      <Title level={4}>提交站点</Title>
-      <Text type="secondary">填写站点信息，并通过一种方式验证域名归属后提交，由管理员审核收录。</Text>
-      <Spin spinning={catesLoading}>
+      <Title level={4}>{TITLE_MAP[mode] || '提交站点'}</Title>
+      <Text type="secondary">{DESC_MAP[mode] || DESC_MAP.submit}</Text>
+      <Spin spinning={catesLoading || loadingSite}>
         <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
           <Form.Item label="站点名称" name="name" rules={[{ required: true, message: '请输入站点名称' }]}>
-            <Input placeholder="例如：兴汉同盟" />
+            <Input placeholder="例如：兴汉同盟" disabled={ro} />
           </Form.Item>
-          <Form.Item
-            label="站点链接"
-            name="url"
-            rules={[
-              { required: true, message: '请输入站点链接' },
-              { type: 'url', message: '请输入合法的链接' },
-            ]}
-          >
-            <Input
-              placeholder="https://example.com"
-              onChange={() => {
-                setVData(null);
-                setVMsg(null);
-              }}
-            />
+          <Form.Item label="站点链接" required>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Form.Item name="url" noStyle rules={[{ required: true, message: '请输入站点链接' }]}>
+                <Input
+                  style={{ flex: 1 }}
+                  disabled={ro || (isEdit && domainLocked)}
+                  placeholder="https://example.com"
+                  onChange={() => {
+                    setVData(null);
+                    setVMsg(null);
+                  }}
+                />
+              </Form.Item>
+              {isEdit && domainLocked && (
+                <Button icon={<EditOutlined />} onClick={() => { setDomainLocked(false); setShowVerify(true); }}>
+                  编辑
+                </Button>
+              )}
+            </div>
           </Form.Item>
           <Form.Item label="网站分类" name="cate" rules={[{ required: true, message: '请选择网站分类' }]}>
-            <Select placeholder="选择后台网站分类">
+            <Select placeholder="选择后台网站分类" disabled={ro}>
               {cates.map((c) => (
                 <Select.Option key={c.id} value={c.id}>
                   {c.name}
@@ -261,39 +400,59 @@ const SubmitSite: React.FC = () => {
           </Form.Item>
           <Form.Item label="网站图标" required>
             <Space wrap className="submit-site-form-space">
-              <Input className="submit-input" value={ico} onChange={(e) => setIco(e.target.value)} placeholder="图标地址（可上传自动填充）" />
+              <Input className="submit-input" value={ico} onChange={(e) => setIco(e.target.value)} placeholder="图标地址（可上传自动填充）" disabled={ro} />
               {uploadButton('ico', '上传图标')}
               {ico ? <img src={ico} alt="ico" className="submit-ico-preview" /> : null}
             </Space>
           </Form.Item>
           <Form.Item label="网站截图" required>
             <Space wrap className="submit-site-form-space">
-              <Input className="submit-input" value={pic} onChange={(e) => setPic(e.target.value)} placeholder="截图地址（可上传自动填充）" />
+              <Input className="submit-input" value={pic} onChange={(e) => setPic(e.target.value)} placeholder="截图地址（可上传自动填充）" disabled={ro} />
               {uploadButton('pic', '上传截图')}
               {pic ? <img src={pic} alt="shot" className="submit-shot-preview" /> : null}
             </Space>
           </Form.Item>
-          <Form.Item label="Feed 订阅地址" name="feed_url" rules={[{ type: 'url', message: '请输入合法的链接' }]}>
-            <Input placeholder="https://example.com/feed（选填，收录后自动聚合文章）" />
+          <Form.Item label="Feed 订阅地址">
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Form.Item name="feed_url" noStyle rules={[{ type: 'url', message: '请输入合法的链接' }]}>
+                <Input style={{ flex: 1 }} disabled={ro || (isEdit && feedLocked)} placeholder="https://example.com/feed（选填，须为站点域名下路径）" />
+              </Form.Item>
+              {isEdit && feedLocked && (
+                <Button icon={<EditOutlined />} onClick={() => { setFeedLocked(false); setShowVerify(true); }}>
+                  编辑
+                </Button>
+              )}
+            </div>
           </Form.Item>
-          <Form.Item label="域名归属验证（任选其一）" required>
-            <Space size="middle" wrap>
-              {(['file', 'dns', 'meta', 'manual'] as VerifyType[]).map((t) => (
-                <Tooltip title={VERIFY_LABELS[t]} key={t}>
-                  <span style={dotStyle(verifyType === t)} onClick={() => openVerify(t)}>
-                    {verifyType === t ? '✓ ' : ''}
-                    {VERIFY_LABELS[t]}
-                  </span>
-                </Tooltip>
-              ))}
-            </Space>
-            {!verifyType && (
-              <div style={{ marginTop: 8, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请选择一种验证方式完成域名归属验证</div>
-            )}
-            {verifyType && (
-              <div style={{ marginTop: 8, color: 'var(--c-link)', fontSize: 'var(--fs-xs)' }}>已通过：{VERIFY_LABELS[verifyType]}</div>
-            )}
+          <Form.Item label="一句话简介" name="tips">
+            <Input placeholder="一句话介绍该站点" disabled={ro} />
           </Form.Item>
+          <Form.Item label="关键词" name="keywords">
+            <Input placeholder="关键词，逗号分隔" disabled={ro} />
+          </Form.Item>
+          <Form.Item label="站点描述" name="content">
+            <Input.TextArea rows={3} placeholder="站点详细介绍" disabled={ro} />
+          </Form.Item>
+
+          {showVerify && (
+            <Form.Item label="域名归属验证（任选其一）" required>
+              <Space size="middle" wrap>
+                {(['file', 'dns', 'meta', 'manual'] as VerifyType[]).map((t) => (
+                  <Tooltip title={VERIFY_LABELS[t]} key={t}>
+                    <span style={dotStyle(verifyType === t)} onClick={() => openVerify(t)}>
+                      {verifyType === t ? '✓' : VERIFY_LABELS[t]}
+                    </span>
+                  </Tooltip>
+                ))}
+              </Space>
+              {!verifyType && (
+                <div style={{ marginTop: 8, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请选择一种验证方式完成域名归属验证</div>
+              )}
+              {verifyType && (
+                <div style={{ marginTop: 8, color: 'var(--c-link)', fontSize: 'var(--fs-xs)' }}>已通过：{VERIFY_LABELS[verifyType]}</div>
+              )}
+            </Form.Item>
+          )}
           {verifyType && (
             <Form.Item label="图形验证码" name="code" rules={[{ required: true, message: '请输入图形验证码' }]}>
               <Space.Compact className="captcha-compact">
@@ -305,8 +464,8 @@ const SubmitSite: React.FC = () => {
             </Form.Item>
           )}
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />} disabled={!verifyType}>
-              提交
+            <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />} disabled={requireVerify && !verifyType}>
+              {isEdit ? '保存' : '提交'}
             </Button>
           </Form.Item>
         </Form>

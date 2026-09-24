@@ -25,7 +25,6 @@ import { WebsiteDetailSkeleton } from '@components/common/skeleton';
 import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
-    claimWebsite,
     getWebsiteByDomain,
     submitReport,
     toggleLike,
@@ -155,18 +154,7 @@ const WebsiteDetailPage: React.FC = () => {
             return;
         }
         if (!item) return;
-        setClaiming(true);
-        claimWebsite(key, Number(item.id))
-            .then((r) => {
-                if (r.code === 1) {
-                    message.success(r.msg || '认领成功');
-                    setClaimed(true);
-                } else {
-                    message.error(r.msg || '认领失败');
-                }
-            })
-            .catch(() => message.error('网络错误'))
-            .finally(() => setClaiming(false));
+        navigate('/user/submit?mode=claim&siteId=' + item.id);
     };
 
     const onReport = () => {

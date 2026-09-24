@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { addSite, captchaUrl, genVerifyToken, getWebsiteCates, uploadFile, verifyDomain, type CateItem } from '@/services/userCenter';
+import { addSite, captchaUrl, genVerifyToken, getBalance, getSiteFee, getWebsiteCates, uploadFile, verifyDomain, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +34,9 @@ const SubmitSite: React.FC = () => {
   const [verifying, setVerifying] = useState(false);
   const [vMsg, setVMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [vData, setVData] = useState<{ domain: string; token: string; metaHash: string } | null>(null);
+  const [siteFee, setSiteFee] = useState(0);
+  const [myBalance, setMyBalance] = useState<number | null>(null);
+  const [feeLoading, setFeeLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -82,7 +85,17 @@ const SubmitSite: React.FC = () => {
   const openVerify = async (type: VerifyType) => {
     setActiveModal(type);
     setVMsg(null);
-    if (type === 'manual') return;
+    if (type === 'manual') {
+      setFeeLoading(true);
+      try {
+        const key = getToken();
+        const [feeRes, balRes] = await Promise.all([getSiteFee(), getBalance(key)]);
+        if (feeRes.code === 1 && feeRes.data) setSiteFee(feeRes.data.fee);
+        if (balRes.code === 1 && balRes.data) setMyBalance(balRes.data.total);
+      } catch {}
+      setFeeLoading(false);
+      return;
+    }
     const key = getToken();
     const domain = getDomain();
     if (!domain) {
@@ -127,9 +140,14 @@ const SubmitSite: React.FC = () => {
   };
 
   const chooseManual = () => {
+    if (siteFee > 0 && (myBalance === null || myBalance < siteFee)) {
+      message.warning('余额不足，请先充值');
+      navigate('/user/recharge');
+      return;
+    }
     setVerifyType('manual');
     setActiveModal('');
-    message.success('已选择人工验证，提交后将由管理员核对');
+    message.success(`已选择人工验证，提交时将扣除 ¥${siteFee}`);
   };
 
   const onFinish = (values: { name: string; url: string; cate?: number; feed_url?: string; code: string }) => {
@@ -255,14 +273,6 @@ const SubmitSite: React.FC = () => {
           <Form.Item label="Feed 订阅地址" name="feed_url" rules={[{ type: 'url', message: '请输入合法的链接' }]}>
             <Input placeholder="https://example.com/feed（选填，收录后自动聚合文章）" />
           </Form.Item>
-          <Form.Item label="图形验证码" name="code" rules={[{ required: true, message: '请输入图形验证码' }]}>
-            <Space.Compact className="captcha-compact">
-              <Input placeholder="请输入右侧验证码" />
-              <Tooltip title="点击刷新">
-                <img src={codeSrc} alt="验证码" className="captcha-img" onClick={refreshCode} />
-              </Tooltip>
-            </Space.Compact>
-          </Form.Item>
           <Form.Item label="域名归属验证（任选其一）" required>
             <Space size="middle" wrap>
               {(['file', 'dns', 'meta', 'manual'] as VerifyType[]).map((t) => (
@@ -281,6 +291,16 @@ const SubmitSite: React.FC = () => {
               <div style={{ marginTop: 8, color: '#52c41a', fontSize: 12 }}>已通过：{VERIFY_LABELS[verifyType]}</div>
             )}
           </Form.Item>
+          {verifyType && (
+            <Form.Item label="图形验证码" name="code" rules={[{ required: true, message: '请输入图形验证码' }]}>
+              <Space.Compact className="captcha-compact">
+                <Input placeholder="请输入右侧验证码" />
+                <Tooltip title="点击刷新">
+                  <img src={codeSrc} alt="验证码" className="captcha-img" onClick={refreshCode} />
+                </Tooltip>
+              </Space.Compact>
+            </Form.Item>
+          )}
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />} disabled={!verifyType}>
               提交
@@ -293,9 +313,29 @@ const SubmitSite: React.FC = () => {
         {activeModal === 'manual' ? (
           <div>
             <p>由管理员人工核对域名归属。提交后将自动进入人工审核流程。</p>
-            <Button type="primary" onClick={chooseManual}>
-              申请人工验证
-            </Button>
+            {feeLoading ? (
+              <p>加载中…</p>
+            ) : siteFee > 0 ? (
+              <>
+                <p>
+                  人工验证费用：<strong>¥{siteFee}</strong>
+                </p>
+                <p>当前余额：¥{myBalance ?? 0}</p>
+                {myBalance !== null && myBalance < siteFee ? (
+                  <Button type="primary" danger onClick={() => navigate('/user/recharge')}>
+                    余额不足，去充值
+                  </Button>
+                ) : (
+                  <Button type="primary" onClick={chooseManual}>
+                    申请人工验证（支付 ¥{siteFee}）
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button type="primary" onClick={chooseManual}>
+                申请人工验证
+              </Button>
+            )}
           </div>
         ) : (
           <div>
@@ -313,7 +353,7 @@ const SubmitSite: React.FC = () => {
             {!fetching && vData && activeModal === 'dns' && (
               <p>
                 添加 TXT 记录：<br />
-                <code>_dao._verify.{vData.domain}</code> TXT = <code>{vData.token}</code>
+                <code>_verify.{vData.domain}</code> TXT = <code>{vData.token}</code>
               </p>
             )}
             {!fetching && vData && activeModal === 'meta' && (

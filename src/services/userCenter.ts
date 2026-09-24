@@ -243,6 +243,11 @@ export function addSite(
   return post<ApiResp>('/addSite.html', { key, sid: getCaptchaSid(), ...data }, USER);
 }
 
+// 获取站点收录人工验证价格（w_rmb）
+export function getSiteFee() {
+  return post<ApiResp<{ fee: number }>>('/getSiteFee.html', {}, USER);
+}
+
 // 生成域名验证 token（文件/DNS 展示明文 token，meta 展示 token 的哈希值）
 export function genVerifyToken(key: string, domain: string) {
   return post<ApiResp<{ domain: string; token: string; metaHash: string }>>(

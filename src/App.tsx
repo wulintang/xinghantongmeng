@@ -38,6 +38,7 @@ import ColumnDetailPage from '@pages/ColumnDetailPage';
 import ColumnArticleDetailPage from '@pages/ColumnArticleDetailPage';
 import MyColumnsPage from '@pages/user/MyColumnsPage';
 import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
+import ArticleEditPage from '@pages/user/ArticleEditPage';
 import { SiteProvider } from '@/context/SiteContext';
 import { getCustomConfig } from '@/services/userCenter';
 
@@ -134,6 +135,8 @@ const App: React.FC = () => {
                             <Route path="mysites" element={<MySitesPage />} />
                             <Route path="columns" element={<MyColumnsPage />} />
                             <Route path="columns/:id" element={<MyColumnDetailPage />} />
+                            <Route path="article/create" element={<ArticleEditPage />} />
+                            <Route path="article/edit/:id" element={<ArticleEditPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>

@@ -49,6 +49,7 @@ function timeAgo(t?: number): string {
 const ColumnDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const rawId = id || '';
   const columnId = Number(id) || 0;
 
   const [loading, setLoading] = useState(true);
@@ -69,7 +70,10 @@ const ColumnDetailPage: React.FC = () => {
     Promise.all([getColumns(), getColumnArticles(columnId)])
       .then(([cols, arts]) => {
         if (!alive) return;
-        const c = (cols.data || []).find((x) => x.id === columnId) || null;
+        const c =
+          (cols.data || []).find(
+            (x) => String(x.id) === String(columnId) || (x.custom_url && x.custom_url === rawId)
+          ) || null;
         if (!c) {
           setError('专栏不存在或未通过审核');
           return;
@@ -138,6 +142,30 @@ const ColumnDetailPage: React.FC = () => {
                 {column.uid === 0 ? '官方' : `作者：${column.author || '匿名'}`}
               </Text>
             </Flex>
+            {(column.uid !== 0 && (column.author_qq || column.author_home)) ? (
+              <Flex align="center" gap={12} wrap>
+                {column.author_qq ? (
+                  <a
+                    href={`https://wpa.qq.com/msgrd?v=3&uin=${column.author_qq}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
+                  >
+                    联系作者
+                  </a>
+                ) : null}
+                {column.author_home ? (
+                  <a
+                    href={column.author_home}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
+                  >
+                    个人主页
+                  </a>
+                ) : null}
+              </Flex>
+            ) : null}
           </Flex>
         </Flex>
       </Card>

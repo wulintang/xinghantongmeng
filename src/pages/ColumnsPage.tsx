@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { PageHeader } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getColumns, type ColumnItem } from '@/services/column';
+import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { assetUrl } from '@/utils/route';
 
 const { Text } = Typography;
@@ -69,7 +69,7 @@ const ColumnsPage: React.FC = () => {
               <Card
                 hoverable
                 className="column-card"
-                onClick={() => navigate(`/article/${c.id}`)}
+                onClick={() => navigate(columnLink(c))}
                 styles={{ body: { padding: 16 } }}
               >
                 <Flex gap={14} align="center">
@@ -79,7 +79,7 @@ const ColumnsPage: React.FC = () => {
                   <div className="column-card-body">
                     <div className="column-card-name">
                       <Link
-                        to={`/article/${c.id}`}
+                        to={columnLink(c)}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {c.name}

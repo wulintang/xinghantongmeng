@@ -17,6 +17,10 @@ export interface ColumnItem {
   uid: number;
   author: string;
   author_head: string;
+  /** 作者 QQ（用于站内“联系作者”，来自 member.qq） */
+  author_qq?: string;
+  /** 作者个人主页（来自 member.home） */
+  author_home?: string;
   /** 审核状态 0待审 1通过 2拒绝 */
   status: number;
   reason: string | null;
@@ -46,6 +50,10 @@ export interface ColumnArticleItem {
   uid: number;
   author: string;
   author_head: string;
+  /** 作者 QQ */
+  author_qq?: string;
+  /** 作者个人主页 */
+  author_home?: string;
   /** 审核状态 0待审 1通过 2拒绝 */
   status: number;
   reason: string | null;
@@ -59,6 +67,16 @@ export interface ColumnConfig {
   article_reward_min: string;
   article_reward_max: string;
   url_fee: string;
+  /** AI 生成文章扣费（元） */
+  ai_article_fee: number;
+  /** 文章正文最低中文字数（防水贴，0=不限制） */
+  article_min_chars: number;
+}
+
+/** 专栏公开链接：已通过自定义别名则优先用别名，否则用 id */
+export function columnLink(c: { id: number; custom_url?: string | null; url_status?: number }): string {
+  if (c.custom_url && (c.url_status ?? 0) === 1) return `/article/${c.custom_url}`;
+  return `/article/${c.id}`;
 }
 
 /** 拼查询串（自动跳过空值） */
@@ -104,11 +122,13 @@ export function getColumnArticles(tid: number | string) {
   );
 }
 
-/** 插件公开配置（URL 审核费等） */
+/** 插件公开配置（URL 审核费、AI 扣费、最低字数为前端展示与校验用） */
 export function getColumnConfig() {
-  return request<{ code: number; msg: string; data: { url_fee: number } }>(
-    `${COL}/config.html`
-  );
+  return request<{
+    code: number;
+    msg: string;
+    data: { url_fee: number; ai_article_fee: number; article_min_chars: number };
+  }>(`${COL}/config.html`);
 }
 
 /** 文章详情（已通过） */
@@ -176,6 +196,55 @@ export function articleDel(id: number) {
 /** 自定义专栏 URL（付费，提交即 URL 待审） */
 export function urlSave(data: { id: number; custom_url: string }) {
   return post<{ code: number; msg: string }>('/urlSave.html', data);
+}
+
+/** AI 生成摘要 / 关键词 / 描述（免扣费，复用后台 AI 配置） */
+export function aiSummary(data: { title: string; content: string }) {
+  return post<{
+    code: number;
+    msg: string;
+    data?: { description?: string; keywords?: string; description_seo?: string };
+  }>('/aiSummary.html', data);
+}
+
+/**
+ * AI 生成文章（流式，先扣后台 AI 文章生成费）。通过 fetch 读取 SSE 流，
+ * 每收到一段增量文本调用 onChunk。后端格式：data: {"code":1,"data":{"content":"..."}} 与 data: [DONE]
+ */
+export async function aiGenerate(params: {
+  key: string;
+  prompt: string;
+  onChunk: (s: string) => void;
+}): Promise<void> {
+  const res = await fetch(`${COL}/aiGenerate.html`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ key: params.key, prompt: params.prompt }).toString(),
+  });
+  if (!res.ok || !res.body) throw new Error(`AI 生成请求失败（HTTP ${res.status}）`);
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const parts = buf.split('\n\n');
+    buf = parts.pop() || '';
+    for (const p of parts) {
+      const line = p.trim();
+      if (!line.startsWith('data:')) continue;
+      const json = line.slice(5).trim();
+      if (json === '[DONE]') continue;
+      try {
+        const obj = JSON.parse(json);
+        if (obj.code === 1 && obj.data?.content) params.onChunk(obj.data.content);
+      } catch {
+        /* 忽略非 JSON 行 */
+      }
+    }
+  }
 }
 
 /** 我的余额（用于自定义 URL 付费前校验；复用 userCenter 的余额接口占位） */

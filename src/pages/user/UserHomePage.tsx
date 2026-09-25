@@ -4,7 +4,7 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
-import { getColumns, type ColumnItem } from '@/services/column';
+import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { domainOf } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -56,7 +56,7 @@ function UserColumnsTab({ loading, columns }: { loading: boolean; columns: Colum
         <Row gutter={[16, 16]}>
             {columns.map((c) => (
                 <Col key={c.id} xs={24} sm={12} md={8}>
-                    <Link to={`/article/${c.id}`} className="member-column-card">
+                    <Link to={columnLink(c)} className="member-column-card">
                         <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
                             {(c.name || '?').slice(0, 1)}
                         </Avatar>

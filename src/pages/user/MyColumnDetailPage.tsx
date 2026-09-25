@@ -6,12 +6,8 @@ import {
   Card,
   Empty,
   Flex,
-  Form,
-  Input,
   List,
-  Modal,
   Popconfirm,
-  Select,
   Tag,
   Typography,
   message,
@@ -23,7 +19,6 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   getMyColumns,
   getMyArticles,
-  articleSave,
   articleDel,
   COLUMN_STATUS_TEXT,
   type ColumnItem,
@@ -31,10 +26,8 @@ import {
 } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
-import ColumnImgUpload from '@/components/common/ColumnImgUpload';
 
 const { Text } = Typography;
-const { TextArea } = Input;
 
 const MyColumnDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,11 +38,6 @@ const MyColumnDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [column, setColumn] = useState<ColumnItem | null>(null);
   const [articles, setArticles] = useState<ColumnArticleItem[]>([]);
-
-  const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<ColumnArticleItem | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [form] = Form.useForm();
 
   usePageMeta({
     title: column?.name ? `${column.name} - 文章管理` : '专栏文章管理',
@@ -88,57 +76,11 @@ const MyColumnDetailPage: React.FC = () => {
       message.warning('专栏通过审核后才能投稿');
       return;
     }
-    setEditing(null);
-    form.resetFields();
-    form.setFieldsValue({ pic: '', tid: column?.article_cate_id || 0 });
-    setEditOpen(true);
+    navigate(`/user/article/create?tid=${column.article_cate_id}`);
   };
 
   const openEdit = (a: ColumnArticleItem) => {
-    setEditing(a);
-    form.resetFields();
-    form.setFieldsValue({
-      tid: a.tid,
-      title: a.title,
-      pic: a.pic || '',
-      description: a.description || '',
-      keywords: a.keywords || '',
-      content: a.content || '',
-    });
-    setEditOpen(true);
-  };
-
-  const onSubmit = async () => {
-    try {
-      const v = await form.validateFields();
-      if (!v.pic) {
-        message.error('封面图必传');
-        return;
-      }
-      setSubmitting(true);
-      articleSave({
-        id: editing?.id,
-        tid: v.tid,
-        title: v.title,
-        pic: v.pic,
-        content: v.content,
-        description: v.description || '',
-        keywords: v.keywords || '',
-      })
-        .then((r) => {
-          if (r.code === 1) {
-            message.success(editing ? '已提交修改，等待审核' : '已提交，等待审核');
-            setEditOpen(false);
-            load();
-          } else {
-            message.error(r.msg || '提交失败');
-          }
-        })
-        .catch((e) => message.error(e?.message || '提交失败'))
-        .finally(() => setSubmitting(false));
-    } catch {
-      /* 校验失败 */
-    }
+    navigate(`/user/article/edit/${a.id}`);
   };
 
   const onDelete = (a: ColumnArticleItem) => {
@@ -313,49 +255,7 @@ const MyColumnDetailPage: React.FC = () => {
           )}
         />
       )}
-
-      <Modal
-        title={editing ? '编辑文章' : '投稿文章'}
-        open={editOpen}
-        onCancel={() => setEditOpen(false)}
-        onOk={onSubmit}
-        confirmLoading={submitting}
-        okText="提交审核"
-        width={640}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="所属专栏"
-            name="tid"
-            rules={[{ required: true, message: '请选择投稿的专栏' }]}
-          >
-            <Select disabled options={[{ value: column.article_cate_id || 0, label: column.name }]} />
-          </Form.Item>
-          <Form.Item label="文章标题" name="title" rules={[{ required: true, message: '请填写标题' }]}>
-            <Input maxLength={100} placeholder="文章标题" />
-          </Form.Item>
-          <Form.Item
-            label="封面图（必传）"
-            name="pic"
-            rules={[{ required: true, message: '请上传封面图' }]}
-          >
-            <ColumnImgUpload hint="点击上传文章封面（必填，支持 webp/jpg/png/gif）。" />
-          </Form.Item>
-          <Form.Item label="摘要" name="description">
-            <TextArea rows={2} maxLength={200} placeholder="一句话摘要" />
-          </Form.Item>
-          <Form.Item label="关键词" name="keywords">
-            <Input maxLength={100} placeholder="用空格或逗号分隔" />
-          </Form.Item>
-          <Form.Item label="正文" name="content" rules={[{ required: true, message: '请填写正文' }]}>
-            <TextArea rows={8} maxLength={20000} placeholder="支持 Markdown" />
-          </Form.Item>
-          {editing?.status === 1 ? (
-            <Alert type="info" showIcon message="已通过文章修改后需重新审核，期间对外仍展示旧内容。" />
-          ) : null}
-        </Form>
-      </Modal>
-    </Flex>
+      </Flex>
     </Card>
   );
 };

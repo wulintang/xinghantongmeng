@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Avatar,
   Button,
   Card,
+  Empty,
   Flex,
   Form,
   Input,
@@ -15,12 +16,13 @@ import {
   Typography,
   message,
 } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
-  getMyArticles,
   getMyColumns,
+  getMyArticles,
   articleSave,
   articleDel,
   COLUMN_STATUS_TEXT,
@@ -34,34 +36,43 @@ import ColumnImgUpload from '@/components/common/ColumnImgUpload';
 const { Text } = Typography;
 const { TextArea } = Input;
 
-const MyArticlesPage: React.FC = () => {
+const MyColumnDetailPage: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const columnId = Number(id) || 0;
   const key = getToken();
 
   const [loading, setLoading] = useState(true);
-  const [list, setList] = useState<ColumnArticleItem[]>([]);
-  const [columns, setColumns] = useState<ColumnItem[]>([]);
+  const [column, setColumn] = useState<ColumnItem | null>(null);
+  const [articles, setArticles] = useState<ColumnArticleItem[]>([]);
+
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<ColumnArticleItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
 
-  usePageMeta({ title: '我的文章', description: '管理你投到专栏下的文章' });
+  usePageMeta({
+    title: column?.name ? `${column.name} - 文章管理` : '专栏文章管理',
+    description: '管理专栏内的文章',
+  });
 
   const load = () => {
-    if (!key) {
+    if (!key || !columnId) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    Promise.all([getMyArticles(key), getMyColumns(key)])
-      .then(([arts, cols]) => {
-        setList(arts.code === 1 ? arts.data || [] : []);
-        setColumns(cols.code === 1 ? cols.data || [] : []);
+    Promise.all([getMyColumns(key), getMyArticles(key)])
+      .then(([cols, arts]) => {
+        const list = cols.code === 1 ? cols.data || [] : [];
+        const c = list.find((x) => x.id === columnId) || null;
+        setColumn(c);
+        const allArts = arts.code === 1 ? arts.data || [] : [];
+        setArticles(allArts.filter((a) => a.tid === columnId));
       })
       .catch(() => {
-        setList([]);
-        setColumns([]);
+        setColumn(null);
+        setArticles([]);
       })
       .finally(() => setLoading(false));
   };
@@ -69,21 +80,19 @@ const MyArticlesPage: React.FC = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
-
-  // 仅供稿到自己已通过的专栏
-  const myPassedColumns = columns.filter((c) => c.status === 1);
+  }, [key, columnId]);
 
   const openCreate = () => {
-    if (myPassedColumns.length === 0) {
-      message.warning('请先创建并通过一个专栏，才能投稿');
+    if (!column || column.status !== 1) {
+      message.warning('专栏通过审核后才能投稿');
       return;
     }
     setEditing(null);
     form.resetFields();
-    form.setFieldsValue({ pic: '', tid: undefined });
+    form.setFieldsValue({ pic: '', tid: columnId });
     setEditOpen(true);
   };
+
   const openEdit = (a: ColumnArticleItem) => {
     setEditing(a);
     form.resetFields();
@@ -154,42 +163,98 @@ const MyArticlesPage: React.FC = () => {
     return <Tag color={s.color}>{s.text}</Tag>;
   };
 
+  const columnStatusTag = useMemo(() => {
+    if (!column) return null;
+    const map: Record<number, { color: string; text: string }> = {
+      0: { color: 'gold', text: COLUMN_STATUS_TEXT[0] },
+      1: { color: 'green', text: COLUMN_STATUS_TEXT[1] },
+      2: { color: 'red', text: COLUMN_STATUS_TEXT[2] },
+    };
+    const s = map[column.status] || map[0];
+    return <Tag color={s.color}>{s.text}</Tag>;
+  }, [column]);
+
   if (!key) {
     return (
-      <Card>
-        <Alert type="info" showIcon message="请先登录" description="登录后可管理你的文章。" />
-      </Card>
+      <Alert type="info" showIcon message="请先登录" description="登录后可管理专栏文章。" />
+    );
+  }
+
+  if (loading) {
+    return (
+      <Flex vertical gap={16}>
+        <Flex justify="space-between" align="center">
+          <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+            专栏文章管理
+          </Text>
+          <Button type="primary" disabled>
+            投稿文章
+          </Button>
+        </Flex>
+        <Card loading />
+      </Flex>
+    );
+  }
+
+  if (!column) {
+    return (
+      <Flex vertical gap={16}>
+        <Flex justify="space-between" align="center">
+          <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+            专栏文章管理
+          </Text>
+        </Flex>
+        <Alert type="warning" showIcon message="专栏不存在或无权访问" />
+        <Button type="link" onClick={() => navigate('/user/columns')}>
+          返回我的专栏
+        </Button>
+      </Flex>
     );
   }
 
   return (
     <Flex vertical gap={16}>
-      <Flex justify="space-between" align="center">
-        <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
-          我的文章
-        </Text>
-        <Button type="primary" onClick={openCreate} disabled={myPassedColumns.length === 0}>
+      <Flex justify="space-between" align="center" wrap gap={8}>
+        <Flex align="center" gap={12} wrap>
+          <Avatar shape="square" size={48} src={assetUrl(column.pic) || undefined}>
+            {(column.name || '?').slice(0, 1)}
+          </Avatar>
+          <Flex vertical>
+            <Flex align="center" gap={8}>
+              <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+                {column.name}
+              </Text>
+              {columnStatusTag}
+            </Flex>
+            <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+              {column.description || '暂无简介'} · 共 {articles.length} 篇文章
+            </Text>
+          </Flex>
+        </Flex>
+        <Button type="primary" onClick={openCreate} disabled={column.status !== 1}>
           投稿文章
         </Button>
       </Flex>
 
-      {myPassedColumns.length === 0 ? (
+      {column.status === 2 && column.reason ? (
+        <Alert type="error" showIcon message={`拒绝原因：${column.reason}`} />
+      ) : null}
+
+      {column.status !== 1 ? (
         <Alert
           type="warning"
           showIcon
-          message="尚未有已通过的专栏"
-          description="投稿文章的前提是拥有自己已通过审核的专栏。请先到「我的专栏」创建并通过一个专栏。"
+          message="专栏尚未通过审核"
+          description="通过审核后才能向该专栏投稿文章。"
         />
       ) : null}
 
-      {loading ? (
-        <Card loading />
-      ) : list.length === 0 ? (
-        <Alert type="info" showIcon message="你还没有文章" description="在已通过的专栏下投稿第一篇文章吧。" />
+      {articles.length === 0 ? (
+        <Empty description="该专栏暂无文章，点击右上角投稿" />
       ) : (
         <List
           grid={{ gutter: 16, xs: 1, sm: 1, md: 2 }}
-          dataSource={list}
+          dataSource={articles}
           renderItem={(a) => (
             <List.Item>
               <Card>
@@ -200,7 +265,9 @@ const MyArticlesPage: React.FC = () => {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <Flex align="center" gap={8} wrap>
                       <Text strong ellipsis>
-                        {a.title}
+                        <Link to={`/columns/article/${a.id}`} onClick={(e) => e.stopPropagation()}>
+                          {a.title}
+                        </Link>
                       </Text>
                       {statusTag(a)}
                     </Flex>
@@ -209,8 +276,8 @@ const MyArticlesPage: React.FC = () => {
                         拒绝原因：{a.reason}
                       </Text>
                     ) : null}
-                    <Text type="secondary" className="column-my-desc">
-                      {a.description || '暂无摘要'}
+                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                      {a.description || '暂无摘要'} · {dayjs.unix(a.time).format('YYYY-MM-DD')}
                     </Text>
                   </div>
                 </Flex>
@@ -221,7 +288,13 @@ const MyArticlesPage: React.FC = () => {
                   <Button size="small" onClick={() => openEdit(a)} disabled={a.status === 1}>
                     编辑
                   </Button>
-                  <Popconfirm title="确认删除该文章？已发奖励将退还" onConfirm={() => onDelete(a)} okText="删除" cancelText="取消">
+                  <Popconfirm
+                    title="确认删除该文章？"
+                    description="已发放的奖励将退还"
+                    onConfirm={() => onDelete(a)}
+                    okText="删除"
+                    cancelText="取消"
+                  >
                     <Button size="small" danger>
                       删除
                     </Button>
@@ -244,19 +317,20 @@ const MyArticlesPage: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="所属专栏（仅自己已通过的专栏）"
+            label="所属专栏"
             name="tid"
             rules={[{ required: true, message: '请选择投稿的专栏' }]}
           >
-            <Select
-              placeholder="请选择专栏"
-              options={myPassedColumns.map((c) => ({ value: c.id, label: c.name }))}
-            />
+            <Select disabled options={[{ value: column.id, label: column.name }]} />
           </Form.Item>
           <Form.Item label="文章标题" name="title" rules={[{ required: true, message: '请填写标题' }]}>
             <Input maxLength={100} placeholder="文章标题" />
           </Form.Item>
-          <Form.Item label="封面图（必传）" name="pic" rules={[{ required: true, message: '请上传封面图' }]}>
+          <Form.Item
+            label="封面图（必传）"
+            name="pic"
+            rules={[{ required: true, message: '请上传封面图' }]}
+          >
             <ColumnImgUpload hint="点击上传文章封面（必填，支持 webp/jpg/png/gif）。" />
           </Form.Item>
           <Form.Item label="摘要" name="description">
@@ -277,4 +351,4 @@ const MyArticlesPage: React.FC = () => {
   );
 };
 
-export default MyArticlesPage;
+export default MyColumnDetailPage;

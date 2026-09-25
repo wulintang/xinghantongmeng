@@ -40,7 +40,7 @@ import ColumnDetailPage from '@pages/ColumnDetailPage';
 import ColumnArticleDetailPage from '@pages/ColumnArticleDetailPage';
 import SquarePage from '@pages/SquarePage';
 import MyColumnsPage from '@pages/user/MyColumnsPage';
-import MyArticlesPage from '@pages/user/MyArticlesPage';
+import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
 import { SiteProvider } from '@/context/SiteContext';
 import { getCustomConfig } from '@/services/userCenter';
 
@@ -140,7 +140,7 @@ const App: React.FC = () => {
                                 <Route path="submit" element={<SubmitSitePage />} />
                             <Route path="mysites" element={<MySitesPage />} />
                             <Route path="columns" element={<MyColumnsPage />} />
-                            <Route path="articles" element={<MyArticlesPage />} />
+                            <Route path="columns/:id" element={<MyColumnDetailPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>

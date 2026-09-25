@@ -19,14 +19,12 @@ import { useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   getMyColumns,
-  getMyArticles,
   columnSave,
   columnDel,
   urlSave,
   COLUMN_STATUS_TEXT,
   COLUMN_URL_STATUS_TEXT,
   type ColumnItem,
-  type ColumnArticleItem,
 } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
@@ -41,7 +39,6 @@ const MyColumnsPage: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [list, setList] = useState<ColumnItem[]>([]);
-  const [myArticles, setMyArticles] = useState<ColumnArticleItem[]>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<ColumnItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -60,14 +57,12 @@ const MyColumnsPage: React.FC = () => {
       return;
     }
     setLoading(true);
-    Promise.all([getMyColumns(key), getMyArticles(key)])
-      .then(([cols, arts]) => {
+    getMyColumns(key)
+      .then((cols) => {
         setList(cols.code === 1 ? cols.data || [] : []);
-        setMyArticles(arts.code === 1 ? arts.data || [] : []);
       })
       .catch(() => {
         setList([]);
-        setMyArticles([]);
       })
       .finally(() => setLoading(false));
   };
@@ -77,8 +72,6 @@ const MyColumnsPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  // 某专栏下我的文章数
-  const articleCountOf = (tid: number) => myArticles.filter((a) => a.tid === tid).length;
 
   const openCreate = () => {
     setEditing(null);
@@ -119,15 +112,10 @@ const MyColumnsPage: React.FC = () => {
   };
 
   const onDelete = (c: ColumnItem) => {
-    const cnt = articleCountOf(c.id);
-    if (cnt > 0) {
-      message.warning(`该专栏下还有 ${cnt} 篇文章，请先在「我的文章」中删除后再删除专栏`);
-      return;
-    }
     columnDel(c.id)
       .then((r) => {
         if (r.code === 1) {
-          message.success('专栏已删除');
+          message.success('专栏已删除，内部文章及已发放奖励已一并处理');
           load();
         } else {
           message.error(r.msg || '删除失败');
@@ -239,13 +227,19 @@ const MyColumnsPage: React.FC = () => {
                   </div>
                 </Flex>
                 <Flex gap={8} style={{ marginTop: 12 }} wrap>
-                  <Button size="small" onClick={() => navigate(`/columns/${c.id}`)}>
-                    查看
+                  <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
+                    文章管理
                   </Button>
                   <Button size="small" onClick={() => openEdit(c)} disabled={c.status === 1}>
                     编辑
                   </Button>
-                  <Popconfirm title="确认删除该专栏？" onConfirm={() => onDelete(c)} okText="删除" cancelText="取消">
+                  <Popconfirm
+                    title="确认删除该专栏？"
+                    description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
+                    onConfirm={() => onDelete(c)}
+                    okText="删除"
+                    cancelText="取消"
+                  >
                     <Button size="small" danger>
                       删除
                     </Button>

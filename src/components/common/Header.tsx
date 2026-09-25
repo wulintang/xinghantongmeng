@@ -23,8 +23,9 @@ interface NavItem {
     href?: string;
 }
 
-/** 广场 / 格子 由前端补充：后台 my_link 无此条目。广场=用户专栏文章聚合(调 /square)，格子=格子广告(调 /grid) */
-const SQUARE_ENTRY: NavItem = { key: 'square', name: '广场', external: false, to: '/square' };
+/** 广场 / 格子 由前端补充：后台 my_link 无此条目。
+ *  广场=feed 插件聚合(调 /feed，展示 my_feed_post)；格子=格子广告(调 /grid)。 */
+const BLOG_ENTRY: NavItem = { key: 'feed', name: '广场', external: false, to: '/feed' };
 const GRID_ENTRY: NavItem = { key: 'grid', name: '格子', external: false, to: '/grid' };
 
 /** 当前路径是否命中该导航项 */
@@ -110,7 +111,7 @@ export default function Header(): React.JSX.Element {
                 href: t.href,
             };
         });
-        if (!list.some((n) => n.to && (n.to === '/square' || n.to.startsWith('/square/')))) list.push(SQUARE_ENTRY);
+        if (!list.some((n) => n.to && (n.to === '/feed' || n.to.startsWith('/feed/')))) list.push(BLOG_ENTRY);
         if (!list.some((n) => n.to && (n.to === '/grid' || n.to.startsWith('/grid/')))) list.push(GRID_ENTRY);
         return list;
     }, [topLinks]);

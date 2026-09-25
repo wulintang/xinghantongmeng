@@ -177,44 +177,51 @@ const MyColumnDetailPage: React.FC = () => {
 
   if (!key) {
     return (
-      <Alert type="info" showIcon message="请先登录" description="登录后可管理专栏文章。" />
+      <Card className="user-center-card">
+        <Alert type="info" showIcon message="请先登录" description="登录后可管理专栏文章。" />
+      </Card>
     );
   }
 
   if (loading) {
     return (
-      <Flex vertical gap={16}>
-        <Flex justify="space-between" align="center">
-          <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
-            专栏文章管理
-          </Text>
-          <Button type="primary" disabled>
-            投稿文章
-          </Button>
+      <Card className="user-center-card">
+        <Flex vertical gap={16}>
+          <Flex justify="space-between" align="center">
+            <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+              专栏文章管理
+            </Text>
+            <Button type="primary" disabled>
+              投稿文章
+            </Button>
+          </Flex>
+          <Card loading />
         </Flex>
-        <Card loading />
-      </Flex>
+      </Card>
     );
   }
 
   if (!column) {
     return (
-      <Flex vertical gap={16}>
-        <Flex justify="space-between" align="center">
-          <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
-            专栏文章管理
-          </Text>
+      <Card className="user-center-card">
+        <Flex vertical gap={16}>
+          <Flex justify="space-between" align="center">
+            <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+              专栏文章管理
+            </Text>
+          </Flex>
+          <Alert type="warning" showIcon message="专栏不存在或无权访问" />
+          <Button type="link" onClick={() => navigate('/user/columns')}>
+            返回我的专栏
+          </Button>
         </Flex>
-        <Alert type="warning" showIcon message="专栏不存在或无权访问" />
-        <Button type="link" onClick={() => navigate('/user/columns')}>
-          返回我的专栏
-        </Button>
-      </Flex>
+      </Card>
     );
   }
 
   return (
-    <Flex vertical gap={16}>
+    <Card className="user-center-card">
+      <Flex vertical gap={16}>
       <Flex justify="space-between" align="center" wrap gap={8}>
         <Flex align="center" gap={12} wrap>
           <Avatar shape="square" size={48} src={assetUrl(column.pic) || undefined}>
@@ -266,7 +273,7 @@ const MyColumnDetailPage: React.FC = () => {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <Flex align="center" gap={8} wrap>
                       <Text strong ellipsis>
-                        <Link to={`/columns/article/${a.id}`} onClick={(e) => e.stopPropagation()}>
+                        <Link to={`/article/detail/${a.id}`} onClick={(e) => e.stopPropagation()}>
                           {a.title}
                         </Link>
                       </Text>
@@ -283,7 +290,7 @@ const MyColumnDetailPage: React.FC = () => {
                   </div>
                 </Flex>
                 <Flex gap={8} style={{ marginTop: 12 }} wrap>
-                  <Button size="small" onClick={() => navigate(`/columns/article/${a.id}`)}>
+                  <Button size="small" onClick={() => navigate(`/article/detail/${a.id}`)}>
                     查看
                   </Button>
                   <Button size="small" onClick={() => openEdit(a)} disabled={a.status === 1}>
@@ -349,6 +356,7 @@ const MyColumnDetailPage: React.FC = () => {
         </Form>
       </Modal>
     </Flex>
+    </Card>
   );
 };
 

@@ -36,7 +36,6 @@ import UpdatePage from '@pages/UpdatePage';
 import ColumnsPage from '@pages/ColumnsPage';
 import ColumnDetailPage from '@pages/ColumnDetailPage';
 import ColumnArticleDetailPage from '@pages/ColumnArticleDetailPage';
-import SquarePage from '@pages/SquarePage';
 import MyColumnsPage from '@pages/user/MyColumnsPage';
 import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
 import { SiteProvider } from '@/context/SiteContext';
@@ -102,15 +101,14 @@ const App: React.FC = () => {
 
                             <Route path="/websites" element={<WebsitesPage />} />
 
-                            <Route path="/columns/article/:id" element={<ColumnArticleDetailPage />} />
-                            <Route path="/columns" element={<ColumnsPage />} />
-                            <Route path="/columns/:id" element={<ColumnDetailPage />} />
+                            <Route path="/article/detail/:id" element={<ColumnArticleDetailPage />} />
+                            <Route path="/article" element={<ColumnsPage />} />
+                            <Route path="/article/:id" element={<ColumnDetailPage />} />
 
                             <Route path="/tools" element={<ToolsPage />} />
                             <Route path="/tools/:id" element={<ToolDetailPage />} />
 
                             <Route path="/feed" element={<BlogsPage />} />
-                            <Route path="/square" element={<SquarePage />} />
 
                             <Route path="/links" element={<LinksPage />} />
                             <Route path="/dan/update" element={<UpdatePage />} />

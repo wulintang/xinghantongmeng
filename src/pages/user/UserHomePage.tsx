@@ -56,7 +56,7 @@ function UserColumnsTab({ loading, columns }: { loading: boolean; columns: Colum
         <Row gutter={[16, 16]}>
             {columns.map((c) => (
                 <Col key={c.id} xs={24} sm={12} md={8}>
-                    <Link to={`/columns/${c.id}`} className="member-column-card">
+                    <Link to={`/article/${c.id}`} className="member-column-card">
                         <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
                             {(c.name || '?').slice(0, 1)}
                         </Avatar>

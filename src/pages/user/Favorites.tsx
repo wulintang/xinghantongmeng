@@ -43,7 +43,7 @@ export default function FavoritesPage() {
   const linkOf = (it: FavoriteItem): string => {
     switch (it.m) {
       case 'website': return it.url ? `https://${it.url}` : '#';
-      case 'article': return it.tid ? `/columns/article/${it.tid}` : '#';
+      case 'article': return it.tid ? `/article/detail/${it.tid}` : '#';
       case 'tool': return it.tid ? `/tools/${it.tid}` : '#';
       case 'dan': return it.url ? `/dan/${it.url}` : '#';
       case 'feed': return it.url ? `/abstract?link=${encodeURIComponent(it.url)}` : '#';
@@ -56,7 +56,7 @@ export default function FavoritesPage() {
     if (it.m === 'website' && it.url) return it.url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
     if (it.m === 'dan' && it.url) return `/dan/${it.url}`;
     if (it.m === 'feed' && it.url) return it.url;
-    if (it.m === 'article' && it.tid) return `/columns/article/${it.tid}`;
+    if (it.m === 'article' && it.tid) return `/article/detail/${it.tid}`;
     if (it.m === 'tool' && it.tid) return `/tools/${it.tid}`;
     return '';
   };

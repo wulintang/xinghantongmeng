@@ -69,7 +69,7 @@ const ColumnsPage: React.FC = () => {
               <Card
                 hoverable
                 className="column-card"
-                onClick={() => navigate(`/columns/${c.id}`)}
+                onClick={() => navigate(`/article/${c.id}`)}
                 styles={{ body: { padding: 16 } }}
               >
                 <Flex gap={14} align="center">
@@ -79,7 +79,7 @@ const ColumnsPage: React.FC = () => {
                   <div className="column-card-body">
                     <div className="column-card-name">
                       <Link
-                        to={`/columns/${c.id}`}
+                        to={`/article/${c.id}`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {c.name}

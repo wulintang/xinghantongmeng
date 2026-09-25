@@ -19,7 +19,7 @@ export interface RouteTarget {
 const SEGMENT_MAP: Record<string, string> = {
     category: '/websites',
     website: '/websites',
-    article: '/columns',
+    article: '/article',
     tool: '/tools',
     blog: '/feed',
     dan: '/dan',

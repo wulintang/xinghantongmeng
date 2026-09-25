@@ -111,13 +111,6 @@ export function getColumnConfig() {
   );
 }
 
-/** 广场聚合：官方 + 用户专栏已通过文章（feed 风格） */
-export function getSquare(page = 1, limit = 20) {
-  return request<{ code: number; msg: string; data: ColumnArticleItem[] }>(
-    `${COL}/square.html` + qs({ page, limit })
-  );
-}
-
 /** 文章详情（已通过） */
 export function getColumnDetail(id: number | string) {
   return request<{ code: number; msg: string; data: ColumnArticleItem }>(

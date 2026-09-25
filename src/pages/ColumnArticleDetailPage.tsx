@@ -133,7 +133,7 @@ const ColumnArticleDetailPage: React.FC = () => {
   if (loading) {
     return (
       <Flex vertical gap={20}>
-        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '广场', to: '/square' }, { label: '详情' }]} />
+        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
         <Card loading />
       </Flex>
     );
@@ -141,10 +141,10 @@ const ColumnArticleDetailPage: React.FC = () => {
   if (error || !item) {
     return (
       <Flex vertical gap={16}>
-        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '广场', to: '/square' }, { label: '详情' }]} />
+        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
         <Alert type="warning" showIcon message={error || '文章不存在'} />
         <div>
-          <Button onClick={() => navigate('/square')}>返回广场</Button>
+          <Button onClick={() => navigate('/article')}>返回专栏</Button>
         </div>
       </Flex>
     );
@@ -156,7 +156,7 @@ const ColumnArticleDetailPage: React.FC = () => {
         title={item.title}
         crumbs={[
           { label: '首页', to: '/' },
-          { label: '广场', to: '/square' },
+          { label: '专栏', to: '/article' },
           { label: item.title },
         ]}
         extra={
@@ -170,7 +170,7 @@ const ColumnArticleDetailPage: React.FC = () => {
             <Tooltip title="举报">
               <Button onClick={() => setReportOpen(true)}>举报</Button>
             </Tooltip>
-            <Button onClick={() => navigate('/square')}>返回广场</Button>
+            <Button onClick={() => navigate('/article')}>返回专栏</Button>
           </Space>
         }
       />
@@ -198,7 +198,7 @@ const ColumnArticleDetailPage: React.FC = () => {
       <AdSlotSkeleton slot="detail_column_article_bottom" />
 
       <div>
-        <Button onClick={() => navigate('/square')}>返回广场</Button>
+        <Button onClick={() => navigate('/article')}>返回专栏</Button>
       </div>
 
       <Modal

@@ -215,14 +215,15 @@ const MyColumnsPage: React.FC = () => {
 
   if (!key) {
     return (
-      <Card>
+      <Card className="user-center-card">
         <Alert type="info" showIcon message="请先登录" description="登录后可管理你的专栏。" />
       </Card>
     );
   }
 
   return (
-    <Flex vertical gap={16}>
+    <Card className="user-center-card">
+      <Flex vertical gap={16}>
       <Flex justify="space-between" align="center">
         <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
           我的专栏
@@ -370,6 +371,7 @@ const MyColumnsPage: React.FC = () => {
         </Form>
       </Modal>
     </Flex>
+    </Card>
   );
 };
 

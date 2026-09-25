@@ -7,7 +7,9 @@ import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getDan, submitReport, toggleFavorite, readFaved, type DanItem } from '@/services/userCenter';
-import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
+import { sanitizeHtml } from '@/utils/CommonUtil';
+import { MdPreview } from 'md-editor-rt';
+import 'md-editor-rt/lib/preview.css';
 import { normalizeAlias } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 
@@ -140,10 +142,9 @@ const DanPage: React.FC = () => {
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }}
                     />
                 ) : (
-                    <div
-                        className="detail-content md-content"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(raw || '')) }}
-                    />
+                    <div className="detail-content md-content">
+                        <MdPreview id="dan-preview" modelValue={raw || ''} />
+                    </div>
                 )}
             </Card>
 

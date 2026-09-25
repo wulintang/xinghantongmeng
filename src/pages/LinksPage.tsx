@@ -7,7 +7,9 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
-import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
+import { sanitizeHtml } from '@/utils/CommonUtil';
+import { MdPreview } from 'md-editor-rt';
+import 'md-editor-rt/lib/preview.css';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -148,7 +150,9 @@ export default function LinksPage() {
                 return isHtml ? (
                     <div className="detail-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }} />
                 ) : (
-                    <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(raw)) }} />
+                    <div className="detail-content md-content">
+                        <MdPreview id="links-preview" modelValue={raw} />
+                    </div>
                 );
             })()}
         </Card>

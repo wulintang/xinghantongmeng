@@ -9,7 +9,8 @@ import { useSite } from '@/context/SiteContext';
 import { getColumnDetail, type ColumnArticleItem } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { stripHtmlSuffix } from '@/utils/route';
-import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
+import { MdPreview } from 'md-editor-rt';
+import 'md-editor-rt/lib/preview.css';
 import { submitReport, toggleLike, toggleFavorite, readFaved } from '@/services/userCenter';
 
 const { Text, Paragraph } = Typography;
@@ -199,7 +200,9 @@ const ColumnArticleDetailPage: React.FC = () => {
           <Alert type="info" showIcon message={item.description} className="article-lead" />
         ) : null}
         {item.content ? (
-          <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content)) }} />
+          <div className="detail-content md-content">
+            <MdPreview id="column-article-preview" modelValue={item.content} />
+          </div>
         ) : (
           <Paragraph className="detail-content">暂无正文</Paragraph>
         )}

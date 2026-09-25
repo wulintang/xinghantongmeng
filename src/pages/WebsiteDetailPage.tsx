@@ -22,7 +22,8 @@ import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
-import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
+import { MdPreview } from 'md-editor-rt';
+import 'md-editor-rt/lib/preview.css';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
     getWebsiteByDomain,
@@ -278,7 +279,7 @@ const WebsiteDetailPage: React.FC = () => {
                                 ))}
                             </Space>
                         ) : null}
-                        <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content || '')) }} />
+                        <div className="detail-content md-content"><MdPreview id="website-preview" modelValue={item.content || ''} /></div>
                     </Flex>
                     {item.pic ? (
                         <img src={item.pic} alt={item.title || item.name} className="detail-shot-side" />

@@ -9,7 +9,8 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getTool, submitReport, toggleFavorite, readFaved, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix } from '@/utils/route';
 import ToolRenderer from '@/components/common/ToolRenderer';
-import { markdownToHtml, sanitizeHtml } from '@/utils/CommonUtil';
+import { MdPreview } from 'md-editor-rt';
+import 'md-editor-rt/lib/preview.css';
 import { getToken } from '@/utils/auth';
 
 const { Title } = Typography;
@@ -146,7 +147,7 @@ const ToolDetailPage: React.FC = () => {
                         <Title level={5} className="detail-subtitle">
                             工具说明
                         </Title>
-                        <div className="detail-content md-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(markdownToHtml(item.content || '')) }} />
+                        <div className="detail-content md-content"><MdPreview id="tool-preview" modelValue={item.content || ''} /></div>
                     </Flex>
                 </Flex>
             </Card>

@@ -122,8 +122,6 @@ const ArticleEditPage: React.FC = () => {
     }
   };
 
-  const countZh = (s: string) => (s.match(/[一-龥]/g) || []).length;
-
   const onAiSummary = () => {
     if (!key) {
       message.error('请先登录');
@@ -203,8 +201,8 @@ const ArticleEditPage: React.FC = () => {
       message.error('请填写正文');
       return;
     }
-    if (minChars > 0 && countZh(content) < minChars) {
-      message.error(`正文中文内容过少，至少需 ${minChars} 字（当前 ${countZh(content)} 字）`);
+    if (minChars > 0 && content.trim().length < minChars) {
+      message.error(`正文字数过少，至少需 ${minChars} 字（当前 ${content.trim().length} 字）`);
       return;
     }
     setSaving(true);
@@ -283,7 +281,7 @@ const ArticleEditPage: React.FC = () => {
           <Alert
             type="info"
             showIcon
-            message={`正文最少需 ${minChars} 个中文字（防水贴），当前 ${countZh(content)} 字`}
+            message={`正文最少需 ${minChars} 字（防水贴），当前 ${content.trim().length} 字`}
           />
         ) : null}
 

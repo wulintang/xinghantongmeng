@@ -182,17 +182,23 @@ const ColumnDetailPage: React.FC = () => {
             const detailRoute = `/article/detail/${a.id}`;
             return (
               <div className="feed-timeline-item" key={a.id}>
-                <div className="feed-author-col">
-                  {a.uid === 0 ? (
-                    <Link to="/dan/about" className="feed-author-name" style={{ color: 'var(--c-text-2)' }}>
-                      作者：{site?.title || '官方'}
-                    </Link>
-                  ) : (
-                    <Link to={`/user/${a.uid}`} className="feed-author-name" style={{ color: 'var(--c-text-2)' }}>
-                      作者：{a.author || '匿名'}
-                    </Link>
-                  )}
-                </div>
+              <div className="feed-author-col">
+                {a.uid === 0 ? (
+                  <Link to="/dan/about" className="feed-author-line" style={{ color: 'var(--c-text-2)' }}>
+                    <Avatar size={20} src={assetUrl(site?.logo || site?.ico) || undefined}>
+                      {(site?.title || '官方').slice(0, 1)}
+                    </Avatar>
+                    <span>作者：{site?.title || '官方'}</span>
+                  </Link>
+                ) : (
+                  <Link to={`/user/${a.uid}`} className="feed-author-line" style={{ color: 'var(--c-text-2)' }}>
+                    <Avatar size={20} src={assetUrl(a.author_head) || undefined}>
+                      {(a.author || '匿名').slice(0, 1)}
+                    </Avatar>
+                    <span>作者：{a.author || '匿名'}</span>
+                  </Link>
+                )}
+              </div>
 
                 <div className="feed-bubble" onClick={() => navigate(detailRoute)}>
                   <div className="feed-bubble-arrow feed-bubble-arrow-border" />

@@ -149,6 +149,8 @@ const App: React.FC = () => {
                             <Route path="/article/detail/:id" element={<ColumnArticleDetailPage />} />
                             <Route path="/article" element={<ColumnsPage />} />
                             <Route path="/article/:id" element={<ColumnDetailPage />} />
+                            <Route path="/user/article/create" element={<ArticleEditPage />} />
+                            <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
 
                             <Route path="/tools" element={<ToolsPage />} />
                             <Route path="/tools/:id" element={<ToolDetailPage />} />
@@ -179,8 +181,6 @@ const App: React.FC = () => {
                             <Route path="mysites" element={<MySitesPage />} />
                             <Route path="columns" element={<MyColumnsPage />} />
                             <Route path="columns/:id" element={<MyColumnDetailPage />} />
-                            <Route path="article/create" element={<ArticleEditPage />} />
-                            <Route path="article/edit/:id" element={<ArticleEditPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>

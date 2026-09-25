@@ -5,7 +5,7 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
-import { domainOf } from '@/utils/route';
+import { domainOf, assetUrl } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const { Text } = Typography;

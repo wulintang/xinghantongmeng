@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Card, Col, Empty, Flex, Row, Typography, message } from 'antd';
+import { Alert, Avatar, Card, Col, Empty, Flex, Row, Tag, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
@@ -92,13 +92,17 @@ const ColumnsPage: React.FC = () => {
                     </Text>
                     <div className="column-card-author">
                       {c.uid === 0 ? (
-                        <Link to="/dan/about" className="column-card-author-name" style={{ color: 'var(--c-text-2)' }}>
-                          作者：{site?.title || '官方'}
-                        </Link>
+                        <Tag color="blue">
+                          <Link to="/dan/about" style={{ color: 'inherit' }}>
+                            作者：{site?.title || '官方'}
+                          </Link>
+                        </Tag>
                       ) : (
-                        <Link to={`/user/${c.uid}`} className="column-card-author-name" style={{ color: 'var(--c-text-2)' }}>
-                          作者：{c.author || '作者'}
-                        </Link>
+                        <Tag color="blue">
+                          <Link to={`/user/${c.uid}`} style={{ color: 'inherit' }}>
+                            作者：{c.author || '作者'}
+                          </Link>
+                        </Tag>
                       )}
                     </div>
                   </div>

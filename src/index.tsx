@@ -9,14 +9,19 @@ import App from './App.tsx';
 // 全局 antd message：统一时长 6 秒、垂直居中 + 半透明笼罩（见 styles.css）
 message.config({ duration: 6 });
 
-// 半透明笼罩：仅在有提示时显示，置于页面之上、message 卡片之下，不拦截点击
+// 半透明笼罩：有提示时全屏显示、拦截点击（点任意处立即关闭提示），置于 message 卡片之下
 function ensureMsgOverlay() {
     let el = document.getElementById('global-msg-overlay');
     if (!el) {
         el = document.createElement('div');
         el.id = 'global-msg-overlay';
         el.style.cssText =
-            'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;pointer-events:none;';
+            'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:2000;pointer-events:auto;cursor:pointer;';
+        // 点击页面任意处立即关闭所有提示
+        el.addEventListener('click', () => {
+            message.destroy();
+            removeMsgOverlay();
+        });
         document.body.appendChild(el);
     }
     return el;
@@ -45,6 +50,7 @@ ReactDOMClient.createRoot(rootElement).render(
             theme={{
                 token: {
                     colorBgLayout: '#ffffff',
+                    zIndex: { message: 2001 },
                     // colorLink: '#000000',
                 },
             }}>

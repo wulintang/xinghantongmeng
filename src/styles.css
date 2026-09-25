@@ -1938,6 +1938,7 @@ body {
   transform: translate(-50%, -50%) !important;
   bottom: auto !important;
   pointer-events: none;
+  z-index: 2001 !important;
 }
 .ant-message-notice-content {
   font-size: 22px !important;

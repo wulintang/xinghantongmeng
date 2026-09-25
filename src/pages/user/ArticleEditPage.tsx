@@ -16,7 +16,10 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 // 直接使用底层 easymde（react-simplemde-editor 的 default 导出在 webpack 生产构建里解析为 undefined，
 // 会触发 React #130 element type is invalid）。easymde 是普通类、无默认导出 interop 问题，
 // 工具栏/全屏/图片上传等能力完全一致，满足「强大 MD 编辑器」要求。
-import EasyMDE from 'easymde';
+// easymde 是 CommonJS 包，webpack 生产构建中 import default 可能解析为 undefined，
+// 导致 new EasyMDE() 抛 TypeError 且编辑器静默不渲染，仅显示裸 textarea。
+// 用 namespace import 并 as any 构造，确保真编辑器在构建产物中可用。
+import * as EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -163,23 +166,28 @@ const ArticleEditPage: React.FC = () => {
 
   useEffect(() => {
     if (!editorRef.current || mdeRef.current) return;
-    const mde = new EasyMDE({
-      element: editorRef.current,
-      initialValue: content,
-      ...mdeOptions,
-    });
-    mde.codemirror.on('change', () => {
-      setContent(mde.value());
-    });
-    mdeRef.current = mde;
-    return () => {
-      try {
-        mde.toTextArea();
-      } catch {
-        /* noop */
-      }
-      mdeRef.current = null;
-    };
+    try {
+      const MdeCtor = (EasyMDE as any).default || EasyMDE;
+      const mde = new MdeCtor({
+        element: editorRef.current,
+        initialValue: content,
+        ...mdeOptions,
+      });
+      mde.codemirror.on('change', () => {
+        setContent(mde.value());
+      });
+      mdeRef.current = mde;
+      return () => {
+        try {
+          mde.toTextArea();
+        } catch {
+          /* noop */
+        }
+        mdeRef.current = null;
+      };
+    } catch (e: any) {
+      message.error(`编辑器初始化失败：${e?.message || String(e)}`);
+    }
     // 仅在挂载时初始化一次；外部 content 变化由下方 effect 同步
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

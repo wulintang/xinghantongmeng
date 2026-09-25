@@ -186,7 +186,7 @@ const ColumnArticleDetailPage: React.FC = () => {
           </Link>
         ) : (
           <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
-            <Text type="secondary}>{item.author || '匿名'}</Text>
+            <Text type="secondary">{item.author || '匿名'}</Text>
           </Link>
         )}
         <Text type="secondary">{dayjs.unix(item.time).format('YYYY-MM-DD HH:mm')}</Text>

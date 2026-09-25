@@ -13,12 +13,6 @@ import {
   message,
 } from 'antd';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-// 直接使用底层 easymde（react-simplemde-editor 的 default 导出在 webpack 生产构建里解析为 undefined，
-// 会触发 React #130 element type is invalid）。easymde 是普通类、无默认导出 interop 问题，
-// 工具栏/全屏/图片上传等能力完全一致，满足「强大 MD 编辑器」要求。
-// easymde 是 CommonJS 包，webpack 生产构建中 import default 可能解析为 undefined，
-// 导致 new EasyMDE() 抛 TypeError 且编辑器静默不渲染，仅显示裸 textarea。
-// 用 namespace import 并 as any 构造，确保真编辑器在构建产物中可用。
 import * as EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
 
@@ -64,6 +58,7 @@ const ArticleEditPage: React.FC = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [genLoading, setGenLoading] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [keywordsLoading, setKeywordsLoading] = useState(false);
 
   usePageMeta({
     title: isEdit ? '编辑文章' : '投稿文章',
@@ -110,7 +105,6 @@ const ArticleEditPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [key, editId, search]);
 
-  // SimpleMDE 图片上传（复用专栏图标/封面上传接口）
   const imageUploadFunction = async (
     file: File,
     onSuccess: (url: string, name?: string) => void,
@@ -156,11 +150,9 @@ const ArticleEditPage: React.FC = () => {
         'guide',
       ] as any,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  // ===== EasyMDE 编辑器实例（直接用底层 easymde，避免默认导出 undefined 导致 #130） =====
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const mdeRef = useRef<any>(null);
 
@@ -176,23 +168,23 @@ const ArticleEditPage: React.FC = () => {
       mde.codemirror.on('change', () => {
         setContent(mde.value());
       });
+      try {
+        if (!mde.isSideBySideActive()) mde.toggleSideBySide();
+      } catch {
+      }
       mdeRef.current = mde;
       return () => {
         try {
           mde.toTextArea();
         } catch {
-          /* noop */
         }
         mdeRef.current = null;
       };
     } catch (e: any) {
       message.error(`编辑器初始化失败：${e?.message || String(e)}`);
     }
-    // 仅在挂载时初始化一次；外部 content 变化由下方 effect 同步
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loading, myColumns.length]);
 
-  // 外部 content 变化（AI 生成追加、编辑回显）时同步进编辑器
   useEffect(() => {
     const mde = mdeRef.current;
     if (mde && mde.value() !== content) {
@@ -210,16 +202,34 @@ const ArticleEditPage: React.FC = () => {
     setSummaryLoading(true);
     aiSummary({ key, title, content })
       .then((r) => {
-        if (r.code === 1 && r.data) {
-          if (r.data.description) setDescription(r.data.description);
-          if (r.data.keywords) setKeywords(r.data.keywords);
-          message.success('已根据文章生成摘要与关键词');
+        if (r.code === 1 && r.data?.description) {
+          setDescription(r.data.description);
+          message.success('已生成摘要');
         } else {
           message.error(r.msg || '生成失败');
         }
       })
       .catch((e) => message.error(e?.message || '生成失败'))
       .finally(() => setSummaryLoading(false));
+  };
+
+  const onAiKeywords = () => {
+    if (!key) {
+      message.error('请先登录');
+      return;
+    }
+    setKeywordsLoading(true);
+    aiSummary({ key, title, content })
+      .then((r) => {
+        if (r.code === 1 && r.data?.keywords) {
+          setKeywords(r.data.keywords);
+          message.success('已生成关键词');
+        } else {
+          message.error(r.msg || '生成失败');
+        }
+      })
+      .catch((e) => message.error(e?.message || '生成失败'))
+      .finally(() => setKeywordsLoading(false));
   };
 
   const onAiGenerate = () => {
@@ -349,20 +359,7 @@ const ArticleEditPage: React.FC = () => {
         ) : null}
 
         <Flex gap={16} wrap style={{ marginTop: 12 }}>
-          <Flex vertical gap={6} style={{ flex: '1 1 240px', minWidth: 240 }}>
-            <Text strong>所属专栏</Text>
-            <Select
-              value={tid || undefined}
-              placeholder="选择投稿的专栏"
-              onChange={(v) => setTid(v)}
-              style={{ maxWidth: 360 }}
-              options={myColumns.map((c) => ({
-                value: c.article_cate_id || c.id,
-                label: c.name,
-              }))}
-            />
-          </Flex>
-          <Flex vertical gap={6} style={{ flex: '2 1 240px', minWidth: 240 }}>
+          <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 240 }}>
             <Text strong>文章标题</Text>
             <Input
               value={title}
@@ -371,31 +368,52 @@ const ArticleEditPage: React.FC = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 200 }}>
-            <Text strong>关键词</Text>
-            <Input
-              value={keywords}
-              maxLength={100}
-              placeholder="用空格或逗号分隔（可点击右侧 AI 生成）"
-              onChange={(e) => setKeywords(e.target.value)}
+          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+            <Text strong>所属专栏</Text>
+            <Select
+              value={tid || undefined}
+              placeholder="所属专栏"
+              onChange={(v) => setTid(v)}
+              style={{ width: '100%' }}
+              options={myColumns.map((c) => ({
+                value: c.article_cate_id || c.id,
+                label: c.name,
+              }))}
             />
           </Flex>
         </Flex>
 
         <Flex vertical gap={6} style={{ marginTop: 12 }}>
-          <Flex align="center" justify="space-between">
-            <Text strong>摘要</Text>
+          <Text strong>关键词</Text>
+          <Flex gap={8} align="center">
+            <Input
+              value={keywords}
+              maxLength={100}
+              placeholder="用空格或逗号分隔"
+              onChange={(e) => setKeywords(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            <Button size="small" loading={keywordsLoading} onClick={onAiKeywords}>
+              AI 生成
+            </Button>
+          </Flex>
+        </Flex>
+
+        <Flex vertical gap={6} style={{ marginTop: 12 }}>
+          <Text strong>摘要</Text>
+          <Flex gap={8} align="center">
+            <TextArea
+              rows={2}
+              maxLength={200}
+              value={description}
+              placeholder="一句话摘要"
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ flex: 1 }}
+            />
             <Button size="small" loading={summaryLoading} onClick={onAiSummary}>
               AI 生成
             </Button>
           </Flex>
-          <TextArea
-            rows={2}
-            maxLength={200}
-            value={description}
-            placeholder="一句话摘要（可点击右侧 AI 生成）"
-            onChange={(e) => setDescription(e.target.value)}
-          />
         </Flex>
       </div>
 

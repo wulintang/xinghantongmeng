@@ -73,7 +73,7 @@ export default function UpdatePage(): React.JSX.Element {
             : '';
 
     return (
-        <div className="update-page container">
+        <div className="update-page">
             <div className="update-hero">
                 <h1 className="update-title">更新日志</h1>
                 <p className="update-subtitle">

@@ -99,13 +99,11 @@ body {
    更新日志页 /update
    ============================================================ */
 .update-page {
-  padding: 32px 0 48px;
-  max-width: 860px;
-  margin: 0 auto;
+  padding: var(--page-gap) 0 calc(var(--page-gap) * 2);
 }
 .update-hero {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: var(--page-gap);
 }
 .update-title {
   margin: 0 0 12px;
@@ -138,9 +136,9 @@ body {
 
 /* 按日期分组的版本卡片 */
 .version-card {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--c-border, #f0f0f0);
   border-radius: 10px;
-  margin-bottom: 16px;
+  margin-bottom: var(--page-gap);
   overflow: hidden;
   background: #fff;
 }
@@ -149,7 +147,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 14px 18px;
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--c-bg-soft, #fafafa);
   user-select: none;
 }
 .collapse-arrow {
@@ -242,7 +240,7 @@ body {
 
 @media (max-width: 768px) {
   .update-page {
-    padding: 20px 0 32px;
+    padding: 16px 0 var(--page-gap);
   }
   .version-header {
     padding: 12px 14px;

@@ -72,11 +72,11 @@ function CustomHead(): null {
                         fragment.appendChild(clone);
                     }
                 });
-                const marker = document.createElement('div');
+                // 用 <meta> 占位作去重标记，真正的 <link>/<script>/<style> 直接追加到 document.head
+                const marker = document.createElement('meta');
                 marker.id = 'custom-head-code';
-                marker.style.display = 'none';
-                marker.appendChild(fragment);
                 document.head.appendChild(marker);
+                document.head.appendChild(fragment);
             })
             .catch(() => {});
         return () => {

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { PageHeader } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSite } from '@/context/SiteContext';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { assetUrl } from '@/utils/route';
 
@@ -12,6 +13,7 @@ const { Text } = Typography;
 
 const ColumnsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { site } = useSite();
   const [loading, setLoading] = useState(true);
   const [list, setList] = useState<ColumnItem[]>([]);
 
@@ -89,11 +91,17 @@ const ColumnsPage: React.FC = () => {
                       {c.description || '暂无简介'}
                     </Text>
                     <div className="column-card-author">
-                      <Avatar size={18} src={assetUrl(c.author_head) || undefined}>
-                        {(c.author || '官方').slice(0, 1)}
-                      </Avatar>
+                      {c.uid === 0 ? (
+                        <Avatar size={18} src={assetUrl(site?.logo || site?.ico) || undefined}>
+                          {(site?.title || '官方').slice(0, 1)}
+                        </Avatar>
+                      ) : (
+                        <Avatar size={18} src={assetUrl(c.author_head) || undefined}>
+                          {(c.author || '作者').slice(0, 1)}
+                        </Avatar>
+                      )}
                       <Text type="secondary" className="column-card-author-name">
-                        {c.uid === 0 ? '官方' : c.author || '作者'}
+                        {c.uid === 0 ? (site?.title || '官方') : c.author || '作者'}
                       </Text>
                     </div>
                   </div>

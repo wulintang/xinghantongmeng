@@ -13,7 +13,10 @@ import {
   message,
 } from 'antd';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import SimpleMDE from 'react-simplemde-editor';
+// react-simplemde-editor 的 default 导出在 webpack 生产构建里可能为 undefined，
+// 用 require 取值并兼容 .default，避免 React #130（element type is invalid）
+const SimpleMDEImport = require('react-simplemde-editor');
+const SimpleMDE = (SimpleMDEImport && (SimpleMDEImport.default || SimpleMDEImport)) as any;
 import 'easymde/dist/easymde.min.css';
 
 import { usePageMeta } from '@/hooks/usePageMeta';

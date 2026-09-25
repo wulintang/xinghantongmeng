@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Card, Divider, Flex, Space, Tooltip, Typography } from 'antd';
+import { Alert, Avatar, Button, Card, Divider, Flex, Space, Tag, Tooltip, Typography } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -136,41 +136,39 @@ const ColumnDetailPage: React.FC = () => {
             <Text type="secondary" style={{ fontSize: 'var(--fs-base)' }}>
               {column.description || '该专栏暂无简介'}
             </Text>
-            <Flex align="center" gap={8}>
+            <Space size={[8, 8]} wrap align="center">
               {column.uid === 0 ? (
-                <Link to="/dan/about" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <>
                   <Avatar size={20} src={assetUrl(site?.logo || site?.ico) || undefined}>
                     {(site?.title || '官方').slice(0, 1)}
                   </Avatar>
-                  <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-                    {site?.title || '官方'}
-                  </Text>
-                </Link>
+                  <Tag color="blue">
+                    <Link to="/dan/about" style={{ color: 'inherit' }}>
+                      {site?.title || '官方'}
+                    </Link>
+                  </Tag>
+                </>
               ) : (
                 <>
-                  <Avatar size={20} src={assetUrl(column.author_head) || undefined}>
-                    {(column.author || '匿名').slice(0, 1)}
-                  </Avatar>
-                  <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
-                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                  <Tag color="blue">
+                    <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
                       作者：{column.author || '匿名'}
-                    </Text>
-                  </Link>
+                    </Link>
+                  </Tag>
+                  {column.author_qq ? (
+                    <Button
+                      size="small"
+                      type="link"
+                      href={`tencent://Message/?uin=${column.author_qq}&Site=&Menu=yes`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      联系作者
+                    </Button>
+                  ) : null}
                 </>
               )}
-            </Flex>
-            {column.uid !== 0 && column.author_qq ? (
-              <Flex align="center" gap={12} wrap>
-                <a
-                  href={`https://wpa.qq.com/msgrd?v=3&uin=${column.author_qq}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
-                >
-                  联系作者
-                </a>
-              </Flex>
-            ) : null}
+            </Space>
           </Flex>
         </Flex>
       </Card>

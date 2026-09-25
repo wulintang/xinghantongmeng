@@ -23,10 +23,9 @@ interface NavItem {
     href?: string;
 }
 
-/** feed 是独立插件，它的入口不在后台导航表 my_link 里，这里固定补一个入口 */
-const BLOG_ENTRY: NavItem = { key: 'feed', name: 'Feed广场', external: false, to: '/feed' };
-/** 格子广告单页（广告增强插件 adpay），固定入口 */
-const GRID_ENTRY: NavItem = { key: 'grid', name: '格子广告', external: false, to: '/grid' };
+/** 广场 / 格子 由前端补充：后台 my_link 无此条目。广场=用户专栏文章聚合(调 /square)，格子=格子广告(调 /grid) */
+const SQUARE_ENTRY: NavItem = { key: 'square', name: '广场', external: false, to: '/square' };
+const GRID_ENTRY: NavItem = { key: 'grid', name: '格子', external: false, to: '/grid' };
 
 /** 当前路径是否命中该导航项 */
 function isActive(pathname: string, to?: string): boolean {
@@ -99,7 +98,7 @@ export default function Header(): React.JSX.Element {
             .catch(() => message.error('签到失败，请稍后重试'));
     };
 
-    // 后端导航数据驱动；后端若未配置 Feed广场入口则补上
+    // 前四项（首页/站点/专栏/工具）由后台 my_link 定义驱动，前端只补「广场、格子」两项
     const navItems = useMemo<NavItem[]>(() => {
         const list: NavItem[] = topLinks.map((l) => {
             const t = toRoute(l.lianjie);
@@ -111,8 +110,8 @@ export default function Header(): React.JSX.Element {
                 href: t.href,
             };
         });
-        if (!list.some((n) => n.to && n.to.startsWith('/feed'))) list.push(BLOG_ENTRY);
-        if (!list.some((n) => n.to && n.to.startsWith('/grid'))) list.push(GRID_ENTRY);
+        if (!list.some((n) => n.to && (n.to === '/square' || n.to.startsWith('/square/')))) list.push(SQUARE_ENTRY);
+        if (!list.some((n) => n.to && (n.to === '/grid' || n.to.startsWith('/grid/')))) list.push(GRID_ENTRY);
         return list;
     }, [topLinks]);
 

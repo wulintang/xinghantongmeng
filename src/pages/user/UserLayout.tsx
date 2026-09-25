@@ -15,6 +15,8 @@ const MENU = [
     label: '我的',
     children: [
       { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
+      { key: '/user/columns', label: <Link to="/user/columns">我的专栏</Link> },
+      { key: '/user/articles', label: <Link to="/user/articles">我的文章</Link> },
       { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/ad/my', label: <Link to="/user/ad/my">我的广告</Link> },
       { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
@@ -40,6 +42,8 @@ const TITLE_MAP: Record<string, string> = {
   '/user': '个人资料',
   '/user/submit': '提交站点',
   '/user/mysites': '我的站点',
+  '/user/columns': '我的专栏',
+  '/user/articles': '我的文章',
   '/user/ad/my': '我的广告',
   '/user/ad/buy': '申请广告位',
   '/user/favorites': '我的收藏',

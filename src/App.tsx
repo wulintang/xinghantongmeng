@@ -35,6 +35,12 @@ import GridPage from '@pages/GridPage';
 import AdPricesPage from '@pages/AdPricesPage';
 import LinksPage from '@pages/LinksPage';
 import UpdatePage from '@pages/UpdatePage';
+import ColumnsPage from '@pages/ColumnsPage';
+import ColumnDetailPage from '@pages/ColumnDetailPage';
+import ColumnArticleDetailPage from '@pages/ColumnArticleDetailPage';
+import SquarePage from '@pages/SquarePage';
+import MyColumnsPage from '@pages/user/MyColumnsPage';
+import MyArticlesPage from '@pages/user/MyArticlesPage';
 import { SiteProvider } from '@/context/SiteContext';
 import { getCustomConfig } from '@/services/userCenter';
 
@@ -101,10 +107,15 @@ const App: React.FC = () => {
                             <Route path="/articles" element={<ArticlesPage />} />
                             <Route path="/articles/:id" element={<ArticleDetailPage />} />
 
+                            <Route path="/columns/article/:id" element={<ColumnArticleDetailPage />} />
+                            <Route path="/columns" element={<ColumnsPage />} />
+                            <Route path="/columns/:id" element={<ColumnDetailPage />} />
+
                             <Route path="/tools" element={<ToolsPage />} />
                             <Route path="/tools/:id" element={<ToolDetailPage />} />
 
                             <Route path="/feed" element={<BlogsPage />} />
+                            <Route path="/square" element={<SquarePage />} />
 
                             <Route path="/links" element={<LinksPage />} />
                             <Route path="/dan/update" element={<UpdatePage />} />
@@ -128,6 +139,8 @@ const App: React.FC = () => {
                                 <Route path="reports" element={<ReportsPage />} />
                                 <Route path="submit" element={<SubmitSitePage />} />
                             <Route path="mysites" element={<MySitesPage />} />
+                            <Route path="columns" element={<MyColumnsPage />} />
+                            <Route path="articles" element={<MyArticlesPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>

@@ -4,6 +4,7 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
+import { getColumns, type ColumnItem } from '@/services/column';
 import { domainOf } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -48,6 +49,28 @@ function UserSitesTab({ loading, sites }: { loading: boolean; sites: MemberSiteI
     );
 }
 
+function UserColumnsTab({ loading, columns }: { loading: boolean; columns: ColumnItem[] }) {
+    if (loading) return <Spin />;
+    if (!columns.length) return <Empty description="该会员暂无专栏" />;
+    return (
+        <Row gutter={[16, 16]}>
+            {columns.map((c) => (
+                <Col key={c.id} xs={24} sm={12} md={8}>
+                    <Link to={`/columns/${c.id}`} className="member-column-card">
+                        <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
+                            {(c.name || '?').slice(0, 1)}
+                        </Avatar>
+                        <div className="member-column-body">
+                            <div className="member-column-title">{c.name}</div>
+                            <div className="member-column-desc">{c.description || '暂无简介'}</div>
+                        </div>
+                    </Link>
+                </Col>
+            ))}
+        </Row>
+    );
+}
+
 const UserHomePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -55,6 +78,8 @@ const UserHomePage: React.FC = () => {
     const [info, setInfo] = useState<MemberHomeInfo | null>(null);
     const [sites, setSites] = useState<MemberSiteItem[]>([]);
     const [sitesLoading, setSitesLoading] = useState(true);
+    const [columns, setColumns] = useState<ColumnItem[]>([]);
+    const [columnsLoading, setColumnsLoading] = useState(true);
     const [error, setError] = useState('');
 
     usePageMeta({ title: info?.name ? `${info.name} 的主页` : '会员主页' });
@@ -91,6 +116,31 @@ const UserHomePage: React.FC = () => {
             .catch(() => {})
             .finally(() => {
                 if (alive) setSitesLoading(false);
+            });
+        return () => {
+            alive = false;
+        };
+    }, [info, id]);
+
+    // 该会员的专栏（已通过才对外展示）
+    useEffect(() => {
+        if (!info) return;
+        let alive = true;
+        setColumnsLoading(true);
+        const uid = Number(id) || 0;
+        getColumns()
+            .then((r) => {
+                if (alive && r.code === 1 && r.data) {
+                    setColumns(r.data.filter((c) => c.uid === uid));
+                } else if (alive) {
+                    setColumns([]);
+                }
+            })
+            .catch(() => {
+                if (alive) setColumns([]);
+            })
+            .finally(() => {
+                if (alive) setColumnsLoading(false);
             });
         return () => {
             alive = false;
@@ -157,18 +207,18 @@ const UserHomePage: React.FC = () => {
                     items={[
                         {
                             key: 'sites',
-                            label: '会员的站点',
+                            label: '站点',
                             children: <UserSitesTab loading={sitesLoading} sites={sites} />,
                         },
                         {
-                            key: 'tools',
-                            label: '会员的工具',
-                            children: <PlaceholderTip text="会员工具功能开发中，敬请期待。" />,
+                            key: 'columns',
+                            label: '专栏',
+                            children: <UserColumnsTab loading={columnsLoading} columns={columns} />,
                         },
                         {
-                            key: 'column',
-                            label: '会员的专栏',
-                            children: <PlaceholderTip text="会员专栏功能开发中，敬请期待。" />,
+                            key: 'tools',
+                            label: '工具',
+                            children: <PlaceholderTip text="工具功能开发中，敬请期待。" />,
                         },
                     ]}
                 />

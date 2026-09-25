@@ -92,17 +92,14 @@ const ColumnsPage: React.FC = () => {
                     </Text>
                     <div className="column-card-author">
                       {c.uid === 0 ? (
-                        <Avatar size={18} src={assetUrl(site?.logo || site?.ico) || undefined}>
-                          {(site?.title || '官方').slice(0, 1)}
-                        </Avatar>
+                        <Link to="/dan/about" className="column-card-author-name" style={{ color: 'var(--c-text-2)' }}>
+                          作者：{site?.title || '官方'}
+                        </Link>
                       ) : (
-                        <Avatar size={18} src={assetUrl(c.author_head) || undefined}>
-                          {(c.author || '作者').slice(0, 1)}
-                        </Avatar>
+                        <Link to={`/user/${c.uid}`} className="column-card-author-name" style={{ color: 'var(--c-text-2)' }}>
+                          作者：{c.author || '作者'}
+                        </Link>
                       )}
-                      <Text type="secondary" className="column-card-author-name">
-                        {c.uid === 0 ? (site?.title || '官方') : c.author || '作者'}
-                      </Text>
                     </div>
                   </div>
                 </Flex>

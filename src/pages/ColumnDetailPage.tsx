@@ -69,8 +69,8 @@ const ColumnDetailPage: React.FC = () => {
     setLoading(true);
     setError('');
     setColumn(null);
-    Promise.all([getColumns(), getColumnArticles(columnId)])
-      .then(([cols, arts]) => {
+    getColumns()
+      .then((cols) => {
         if (!alive) return;
         const c =
           (cols.data || []).find(
@@ -81,7 +81,11 @@ const ColumnDetailPage: React.FC = () => {
           return;
         }
         setColumn(c);
-        setArticles(arts.code === 1 ? arts.data || [] : []);
+        return getColumnArticles(c.id);
+      })
+      .then((arts) => {
+        if (!alive) return;
+        setArticles(arts && arts.code === 1 ? arts.data || [] : []);
       })
       .catch((e) => {
         if (alive) setError(e?.message || '加载失败');
@@ -92,7 +96,7 @@ const ColumnDetailPage: React.FC = () => {
     return () => {
       alive = false;
     };
-  }, [columnId]);
+  }, [columnId, rawId]);
 
   if (loading) {
     return (
@@ -138,23 +142,18 @@ const ColumnDetailPage: React.FC = () => {
             </Text>
             <Space size={[8, 8]} wrap align="center">
               {column.uid === 0 ? (
-                <>
-                  <Avatar size={20} src={assetUrl(site?.logo || site?.ico) || undefined}>
-                    {(site?.title || '官方').slice(0, 1)}
-                  </Avatar>
-                  <Tag color="blue">
-                    <Link to="/dan/about" style={{ color: 'inherit' }}>
-                      {site?.title || '官方'}
-                    </Link>
-                  </Tag>
-                </>
+                <Text type="secondary">
+                  <Link to="/dan/about" style={{ color: 'inherit' }}>
+                    作者：{site?.title || '官方'}
+                  </Link>
+                </Text>
               ) : (
                 <>
-                  <Tag color="blue">
+                  <Text type="secondary">
                     <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
                       作者：{column.author || '匿名'}
                     </Link>
-                  </Tag>
+                  </Text>
                   {column.author_qq ? (
                     <Button
                       size="small"
@@ -181,19 +180,18 @@ const ColumnDetailPage: React.FC = () => {
         <div className="feed-timeline">
           {articles.map((a) => {
             const detailRoute = `/article/detail/${a.id}`;
-            const authorAvatar = assetUrl(column.author_head || '');
-            const authorName = column.name || a.author || '专栏';
             return (
               <div className="feed-timeline-item" key={a.id}>
                 <div className="feed-author-col">
-                  <Avatar
-                    className="feed-author-avatar"
-                    shape="circle"
-                    src={authorAvatar || undefined}
-                  >
-                    {(authorName || '?').slice(0, 1)}
-                  </Avatar>
-                  <span className="feed-author-name">{authorName}</span>
+                  {a.uid === 0 ? (
+                    <Link to="/dan/about" className="feed-author-name" style={{ color: 'var(--c-text-2)' }}>
+                      作者：{site?.title || '官方'}
+                    </Link>
+                  ) : (
+                    <Link to={`/user/${a.uid}`} className="feed-author-name" style={{ color: 'var(--c-text-2)' }}>
+                      作者：{a.author || '匿名'}
+                    </Link>
+                  )}
                 </div>
 
                 <div className="feed-bubble" onClick={() => navigate(detailRoute)}>

@@ -239,7 +239,7 @@ const MyColumnsPage: React.FC = () => {
         <Alert type="info" showIcon message="你还没有专栏" description="创建专栏后可向其投稿文章，审核通过即获得随机奖励。" />
       ) : (
         <List
-          grid={{ gutter: 16, xs: 1, sm: 1, md: 2 }}
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }}
           dataSource={list}
           renderItem={(c) => (
             <List.Item>

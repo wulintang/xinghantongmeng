@@ -75,7 +75,7 @@ const AbstractPage: React.FC = () => {
 
     usePageMeta({
         title: '文章详情',
-        description: '兴汉同盟 Feed 广场文章详情页。',
+        description: '兴汉同盟广场聚合文章详情页。',
     });
 
     useEffect(() => {
@@ -151,7 +151,7 @@ const AbstractPage: React.FC = () => {
     if (loading) {
         return (
             <Flex vertical gap={20}>
-                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]} />
+                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '广场聚合', to: '/feed' }, { label: '详情' }]} />
                 <AbstractSkeleton />
             </Flex>
         );
@@ -160,10 +160,10 @@ const AbstractPage: React.FC = () => {
     if (error || !p) {
         return (
             <Flex vertical gap={20}>
-                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]} />
+                <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '广场聚合', to: '/feed' }, { label: '详情' }]} />
                 <Alert type="warning" showIcon message={error || '文章不存在'} />
                 <div>
-                    <Button onClick={() => navigate('/feed')}>返回 Feed 广场</Button>
+                    <Button onClick={() => navigate('/feed')}>返回广场聚合</Button>
                 </div>
             </Flex>
         );
@@ -177,10 +177,10 @@ const AbstractPage: React.FC = () => {
         <Flex vertical gap={20} className="abstract-page">
             <PageHeader
                 title="文章详情"
-                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }, { label: '详情' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '广场聚合', to: '/feed' }, { label: '详情' }]}
                 extra={
                     <Space>
-                        <Button onClick={() => navigate('/feed')}>返回 Feed 广场</Button>
+                        <Button onClick={() => navigate('/feed')}>返回广场聚合</Button>
                     </Space>
                 }
             />

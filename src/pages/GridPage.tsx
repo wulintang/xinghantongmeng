@@ -4,6 +4,7 @@ import { Alert, Button, Form, Input, InputNumber, Modal, Spin, Typography, messa
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { PageHeader } from '@components/common';
 import GridCanvas from '@components/common/GridCanvas';
 import AdImgUpload from '@/components/common/AdImgUpload';
 
@@ -80,12 +81,11 @@ export default function GridPage(): React.JSX.Element {
 
   return (
     <div className="grid-page">
-      <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
-        {page === 'home' ? '首页底部格子广告' : '格子广告'}
-      </Title>
-      <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-        在下方画布拖拽框选投放区域（每格 ¥{pricePerCell}/月）。框选后弹出申请表单，提交即从余额扣费，审核通过后展示。
-      </Paragraph>
+      <PageHeader
+        title={page === 'home' ? '首页底部格子广告' : '格子广告'}
+        description={`在下方画布拖拽框选投放区域（每格 ¥${pricePerCell}/月）。框选后弹出申请表单，提交即从余额扣费，审核通过后展示。`}
+        crumbs={[{ label: '首页', to: '/' }, { label: page === 'home' ? '首页底部格子广告' : '格子广告', to: '/grid' }]}
+      />
 
       <GridCanvas
         grid={grid}

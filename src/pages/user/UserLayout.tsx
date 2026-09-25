@@ -89,8 +89,10 @@ function UserLayoutInner() {
   };
 
   const selected = useMemo(() => {
-    if (location.pathname.startsWith('/user/ad/')) return '/user/ad/my';
-    return MENU_KEYS.includes(location.pathname) ? location.pathname : '/user';
+    const p = location.pathname;
+    if (p.startsWith('/user/ad/')) return '/user/ad/my';
+    const matched = MENU_KEYS.find((k) => p === k || p.startsWith(k + '/'));
+    return matched || '/user';
   }, [location.pathname]);
 
   if (loading) {

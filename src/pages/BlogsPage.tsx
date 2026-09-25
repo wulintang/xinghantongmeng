@@ -104,9 +104,9 @@ const BlogsPage: React.FC = () => {
     const [reporting, setReporting] = useState(false);
 
     usePageMeta({
-        title: 'Feed广场',
-        keywords: 'Feed广场, 文章聚合, 站点圈',
-        description: '兴汉同盟收录站点的最新文章聚合。',
+        title: '广场聚合',
+        keywords: '广场聚合, 文章聚合, 站点圈',
+        description: '兴汉同盟广场聚合的最新文章。',
     });
 
     useEffect(() => {
@@ -232,9 +232,9 @@ const BlogsPage: React.FC = () => {
     return (
         <Flex vertical gap={20}>
             <PageHeader
-                title="Feed广场"
+                title="广场聚合"
                 description={`来自 ${siteCount} 个站点的最新文章`}
-                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '广场聚合', to: '/feed' }]}
             />
 
             <AdSlotSkeleton slot="list_blog_top" />

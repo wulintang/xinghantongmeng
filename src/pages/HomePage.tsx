@@ -21,7 +21,7 @@ import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
-import { getColumns } from '@/services/column';
+import { getColumns, columnLink } from '@/services/column';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
     const [articles, setArticles] = useState<ArticleItem[]>([]);
     const [posts, setPosts] = useState<PostData[]>([]);
     const [siteIdByDomain, setSiteIdByDomain] = useState<Map<string, number>>(new Map());
-    const [columnMap, setColumnMap] = useState<Map<number, { name: string; description: string | null; author: string }>>(new Map());
+    const [columnMap, setColumnMap] = useState<Map<number, { id: number; name: string; description: string | null; author: string; custom_url?: string | null; url_status?: number }>>(new Map());
 
     usePageMeta({});
 
@@ -60,8 +60,8 @@ const HomePage: React.FC = () => {
                 if (a.code === 1 && a.data?.list) setArticles(a.data.list);
                 setPosts(p.slice(0, HOME_SIDE_LIMIT));
                 if (cols.code === 1 && cols.data) {
-                    const m = new Map<number, { name: string; description: string | null; author: string }>();
-                    cols.data.forEach((c) => m.set(c.id, { name: c.name, description: c.description, author: c.author }));
+                    const m = new Map<number, { id: number; name: string; description: string | null; author: string; custom_url?: string | null; url_status?: number }>();
+                    cols.data.forEach((c) => m.set(c.id, { id: c.id, name: c.name, description: c.description, author: c.author, custom_url: c.custom_url, url_status: c.url_status }));
                     setColumnMap(m);
                 }
             })
@@ -191,7 +191,7 @@ const HomePage: React.FC = () => {
                                                           }
                                                       >
                                                           <Link
-                                                              to={`/article/${a.tid}`}
+                                                              to={columnLink(col)}
                                                               style={{ fontSize: 'var(--fs-xs)', color: 'var(--c-link)' }}
                                                           >
                                                               {col.name}

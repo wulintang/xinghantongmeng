@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Spin, Typography, message } from 'antd';
 import { getPrices, type AdPayPosition, type AdPayGridConfig } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { PageHeader } from '@components/common';
 import CardTable from '@/components/common/CardTable';
 
 const { Title, Paragraph } = Typography;
@@ -45,12 +46,11 @@ export default function AdPricesPage(): React.JSX.Element {
 
   return (
     <div className="ad-prices-page">
-      <Title level={3} style={{ fontSize: 'var(--fs-xl)' }}>
-        广告价格单
-      </Title>
-      <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-        系统广告位按页面独立定价；格子广告为虚拟 1×1 单元格画布，每格统一月价，用户可框选任意矩形区域投放（单价 × 格子数 × 月数 = 总价）。
-      </Paragraph>
+      <PageHeader
+        title="广告价格单"
+        description="系统广告位按页面独立定价；格子广告为虚拟 1×1 单元格画布，每格统一月价，用户可框选任意矩形区域投放（单价 × 格子数 × 月数 = 总价）。"
+        crumbs={[{ label: '首页', to: '/' }, { label: '广告价格单', to: '/dan/ad' }]}
+      />
 
       <Card title="系统广告位" style={{ marginBottom: 'var(--page-gap)' }}>
         <CardTable<AdPayPosition>

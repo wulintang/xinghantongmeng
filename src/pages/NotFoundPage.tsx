@@ -19,7 +19,7 @@ const NotFoundPage: React.FC = () => {
                         返回首页
                     </Button>
                     <Button onClick={() => navigate('/websites')}>去网址导航</Button>
-                    <Button onClick={() => navigate('/feed')}>去Feed广场</Button>
+                    <Button onClick={() => navigate('/feed')}>去广场聚合</Button>
                 </Space>
             }
         />

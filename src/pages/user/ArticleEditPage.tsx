@@ -34,7 +34,8 @@ import {
 import { getToken } from '@/utils/auth';
 import ColumnImgUpload from '@/components/common/ColumnImgUpload';
 
-const { Text, TextArea } = Typography;
+const { Text } = Typography;
+const { TextArea } = Input;
 const { Title } = Typography;
 
 const ArticleEditPage: React.FC = () => {

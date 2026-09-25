@@ -2,9 +2,37 @@ import React from 'react';
 import ReactDOMClient from 'react-dom/client';
 import './styles.css';
 
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, message } from 'antd';
 
 import App from './App.tsx';
+
+// 全局 antd message：统一时长 6 秒、垂直居中 + 半透明笼罩（见 styles.css）
+message.config({ duration: 6 });
+
+// 半透明笼罩：仅在有提示时显示，置于页面之上、message 卡片之下，不拦截点击
+function ensureMsgOverlay() {
+    let el = document.getElementById('global-msg-overlay');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'global-msg-overlay';
+        el.style.cssText =
+            'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;pointer-events:none;';
+        document.body.appendChild(el);
+    }
+    return el;
+}
+function removeMsgOverlay() {
+    const el = document.getElementById('global-msg-overlay');
+    if (el) el.remove();
+}
+if (typeof MutationObserver !== 'undefined') {
+    const mo = new MutationObserver(() => {
+        const has = !!document.querySelector('.ant-message .ant-message-notice');
+        if (has) ensureMsgOverlay();
+        else removeMsgOverlay();
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+}
 
 const rootElement = document.getElementById('top');
 if (!rootElement) {

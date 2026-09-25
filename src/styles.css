@@ -1927,3 +1927,22 @@ body {
     display: none !important;
   }
 }
+
+/* ============================================================
+   全局 antd message 提示：垂直居中 + 字号放大（22px）+ 半透明笼罩
+   一刀切覆盖所有 message.xxx 调用，不改任何业务调用点
+   ============================================================ */
+.ant-message {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  bottom: auto !important;
+  pointer-events: none;
+}
+.ant-message-notice-content {
+  font-size: 22px !important;
+  padding: 16px 26px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18) !important;
+  line-height: var(--lh-snug);
+}

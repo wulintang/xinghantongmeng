@@ -79,7 +79,7 @@ const ToolsPage: React.FC = () => {
             <PageHeader
                 title="常用工具"
                 description="后台工具箱里已开放的全部工具"
-                crumbs={[{ label: '首页', to: '/' }, { label: '常用工具' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '常用工具', to: '/tools' }]}
             />
 
             <AdSlotSkeleton slot="list_tool_top" />

@@ -84,7 +84,7 @@ const WebsitesPage: React.FC = () => {
             <PageHeader
                 title="网址导航"
                 description="按分类浏览后台收录的全部站点"
-                crumbs={[{ label: '首页', to: '/' }, { label: '网址导航' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '网址导航', to: '/websites' }]}
             />
 
             <AdSlotSkeleton slot="list_website_top" />

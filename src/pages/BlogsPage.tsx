@@ -234,7 +234,7 @@ const BlogsPage: React.FC = () => {
             <PageHeader
                 title="Feed广场"
                 description={`来自 ${siteCount} 个站点的最新文章`}
-                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场' }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: 'Feed广场', to: '/feed' }]}
             />
 
             <AdSlotSkeleton slot="list_blog_top" />

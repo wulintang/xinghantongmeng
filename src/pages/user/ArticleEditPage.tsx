@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -13,10 +13,10 @@ import {
   message,
 } from 'antd';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-// react-simplemde-editor 的 default 导出在 webpack 生产构建里可能为 undefined，
-// 用 require 取值并兼容 .default，避免 React #130（element type is invalid）
-const SimpleMDEImport = require('react-simplemde-editor');
-const SimpleMDE = (SimpleMDEImport && (SimpleMDEImport.default || SimpleMDEImport)) as any;
+// 直接使用底层 easymde（react-simplemde-editor 的 default 导出在 webpack 生产构建里解析为 undefined，
+// 会触发 React #130 element type is invalid）。easymde 是普通类、无默认导出 interop 问题，
+// 工具栏/全屏/图片上传等能力完全一致，满足「强大 MD 编辑器」要求。
+import EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -158,6 +158,41 @@ const ArticleEditPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  // ===== EasyMDE 编辑器实例（直接用底层 easymde，避免默认导出 undefined 导致 #130） =====
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+  const mdeRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!editorRef.current || mdeRef.current) return;
+    const mde = new EasyMDE({
+      element: editorRef.current,
+      initialValue: content,
+      ...mdeOptions,
+    });
+    mde.codemirror.on('change', () => {
+      setContent(mde.value());
+    });
+    mdeRef.current = mde;
+    return () => {
+      try {
+        mde.toTextArea();
+      } catch {
+        /* noop */
+      }
+      mdeRef.current = null;
+    };
+    // 仅在挂载时初始化一次；外部 content 变化由下方 effect 同步
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 外部 content 变化（AI 生成追加、编辑回显）时同步进编辑器
+  useEffect(() => {
+    const mde = mdeRef.current;
+    if (mde && mde.value() !== content) {
+      mde.value(content);
+    }
+  }, [content]);
 
   const countZh = (s: string) => (s.match(/[一-龥]/g) || []).length;
 
@@ -381,7 +416,7 @@ const ArticleEditPage: React.FC = () => {
               AI 写文章
             </Button>
           </Flex>
-          <SimpleMDE value={content} onChange={setContent} options={mdeOptions} />
+          <textarea ref={editorRef} />
         </Flex>
 
         <Flex gap={12} wrap>

@@ -21,6 +21,7 @@ import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
+import { getColumns } from '@/services/column';
 import { getPosts } from '@/services/postService';
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
@@ -38,6 +39,7 @@ const HomePage: React.FC = () => {
     const [articles, setArticles] = useState<ArticleItem[]>([]);
     const [posts, setPosts] = useState<PostData[]>([]);
     const [siteIdByDomain, setSiteIdByDomain] = useState<Map<string, number>>(new Map());
+    const [columnMap, setColumnMap] = useState<Map<number, { name: string; description: string | null; author: string }>>(new Map());
 
     usePageMeta({});
 
@@ -46,8 +48,9 @@ const HomePage: React.FC = () => {
             getWebsites({ page: 1, limit: 100 }),
             getArticles({ page: 1, limit: HOME_SIDE_LIMIT }),
             getPosts(),
+            getColumns(),
         ])
-            .then(([w, a, p]) => {
+            .then(([w, a, p, cols]) => {
                 if (w.code === 1 && w.data?.list) {
                     setSites(w.data.list.slice(0, HOME_SITE_LIMIT));
                     const map = new Map<string, number>();
@@ -56,6 +59,11 @@ const HomePage: React.FC = () => {
                 }
                 if (a.code === 1 && a.data?.list) setArticles(a.data.list);
                 setPosts(p.slice(0, HOME_SIDE_LIMIT));
+                if (cols.code === 1 && cols.data) {
+                    const m = new Map<number, { name: string; description: string | null; author: string }>();
+                    cols.data.forEach((c) => m.set(c.id, { name: c.name, description: c.description, author: c.author }));
+                    setColumnMap(m);
+                }
             })
             .catch(() => {})
             .finally(() => setLoading(false));
@@ -152,7 +160,7 @@ const HomePage: React.FC = () => {
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
                         <Title level={4} className="section-title">
-                            站内动态
+                            专栏文章
                         </Title>
                         <Button type="link" onClick={() => navigate('/article')}>
                             更多
@@ -166,18 +174,44 @@ const HomePage: React.FC = () => {
                             className="home-list"
                             dataSource={articles}
                             rowKey={(a) => a.id}
-                            renderItem={(a) => (
-                                <List.Item>
-                                    <List.Item.Meta
-                                        title={<Tooltip title={a.title}><Link to={`/article/detail/${a.id}`}>{a.title}</Link></Tooltip>}
-                                        description={
-                                            <Text type="secondary">
-                                                {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
-                                            </Text>
+                            renderItem={(a) => {
+                                const col = columnMap.get(a.tid);
+                                return (
+                                    <List.Item
+                                        actions={
+                                            col
+                                                ? [
+                                                      <Tooltip
+                                                          key="col"
+                                                          title={
+                                                              <div style={{ maxWidth: 240 }}>
+                                                                  {col.description ? <div style={{ marginBottom: 4 }}>{col.description}</div> : null}
+                                                                  <div>作者：{col.author || '官方'}</div>
+                                                              </div>
+                                                          }
+                                                      >
+                                                          <Link
+                                                              to={`/article/${a.tid}`}
+                                                              style={{ fontSize: 'var(--fs-xs)', color: 'var(--c-link)' }}
+                                                          >
+                                                              {col.name}
+                                                          </Link>
+                                                      </Tooltip>,
+                                                  ]
+                                                : []
                                         }
-                                    />
-                                </List.Item>
-                            )}
+                                    >
+                                        <List.Item.Meta
+                                            title={<Tooltip title={a.title}><Link to={`/article/detail/${a.id}`}>{a.title}</Link></Tooltip>}
+                                            description={
+                                                <Text type="secondary">
+                                                    {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
+                                                </Text>
+                                            }
+                                        />
+                                    </List.Item>
+                                );
+                            }}
                         />
                     )}
                 </Col>
@@ -185,7 +219,7 @@ const HomePage: React.FC = () => {
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
                         <Title level={4} className="section-title">
-                            最新文章
+                            广场聚合
                         </Title>
                         <Button type="link" onClick={() => navigate('/feed')}>
                             更多

@@ -97,7 +97,7 @@ const DanPage: React.FC = () => {
     if (error || !dan) {
         return (
             <Flex vertical gap={16}>
-                <PageHeader title="单页" crumbs={[{ label: '首页', to: '/' }, { label: '单页' }]} />
+                <PageHeader title="单页" crumbs={[{ label: '首页', to: '/' }, { label: '单页', to: '/dan' }]} />
                 <Alert type="warning" showIcon message={error || '页面不存在'} />
                 <div>
                     <Button onClick={() => navigate('/')}>返回首页</Button>

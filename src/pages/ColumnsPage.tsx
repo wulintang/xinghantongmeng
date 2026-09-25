@@ -51,7 +51,7 @@ const ColumnsPage: React.FC = () => {
       <PageHeader
         title="专栏"
         description="作者与官方创建的专栏矩阵"
-        crumbs={[{ label: '首页', to: '/' }, { label: '专栏' }]}
+        crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }]}
       />
 
       {loading ? (

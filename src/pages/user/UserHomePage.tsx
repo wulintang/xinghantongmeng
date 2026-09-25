@@ -153,7 +153,7 @@ const UserHomePage: React.FC = () => {
     if (error || !info) {
         return (
             <Flex vertical gap={16}>
-                <PageHeader title="会员主页" crumbs={[{ label: '首页', to: '/' }, { label: '会员主页' }]} />
+                <PageHeader title="会员主页" crumbs={[{ label: '首页', to: '/' }, { label: '会员主页', to: '/user' }]} />
                 <Alert type="warning" showIcon message={error || '用户不存在'} />
                 <div>
                     <Button onClick={() => navigate('/')}>返回首页</Button>
@@ -168,7 +168,7 @@ const UserHomePage: React.FC = () => {
         <Flex vertical gap={20}>
             <PageHeader
                 title={info.name}
-                crumbs={[{ label: '首页', to: '/' }, { label: '会员主页' }, { label: info.name }]}
+                crumbs={[{ label: '首页', to: '/' }, { label: '会员主页', to: '/user' }, { label: info.name }]}
             />
 
             <Card>

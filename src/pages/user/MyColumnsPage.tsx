@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   getMyColumns,
+  getColumnConfig,
   columnSave,
   columnDel,
   urlSave,
@@ -28,9 +29,10 @@ import {
 } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { assetUrl } from '@/utils/route';
+import { getBalance } from '@/services/userCenter';
 import ColumnImgUpload from '@/components/common/ColumnImgUpload';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const MyColumnsPage: React.FC = () => {
@@ -48,6 +50,8 @@ const MyColumnsPage: React.FC = () => {
   const [urlTarget, setUrlTarget] = useState<ColumnItem | null>(null);
   const [urlForm] = Form.useForm();
   const [urlSubmitting, setUrlSubmitting] = useState(false);
+  const [urlFee, setUrlFee] = useState<number>(1);
+  const [balance, setBalance] = useState<number | null>(null);
 
   usePageMeta({ title: '我的专栏', description: '管理你创建的专栏' });
 
@@ -69,6 +73,11 @@ const MyColumnsPage: React.FC = () => {
 
   useEffect(() => {
     load();
+    getColumnConfig()
+      .then((r) => {
+        if (r.code === 1 && r.data) setUrlFee(Number(r.data.url_fee) || 1);
+      })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
@@ -128,24 +137,66 @@ const MyColumnsPage: React.FC = () => {
     setUrlTarget(c);
     urlForm.resetFields();
     urlForm.setFieldsValue({ custom_url: c.custom_url || '' });
+    setBalance(null);
     setUrlOpen(true);
+    getBalance(key)
+      .then((r: any) => {
+        if (r.code === 1 && r.data) setBalance(Number(r.data.total || 0));
+      })
+      .catch(() => setBalance(null));
   };
   const onUrlSubmit = async () => {
     try {
       const v = await urlForm.validateFields();
       if (!urlTarget) return;
+      if (urlTarget.status !== 1) {
+        message.error('专栏通过审核后才能设置自定义URL');
+        return;
+      }
       setUrlSubmitting(true);
-      urlSave({ id: urlTarget.id, custom_url: v.custom_url })
-        .then((r) => {
-          if (r.code === 1) {
-            message.success('自定义URL已提交，等待审核');
-            setUrlOpen(false);
-            load();
-          } else {
-            message.error(r.msg || '提交失败');
+      const fee = urlFee;
+      // 友情链接同款：先提示查询余额，再显示扣款过程
+      message.open({ key: 'urlpay', type: 'loading', content: '查询余额中…', duration: 0 });
+      getBalance(key)
+        .then((r: any) => {
+          const bal = r.code === 1 && r.data ? Number(r.data.total || 0) : 0;
+          if (bal < fee) {
+            message.open({
+              key: 'urlpay',
+              type: 'error',
+              content: `余额不足，自定义URL需 ¥${fee.toFixed(2)}，请先充值`,
+              duration: 3,
+            });
+            setTimeout(() => navigate('/user/balance'), 1200);
+            return;
           }
+          return urlSave({ id: urlTarget.id, custom_url: v.custom_url })
+            .then((res) => {
+              if (res.code === 1) {
+                message.open({
+                  key: 'urlpay',
+                  type: 'success',
+                  content: `已扣除 ¥${fee.toFixed(2)}，自定义URL已提交审核`,
+                  duration: 3,
+                });
+                setUrlOpen(false);
+                load();
+              } else {
+                message.open({
+                  key: 'urlpay',
+                  type: 'error',
+                  content: res.msg || '提交失败',
+                  duration: 3,
+                });
+              }
+            })
+            .catch((e) =>
+              message.open({ key: 'urlpay', type: 'error', content: e?.message || '提交失败', duration: 3 })
+            );
         })
-        .catch((e) => message.error(e?.message || '提交失败'))
+        .catch(() =>
+          message.open({ key: 'urlpay', type: 'error', content: '查询余额失败，请稍后重试', duration: 3 })
+        )
         .finally(() => setUrlSubmitting(false));
     } catch {
       /* 校验失败 */
@@ -220,7 +271,12 @@ const MyColumnsPage: React.FC = () => {
                           '未设置'
                         )}
                       </Text>
-                      <Button size="small" type="link" onClick={() => openUrl(c)}>
+                      <Button
+                        size="small"
+                        type="link"
+                        disabled={c.status !== 1}
+                        onClick={() => openUrl(c)}
+                      >
                         设置
                       </Button>
                     </div>
@@ -261,7 +317,7 @@ const MyColumnsPage: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item label="专栏名称" name="name" rules={[{ required: true, message: '请填写专栏名称' }]}>
-            <Input maxLength={50} placeholder="如：道家文化研究" />
+            <Input maxLength={50} placeholder="如：建站经验分享" />
           </Form.Item>
           <Form.Item label="专栏图标（必传）" name="pic" rules={[{ required: true, message: '请上传专栏图标' }]}>
             <ColumnImgUpload hint="点击上传专栏图标（必填，支持 webp/jpg/png/gif）。" />
@@ -287,8 +343,19 @@ const MyColumnsPage: React.FC = () => {
           type="warning"
           showIcon
           style={{ marginBottom: 12 }}
-          message="自定义URL需付费审核，提交即从余额扣费（禁止纯中文）。"
+          message={`自定义URL需付费审核，提交即从余额扣除 ¥${urlFee.toFixed(2)}（禁止纯中文）。`}
         />
+        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)', marginBottom: 12 }}>
+          当前余额：
+          {balance === null ? (
+            '查询中…'
+          ) : (
+            <Text strong>¥{balance.toFixed(2)}</Text>
+          )}
+          {balance !== null && balance < urlFee ? (
+            <Text type="danger">（余额不足，需充值 ¥{(urlFee - balance).toFixed(2)}）</Text>
+          ) : null}
+        </Paragraph>
         <Form form={urlForm} layout="vertical">
           <Form.Item
             label="自定义URL"
@@ -298,7 +365,7 @@ const MyColumnsPage: React.FC = () => {
               { pattern: /^[a-zA-Z0-9_-]+$/, message: '仅允许字母/数字/横线/下划线，禁止纯中文' },
             ]}
           >
-            <Input maxLength={100} placeholder="如：daojia-wenhua" />
+            <Input maxLength={100} placeholder="如：my-column" />
           </Form.Item>
         </Form>
       </Modal>

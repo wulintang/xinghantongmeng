@@ -8,6 +8,8 @@ const COL = '/index.php/column/api';
 export interface ColumnItem {
   id: number;
   tid?: number;
+  /** 申请记录关联的 my_article_cate.id，0=尚未创建 */
+  article_cate_id: number;
   name: string;
   pic: string;
   description: string | null;
@@ -99,6 +101,13 @@ export function getColumns() {
 export function getColumnArticles(tid: number | string) {
   return request<{ code: number; msg: string; data: ColumnArticleItem[] }>(
     `${COL}/columnArticles.html` + qs({ tid })
+  );
+}
+
+/** 插件公开配置（URL 审核费等） */
+export function getColumnConfig() {
+  return request<{ code: number; msg: string; data: { url_fee: number } }>(
+    `${COL}/config.html`
   );
 }
 

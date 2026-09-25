@@ -154,7 +154,7 @@ const HomePage: React.FC = () => {
                         <Title level={4} className="section-title">
                             站内动态
                         </Title>
-                        <Button type="link" onClick={() => navigate('/articles')}>
+                        <Button type="link" onClick={() => navigate('/square')}>
                             更多
                         </Button>
                     </Flex>
@@ -169,7 +169,7 @@ const HomePage: React.FC = () => {
                             renderItem={(a) => (
                                 <List.Item>
                                     <List.Item.Meta
-                                        title={<Tooltip title={a.title}><Link to={`/articles/${a.id}`}>{a.title}</Link></Tooltip>}
+                                        title={<Tooltip title={a.title}><Link to={`/columns/article/${a.id}`}>{a.title}</Link></Tooltip>}
                                         description={
                                             <Text type="secondary">
                                                 {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}

@@ -68,7 +68,8 @@ const MyColumnDetailPage: React.FC = () => {
         const c = list.find((x) => x.id === columnId) || null;
         setColumn(c);
         const allArts = arts.code === 1 ? arts.data || [] : [];
-        setArticles(allArts.filter((a) => a.tid === columnId));
+        // 文章 tid 是真实分类 id（my_article_cate.id），不是申请记录 id
+        setArticles(allArts.filter((a) => a.tid === (c?.article_cate_id || 0)));
       })
       .catch(() => {
         setColumn(null);
@@ -89,7 +90,7 @@ const MyColumnDetailPage: React.FC = () => {
     }
     setEditing(null);
     form.resetFields();
-    form.setFieldsValue({ pic: '', tid: columnId });
+    form.setFieldsValue({ pic: '', tid: column?.article_cate_id || 0 });
     setEditOpen(true);
   };
 
@@ -321,7 +322,7 @@ const MyColumnDetailPage: React.FC = () => {
             name="tid"
             rules={[{ required: true, message: '请选择投稿的专栏' }]}
           >
-            <Select disabled options={[{ value: column.id, label: column.name }]} />
+            <Select disabled options={[{ value: column.article_cate_id || 0, label: column.name }]} />
           </Form.Item>
           <Form.Item label="文章标题" name="title" rules={[{ required: true, message: '请填写标题' }]}>
             <Input maxLength={100} placeholder="文章标题" />

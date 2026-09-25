@@ -7,8 +7,6 @@ import MainLayout from '@layouts/MainLayout';
 import HomePage from '@pages/HomePage';
 import WebsitesPage from '@pages/WebsitesPage';
 import WebsiteDetailPage from '@pages/WebsiteDetailPage';
-import ArticlesPage from '@pages/ArticlesPage';
-import ArticleDetailPage from '@pages/ArticleDetailPage';
 import ToolsPage from '@pages/ToolsPage';
 import ToolDetailPage from '@pages/ToolDetailPage';
 import BlogsPage from '@pages/BlogsPage';
@@ -103,9 +101,6 @@ const App: React.FC = () => {
                             <Route path="/" element={<HomePage />} />
 
                             <Route path="/websites" element={<WebsitesPage />} />
-
-                            <Route path="/articles" element={<ArticlesPage />} />
-                            <Route path="/articles/:id" element={<ArticleDetailPage />} />
 
                             <Route path="/columns/article/:id" element={<ColumnArticleDetailPage />} />
                             <Route path="/columns" element={<ColumnsPage />} />

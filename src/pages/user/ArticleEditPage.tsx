@@ -1,20 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Button,
-  Card,
   Flex,
   Input,
   Modal,
   Select,
-  Space,
   Spin,
   Typography,
   message,
 } from 'antd';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import * as EasyMDE from 'easymde';
-import 'easymde/dist/easymde.min.css';
+import { MdEditor } from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
@@ -105,92 +103,24 @@ const ArticleEditPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [key, editId, search]);
 
-  const imageUploadFunction = async (
-    file: File,
-    onSuccess: (url: string, name?: string) => void,
-    onError: (error: string) => void
-  ) => {
+  const onUploadImg = async (files: File[], callback: (urls: string[]) => void) => {
     if (!key) {
-      onError('请先登录');
+      message.error('请先登录');
       return;
     }
     try {
-      const r = await uploadColumnImg(key, file);
-      if (r.code === 1 && r.data?.url) onSuccess(r.data.url, file.name);
-      else onError(r.msg || '上传失败');
+      const urls = await Promise.all(
+        files.map(async (file) => {
+          const r = await uploadColumnImg(key, file);
+          if (r.code === 1 && r.data?.url) return r.data.url;
+          throw new Error(r.msg || '上传失败');
+        })
+      );
+      callback(urls);
     } catch (e: any) {
-      onError(e?.message || '上传失败');
+      message.error(e?.message || '上传失败');
     }
   };
-
-  const mdeOptions = useMemo(
-    () => ({
-      autofocus: true,
-      spellChecker: false,
-      placeholder: '在此撰写正文，支持 Markdown；可点击工具栏上传图片、切换全屏',
-      uploadImage: true,
-      imageUploadFunction,
-      toolbar: [
-        'bold',
-        'italic',
-        'heading',
-        '|',
-        'quote',
-        'code',
-        'table',
-        '|',
-        'list-ul',
-        'list-ol',
-        'link',
-        'image',
-        '|',
-        'fullscreen',
-        'preview',
-        'side-by-side',
-        'guide',
-      ] as any,
-    }),
-    []
-  );
-
-  const editorRef = useRef<HTMLTextAreaElement>(null);
-  const mdeRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (!editorRef.current || mdeRef.current) return;
-    try {
-      const MdeCtor = (EasyMDE as any).default || EasyMDE;
-      const mde = new MdeCtor({
-        element: editorRef.current,
-        initialValue: content,
-        ...mdeOptions,
-      });
-      mde.codemirror.on('change', () => {
-        setContent(mde.value());
-      });
-      try {
-        if (!mde.isSideBySideActive()) mde.toggleSideBySide();
-      } catch {
-      }
-      mdeRef.current = mde;
-      return () => {
-        try {
-          mde.toTextArea();
-        } catch {
-        }
-        mdeRef.current = null;
-      };
-    } catch (e: any) {
-      message.error(`编辑器初始化失败：${e?.message || String(e)}`);
-    }
-  }, [loading, myColumns.length]);
-
-  useEffect(() => {
-    const mde = mdeRef.current;
-    if (mde && mde.value() !== content) {
-      mde.value(content);
-    }
-  }, [content]);
 
   const countZh = (s: string) => (s.match(/[一-龥]/g) || []).length;
 
@@ -353,12 +283,11 @@ const ArticleEditPage: React.FC = () => {
           <Alert
             type="info"
             showIcon
-            style={{ marginTop: 12 }}
             message={`正文最少需 ${minChars} 个中文字（防水贴），当前 ${countZh(content)} 字`}
           />
         ) : null}
 
-        <Flex gap={16} wrap style={{ marginTop: 12 }}>
+        <Flex gap={16} wrap>
           <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 240 }}>
             <Text strong>文章标题</Text>
             <Input
@@ -383,7 +312,7 @@ const ArticleEditPage: React.FC = () => {
           </Flex>
         </Flex>
 
-        <Flex vertical gap={6} style={{ marginTop: 12 }}>
+        <Flex vertical gap={6}>
           <Text strong>关键词</Text>
           <Flex gap={8} align="center">
             <Input
@@ -399,7 +328,7 @@ const ArticleEditPage: React.FC = () => {
           </Flex>
         </Flex>
 
-        <Flex vertical gap={6} style={{ marginTop: 12 }}>
+        <Flex vertical gap={6}>
           <Text strong>摘要</Text>
           <Flex gap={8} align="center">
             <TextArea
@@ -418,13 +347,13 @@ const ArticleEditPage: React.FC = () => {
       </div>
 
       <div className="article-edit-editor">
-        <Flex align="center" justify="space-between" wrap gap={8} style={{ marginBottom: 8 }}>
+        <Flex align="center" justify="space-between" wrap gap={8}>
           <Text strong>正文（Markdown）</Text>
           <Button type="primary" ghost size="small" loading={genLoading} onClick={() => setAiModal(true)}>
             AI 写文章
           </Button>
         </Flex>
-        <textarea ref={editorRef} />
+        <MdEditor value={content} onChange={setContent} onUploadImg={onUploadImg} />
       </div>
 
       <Modal

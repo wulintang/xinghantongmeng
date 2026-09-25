@@ -2049,38 +2049,28 @@ body {
   line-height: var(--lh-snug);
 }
 
-/* ===================== 投稿/编辑文章：全屏独立编辑器 ===================== */
+/* ===================== 投稿/编辑文章页 ===================== */
 .article-edit-fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: #fff;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 16px 24px 24px;
+  gap: 16px;
+  background: var(--c-bg, #fff);
 }
 .article-edit-top {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--c-border, #f0f0f0);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .article-edit-editor {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 16px 24px;
 }
-.article-edit-editor .EasyMDEContainer {
+.article-edit-editor .md-editor {
   flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-.article-edit-editor .EasyMDEContainer .editor-toolbar {
-  flex-shrink: 0;
-}
-.article-edit-editor .EasyMDEContainer .CodeMirror {
-  flex: 1;
-  min-height: 0;
-  height: auto;
+  min-height: 480px;
+  height: 100%;
 }

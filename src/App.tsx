@@ -83,6 +83,49 @@ function CustomHead(): null {
     return null;
 }
 
+/** 全局错误边界：捕获渲染期异常，避免整页白屏，提供返回首页出口 */
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; msg: string }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, msg: '' };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, msg: error?.message || String(error) };
+  }
+  componentDidCatch(error: any, info: any) {
+    console.error('页面渲染出错：', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <h2 style={{ marginBottom: 12 }}>页面出现了一点问题</h2>
+          <p style={{ color: 'var(--c-text-3)', marginBottom: 20 }}>{this.state.msg}</p>
+          <button
+            onClick={() => {
+              window.location.href = '/';
+            }}
+            style={{
+              padding: '6px 18px',
+              borderRadius: 8,
+              border: '1px solid var(--c-border)',
+              background: 'var(--c-link)',
+              color: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            返回首页
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const theme = {
     token: {
         borderRadius: 8,
@@ -96,6 +139,7 @@ const App: React.FC = () => {
                 <BrowserRouter>
                     <ScrollToTop />
                     <CustomHead />
+                    <ErrorBoundary>
                     <Routes>
                         <Route element={<MainLayout />}>
                             <Route path="/" element={<HomePage />} />
@@ -151,6 +195,7 @@ const App: React.FC = () => {
                             <Route path="*" element={<NotFoundPage />} />
                         </Route>
                     </Routes>
+                    </ErrorBoundary>
                 </BrowserRouter>
             </SiteProvider>
         </ConfigProvider>

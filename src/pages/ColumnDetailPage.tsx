@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSite } from '@/context/SiteContext';
 import { getColumns, getColumnArticles, type ColumnItem, type ColumnArticleItem } from '@/services/column';
 import { assetUrl } from '@/utils/route';
 
@@ -51,6 +52,7 @@ const ColumnDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const rawId = id || '';
   const columnId = Number(id) || 0;
+  const { site } = useSite();
 
   const [loading, setLoading] = useState(true);
   const [column, setColumn] = useState<ColumnItem | null>(null);
@@ -135,35 +137,38 @@ const ColumnDetailPage: React.FC = () => {
               {column.description || '该专栏暂无简介'}
             </Text>
             <Flex align="center" gap={8}>
-              <Avatar size={20} src={assetUrl(column.author_head) || undefined}>
-                {(column.author || '官方').slice(0, 1)}
-              </Avatar>
-              <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-                {column.uid === 0 ? '官方' : `作者：${column.author || '匿名'}`}
-              </Text>
+              {column.uid === 0 ? (
+                <Link to="/dan/about" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <Avatar size={20} src={assetUrl(site?.logo || site?.ico) || undefined}>
+                    {(site?.title || '官方').slice(0, 1)}
+                  </Avatar>
+                  <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                    {site?.title || '官方'}
+                  </Text>
+                </Link>
+              ) : (
+                <>
+                  <Avatar size={20} src={assetUrl(column.author_head) || undefined}>
+                    {(column.author || '匿名').slice(0, 1)}
+                  </Avatar>
+                  <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
+                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                      作者：{column.author || '匿名'}
+                    </Text>
+                  </Link>
+                </>
+              )}
             </Flex>
-            {(column.uid !== 0 && (column.author_qq || column.author_home)) ? (
+            {column.uid !== 0 && column.author_qq ? (
               <Flex align="center" gap={12} wrap>
-                {column.author_qq ? (
-                  <a
-                    href={`https://wpa.qq.com/msgrd?v=3&uin=${column.author_qq}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
-                  >
-                    联系作者
-                  </a>
-                ) : null}
-                {column.author_home ? (
-                  <a
-                    href={column.author_home}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
-                  >
-                    个人主页
-                  </a>
-                ) : null}
+                <a
+                  href={`https://wpa.qq.com/msgrd?v=3&uin=${column.author_qq}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: 'var(--fs-sm)', color: 'var(--c-link)' }}
+                >
+                  联系作者
+                </a>
               </Flex>
             ) : null}
           </Flex>

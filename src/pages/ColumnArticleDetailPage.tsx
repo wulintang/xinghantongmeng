@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, Divider, Flex, Input, Modal, Space, Tooltip, Typography, message } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useSite } from '@/context/SiteContext';
 import { getColumnDetail, type ColumnArticleItem } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { stripHtmlSuffix } from '@/utils/route';
@@ -17,6 +18,7 @@ const ColumnArticleDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const articleId = stripHtmlSuffix(id);
+  const { site } = useSite();
 
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState<ColumnArticleItem | null>(null);
@@ -178,7 +180,15 @@ const ColumnArticleDetailPage: React.FC = () => {
       <AdSlotSkeleton slot="detail_column_article_top" />
 
       <Space split={<Divider type="vertical" />} wrap className="detail-meta">
-        <Text type="secondary">{item.author || '匿名'}</Text>
+        {item.uid === 0 ? (
+          <Link to="/dan/about" style={{ color: 'inherit' }}>
+            <Text type="secondary">{site?.title || '官方'}</Text>
+          </Link>
+        ) : (
+          <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+            <Text type="secondary}>{item.author || '匿名'}</Text>
+          </Link>
+        )}
         <Text type="secondary">{dayjs.unix(item.time).format('YYYY-MM-DD HH:mm')}</Text>
         <Text type="secondary">浏览 {item.view}</Text>
         <Text type="secondary">点赞 {zan}</Text>

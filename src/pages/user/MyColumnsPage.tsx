@@ -7,7 +7,6 @@ import {
   Flex,
   Form,
   Input,
-  List,
   Modal,
   Popconfirm,
   Tag,
@@ -238,74 +237,70 @@ const MyColumnsPage: React.FC = () => {
       ) : list.length === 0 ? (
         <Alert type="info" showIcon message="你还没有专栏" description="创建专栏后可向其投稿文章，审核通过即获得随机奖励。" />
       ) : (
-        <List
-          grid={{ gutter: 16, xs: 1 }}
-          dataSource={list}
-          renderItem={(c) => (
-            <List.Item>
-              <Card>
-                <Flex gap={12} align="center" wrap>
-                  <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
-                    {(c.name || '?').slice(0, 1)}
-                  </Avatar>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <Flex align="center" gap={8} wrap>
-                      <Text strong>{c.name}</Text>
-                      {statusTag(c)}
-                    </Flex>
-                    {c.status === 2 && c.reason ? (
-                      <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
-                        拒绝原因：{c.reason}
-                      </Text>
-                    ) : null}
-                    <Text type="secondary" className="column-my-desc">
-                      {c.description || '暂无简介'}
+        <div className="my-columns-list">
+          {list.map((c) => (
+            <Card key={c.id}>
+              <Flex gap={12} align="center" wrap>
+                <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
+                  {(c.name || '?').slice(0, 1)}
+                </Avatar>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Flex align="center" gap={8} wrap>
+                    <Text strong>{c.name}</Text>
+                    {statusTag(c)}
+                  </Flex>
+                  {c.status === 2 && c.reason ? (
+                    <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
+                      拒绝原因：{c.reason}
                     </Text>
-                    <div className="column-my-url">
-                      <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-                        自定义URL：
-                        {c.custom_url ? (
-                          <Tag color={c.url_status === 1 ? 'green' : c.url_status === 2 ? 'red' : 'gold'}>
-                            {c.custom_url}（{COLUMN_URL_STATUS_TEXT[c.url_status] || '—'}）
-                          </Tag>
-                        ) : (
-                          '未设置'
-                        )}
-                      </Text>
-                      <Button
-                        size="small"
-                        type="link"
-                        disabled={c.status !== 1}
-                        onClick={() => openUrl(c)}
-                      >
-                        设置
-                      </Button>
-                    </div>
-                  </div>
-                </Flex>
-                <Flex gap={8} style={{ marginTop: 12 }} wrap>
-                  <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
-                    文章管理
-                  </Button>
-                  <Button size="small" onClick={() => openEdit(c)}>
-                    编辑
-                  </Button>
-                  <Popconfirm
-                    title="确认删除该专栏？"
-                    description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
-                    onConfirm={() => onDelete(c)}
-                    okText="删除"
-                    cancelText="取消"
-                  >
-                    <Button size="small" danger>
-                      删除
+                  ) : null}
+                  <Text type="secondary" className="column-my-desc">
+                    {c.description || '暂无简介'}
+                  </Text>
+                  <div className="column-my-url">
+                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                      自定义URL：
+                      {c.custom_url ? (
+                        <Tag color={c.url_status === 1 ? 'green' : c.url_status === 2 ? 'red' : 'gold'}>
+                          {c.custom_url}（{COLUMN_URL_STATUS_TEXT[c.url_status] || '—'}）
+                        </Tag>
+                      ) : (
+                        '未设置'
+                      )}
+                    </Text>
+                    <Button
+                      size="small"
+                      type="link"
+                      disabled={c.status !== 1}
+                      onClick={() => openUrl(c)}
+                    >
+                      设置
                     </Button>
-                  </Popconfirm>
-                </Flex>
-              </Card>
-            </List.Item>
-          )}
-        />
+                  </div>
+                </div>
+              </Flex>
+              <Flex gap={8} style={{ marginTop: 12 }} wrap>
+                <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
+                  文章管理
+                </Button>
+                <Button size="small" onClick={() => openEdit(c)}>
+                  编辑
+                </Button>
+                <Popconfirm
+                  title="确认删除该专栏？"
+                  description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
+                  onConfirm={() => onDelete(c)}
+                  okText="删除"
+                  cancelText="取消"
+                >
+                  <Button size="small" danger>
+                    删除
+                  </Button>
+                </Popconfirm>
+              </Flex>
+            </Card>
+          ))}
+        </div>
       )}
 
       <Modal

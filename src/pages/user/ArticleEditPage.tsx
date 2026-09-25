@@ -32,7 +32,6 @@ import {
   type ColumnArticleItem,
 } from '@/services/column';
 import { getToken } from '@/utils/auth';
-import ColumnImgUpload from '@/components/common/ColumnImgUpload';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -53,7 +52,6 @@ const ArticleEditPage: React.FC = () => {
 
   const [tid, setTid] = useState<number>(0);
   const [title, setTitle] = useState('');
-  const [pic, setPic] = useState('');
   const [description, setDescription] = useState('');
   const [keywords, setKeywords] = useState('');
   const [content, setContent] = useState('');
@@ -93,7 +91,6 @@ const ArticleEditPage: React.FC = () => {
           if (a) {
             setTid(a.tid);
             setTitle(a.title);
-            setPic(a.pic || '');
             setDescription(a.description || '');
             setKeywords(a.keywords || '');
             setContent(a.content || '');
@@ -267,7 +264,6 @@ const ArticleEditPage: React.FC = () => {
       id: isEdit ? Number(editId) : undefined,
       tid,
       title: title.trim(),
-      pic,
       content: content.trim(),
       description: description.trim(),
       keywords: keywords.trim(),
@@ -286,25 +282,25 @@ const ArticleEditPage: React.FC = () => {
 
   if (!key) {
     return (
-      <Card className="user-center-card">
+      <div className="article-edit-fullscreen">
         <Alert type="info" showIcon message="请先登录" description="登录后可投稿或编辑文章。" />
-      </Card>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <Card className="user-center-card">
+      <div className="article-edit-fullscreen">
         <Flex justify="center" style={{ padding: 40 }}>
           <Spin />
         </Flex>
-      </Card>
+      </div>
     );
   }
 
   if (myColumns.length === 0) {
     return (
-      <Card className="user-center-card">
+      <div className="article-edit-fullscreen">
         <Alert
           type="warning"
           showIcon
@@ -316,64 +312,69 @@ const ArticleEditPage: React.FC = () => {
             去我的专栏
           </Button>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="user-center-card">
-      <Flex vertical gap={16}>
+    <div className="article-edit-fullscreen">
+      <div className="article-edit-top">
         <Flex justify="space-between" align="center" wrap gap={8}>
           <Title level={5} style={{ margin: 0 }}>
             {isEdit ? '编辑文章' : '投稿文章'}
           </Title>
-          <Button type="link" onClick={() => navigate('/user/columns')}>
-            返回我的专栏
-          </Button>
+          <Flex gap={8} wrap>
+            <Button type="primary" loading={saving} onClick={onSubmit}>
+              {isEdit ? '提交修改' : '提交审核'}
+            </Button>
+            <Button onClick={() => navigate('/user/columns')}>取消</Button>
+          </Flex>
         </Flex>
 
         {minChars > 0 ? (
           <Alert
             type="info"
             showIcon
+            style={{ marginTop: 12 }}
             message={`正文最少需 ${minChars} 个中文字（防水贴），当前 ${countZh(content)} 字`}
           />
         ) : null}
 
-        <Flex vertical gap={6}>
-          <Text strong>所属专栏</Text>
-          <Select
-            value={tid || undefined}
-            placeholder="选择投稿的专栏"
-            onChange={(v) => setTid(v)}
-            style={{ maxWidth: 360 }}
-            options={myColumns.map((c) => ({
-              value: c.article_cate_id || c.id,
-              label: c.name,
-            }))}
-          />
+        <Flex gap={16} wrap style={{ marginTop: 12 }}>
+          <Flex vertical gap={6} style={{ flex: '1 1 240px', minWidth: 240 }}>
+            <Text strong>所属专栏</Text>
+            <Select
+              value={tid || undefined}
+              placeholder="选择投稿的专栏"
+              onChange={(v) => setTid(v)}
+              style={{ maxWidth: 360 }}
+              options={myColumns.map((c) => ({
+                value: c.article_cate_id || c.id,
+                label: c.name,
+              }))}
+            />
+          </Flex>
+          <Flex vertical gap={6} style={{ flex: '2 1 240px', minWidth: 240 }}>
+            <Text strong>文章标题</Text>
+            <Input
+              value={title}
+              maxLength={100}
+              placeholder="文章标题"
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </Flex>
+          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 200 }}>
+            <Text strong>关键词</Text>
+            <Input
+              value={keywords}
+              maxLength={100}
+              placeholder="用空格或逗号分隔（可点击右侧 AI 生成）"
+              onChange={(e) => setKeywords(e.target.value)}
+            />
+          </Flex>
         </Flex>
 
-        <Flex vertical gap={6}>
-          <Text strong>文章标题</Text>
-          <Input
-            value={title}
-            maxLength={100}
-            placeholder="文章标题"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </Flex>
-
-        <Flex vertical gap={6}>
-          <Text strong>封面图（可选）</Text>
-          <ColumnImgUpload
-            value={pic}
-            onChange={setPic}
-            hint="点击上传文章封面（可选，不传则不展示封面）。"
-          />
-        </Flex>
-
-        <Flex vertical gap={6}>
+        <Flex vertical gap={6} style={{ marginTop: 12 }}>
           <Flex align="center" justify="space-between">
             <Text strong>摘要</Text>
             <Button size="small" loading={summaryLoading} onClick={onAiSummary}>
@@ -388,45 +389,17 @@ const ArticleEditPage: React.FC = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Flex>
+      </div>
 
-        <Flex vertical gap={6}>
-          <Flex align="center" justify="space-between">
-            <Text strong>关键词</Text>
-            <Button size="small" loading={summaryLoading} onClick={onAiSummary}>
-              AI 生成
-            </Button>
-          </Flex>
-          <Input
-            value={keywords}
-            maxLength={100}
-            placeholder="用空格或逗号分隔（可点击右侧 AI 生成）"
-            onChange={(e) => setKeywords(e.target.value)}
-          />
-        </Flex>
-
-        <Flex vertical gap={6}>
-          <Flex align="center" justify="space-between" wrap gap={8}>
-            <Text strong>正文（Markdown）</Text>
-            <Button
-              type="primary"
-              ghost
-              size="small"
-              loading={genLoading}
-              onClick={() => setAiModal(true)}
-            >
-              AI 写文章
-            </Button>
-          </Flex>
-          <textarea ref={editorRef} />
-        </Flex>
-
-        <Flex gap={12} wrap>
-          <Button type="primary" loading={saving} onClick={onSubmit}>
-            {isEdit ? '提交修改' : '提交审核'}
+      <div className="article-edit-editor">
+        <Flex align="center" justify="space-between" wrap gap={8} style={{ marginBottom: 8 }}>
+          <Text strong>正文（Markdown）</Text>
+          <Button type="primary" ghost size="small" loading={genLoading} onClick={() => setAiModal(true)}>
+            AI 写文章
           </Button>
-          <Button onClick={() => navigate('/user/columns')}>取消</Button>
         </Flex>
-      </Flex>
+        <textarea ref={editorRef} />
+      </div>
 
       <Modal
         title="AI 写文章"
@@ -450,7 +423,7 @@ const ArticleEditPage: React.FC = () => {
           onChange={(e) => setAiPrompt(e.target.value)}
         />
       </Modal>
-    </Card>
+    </div>
   );
 };
 

@@ -142,18 +142,18 @@ const ColumnDetailPage: React.FC = () => {
             </Text>
             <Space size={[8, 8]} wrap align="center">
               {column.uid === 0 ? (
-                <Text type="secondary">
+                <Tag color="blue">
                   <Link to="/dan/about" style={{ color: 'inherit' }}>
                     作者：{site?.title || '官方'}
                   </Link>
-                </Text>
+                </Tag>
               ) : (
                 <>
-                  <Text type="secondary">
+                  <Tag color="blue">
                     <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
                       作者：{column.author || '匿名'}
                     </Link>
-                  </Text>
+                  </Tag>
                   {column.author_qq ? (
                     <Button
                       size="small"
@@ -182,23 +182,21 @@ const ColumnDetailPage: React.FC = () => {
             const detailRoute = `/article/detail/${a.id}`;
             return (
               <div className="feed-timeline-item" key={a.id}>
-              <div className="feed-author-col">
-                {a.uid === 0 ? (
-                  <Link to="/dan/about" className="feed-author-line" style={{ color: 'var(--c-text-2)' }}>
-                    <Avatar size={20} src={assetUrl(site?.logo || site?.ico) || undefined}>
-                      {(site?.title || '官方').slice(0, 1)}
-                    </Avatar>
-                    <span>作者：{site?.title || '官方'}</span>
-                  </Link>
-                ) : (
-                  <Link to={`/user/${a.uid}`} className="feed-author-line" style={{ color: 'var(--c-text-2)' }}>
-                    <Avatar size={20} src={assetUrl(a.author_head) || undefined}>
-                      {(a.author || '匿名').slice(0, 1)}
-                    </Avatar>
-                    <span>作者：{a.author || '匿名'}</span>
-                  </Link>
-                )}
-              </div>
+              {a.uid === 0 ? (
+                <Link to="/dan/about" className="feed-author-col">
+                  <Avatar className="feed-author-avatar" shape="circle" src={assetUrl(site?.logo || site?.ico) || undefined}>
+                    {(site?.title || '官方').slice(0, 1)}
+                  </Avatar>
+                  <span className="feed-author-name">{site?.title || '官方'}</span>
+                </Link>
+              ) : (
+                <Link to={`/user/${a.uid}`} className="feed-author-col">
+                  <Avatar className="feed-author-avatar" shape="circle" src={assetUrl(a.author_head) || undefined}>
+                    {(a.author || '匿名').slice(0, 1)}
+                  </Avatar>
+                  <span className="feed-author-name">{a.author || '匿名'}</span>
+                </Link>
+              )}
 
                 <div className="feed-bubble" onClick={() => navigate(detailRoute)}>
                   <div className="feed-bubble-arrow feed-bubble-arrow-border" />

@@ -1072,6 +1072,9 @@ body {
   color: var(--c-text);
   transition: border-color 0.2s;
 }
+.member-column-card .ant-avatar {
+  flex-shrink: 0;
+}
 .member-column-card:hover {
   border-color: var(--c-link);
 }
@@ -1090,8 +1093,9 @@ body {
   font-size: var(--fs-sm);
   color: var(--c-text-3);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .color-secondary-12-ml {
@@ -2043,4 +2047,40 @@ body {
   border-radius: 10px !important;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18) !important;
   line-height: var(--lh-snug);
+}
+
+/* ===================== 投稿/编辑文章：全屏独立编辑器 ===================== */
+.article-edit-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.article-edit-top {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--c-border, #f0f0f0);
+  overflow-y: auto;
+}
+.article-edit-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+}
+.article-edit-editor .EasyMDEContainer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.article-edit-editor .EasyMDEContainer .editor-toolbar {
+  flex-shrink: 0;
+}
+.article-edit-editor .EasyMDEContainer .CodeMirror {
+  flex: 1;
+  min-height: 0;
+  height: auto;
 }

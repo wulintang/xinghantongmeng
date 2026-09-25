@@ -189,7 +189,7 @@ export default function LinksPage() {
         : '';
     const logoLinkCode =
         friendDomain && friendLogo
-            ? `<a href="${friendDomain}" target="_blank"><img src="${friendLogo}" alt="${friendTitle}" style="max-height:32px"></a>`
+            ? `<a href="${friendDomain}" target="_blank"><img src="${friendLogo}" alt="${friendTitle}"></a>`
             : '';
 
     const applyNotice =

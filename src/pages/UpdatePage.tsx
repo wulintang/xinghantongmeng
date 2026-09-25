@@ -6,7 +6,32 @@ import {
     GIT_REPO_URL,
     CommitGroup,
     CommitItem,
+    CommitType,
 } from '@/utils/gitCommits';
+
+const TYPE_CFG: Record<CommitType, { cat: string; icon: string }> = {
+    feat: { cat: '新功能', icon: '🎉' },
+    fix: { cat: '问题修复', icon: '🐛' },
+    ui: { cat: '样式调整', icon: '🎨' },
+    perf: { cat: '性能优化', icon: '⚡' },
+    revert: { cat: '回退', icon: '↩️' },
+    other: { cat: '其他', icon: '📄' },
+};
+const TYPE_ORDER: CommitType[] = ['feat', 'fix', 'ui', 'perf', 'revert', 'other'];
+
+function sectionsOf(group: CommitGroup) {
+    const map: Record<string, { cat: string; icon: string; items: CommitItem[] }> = {};
+    for (const c of group.commits) {
+        const t = c.type || 'other';
+        if (!map[t]) {
+            const cfg = TYPE_CFG[t] || TYPE_CFG.other;
+            map[t] = { cat: cfg.cat, icon: cfg.icon, items: [] };
+        }
+        map[t].items.push(c);
+    }
+    // 只保留有提交的类型，按 TYPE_ORDER 顺序输出；类内沿用已倒序的 commits（最新在前）
+    return TYPE_ORDER.filter((t) => map[t]).map((t) => ({ type: t, ...map[t] }));
+}
 
 export default function UpdatePage(): React.JSX.Element {
     usePageMeta({ title: '更新日志' });
@@ -23,7 +48,7 @@ export default function UpdatePage(): React.JSX.Element {
                 if (!alive) return;
                 const init: Record<string, boolean> = {};
                 groups.forEach((g) => {
-                    init[g.date] = !g.latest; // 最新一天默认展开，其余折叠
+                    init[g.date] = true; // 默认全部折叠，需手动展开
                 });
                 setCollapsed(init);
                 setData(groups);
@@ -56,7 +81,7 @@ export default function UpdatePage(): React.JSX.Element {
                     当前版本：兴汉同盟{' '}
                     {latestSha ? <span className="update-version">{latestSha}</span> : null}
                     <br />
-                    共 {total} 次迭代，按日期分组展示。
+                    共 {total} 次迭代，按日期与类型分组展示。
                 </p>
             </div>
 
@@ -85,29 +110,37 @@ export default function UpdatePage(): React.JSX.Element {
                             </span>
                         </div>
                         {!collapsed[group.date]
-                            ? group.commits.map((c) => (
-                                  <div className="change-item" key={c.sha}>
-                                      <span className="change-dot" />
-                                      <div className="change-content">
-                                          <div className="change-main">
-                                              <a
-                                                  className="change-hash"
-                                                  href={`${GIT_REPO_URL}/commit/${c.sha}`}
-                                                  target="_blank"
-                                                  rel="noreferrer"
-                                              >
-                                                  {c.sha.slice(0, 7)}
-                                              </a>
-                                              <span className="change-message">
-                                                  {c.message}
-                                              </span>
-                                          </div>
-                                          <div className="change-meta">
-                                              <span className="change-author">
-                                                  @{c.authorName}
-                                              </span>
-                                          </div>
+                            ? sectionsOf(group).map((sec) => (
+                                  <div key={sec.type}>
+                                      <div className="section-title">
+                                          <span className="section-icon">{sec.icon}</span>
+                                          <span className="section-name">{sec.cat}</span>
                                       </div>
+                                      {sec.items.map((c) => (
+                                          <div className="change-item" key={c.sha}>
+                                              <span className="change-dot" />
+                                              <div className="change-content">
+                                                  <div className="change-main">
+                                                      <a
+                                                          className="change-hash"
+                                                          href={`${GIT_REPO_URL}/commit/${c.sha}`}
+                                                          target="_blank"
+                                                          rel="noreferrer"
+                                                      >
+                                                          {c.sha.slice(0, 7)}
+                                                      </a>
+                                                      <span className="change-message">
+                                                          {c.message}
+                                                      </span>
+                                                  </div>
+                                                  <div className="change-meta">
+                                                      <span className="change-author">
+                                                          @{c.authorName}
+                                                      </span>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      ))}
                                   </div>
                               ))
                             : null}

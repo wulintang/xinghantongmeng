@@ -134,6 +134,22 @@ body {
   color: var(--c-link);
 }
 
+/* 日期分组内，按提交类型再细分的二级分类标题 */
+.update-page .section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 4px;
+}
+.update-page .section-icon {
+  font-size: var(--fs-md);
+}
+.update-page .section-name {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-text-2);
+}
+
 /* 按日期分组的版本卡片 */
 .version-card {
   border: 1px solid var(--c-border, #f0f0f0);

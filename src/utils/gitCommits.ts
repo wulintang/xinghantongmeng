@@ -53,7 +53,8 @@ export async function fetchCommitGroups(): Promise<CommitGroup[]> {
 /** 读取最新一条提交的短哈希，用于页脚版本号展示 */
 export async function fetchLatestSha(): Promise<string> {
     if (shaCache && Date.now() - shaCache.ts < TTL) return shaCache.sha;
-    const { latest } = await fetchPayload();
-    shaCache = { ts: Date.now(), sha: latest };
-    return latest;
+    const { groups } = await fetchPayload();
+    const sha = groups?.[0]?.commits?.[0]?.sha?.slice(0, 7) || '';
+    shaCache = { ts: Date.now(), sha };
+    return sha;
 }

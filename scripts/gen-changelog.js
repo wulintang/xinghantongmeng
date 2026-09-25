@@ -21,7 +21,24 @@ function runGit(args) {
     });
 }
 
-function categorize(msg) {
+function categorize(msg, body) {
+    // 新规则：从提交正文首行「类型：中文类型」解析，标题已无英文前缀
+    const firstLine = (body || '').split('\n')[0].trim();
+    const m = firstLine.match(/^类型：(.+)$/);
+    if (m) {
+        const cn = m[1];
+        const map = {
+            '功能新增': 'feat',
+            '问题修复': 'fix',
+            '样式调整': 'ui',
+            '版本回退': 'revert',
+            '品牌调整': 'other',
+            '代码重构': 'other',
+            '其他调整': 'other',
+        };
+        if (map[cn]) return map[cn];
+    }
+    // 兜底：旧格式标题前缀
     const prefix = (msg || '').split(':')[0].toLowerCase();
     if (['feat', 'fix', 'ui', 'revert', 'perf'].includes(prefix)) return prefix;
     return 'other';
@@ -39,19 +56,23 @@ function main() {
             // 无法 deepen 时仍继续，用已有历史
         }
 
-        const log = runGit(['log', '--format=%H%x09%ad%x09%an%x09%s', '--date=short', '--reverse']);
+        const log = runGit(['log', '--format=%H%x09%ad%x09%an%x09%s%x09%b', '--date=short', '--reverse']);
         const lines = log.split(/\r?\n/).filter(Boolean);
 
         const groups = {};
         for (const line of lines) {
-            const [sha, date, author, ...msgParts] = line.split('\t');
-            const message = msgParts.join('\t');
+            const parts = line.split('\t');
+            const sha = parts[0];
+            const date = parts[1];
+            const author = parts[2];
+            const message = parts[3] || '';
+            const body = parts.slice(4).join('\t');
             if (!sha || !date) continue;
             if (!groups[date]) groups[date] = { date, latest: false, commits: [] };
             groups[date].commits.push({
                 sha,
                 message,
-                type: categorize(message),
+                type: categorize(message, body),
                 authorName: author || 'unknown',
             });
         }

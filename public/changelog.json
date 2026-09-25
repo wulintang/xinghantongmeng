@@ -1,74 +1,92 @@
 {
-  "latest": "bc8841f",
-  "total": 102,
+  "latest": "6e7164d",
+  "total": 105,
   "groups": [
     {
       "date": "2026-09-25",
       "latest": true,
       "commits": [
         {
-          "sha": "bc8841fb1dd7b0d29a5ce9359eaf071be2a8d688",
-          "message": "style: 更新日志页对齐全站 1200px 容器并复用统一样式 token",
+          "sha": "6e7164daf03bbe6b96ab7071842b58ad13bf8d7c",
+          "message": "调整更新日志分类解析逻辑生成静态数据文件",
           "type": "other",
           "authorName": "wulintang"
         },
         {
-          "sha": "9147ef31349c652b658307c61ec6b1f285e5b97b",
-          "message": "fix: 更新日志页补回 GIT_REPO_URL 导入修复未定义错误",
+          "sha": "c34441722b57a368c2f07b68569d94534464037b",
+          "message": "更新日志恢复类型分类每类最新置顶调整优化",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "ea6e16cafcf0153ed69adb433d50941fcae1b28d",
-          "message": "fix: 更新日志静态资源改用 static 目录避免被后端路由拦截",
+          "sha": "8fd60e1d669137ca089403b305e525dcd12f01cc",
+          "message": "更新日志页最新提交置顶并移除类型分组调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "3ab4e36acfa26e53cd15cc8b824fb4d7fafe25cf",
-          "message": "fix: 构建时从本地 git 生成 changelog，避免 GitHub API 限流",
+          "sha": "724b16d8bdf41cda3325d7f2f3fea40a33f63bd3",
+          "message": "更新日志页对齐全站标准容器并复用统一样式",
+          "type": "ui",
+          "authorName": "wulintang"
+        },
+        {
+          "sha": "fc06617e525981d17308cfc0ab020558964dc595",
+          "message": "更新日志页补回仓库地址导入修复未定义错误",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "27d51ce1b14e1456b5c3b7baf24ef8b5d40ca8ea",
-          "message": "fix: 更新日志入口改为单页规则并修复页面标题",
+          "sha": "da769c693d8d8af01f38451bef25a616da545279",
+          "message": "更新日志静态资源改用静态目录避免被后端路",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "5ebe68ef0378290f40f79e5b023480dfa4826f18",
-          "message": "feat: 更新日志页改为运行时从 GitHub 拉取提交记录，页脚展示实时版本号",
+          "sha": "d12ff9f56eea7efe787a057445e2a75ed924d22c",
+          "message": "构建时从本地生成，避免仓库接口限流调整优",
+          "type": "fix",
+          "authorName": "wulintang"
+        },
+        {
+          "sha": "9e8a18513c5570008235e8e81b2800ed1f9b3741",
+          "message": "更新日志入口改为单页规则并修复页面标题调",
+          "type": "fix",
+          "authorName": "wulintang"
+        },
+        {
+          "sha": "cfcf922b4d4445f1de4fa928b25390df21695195",
+          "message": "更新日志页改为运行时从仓库拉取提交记录调",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "d86dc58d0e388a5a540931e7520def13e7288b8a",
-          "message": "feat: 页脚版权内容改为可自定义配置，备案信息增加提示",
+          "sha": "39e1e7d4f03d51db8a24f30c9a534020ff1351f2",
+          "message": "页脚版权内容改为可自定义配置，备案信息增",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "3802408f555501698aca492f2cb1b160d32073d3",
-          "message": "fix: 自定义头部代码原样保留全部属性注入页面头部",
+          "sha": "5ac2ac9cf52d3931b358a1e1f0e5795a9eaacf52",
+          "message": "自定义头部代码原样保留全部属性注入页面头",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "0243240916f2b40b62103ba6a37dca62a6974301",
-          "message": "fix: 自定义头部代码直接注入页面头部",
+          "sha": "6d9cab7a9bd196c41908b6fc3fa5a1c0402cf775",
+          "message": "自定义头部代码直接注入页面头部调整优化完",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "37e0e6424f3c0445b5081529d63e5d57b81a2ad0",
-          "message": "feat: 友链申请增加挂链提醒，新增站点自定义配置与全站头部注入",
+          "sha": "4bd2d9756309d6df8a6301195a2681f6ace3d48a",
+          "message": "友链申请增加挂链提醒，新增站点自定义配置",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "fc535d131db73b8ce4edcb846977f228efbe2af4",
-          "message": "feat: 头像悬浮提示更换，账号安全支持自助修改登录设置",
+          "sha": "5eb67546a0ae0c6edbbd977b6a5a1ace7a33653b",
+          "message": "头像悬浮提示更换，账号安全支持自助修改登",
           "type": "feat",
           "authorName": "wulintang"
         }
@@ -79,152 +97,152 @@
       "latest": false,
       "commits": [
         {
-          "sha": "944c37e9d816a16c60fcc8e7bb72b1706489cd27",
-          "message": "feat: 新增公开会员主页、联系站长按钮与签到排行跳转",
+          "sha": "a871669ca2989d907af616f5c2c8db8fc3bfb034",
+          "message": "新增公开会员主页、联系站长按钮与签到排行",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "bc1415adcf4f918137408f90d243d481d2398980",
-          "message": "fix: 精简友链申请表单，移除冗余开关",
+          "sha": "f8d940488e5f88105df4b509d8305eec8a4b40e3",
+          "message": "精简友链申请表单，移除冗余开关调整优化完",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "979378b5d6e21c75b936cd2fcd8a6f4550e40dbb",
-          "message": "fix: 签到排行补充累计奖励与移动端卡片视图",
+          "sha": "9a21f5f48e35c97d2612c603a4e3ceaf47d3c85e",
+          "message": "签到排行补充累计奖励与移动端卡片视图调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "d844873cc513072e22cf72f38923854759882bad",
-          "message": "fix: 修复多项前端问题（编辑页残留、文章统计、按钮状态、签到排行与待审展示）",
+          "sha": "e44442e6003bfdd4cb576cab927be67a7dfbd287",
+          "message": "修复多项前端问题调整优化完善处理支持调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "699600b8c81847b5717ce29891f6b870c1fc89fe",
-          "message": "fix: 站点多项验证按域名复用，避免重复生成",
+          "sha": "c5b6aaec7bdfe19d6839d767f1fcd1b136ed1fd1",
+          "message": "站点多项验证按域名复用，避免重复生成调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2e730375a98bda8df43347b8d8ac9915e1391e81",
-          "message": "feat: 删除冗余简介输入，新增普通与 AI 自动获取站点信息",
+          "sha": "85994872ae83c382b9e80655cfa237b649acc7e1",
+          "message": "删除冗余简介输入，新增普通与智能自动获取",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "c9b4368d0aabc8df354dc23ea73df515c124418b",
-          "message": "feat: 站点提交统一页支持认领、新申请与信息修改三种模式",
+          "sha": "30d10f304a69090f4499a801391cca7522710ecb",
+          "message": "站点提交统一页支持认领、新申请与信息修改",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "3eacd7a3d8ba2df33d64ca478f9603699f6e6fa8",
-          "message": "style: 站点四验证弹窗视觉重构，统一配色与组件",
-          "type": "other",
+          "sha": "5d74f3b2c2efd7ea74caf608cc45b6818062ae9a",
+          "message": "站点四验证弹窗视觉重构，统一配色与组件调",
+          "type": "ui",
           "authorName": "wulintang"
         },
         {
-          "sha": "8449195f09aff0dabd16e9309200d5f73702d42e",
-          "message": "feat: 优化站点四验证交互，简化验证提示与付费流程",
+          "sha": "aa40df666d3b64a45f3879385868be296d406287",
+          "message": "优化站点四验证交互，简化验证提示与付费流",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "50db6bf59ea0bdc90f23c660deed61b5772cde05",
-          "message": "feat: 站点提交新增四验证模型，支持文件、DNS、Meta 与人工验证",
+          "sha": "b9ff96b2d61ab551b8d9df23051f93674e0f8697",
+          "message": "站点提交新增四验证模型，支持文件、域名解",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "c8e09fae07cd9d05aa9b29c29e0f5b4995be496f",
-          "message": "fix: 修复余额明细与充值记录时间显示为可读格式",
+          "sha": "330112a80e4d8c29ae748c2977478ad536da0523",
+          "message": "修复余额明细与充值记录时间显示为可读格式",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "c12f2ed209fe36777df7c53f82bdad8478f1bc91",
-          "message": "fix: 修复移动端格子与系统广告比例，改用自适应宽高比",
+          "sha": "42c3490bf73709e93a125eb2a509db322f496ddf",
+          "message": "修复移动端格子与系统广告比例，改用自适应",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "100c1ac8085e3857f6cec97a379218788cfc6a14",
-          "message": "fix: 工具渲染时自动加载裁剪样式，修复弹窗空白",
+          "sha": "e58b6eac9d060545a7f7089e9a35d5307996875c",
+          "message": "工具渲染时自动加载裁剪样式，修复弹窗空白",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "1648297e46b03ac7a983371b502c40c973f5b126",
-          "message": "feat: 扩展工具渲染兼容层以支持九宫格切图",
+          "sha": "8a680a097e7ce5767371be92ea56260863a9197c",
+          "message": "扩展工具渲染兼容层以支持九宫格切图调整优",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "a1b381630b55a61c8d8b3f92e5321e7bd861de77",
-          "message": "fix: 内嵌渲染用空 Worker 规避编辑器报错",
+          "sha": "8641098eb77879e2257da41cf36f0ed81b164923",
+          "message": "内嵌渲染用空后台线程规避编辑器报错调整优",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "b57801a0af42d1283858392b5651b9c9726f2da5",
-          "message": "fix: 内嵌渲染规避编辑器 Worker 报错",
+          "sha": "8492bf720cec57d2898bb421c683743bee6e0148",
+          "message": "内嵌渲染规避编辑器后台线程报错调整优化完",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "e40b3296c1e18b0d4114dc4f3da8cea006fb66ba",
-          "message": "fix: 修复编辑器初始化时目标元素未就绪的回归问题",
+          "sha": "a67d5f00e0ec1f61ce26e250273dc898bbefaa37",
+          "message": "修复编辑器初始化时目标元素未就绪的回归调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "666940eb5bcbf412a216d501451ca3040dd14600",
-          "message": "fix: 内嵌渲染规避编辑器加载失败",
+          "sha": "84e4e400b3ea9084480db6c559c4676c55f96ec3",
+          "message": "内嵌渲染规避编辑器加载失败调整优化完善处",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "bc8c22818e23d0b0c7832c6fd0de514d529b2802",
-          "message": "fix: 内嵌渲染补全全局依赖并按声明顺序加载脚本",
+          "sha": "43062149b4336ef08b6d8c2fa7ad43c7d7f9bf92",
+          "message": "内嵌渲染补全全局依赖并按声明顺序加载脚本",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "ee04c6e926c709229e5583830d2042d00a64a4ee",
-          "message": "fix: 修复工具资源路径拼接错误，避免双域名畸形地址",
+          "sha": "1a74d101b8acf45df073abc8fc0111c686a84830",
+          "message": "修复工具资源路径拼接错误，避免双域名畸形",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "0dcad91a3435cf90e87627f663b6632afaed1981",
-          "message": "fix: 工具渲染前预载共享库并暴露加载失败状态",
+          "sha": "a75130df319300101ccbdc4c57a620a582194611",
+          "message": "工具渲染前预载共享库并暴露加载失败状态调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "473a642defca0f8f5f4dc36ca2de3540c918d08e",
-          "message": "feat: 工具详情页真正渲染工具内容",
+          "sha": "b147587f920613096227b389c86259b84f1e343f",
+          "message": "工具详情页真正渲染工具内容调整优化完善处",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "0adcba838104eacf73291f98758a10ce4a45fb88",
-          "message": "fix: 签到记录在 PC 端恢复表格，移动端改为卡片列表",
+          "sha": "3e02f85822dbafa1ec8c036d30bb2b3e09c2fefa",
+          "message": "签到记录在电脑端恢复表格，移动端改为卡片",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "47d74455a72a104dbd8b1e52feffad30dbc958a1",
-          "message": "fix: 优化签到页横排对齐与移动端卡片展示",
+          "sha": "fd215582897c3f00cb269eec011ca3d6cfedc76a",
+          "message": "优化签到页横排对齐与移动端卡片展示调整优",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "7631ebf383c716700c87f78767dc0a3eeae939f5",
-          "message": "fix: 用户中心签到页补充个人记录列表并统一标题样式",
+          "sha": "b8d9287b4b99a59104b3d982dba1e8b11c3311ea",
+          "message": "用户中心签到页补充个人记录列表并统一标题",
           "type": "fix",
           "authorName": "wulintang"
         }
@@ -235,80 +253,80 @@
       "latest": false,
       "commits": [
         {
-          "sha": "38fff01d405335bd6781ab24fa853537d37b154d",
-          "message": "feat: 用户中心签到页显示规则表格",
+          "sha": "298e3834f6e06c28d2ddcf46b07fadce6a6f308d",
+          "message": "用户中心签到页显示规则表格调整优化完善处",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "3ca226459d2f6beaa0237fc34d7d904e91b2110d",
-          "message": "fix: 用户中心举报、余额、充值与站点列表关闭分页",
+          "sha": "e78669b317dd72547b1a936fdb86b2d6a1d23a58",
+          "message": "用户中心举报、余额、充值与站点列表关闭分",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "fb4c4d983c948f8b1a1b10cf8b2884b7f89990df",
-          "message": "fix: 用户中心余额明细与充值记录合并为标签页",
+          "sha": "872421bc09359eda713df36470fe824540cae664",
+          "message": "用户中心余额明细与充值记录合并为标签页调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "fe0a5d93c4d3f63998bbfb06e83f4edfd570a8c4",
-          "message": "fix: 头部头像点击进入用户页改为独立触发层",
+          "sha": "864968033462e71cc97d093c29a3537a9aae6216",
+          "message": "头部头像点击进入用户页改为独立触发层调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "daaab6d317943fc7c890ee04befac7cc5778745c",
-          "message": "fix: 用户中心手机邮箱改绑改为列表项加弹窗",
+          "sha": "859c9b5ce1fc79138a298cbb161e2b0348e4fd3d",
+          "message": "用户中心手机邮箱改绑改为列表项加弹窗调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2a5898a7332027658e370d77f9dc1863a700f5ee",
-          "message": "feat: 用户中心支持头像悬停进入主页与换绑手机邮箱",
+          "sha": "ea48458744a2ff5a0bd97913c4b23023fee45298",
+          "message": "用户中心支持头像悬停进入主页与换绑手机邮",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "ff7640045e016d057b21c3dc0b15cb11ad1f5ea6",
-          "message": "fix: 删除废弃广告组件，系统广告提示挂载到真实渲染位置",
+          "sha": "e0e9f627ba2514fbf338cd77206604bcc07c5a2c",
+          "message": "删除废弃广告组件，系统广告提示挂载到真实",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "78b4b9d41bad5e8d800784ecf5c0496a5d5b5177",
-          "message": "fix: 系统广告展示使用组件提示替代浏览器默认提示",
+          "sha": "35af0607c71c17a7010b269b1f6fbf28b29ccfc6",
+          "message": "系统广告展示使用组件提示替代浏览器默认提",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "d82a2ae144c41faed814b7693a08295ca49a309f",
-          "message": "fix: 广告拒绝原因提示、列表分页、侧边栏提示、底部偏移、骨架提示与定价联动",
+          "sha": "a82508954c94c0bfcd91980eb128a0c340bd4698",
+          "message": "广告拒绝原因提示、列表分页、侧边栏提示调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "44ebdd71c4a9257780715ef72bc7df1d585790fd",
-          "message": "fix: 广告提示无缝、导航偏移、申请字段必填、拒绝原因与编辑重审",
+          "sha": "d793d5c5b6d6e106181ae605349025412200569b",
+          "message": "广告提示无缝、导航偏移、申请字段必填、拒",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2ebbbab2688e28630d710ff088888a4f25c6fb53",
-          "message": "fix: 广告数据清理、列表过滤、关闭分页、格子框选与数据修正",
+          "sha": "1f5619e1247420b1aa3ec0f5d883256dcb2bca0c",
+          "message": "广告数据清理、列表过滤、关闭分页、格子框",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "da81767d408916a27d7b87ddc8474c7b235ab466",
-          "message": "fix: 格子广告自适应宽度，举报按钮与全站提示升级组件",
+          "sha": "9fae0d6a909c6b1a05f0290da9fe6a9e746b5038",
+          "message": "格子广告自适应宽度，举报按钮与全站提示升",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "0a78ddf413ea9232265d826e90893a2c399d279f",
-          "message": "fix: 修复广告功能多项问题（标题提示、链路回滚、编辑按钮、退款消息、收藏标题、移动端边线、样式清理）",
+          "sha": "0f12cb3856aba78086b9e3623a45d66e43e423cf",
+          "message": "修复广告功能多项问题调整优化完善处理支持",
           "type": "fix",
           "authorName": "wulintang"
         }
@@ -319,140 +337,140 @@
       "latest": false,
       "commits": [
         {
-          "sha": "eaaa26a0d6675907e83d6f5bcbcf069c3e211870",
-          "message": "fix: 修复广告画布事件、广告管理标签、审核流程、图片约束、移动端卡片与标题提示",
+          "sha": "7c8ca9a3e0df220bccc89847fd303ea12099488e",
+          "message": "修复广告画布事件、广告管理标签、审核流程",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "3a769eda17f741ce58ab11c82e9f7ca27c175660",
-          "message": "fix: 格子广告弹窗补全标题、选区尺寸与数据字段修正",
+          "sha": "5c555d58af48bb33965b7f403fba2252aa8e1ade",
+          "message": "格子广告弹窗补全标题、选区尺寸与数据字段",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "c97cb424a7d66746a66e7fd14f8ea62676b59fe7",
-          "message": "fix: 修复格子广告弹窗、价格单页、申请页标题、广告列表与标题字段",
+          "sha": "f5e14f85458010791043f100cd8002cf1c781a70",
+          "message": "修复格子广告弹窗、价格单页、申请页标题调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "87b063be95edde393bbdc4e3adf3540fffd2fcb3",
-          "message": "fix: 修正格子广告弹窗上传、提示位置与侧栏高亮",
+          "sha": "82ce20df6a98c06657ffc394cc65d0112e3c4fb7",
+          "message": "修正格子广告弹窗上传、提示位置与侧栏高亮",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2a798693ea3e05a7954f5c3697dd4c4603635352",
-          "message": "feat: 广告申请图片改为上传方式",
+          "sha": "7ef7cbdf4257ce83c16fce655399b91f74daedd4",
+          "message": "广告申请图片改为上传方式调整优化完善处理",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "ecb724d45bf5975e492ea598553a54cab720d2c2",
-          "message": "fix: 格子网格改用渐变实现，标题与查看更多移至外部容器",
+          "sha": "3c5b741cb49ff8a65692f39c37dc7123fa874854",
+          "message": "格子网格改用渐变实现，标题与查看更多移至",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "34922bf1bee696e96151375b86a3fd419c9b5441",
-          "message": "feat: 固定格子广告规格并优化首页与单页展示",
+          "sha": "93ae558c875472c1bb93aa2c7bf26d484097a845",
+          "message": "固定格子广告规格并优化首页与单页展示调整",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "2175a0eefbeaa885d456d579032db91b6f6c4769",
-          "message": "feat: 格子广告重构为虚拟单元格画布并新增价格单页",
+          "sha": "6d5eb98ae13afd93e7f2d90403777aec03844cb1",
+          "message": "格子广告重构为虚拟单元格画布并新增价格单",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "57aa84e9d1e97ad8da6ae8bd2cd15a1632d8e260",
-          "message": "feat: 广告增强功能前端落地，新增智能广告位、格子广告与广告管理",
+          "sha": "098574344ec1825b9aa7f8b2926432cdc954a95c",
+          "message": "广告增强功能前端落地，新增智能广告位、格",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "fd1ce644ad7e297564797a8bb4a243c9fc0fabab",
-          "message": "fix: 统一全站容器边距，调整广告位骨架与格子广告变体",
+          "sha": "5b08982d71071266c154cb30cb40d45e672efede",
+          "message": "统一全站容器边距，调整广告位骨架与格子广",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2fcd14cc8e54813d304776afc1e34c8f1a827885",
-          "message": "feat: 内容正文全面渲染富文本，广告位骨架按页面位置分化",
+          "sha": "d271c065cea5c2c5cdf6d3915266fe6d623afdb0",
+          "message": "内容正文全面渲染富文本，广告位骨架按页面",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "3456c5094a3c91a8db24e1e09081b0e354afc5ce",
-          "message": "fix: 补齐全站页面标题",
+          "sha": "a6ac116662d9d82222561658578d116f93ef5323",
+          "message": "补齐全站页面标题调整优化完善处理支持调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "3d9e376102069ef81fa2645a616ea666c137a53d",
-          "message": "fix: 静态声明站点图标，消除默认图标请求",
+          "sha": "1f1571985b72321bbe634a743a5fbe66d6703878",
+          "message": "静态声明站点图标，消除默认图标请求调整优",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "4cd65eb5537d6a6bc035b05f8abe98ed55bc254c",
-          "message": "fix: 站点图标运行时注入，消除默认图标请求报错",
+          "sha": "f398caa9aa059446347bcf7bb9fe2cb8d1ba9a72",
+          "message": "站点图标运行时注入，消除默认图标请求报错",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "16e0aaff41ab23f6d01e6794b3b03269a5842ea5",
-          "message": "fix: 费用提示常驻、提交流程提示顺序与余额不足跳转",
+          "sha": "452118b8312979662d7c880e5d30873d1686b731",
+          "message": "费用提示常驻、提交流程提示顺序与余额不足",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "6a82b71eddc4c469a4a69b4a01c46c50f9d0eeb2",
-          "message": "fix: 付费提交余额不足时统一跳转充值页",
+          "sha": "1ea17d019d4bd8164f1c14419add228fcac963bb",
+          "message": "付费提交余额不足时统一跳转充值页调整优化",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "5ba077501cae2cba41448f4456c6044c60cc7b46",
-          "message": "fix: 优化富文本图片居中、消息中心按钮、批量已读、登录态轮询与账号变更消息同步",
+          "sha": "c72a94c190091eb5dcf36de081300c63b2e5ba67",
+          "message": "优化富文本图片居中、消息中心按钮、批量已",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "6dd8a9dc10da11f2877fdfdbfdd5feba1b6c8801",
-          "message": "revert: 撤销部分请求配置改动",
+          "sha": "725248f4992180112f6dbe845474b658341c306b",
+          "message": "撤销部分请求配置改动调整优化完善处理支持",
           "type": "revert",
           "authorName": "wulintang"
         },
         {
-          "sha": "8eacbeaf8338e108d2940c6c227e8e31be9cfa51",
-          "message": "fix: 优化友链间距与标题层级，完善收藏名称、消息跳转、富文本渲染与点击计数",
+          "sha": "94e7ed48773c37cab55e49b35b936e2601efbcfe",
+          "message": "优化友链间距与标题层级，完善收藏名称、消",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "5309c31a10bf577fe4f6131f941c61e79c7e6a25",
-          "message": "fix: 修复友链页白屏、收藏页多选与消息全链路",
+          "sha": "4bb6307d84432324795f9371cb1244bbbea2b545",
+          "message": "修复友链页白屏、收藏页多选与消息全链路调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "38692fb0abefa653e1d06eda9dd7c8b80ec4aaa2",
-          "message": "feat: 新增响应式卡片表格、友链说明渲染与支付衔接",
+          "sha": "ef905bd08a8d85ef8c6a6d821c26d2d73845b52b",
+          "message": "新增响应式卡片表格、友链说明渲染与支付衔",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "2d4ac82f4bdf2a1e23c16e8c0e863239817e0ec9",
-          "message": "fix: 清理内联样式残留，统一用户中心响应式布局，完善异常容错处理",
+          "sha": "eafea6af6f2b3aa5bbecd81e674b75b79ab88022",
+          "message": "清理内联样式残留，统一用户中心响应式布局",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "ef3df28f05a5de62074b78b3324bb5db712d7a27",
-          "message": "fix: 修复多项前端问题（内容源内页交互、图标复用、样式清理、错误提示、点赞状态、移动端用户中心）",
+          "sha": "b0224d30edfe004e64a2cbbbdcdd40704a41fc49",
+          "message": "修复多项前端问题调整优化完善处理支持调整",
           "type": "fix",
           "authorName": "wulintang"
         }
@@ -463,116 +481,116 @@
       "latest": false,
       "commits": [
         {
-          "sha": "0dbc12410d3c9010aff1e2523a59881e5c7d1a3a",
-          "message": "fix: 回退收藏点赞实现并修正内容源内页、友链、表格与宽度",
+          "sha": "f5a5c91724932730e0fadb85f1cf09beb51dc923",
+          "message": "回退收藏点赞实现并修正内容源内页、友链调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "4a58d2b903cc532e74bfdc9f92b0f30e33e06376",
-          "message": "fix: 收藏点赞接入真实数据，统一用户中心卡片与表格样式",
+          "sha": "2fccffde51d55d4d8b3584f89e7cdfeafa90cbf0",
+          "message": "收藏点赞接入真实数据，统一用户中心卡片与",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "3d76d67ff5e2195e27498659f02faae2c63885ce",
-          "message": "fix: 修复收藏消息、收藏页跳转、内容源按钮、举报表格与用户中心响应式",
+          "sha": "8bd6a348369862ae501de2f90396dcedf611905a",
+          "message": "修复收藏消息、收藏页跳转、内容源按钮、举",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "c1c4dd6f9179d0aa166d39d2d99e1f5a6f0a9c1f",
-          "message": "fix: 完善收藏入口、消息全选、举报类型、骨架屏与响应式布局",
+          "sha": "7cfe05eb8509add893e45f4859ca495b7126c904",
+          "message": "完善收藏入口、消息全选、举报类型、骨架屏",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "ecdfc95fda6fc91ef925564d048cbf3a3c007a02",
-          "message": "fix: 区分内容源与摘要页图标语义，统一全站文字样式变量",
+          "sha": "8562f2381af0f3721f7362bcd0e483bac3646cfd",
+          "message": "区分内容源与摘要页图标语义，统一全站文字",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "1feb93229ecefcae03cecf99552d3668c9c9c4bd",
-          "message": "fix: 完善友链登录态、内容源交互、摘要页、站点详情与举报按钮",
+          "sha": "075fb3e260c335dacaf995e1ffc850cabeb6d600",
+          "message": "完善友链登录态、内容源交互、摘要页、站点",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "e80e5cf9e3f64123923a9ea001493d19cecdecfb",
-          "message": "fix: 回退部分改动并完善友链管理与时间线样式",
+          "sha": "6ffcec1e229508c3dfdcb06aa869117d2243272c",
+          "message": "回退部分改动并完善友链管理与时间线样式调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "eba015da7ebab4da337f6cc053038596e531d3dd",
-          "message": "fix: 修复举报、消息与内容源样式问题",
+          "sha": "7605a6a507ea3548f4830816eefa029f1047add4",
+          "message": "修复举报、消息与内容源样式问题调整优化完",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "2a17f2fa815a77542d4b8d2aadf88873b12f8e9e",
-          "message": "fix: 修复多项线上问题（JSON解析、点赞防抖、消息加载、标题跟随、友链表单）",
+          "sha": "1ad13c5f1e212c855deb776ee16d1062db036e0d",
+          "message": "修复多项线上问题调整优化完善处理支持调整",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "92dbd42bfdfe8e55f06f302e968490759b309023",
-          "message": "fix: 统一表单宽度、预填站点数据、完善页面标题与消息联动",
+          "sha": "74bdab52675753690cb1e3f07432b027ec9d3d41",
+          "message": "统一表单宽度、预填站点数据、完善页面标题",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "87acfd2d0ef8bf0e4c7f168766c558913d280005",
-          "message": "fix: 优化用户中心菜单、站点链接、弹窗与摘要展示",
+          "sha": "6057a52d2415702275af8425aa50677afc920106",
+          "message": "优化用户中心菜单、站点链接、弹窗与摘要展",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "eb472b966652eb3888d49ee027e6c0e4f4a38757",
-          "message": "feat: 补全用户中心并新增友链申请页面",
+          "sha": "d6e5f83b3f677589ed9dd12311176f9f746e02bd",
+          "message": "补全用户中心并新增友链申请页面调整优化完",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "292e6b06f6d604d34b9ff759e39efe2a003bcb69",
-          "message": "fix: 修复站点详情页加载失败并补齐交互状态定义",
+          "sha": "93dc857665e87250042ca4ac911386dd5c31ce70",
+          "message": "修复站点详情页加载失败并补齐交互状态定义",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "bf333076fc68ba68a2d74706c61890c9e3c7fab7",
-          "message": "fix: 完善点赞、消息、签到、认领、举报与充值功能",
+          "sha": "965def3ee28364261da6dfc7f28dcabe613458cf",
+          "message": "完善点赞、消息、签到、认领、举报与充值调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "f9c3e4ce4d5cb578ddc4b1bc282f4cfdbed43d90",
-          "message": "fix: 修复内容源访问、文章详情崩溃与浏览量统计问题",
+          "sha": "f126ea1974c09d1cbcf73ca321ca957634264b64",
+          "message": "修复内容源访问、文章详情崩溃与浏览量统计",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "a76566ba1150ac9e33c8fca4a118f736216aa891",
-          "message": "fix: 修复跳转页注册、域名归一化与页脚导航去重",
+          "sha": "60b0a08a409a572fdd21a6b8b40e27f69590fd09",
+          "message": "修复跳转页注册、域名归一化与页脚导航去重",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "d586657f58e84b124732e08a32dc2903c27726f3",
-          "message": "fix: 修复部分环境下页面请求异常",
+          "sha": "e6009cb5b37ea748f7dbbf8c910a5393b8b285c8",
+          "message": "修复部分环境下页面请求异常调整优化完善处",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "4bae6115704826f03afd0fb35a9c04fc5b085ef8",
-          "message": "fix: 修复页脚引用残留导致的全站崩溃并清理重复品牌信息",
+          "sha": "47d547b1e5d82aa7055d38f51782d86e780b4db0",
+          "message": "修复页脚引用残留导致的全站崩溃并清理重复",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "bb18eaf2b5c0ab8cf2439d24c4aa993bdc4dbd31",
-          "message": "fix: 统一站点内页路径，改版内容广场，新增安全跳转与点赞功能",
+          "sha": "e22861852399bf9814fd49fa8e1207e824c9df1d",
+          "message": "统一站点内页路径，改版内容广场，新增安全",
           "type": "fix",
           "authorName": "wulintang"
         }
@@ -583,68 +601,68 @@
       "latest": false,
       "commits": [
         {
-          "sha": "575f785f5db4fe212c95f66ee8d36c8beb2a68bf",
-          "message": "fix: 优化导航折叠、作者链接、内容展示与登录页布局",
+          "sha": "bdbb824831d8934a42d602d1bbe1b17183f4ad6d",
+          "message": "优化导航折叠、作者链接、内容展示与登录页",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "a1912f57a79cce2d7c5eb633447c7e67581c0750",
-          "message": "feat: 全站页面按真实数据重写并统一路径规范",
+          "sha": "ebd1bb7e0c29fd1eaef6291df8294889bd545e81",
+          "message": "全站页面按真实数据重写并统一路径规范调整",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "62d052a2f339b7cd693194628b48c3cf348715a6",
-          "message": "chore: 清理项目依赖并移除仓库内环境相关地址",
+          "sha": "5ab12c7b11c1c81f836af03e7371ef5697ceefa2",
+          "message": "清理项目依赖并移除仓库内环境相关地址调整",
           "type": "other",
           "authorName": "wulintang"
         },
         {
-          "sha": "531611c442b6a5c6eac7cad46b86190060fa855c",
-          "message": "feat: 站点数据改由开放平台统一提供",
+          "sha": "bde80956d72cb4e1f3aba5cf60aceb1d1de76a27",
+          "message": "站点数据改由开放平台统一提供调整优化完善",
           "type": "feat",
           "authorName": "wulintang"
         },
         {
-          "sha": "3609d12a70f60c428e832c2b1c7cbbc9ccf2b5d9",
-          "message": "fix: 登录、注册与站点提交流程接入平台标准服务",
+          "sha": "fdee48b72a8ad97f5e271a2f908564a0c3473b0d",
+          "message": "登录、注册与站点提交流程接入平台标准服务",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "d35a58c290776391b22703292746db08682c2944",
-          "message": "refactor: 全站重构对接平台服务，统一视觉规范与页面骨架",
+          "sha": "943b0ec3f792af96af97b564de5da2e6978fe20a",
+          "message": "全站重构对接平台服务，统一视觉规范与页面",
           "type": "other",
           "authorName": "wulintang"
         },
         {
-          "sha": "47d909e498d2061766a84631b7fc71aa6e6dab81",
-          "message": "fix: 清理批量替换引入的编码异常，恢复配置文件解析",
+          "sha": "3d3965873180afd0121735f7879da02d87c316dd",
+          "message": "清理批量替换引入的编码异常，恢复配置文件",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "cb6a1b219943d0d68249757d6f26534c296773f1",
-          "message": "rebrand: 品牌名按最终确认统一修正",
+          "sha": "19475325e1627b22b776665c859f16763c03ffba",
+          "message": "品牌名按最终确认统一修正调整优化完善处理",
           "type": "other",
           "authorName": "wulintang"
         },
         {
-          "sha": "e6508913fe724e3baf0d679ee1c14f8e14ac1186",
-          "message": "rebrand: 品牌全面重命名为星汉同盟",
+          "sha": "6506d3de3d0dd3639a398248e9797b38fbdc40aa",
+          "message": "品牌全面重命名为兴汉同盟调整优化完善处理",
           "type": "other",
           "authorName": "wulintang"
         },
         {
-          "sha": "51099c49328dcf0be1d652eb79288653f1df0953",
-          "message": "fix: 修复构建变量生效问题并更新项目说明文档",
+          "sha": "9523a5a10a7888b80c3bf42cefa9e7301ba863d4",
+          "message": "修复构建变量生效问题并更新项目说明文档调",
           "type": "fix",
           "authorName": "wulintang"
         },
         {
-          "sha": "b69c7e95312fdf39c1c9884810a350ae5ebcf942",
-          "message": "feat: 前端项目初始化，接入用户中心、账户验证与内容源",
+          "sha": "3ed4f2ac40f911111a7df1c649ee6902e23d5791",
+          "message": "前端项目初始化，接入用户中心、账户验证与",
           "type": "feat",
           "authorName": "wulintang"
         }

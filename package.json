@@ -4,7 +4,9 @@
     "description": "兴汉同盟前端源码",
     "main": "/src/index.tsx",
     "scripts": {
+        "prestart": "node scripts/gen-changelog.js",
         "start": "webpack-dev-server",
+        "prebuild": "node scripts/gen-changelog.js",
         "build": "webpack --mode production"
     },
     "dependencies": {

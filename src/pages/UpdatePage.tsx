@@ -132,14 +132,9 @@ export default function UpdatePage(): React.JSX.Element {
                                                       </span>
                                                   </div>
                                                   <div className="change-meta">
-                                                      <a
-                                                          className="change-author"
-                                                          href={`https://github.com/${c.authorLogin}`}
-                                                          target="_blank"
-                                                          rel="noreferrer"
-                                                      >
-                                                          @{c.authorLogin}
-                                                      </a>
+                                                      <span className="change-author">
+                                                          @{c.authorName}
+                                                      </span>
                                                   </div>
                                               </div>
                                           </div>

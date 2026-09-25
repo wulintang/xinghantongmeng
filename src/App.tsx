@@ -183,18 +183,17 @@ const App: React.FC = () => {
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>
 
-                            <Route path="/user/article/create" element={<ArticleEditPage />} />
-                            <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
+                        <Route path="/user/article/create" element={<ArticleEditPage />} />
+                        <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
 
-                            {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
-                            <Route path="/user/:id" element={<UserHomePage />} />
+                        {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
+                        <Route path="/user/:id" element={<UserHomePage />} />
 
-                            {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
-                            <Route path="/jump" element={<JumpPage />} />
-                            <Route path="/:id" element={<WebsiteDetailPage />} />
+                        {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
+                        <Route path="/jump" element={<JumpPage />} />
+                        <Route path="/:id" element={<WebsiteDetailPage />} />
 
-                            <Route path="*" element={<NotFoundPage />} />
-                        </Route>
+                        <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                     </ErrorBoundary>
                 </BrowserRouter>

@@ -9,15 +9,19 @@ const { Content } = Layout;
 
 const MainLayout: React.FC = () => {
     const location = useLocation();
+    const isArticleEdit = location.pathname.startsWith('/user/article/');
 
     return (
         <Layout className="site-layout">
             <Header />
             <Content className="site-content">
-                <div className="container">
-                    {/* 以路径为 key 强制重挂，保证切换页面一定重新取数、不留上一页状态 */}
+                {isArticleEdit ? (
                     <Outlet key={location.pathname} />
-                </div>
+                ) : (
+                    <div className="container">
+                        <Outlet key={location.pathname} />
+                    </div>
+                )}
             </Content>
             <SiteFooter />
         </Layout>

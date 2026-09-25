@@ -353,7 +353,7 @@ const ArticleEditPage: React.FC = () => {
             AI 写文章
           </Button>
         </Flex>
-        <MdEditor value={content} onChange={setContent} onUploadImg={onUploadImg} />
+        <MdEditor modelValue={content} onChange={setContent} preview="live" onUploadImg={onUploadImg} />
       </div>
 
       <Modal

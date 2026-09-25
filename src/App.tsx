@@ -149,8 +149,6 @@ const App: React.FC = () => {
                             <Route path="/article/detail/:id" element={<ColumnArticleDetailPage />} />
                             <Route path="/article" element={<ColumnsPage />} />
                             <Route path="/article/:id" element={<ColumnDetailPage />} />
-                            <Route path="/user/article/create" element={<ArticleEditPage />} />
-                            <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
 
                             <Route path="/tools" element={<ToolsPage />} />
                             <Route path="/tools/:id" element={<ToolDetailPage />} />
@@ -184,6 +182,9 @@ const App: React.FC = () => {
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
                         </Route>
+
+                            <Route path="/user/article/create" element={<ArticleEditPage />} />
+                            <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
 
                             {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
                             <Route path="/user/:id" element={<UserHomePage />} />

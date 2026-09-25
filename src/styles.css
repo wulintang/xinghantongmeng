@@ -2051,7 +2051,8 @@ body {
 
 /* ===================== 投稿/编辑文章页 ===================== */
 .article-edit-fullscreen {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 16px 24px 24px;

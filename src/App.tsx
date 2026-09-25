@@ -35,6 +35,7 @@ import GridPage from '@pages/GridPage';
 import AdPricesPage from '@pages/AdPricesPage';
 import LinksPage from '@pages/LinksPage';
 import { SiteProvider } from '@/context/SiteContext';
+import { getCustomConfig } from '@/services/userCenter';
 
 /** 路由切换后回到页面顶部，否则从长页面跳转会停在半空 */
 function ScrollToTop(): null {
@@ -42,6 +43,46 @@ function ScrollToTop(): null {
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }, [pathname]);
+    return null;
+}
+
+/** 自定义 Head 代码注入：读取后台自定义配置，把 head_code 注入到全站 <head>（管理员专属） */
+function CustomHead(): null {
+    useEffect(() => {
+        let alive = true;
+        getCustomConfig()
+            .then((r: any) => {
+                if (!alive || !r || r.code !== 1 || !r.data?.head_code) return;
+                if (document.getElementById('custom-head-code')) return;
+                const doc = new DOMParser().parseFromString(
+                    `<!DOCTYPE html><html><head>${r.data.head_code}</head><body></body></html>`,
+                    'text/html'
+                );
+                const fragment = document.createDocumentFragment();
+                doc.head.childNodes.forEach((node: ChildNode) => {
+                    const clone = document.importNode(node, true);
+                    if (clone.nodeType === 1 && (clone as HTMLElement).tagName === 'SCRIPT') {
+                        const s = document.createElement('script');
+                        const src = (clone as HTMLScriptElement).getAttribute('src');
+                        if (src) s.src = src;
+                        else s.textContent = (clone as HTMLScriptElement).textContent;
+                        s.async = false;
+                        fragment.appendChild(s);
+                    } else {
+                        fragment.appendChild(clone);
+                    }
+                });
+                const marker = document.createElement('div');
+                marker.id = 'custom-head-code';
+                marker.style.display = 'none';
+                marker.appendChild(fragment);
+                document.head.appendChild(marker);
+            })
+            .catch(() => {});
+        return () => {
+            alive = false;
+        };
+    }, []);
     return null;
 }
 
@@ -57,6 +98,7 @@ const App: React.FC = () => {
             <SiteProvider>
                 <BrowserRouter>
                     <ScrollToTop />
+                    <CustomHead />
                     <Routes>
                         <Route element={<MainLayout />}>
                             <Route path="/" element={<HomePage />} />

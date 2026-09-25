@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
 import { Button, Card, Form, Input, List, Space, Tag, Tooltip, Typography, message } from 'antd';
-import { addSite, captchaUrl, getBalance, getDan, getMyLinks, type MyLinkItem } from '@/services/userCenter';
+import { addSite, captchaUrl, getBalance, getDan, getMyLinks, getCustomConfig, type CustomConfig, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
@@ -31,6 +31,8 @@ export default function LinksPage() {
 
     const [danTitle, setDanTitle] = useState('');
     const [danContent, setDanContent] = useState('');
+
+    const [custom, setCustom] = useState<CustomConfig | null>(null);
 
     const linkFee = Number(site?.l_rmb || 0);
 
@@ -64,6 +66,15 @@ export default function LinksPage() {
         return () => {
             alive = false;
         };
+    }, []);
+
+    // 自定义配置（公开接口）：域名/logo 用于生成友链申请提醒代码
+    useEffect(() => {
+        getCustomConfig()
+            .then((r: any) => {
+                if (r.code === 1 && r.data) setCustom(r.data);
+            })
+            .catch(() => {});
     }, []);
 
     const onFinish = (values: { name: string; url: string; code: string }) => {
@@ -143,12 +154,77 @@ export default function LinksPage() {
         </Card>
     ) : null;
 
+    // 复制代码：优先 Clipboard API，失败回退 execCommand
+    const fallbackCopy = (code: string, done: () => void, fail: () => void) => {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            if (document.execCommand('copy')) done();
+            else fail();
+        } catch {
+            fail();
+        }
+        document.body.removeChild(ta);
+    };
+    const copyCode = (code: string) => {
+        const done = () => message.success('已复制代码');
+        const fail = () => message.error('复制失败，请手动复制');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done, fail));
+        } else {
+            fallbackCopy(code, done, fail);
+        }
+    };
+
+    // 友情链接申请提醒：从自定义配置读取域名/logo，生成需放在贵站的本站链接代码
+    const friendDomain = custom?.domain || '';
+    const friendLogo = custom?.logo || '';
+    const friendTitle = site?.title || '本站';
+    const textLinkCode = friendDomain
+        ? `<a href="${friendDomain}" target="_blank">${friendTitle}</a>`
+        : '';
+    const logoLinkCode =
+        friendDomain && friendLogo
+            ? `<a href="${friendDomain}" target="_blank"><img src="${friendLogo}" alt="${friendTitle}" style="max-height:32px"></a>`
+            : '';
+
+    const applyNotice =
+        friendDomain ? (
+            <Card className="links-notice-card">
+                <Title level={4}>申请友情链接前，请先在贵站做上本站的友情链接</Title>
+                <ul className="links-notice-list">
+                    <li>如果在贵站未发现本站文字链接或者贵站不符合本站要求，友情链接将不会生效；本站在贵站上只做文字链接就可以了。</li>
+                    <li>如果贵站流量高，贵站友情链接可以排在本站前五位展示。</li>
+                    <li>申请链接的网站应美观大方，有一定的内容，且内容健康丰富，并基本建设完成。</li>
+                </ul>
+                <div className="links-code-row">
+                    {logoLinkCode ? (
+                        <div className="links-code-col">
+                            <div className="links-code-label">本站 LOGO 链接地址</div>
+                            <pre className="links-code-block">{logoLinkCode}</pre>
+                            <Button size="small" onClick={() => copyCode(logoLinkCode)}>复制代码</Button>
+                        </div>
+                    ) : null}
+                    <div className="links-code-col">
+                        <div className="links-code-label">本站文字链接地址</div>
+                        <pre className="links-code-block">{textLinkCode}</pre>
+                        <Button size="small" onClick={() => copyCode(textLinkCode)}>复制代码</Button>
+                    </div>
+                </div>
+            </Card>
+        ) : null;
+
     if (!isLogin) {
         return (
             <div className="container site-content links-page">
-                {friendCard}
-                {descCard}
-                <Card className="links-center-card">
+            {friendCard}
+            {descCard}
+            {applyNotice}
+            <Card className="links-center-card">
                     <Title level={4}>申请友链</Title>
                     <Paragraph type="secondary">登录后即可提交友链申请，审核通过后展示在上方。</Paragraph>
                     <Button type="primary" onClick={() => navigate('/login')}>
@@ -163,6 +239,7 @@ export default function LinksPage() {
         <div className="container site-content links-page">
             {friendCard}
             {descCard}
+            {applyNotice}
             <div className="links-grid">
                 <Card>
                     <Title level={4}>申请友链</Title>

@@ -566,6 +566,16 @@ export function getInit() {
   );
 }
 
+/** 自定义配置：友情链接页用 domain/logo，全站 head 注入用 head_code */
+export interface CustomConfig {
+  domain: string;
+  logo: string;
+  head_code: string;
+}
+export function getCustomConfig() {
+  return request<ApiResp<CustomConfig>>(`${OPEN}/customConfig.html`);
+}
+
 // 顶部导航 / 底部导航 / 友情链接（my_link，wz=1/2/9）
 export function getLinks() {
   return request<ApiResp<LinkGroups>>(`${OPEN}/links.html`);

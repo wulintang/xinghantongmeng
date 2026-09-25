@@ -34,6 +34,7 @@ import AdMyPage from '@pages/user/AdMyPage';
 import GridPage from '@pages/GridPage';
 import AdPricesPage from '@pages/AdPricesPage';
 import LinksPage from '@pages/LinksPage';
+import UpdatePage from '@pages/UpdatePage';
 import { SiteProvider } from '@/context/SiteContext';
 import { getCustomConfig } from '@/services/userCenter';
 
@@ -106,6 +107,7 @@ const App: React.FC = () => {
                             <Route path="/feed" element={<BlogsPage />} />
 
                             <Route path="/links" element={<LinksPage />} />
+                            <Route path="/update" element={<UpdatePage />} />
 
                             <Route path="/grid" element={<GridPage />} />
                             <Route path="/dan/ad" element={<AdPricesPage />} />

@@ -95,6 +95,166 @@ body {
   display: block;
 }
 
+/* ============================================================
+   更新日志页 /update
+   ============================================================ */
+.update-page {
+  padding: 32px 0 48px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.update-hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.update-title {
+  margin: 0 0 12px;
+  font-size: var(--fs-2xl);
+  color: var(--c-text);
+  line-height: var(--lh-tight);
+}
+.update-subtitle {
+  color: var(--c-text-2);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  margin: 0;
+}
+.update-subtitle a {
+  color: var(--c-link);
+}
+.update-version {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  color: var(--c-text-3);
+}
+.update-state {
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: var(--fs-base);
+  padding: 40px 0;
+}
+.update-state-error {
+  color: var(--c-link);
+}
+
+/* 按日期分组的版本卡片 */
+.version-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.02);
+  user-select: none;
+}
+.collapse-arrow {
+  font-size: var(--fs-xs);
+  color: var(--c-text-3);
+  width: 14px;
+}
+.version-date {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--c-text);
+}
+.version-badge {
+  font-size: var(--fs-xs);
+  color: #fff;
+  background: var(--c-link);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+.version-count {
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  color: var(--c-text-3);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 4px;
+}
+.section-icon {
+  font-size: var(--fs-md);
+}
+.section-name {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--c-text-2);
+}
+
+.change-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 18px;
+}
+.change-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-text-3);
+  margin-top: 8px;
+  flex: none;
+}
+.change-content {
+  flex: 1;
+  min-width: 0;
+}
+.change-main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.change-hash {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: var(--fs-xs);
+  color: var(--c-text-3);
+  text-decoration: none;
+}
+.change-hash:hover {
+  color: var(--c-link);
+}
+.change-message {
+  font-size: var(--fs-base);
+  color: var(--c-text);
+  line-height: var(--lh-base);
+}
+.change-meta {
+  margin-top: 2px;
+}
+.change-author {
+  font-size: var(--fs-xs);
+  color: var(--c-text-3);
+  text-decoration: none;
+}
+.change-author:hover {
+  color: var(--c-link);
+}
+
+@media (max-width: 768px) {
+  .update-page {
+    padding: 20px 0 32px;
+  }
+  .version-header {
+    padding: 12px 14px;
+  }
+  .change-item {
+    padding: 6px 14px;
+  }
+  .section-title {
+    padding: 12px 14px 4px;
+  }
+}
+
 /* 申请入口（无广告时） */
 .ad-slot-apply {
   cursor: pointer;

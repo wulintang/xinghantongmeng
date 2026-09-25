@@ -571,6 +571,7 @@ export interface CustomConfig {
   domain: string;
   logo: string;
   head_code: string;
+  footer_left?: string;
 }
 export function getCustomConfig() {
   return request<ApiResp<CustomConfig>>(`${OPEN}/customConfig.html`);

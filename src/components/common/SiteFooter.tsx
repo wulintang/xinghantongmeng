@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Col, Divider, Flex, Row, Space, Tooltip, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 
 import { useSite } from '@/context/SiteContext';
-import type { LinkItem } from '@/services/userCenter';
+import type { CustomConfig, LinkItem } from '@/services/userCenter';
+import { getCustomConfig } from '@/services/userCenter';
 import { sanitizeHtml } from '@/utils/CommonUtil';
 import { toRoute } from '@/utils/route';
 
@@ -79,6 +80,24 @@ export default function SiteFooter(): React.JSX.Element {
     const year = new Date().getFullYear();
     const gonganHtml = useMemo(() => sanitizeHtml(site?.gonganbei || ''), [site?.gonganbei]);
 
+    // Footer 左侧版权内容：优先读取后台「自定义配置」的 footer_left（支持 HTML），未配置则回退默认文案
+    const [custom, setCustom] = useState<CustomConfig | null>(null);
+    useEffect(() => {
+        let alive = true;
+        getCustomConfig()
+            .then((r) => {
+                if (alive && r && r.code === 1) setCustom(r.data || null);
+            })
+            .catch(() => {});
+        return () => {
+            alive = false;
+        };
+    }, []);
+    const footerLeftHtml = useMemo(
+        () => (custom?.footer_left ? sanitizeHtml(custom.footer_left) : ''),
+        [custom?.footer_left]
+    );
+
     return (
         <footer className="site-footer">
             <div className="container">
@@ -111,7 +130,11 @@ export default function SiteFooter(): React.JSX.Element {
 
                 <Flex className="site-footer-bottom" justify="space-between" align="center" gap={12} wrap>
                     <Text type="secondary">
-                        © {year} {site?.title || '兴汉同盟'} 版权所有
+                        {footerLeftHtml ? (
+                            <span dangerouslySetInnerHTML={{ __html: footerLeftHtml }} />
+                        ) : (
+                            <>© {year} {site?.title || '兴汉同盟'} 版权所有</>
+                        )}
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (
@@ -121,7 +144,11 @@ export default function SiteFooter(): React.JSX.Element {
                                 </a>
                             </Tooltip>
                         ) : null}
-                        {gonganHtml ? <span dangerouslySetInnerHTML={{ __html: gonganHtml }} /> : null}
+                        {gonganHtml ? (
+                            <Tooltip title="公安备案查询">
+                                <span dangerouslySetInnerHTML={{ __html: gonganHtml }} />
+                            </Tooltip>
+                        ) : null}
                     </Space>
                 </Flex>
             </div>

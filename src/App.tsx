@@ -60,19 +60,11 @@ function CustomHead(): null {
                 );
                 const fragment = document.createDocumentFragment();
                 doc.head.childNodes.forEach((node: ChildNode) => {
+                    // 原样保留：后台写的 <link>/<script>/<style>/<meta> 等标签及其全部属性（defer、data-*、crossorigin...）
                     const clone = document.importNode(node, true);
-                    if (clone.nodeType === 1 && (clone as HTMLElement).tagName === 'SCRIPT') {
-                        const s = document.createElement('script');
-                        const src = (clone as HTMLScriptElement).getAttribute('src');
-                        if (src) s.src = src;
-                        else s.textContent = (clone as HTMLScriptElement).textContent;
-                        s.async = false;
-                        fragment.appendChild(s);
-                    } else {
-                        fragment.appendChild(clone);
-                    }
+                    fragment.appendChild(clone);
                 });
-                // 用 <meta> 占位作去重标记，真正的 <link>/<script>/<style> 直接追加到 document.head
+                // 用 <meta> 占位作去重标记，真正的节点直接追加到 document.head
                 const marker = document.createElement('meta');
                 marker.id = 'custom-head-code';
                 document.head.appendChild(marker);

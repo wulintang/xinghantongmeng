@@ -1,6 +1,7 @@
 {
     "name": "xinghantongmeng",
     "version": "2.0.0",
+    "description": "兴汉同盟前端源码",
     "main": "/src/index.tsx",
     "scripts": {
         "start": "webpack-dev-server",

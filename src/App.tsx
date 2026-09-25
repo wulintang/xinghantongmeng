@@ -107,7 +107,7 @@ const App: React.FC = () => {
                             <Route path="/feed" element={<BlogsPage />} />
 
                             <Route path="/links" element={<LinksPage />} />
-                            <Route path="/update" element={<UpdatePage />} />
+                            <Route path="/dan/update" element={<UpdatePage />} />
 
                             <Route path="/grid" element={<GridPage />} />
                             <Route path="/dan/ad" element={<AdPricesPage />} />

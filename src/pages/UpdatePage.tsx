@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { usePageMeta } from '@/utils/CommonUtil';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import {
     fetchCommitGroups,
-    GIT_REPO_URL,
-    GIT_REPO_NAME,
     CommitGroup,
     CommitItem,
     CommitType,
@@ -34,7 +32,7 @@ function sectionsOf(group: CommitGroup) {
 }
 
 export default function UpdatePage(): React.JSX.Element {
-    usePageMeta('更新日志');
+    usePageMeta({ title: '更新日志' });
 
     const [data, setData] = useState<CommitGroup[] | null>(null);
     const [loading, setLoading] = useState(true);
@@ -78,11 +76,8 @@ export default function UpdatePage(): React.JSX.Element {
             <div className="update-hero">
                 <h1 className="update-title">更新日志</h1>
                 <p className="update-subtitle">
-                    当前版本：
-                    <a href={GIT_REPO_URL} target="_blank" rel="noreferrer">
-                        {GIT_REPO_NAME}
-                    </a>
-                    {latestSha ? <span className="update-version"> {latestSha}</span> : null}
+                    当前版本：兴汉同盟{' '}
+                    {latestSha ? <span className="update-version">{latestSha}</span> : null}
                     <br />
                     共 {total} 次迭代，按日期分组展示。
                 </p>

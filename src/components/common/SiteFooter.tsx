@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Col, Divider, Flex, Row, Space, Tooltip, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 
-import { GIT_REPO_NAME, GIT_REPO_URL, fetchLatestSha } from '@/utils/gitCommits';
+import { fetchLatestSha } from '@/utils/gitCommits';
 import { useSite } from '@/context/SiteContext';
 import type { CustomConfig, LinkItem } from '@/services/userCenter';
 import { getCustomConfig } from '@/services/userCenter';
@@ -150,11 +150,8 @@ export default function SiteFooter(): React.JSX.Element {
                         ) : (
                             <>© {year} {site?.title || '兴汉同盟'} 版权所有</>
                         )}
-                        {' · '}前端：
-                        <a href={GIT_REPO_URL} target="_blank" rel="noreferrer">
-                            {GIT_REPO_NAME}
-                        </a>{' '}
-                        <Link to="/update">{version ? `v${version}` : '更新日志'}</Link>
+                        、前端：兴汉同盟{' '}
+                        <Link to="/dan/update">{version || '更新日志'}</Link>
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (

@@ -59,6 +59,8 @@ function main() {
         const sortedDates = Object.keys(groups).sort().reverse();
         sortedDates.forEach((d, i) => {
             groups[d].latest = i === 0;
+            // 同一天内按时间倒序，最新提交在最前（git log --reverse 是从旧到新）
+            groups[d].commits.reverse();
         });
 
         // --reverse 输出从旧到新，最后一条才是最新提交

@@ -173,21 +173,6 @@ body {
   color: var(--c-text-3);
 }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 18px 4px;
-}
-.section-icon {
-  font-size: var(--fs-md);
-}
-.section-name {
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  color: var(--c-text-2);
-}
-
 .change-item {
   display: flex;
   align-items: flex-start;

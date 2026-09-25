@@ -150,8 +150,13 @@ export default function SiteFooter(): React.JSX.Element {
                         ) : (
                             <>© {year} {site?.title || '兴汉同盟'} 版权所有</>
                         )}
-                        、前端：兴汉同盟{' '}
-                        <Link to="/dan/update">{version || '更新日志'}</Link>
+                        、前端：兴汉同盟
+                        {version ? (
+                            <>
+                                {' '}
+                                <Link to="/dan/update">{version}</Link>
+                            </>
+                        ) : null}
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (

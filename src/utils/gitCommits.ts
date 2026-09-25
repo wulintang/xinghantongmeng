@@ -25,7 +25,7 @@ interface ChangelogPayload {
     groups: CommitGroup[];
 }
 
-const API = '/changelog.json';
+const API = '/static/changelog.json';
 
 // 轻量内存缓存：避免页脚与更新日志页重复请求同一份静态 JSON
 const TTL = 10 * 60 * 1000;

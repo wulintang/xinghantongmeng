@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
     fetchCommitGroups,
+    GIT_REPO_URL,
     CommitGroup,
     CommitItem,
     CommitType,

@@ -39,18 +39,13 @@ export default function UpdatePage(): React.JSX.Element {
     const [data, setData] = useState<CommitGroup[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+    const [expanded, setExpanded] = useState<string | null>(null);
 
     useEffect(() => {
         let alive = true;
         fetchCommitGroups()
             .then((groups) => {
                 if (!alive) return;
-                const init: Record<string, boolean> = {};
-                groups.forEach((g) => {
-                    init[g.date] = true; // 默认全部折叠，需手动展开
-                });
-                setCollapsed(init);
                 setData(groups);
             })
             .catch(() => {
@@ -97,11 +92,11 @@ export default function UpdatePage(): React.JSX.Element {
                         <div
                             className="version-header"
                             onClick={() =>
-                                setCollapsed((c) => ({ ...c, [group.date]: !c[group.date] }))
+                                setExpanded((prev) => (prev === group.date ? null : group.date))
                             }
                         >
                             <span className="collapse-arrow">
-                                {collapsed[group.date] ? '▶' : '▼'}
+                                {expanded === group.date ? '▼' : '▶'}
                             </span>
                             <span className="version-date">{group.date}</span>
                             {group.latest ? <span className="version-badge">最新</span> : null}
@@ -109,7 +104,7 @@ export default function UpdatePage(): React.JSX.Element {
                                 {group.commits.length} 条改动
                             </span>
                         </div>
-                        {!collapsed[group.date]
+                        {expanded === group.date
                             ? sectionsOf(group).map((sec) => (
                                   <div key={sec.type}>
                                       <div className="section-title">

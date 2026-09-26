@@ -264,7 +264,7 @@ export function deleteMessage(key: string, id: number | number[]) {
   return post<ApiResp>('/delMsg.html', { key, id }, USER);
 }
 export function getBalance(key: string) {
-  return request<ApiResp<{ list: BalanceItem[]; total: number }>>(
+  return request<ApiResp<{ list: BalanceItem[]; total: number; income?: number; expense?: number }>>(
     `${USER}/balance.html?key=${encodeURIComponent(key)}`
   );
 }

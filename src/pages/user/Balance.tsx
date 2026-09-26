@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, InputNumber, Modal, Space, Tag, Statistic, Spin, Tabs, Typography, message } from 'antd';
+import { Button, Card, InputNumber, Modal, Space, Tag, Spin, Tabs, Typography, message } from 'antd';
 import { getBalance, getUserProfile, getOrders, type BalanceItem, type OrderItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -12,6 +12,8 @@ export default function BalancePage() {
   usePageMeta({ title: '余额明细' });
   const [list, setList] = useState<BalanceItem[]>([]);
   const [total, setTotal] = useState(0);
+  const [income, setIncome] = useState(0);
+  const [expense, setExpense] = useState(0);
   const [loading, setLoading] = useState(true);
   const [uid, setUid] = useState(0);
   const [payOpen, setPayOpen] = useState(false);
@@ -19,6 +21,7 @@ export default function BalancePage() {
   const [paying, setPaying] = useState(false);
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [tab, setTab] = useState('balance');
 
   const fmt = (t: any) => { const n = Number(t); return n ? new Date(n * 1000).toLocaleString() : ''; };
 
@@ -33,6 +36,8 @@ export default function BalancePage() {
         if (r.code === 1) {
           setList(r.data.list || []);
           setTotal(r.data.total || 0);
+          setIncome(r.data.income || 0);
+          setExpense(r.data.expense || 0);
         } else {
           navigate('/login');
         }
@@ -76,19 +81,32 @@ export default function BalancePage() {
   return (
     <Card className="user-center-card">
       <Tabs
-        defaultActiveKey="balance"
+        activeKey={tab}
+        onChange={setTab}
         items={[
           {
             key: 'balance',
             label: '余额明细',
             children: (
               <Spin spinning={loading}>
-                <Space className="mb-16" align="center">
-                  <Statistic title="账户余额(元)" value={total} precision={2} />
-                  <Button type="primary" onClick={() => setPayOpen(true)}>
-                    充值
-                  </Button>
-                </Space>
+                <div className="balance-hero">
+                  <div className="balance-hero-left">
+                    <div className="balance-hero-label">账号余额（元）</div>
+                    <div className="balance-hero-amount">{Number(total).toFixed(2)}</div>
+                    <div className="balance-hero-sub">
+                      <span className="text-up">累计收入 {Number(income).toFixed(2)}</span>
+                      <span className="text-down">累计支出 {Number(expense).toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <div className="balance-hero-actions">
+                    <Button type="primary" shape="round" onClick={() => setPayOpen(true)}>
+                      充值
+                    </Button>
+                    <Button shape="round" onClick={() => setTab('orders')}>
+                      充值记录
+                    </Button>
+                  </div>
+                </div>
                 <CardTable<BalanceItem>
                   className="user-center-table"
                   dataSource={list}
@@ -138,7 +156,7 @@ export default function BalancePage() {
         ]}
       />
       <Modal
-        title="账户充值（支付宝）"
+        title="账号充值（支付宝）"
         open={payOpen}
         onCancel={() => setPayOpen(false)}
         onOk={onPay}

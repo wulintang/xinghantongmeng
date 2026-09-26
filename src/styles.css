@@ -101,6 +101,73 @@ body {
   border-radius: var(--capsule-radius) !important;
 }
 
+/* 搜索框：保持 Input.Search 原有形态（左直角、右圆角），仅右侧圆角用统一大圆角；
+   按钮颜色保持品牌蓝色填充，不被全局胶囊线框规则覆盖 */
+.site-search .ant-input {
+  border-radius: 0;
+}
+.site-search .ant-btn {
+  border-radius: 0 var(--container-radius) var(--container-radius) 0 !important;
+}
+
+/* 余额页顶部卡片：左右分栏，避免左侧堆叠、右侧留白 */
+.balance-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: var(--container-radius);
+  padding: var(--space-6) var(--space-8);
+  margin-bottom: var(--space-5);
+}
+.balance-hero-left {
+  flex: 1;
+  min-width: 0;
+}
+.balance-hero-label {
+  font-size: var(--fs-base);
+  color: var(--c-text-2);
+  margin-bottom: var(--space-2);
+}
+.balance-hero-amount {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.balance-hero-sub {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+.balance-hero-sub .text-up {
+  color: #16a34a;
+}
+.balance-hero-sub .text-down {
+  color: #dc2626;
+}
+.balance-hero-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .balance-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .balance-hero-actions {
+    width: 100%;
+  }
+  .balance-hero-actions .ant-btn {
+    flex: 1;
+  }
+}
+
 .container {
   width: 100%;
   max-width: 1200px;

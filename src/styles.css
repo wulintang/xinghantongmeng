@@ -100,6 +100,12 @@ body {
   --capsule-option-pad-x: 16px;
   --capsule-option-pad-y: 5px;
   background: transparent !important;
+  gap: 8px !important;
+}
+
+/* 去掉 Tabs 底部横线 */
+.ant-tabs-nav::before {
+  display: none !important;
 }
 
 /* Segmented */

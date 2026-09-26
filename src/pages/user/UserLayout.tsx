@@ -9,7 +9,6 @@ import { MemberProvider, useMember } from '@/context/MemberContext';
 const { Text } = Typography;
 
 const MENU = [
-  { key: '/user/submit', label: <Link to="/user/submit">提交站点</Link> },
   {
     type: 'group' as const,
     label: '我的',
@@ -91,6 +90,7 @@ function UserLayoutInner() {
   const selected = useMemo(() => {
     const p = location.pathname;
     if (p.startsWith('/user/ad/')) return '/user/ad/my';
+    if (p === '/user/submit' || p.startsWith('/user/submit/')) return '/user/mysites';
     const matched = MENU_KEYS.find((k) => p === k || p.startsWith(k + '/'));
     return matched || '/user';
   }, [location.pathname]);

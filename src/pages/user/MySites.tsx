@@ -9,7 +9,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import CardTable from '@components/common/CardTable';
 import type { WebsiteItem } from '@/services/userCenter';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export default function MySitesPage() {
   const navigate = useNavigate();
@@ -112,8 +112,15 @@ export default function MySitesPage() {
   ];
 
   return (
-    <Card className="user-center-card">
-      <Title level={4}>我的站点</Title>
+    <Card
+      className="user-center-card"
+      title="我的站点"
+      extra={
+        <Button type="primary" shape="round" onClick={() => navigate('/user/submit')}>
+          + 提交站点
+        </Button>
+      }
+    >
       <Text type="secondary">
         认领/提交的站点会出现在这里。点击「编辑」修改资料（仅改域名或 Feed 需重新验证域名归属），待审核的站点由管理员收录后对外展示。
       </Text>

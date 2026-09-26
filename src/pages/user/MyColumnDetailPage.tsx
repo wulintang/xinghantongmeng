@@ -6,7 +6,6 @@ import {
   Card,
   Empty,
   Flex,
-  List,
   Popconfirm,
   Tag,
   Typography,
@@ -202,55 +201,49 @@ const MyColumnDetailPage: React.FC = () => {
       {articles.length === 0 ? (
         <Empty description="该专栏暂无文章，点击右上角投稿" />
       ) : (
-        <List
-          grid={{ gutter: 0, xs: 1, sm: 1, md: 1 }}
-          dataSource={articles}
-          renderItem={(a) => (
-            <List.Item>
-              <Card>
-                <Flex gap={12} align="center" wrap>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <Flex align="center" gap={8} wrap>
-                      <Text strong ellipsis>
-                        <Link to={`/article/detail/${a.id}`} onClick={(e) => e.stopPropagation()}>
-                          {a.title}
-                        </Link>
-                      </Text>
-                      {statusTag(a)}
-                    </Flex>
-                    {a.status === 2 && a.reason ? (
-                      <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
-                        拒绝原因：{a.reason}
-                      </Text>
-                    ) : null}
-                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
-                      {a.description || '暂无摘要'} · {dayjs.unix(a.time).format('YYYY-MM-DD')}
-                    </Text>
-                  </div>
+        {articles.map((a) => (
+          <Card key={a.id}>
+            <Flex gap={12} align="center" wrap>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Flex align="center" gap={8} wrap>
+                  <Text strong ellipsis>
+                    <Link to={`/article/detail/${a.id}`} onClick={(e) => e.stopPropagation()}>
+                      {a.title}
+                    </Link>
+                  </Text>
+                  {statusTag(a)}
                 </Flex>
-                <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
-                  <Button size="small" onClick={() => window.open(`/article/detail/${a.id}`, '_blank')}>
-                    查看
-                  </Button>
-                  <Button size="small" onClick={() => openEdit(a)}>
-                    编辑
-                  </Button>
-                  <Popconfirm
-                    title="确认删除该文章？"
-                    description="已发放的奖励将退还"
-                    onConfirm={() => onDelete(a)}
-                    okText="删除"
-                    cancelText="取消"
-                  >
-                    <Button size="small" danger>
-                      删除
-                    </Button>
-                  </Popconfirm>
-                </Flex>
-              </Card>
-            </List.Item>
-          )}
-        />
+                {a.status === 2 && a.reason ? (
+                  <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
+                    拒绝原因：{a.reason}
+                  </Text>
+                ) : null}
+                <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                  {a.description || '暂无摘要'} · {dayjs.unix(a.time).format('YYYY-MM-DD')}
+                </Text>
+              </div>
+            </Flex>
+            <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
+              <Button size="small" onClick={() => window.open(`/article/detail/${a.id}`, '_blank')}>
+                查看
+              </Button>
+              <Button size="small" onClick={() => openEdit(a)}>
+                编辑
+              </Button>
+              <Popconfirm
+                title="确认删除该文章？"
+                description="已发放的奖励将退还"
+                onConfirm={() => onDelete(a)}
+                okText="删除"
+                cancelText="取消"
+              >
+                <Button size="small" danger>
+                  删除
+                </Button>
+              </Popconfirm>
+            </Flex>
+          </Card>
+        ))}
       )}
       </Flex>
     </Card>

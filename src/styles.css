@@ -61,22 +61,14 @@ body {
 
 /* ============================================================
    胶囊体系：全站 antd 按钮 / 标签 / 大容器统一为一套圆角与边线
-   - 所有 antd 按钮强制胶囊圆角；默认=品牌色线框，primary=品牌色填充
+   - 所有 antd 按钮强制胶囊圆角；primary=品牌色填充白字，danger=红色填充白字
+   - 普通默认按钮恢复 antd 原生样式，不强制线框
+   - 选项式胶囊（Segmented / Radio.Group / Tabs）：选中=品牌背景白字，未选中=品牌色文字+边框
    - 所有 antd 标签强制胶囊圆角（颜色仍按语义保留，仅统一形状/边线）
    - 大容器圆角由 antd theme.borderRadius（= --container-radius）统一驱动
    ============================================================ */
 .ant-btn {
   border-radius: var(--capsule-radius) !important;
-}
-.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-link) {
-  background: transparent;
-  border-color: var(--capsule-brand);
-  color: var(--capsule-brand);
-}
-.ant-btn-default:not(.ant-btn-dangerous):not(.ant-btn-link):hover {
-  background: rgba(22, 119, 255, 0.06);
-  border-color: var(--capsule-brand);
-  color: var(--capsule-brand);
 }
 .ant-btn-primary {
   background: var(--capsule-brand);
@@ -88,9 +80,9 @@ body {
   opacity: 0.88;
 }
 .ant-btn-dangerous {
+  background: var(--capsule-danger);
   border-color: var(--capsule-danger);
-  color: var(--capsule-danger);
-  background: transparent;
+  color: #fff;
 }
 .ant-btn-dangerous.ant-btn-primary {
   background: var(--capsule-danger);
@@ -101,13 +93,80 @@ body {
   border-radius: var(--capsule-radius) !important;
 }
 
+/* 选项式胶囊：Segmented / Radio.Group / Tabs 统一为选中填充、未选中线框 */
+.ant-segmented,
+.ant-radio-group,
+.ant-tabs-nav {
+  --capsule-option-pad-x: 16px;
+  --capsule-option-pad-y: 5px;
+  border: 1px solid var(--capsule-brand) !important;
+  border-radius: var(--capsule-radius) !important;
+  background: transparent !important;
+  padding: 2px !important;
+}
+
+/* Segmented */
+.ant-segmented-item {
+  border-radius: var(--capsule-radius) !important;
+  color: var(--capsule-brand) !important;
+  padding: var(--capsule-option-pad-y) var(--capsule-option-pad-x) !important;
+}
+.ant-segmented-item-selected {
+  background: var(--capsule-brand) !important;
+  color: #fff !important;
+}
+.ant-segmented-item:hover:not(.ant-segmented-item-selected):not(.ant-segmented-item-disabled) {
+  color: var(--capsule-brand) !important;
+}
+.ant-segmented-thumb {
+  background: var(--capsule-brand) !important;
+}
+
+/* Radio.Group */
+.ant-radio-group .ant-radio-button-wrapper {
+  border: none !important;
+  background: transparent;
+  color: var(--capsule-brand);
+  border-radius: var(--capsule-radius) !important;
+  padding-inline: var(--capsule-option-pad-x) !important;
+  padding-block: var(--capsule-option-pad-y) !important;
+}
+.ant-radio-group .ant-radio-button-wrapper-checked {
+  background: var(--capsule-brand) !important;
+  color: #fff !important;
+}
+.ant-radio-group .ant-radio-button-wrapper:not(:first-child)::before {
+  display: none;
+}
+
+/* Tabs */
+.ant-tabs-nav .ant-tabs-tab {
+  border-radius: var(--capsule-radius) !important;
+  color: var(--capsule-brand) !important;
+  padding: var(--capsule-option-pad-y) var(--capsule-option-pad-x) !important;
+  margin: 0 !important;
+  border: none !important;
+}
+.ant-tabs-nav .ant-tabs-tab-active {
+  background: var(--capsule-brand) !important;
+}
+.ant-tabs-nav .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #fff !important;
+}
+.ant-tabs-nav .ant-tabs-ink-bar {
+  display: none;
+}
+
 /* 搜索框：保持 Input.Search 原有形态（左直角、右圆角），仅右侧圆角用统一大圆角；
-   按钮颜色保持品牌蓝色填充，不被全局胶囊线框规则覆盖 */
+   搜索按钮颜色保持品牌蓝色填充白字，不被默认按钮样式覆盖 */
 .site-search .ant-input {
   border-radius: 0;
 }
 .site-search .ant-btn {
   border-radius: 0 var(--container-radius) var(--container-radius) 0 !important;
+  background: var(--capsule-brand);
+  border-color: var(--capsule-brand);
+  color: #fff;
 }
 
 /* 余额页顶部卡片：左右分栏，避免左侧堆叠、右侧留白 */

@@ -104,9 +104,6 @@ export default function BalancePage() {
                     <Button type="primary" shape="round" onClick={() => setPayOpen(true)}>
                       充值
                     </Button>
-                    <Button shape="round" onClick={() => setTab('orders')}>
-                      充值记录
-                    </Button>
                   </div>
                 </div>
                 <CardTable<BalanceItem>

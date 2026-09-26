@@ -1338,6 +1338,16 @@ body {
   padding: var(--space-3);
 }
 
+/* 用户中心左侧导航项像退出登录按钮一样左右居中 */
+.user-sider .ant-menu-item {
+  justify-content: center !important;
+  padding-inline: var(--space-3) !important;
+}
+.user-sider .ant-menu-title-content {
+  flex: none !important;
+  text-align: center !important;
+}
+
 .user-main {
   flex: 1 1 auto !important;
   min-width: 0 !important;

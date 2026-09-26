@@ -224,6 +224,7 @@ const ColumnDetailPage: React.FC = () => {
                         <span className="feed-bubble-views">
                           <HeartIcon /> {a.zan || 0}
                         </span>
+                        <Link to={a.uid === 0 ? '/dan/about' : `/user/${a.uid}`} className="feed-bubble-author">作者（{a.uid === 0 ? (site?.title || '官方') : (a.author || '匿名')}）</Link>
                       </Space>
                       <Space size={12} className="feed-bubble-actions">
                         <Tooltip title="查看文章">

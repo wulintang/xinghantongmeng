@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List, Table, Tabs, TabPane } from 'antd';
+import { Card, Typography, Statistic, Button, Space, message, Spin, Tag, Divider, List, Table, Tabs } from 'antd';
 import dayjs from 'dayjs';
 import { getCheckin, doCheckin, getCheckinList, getCheckinRank } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
@@ -213,12 +213,12 @@ export default function CheckinPage() {
         {myRecord}
         <Divider />
         <Tabs defaultActiveKey="mine">
-          <TabPane tab="我的签到记录" key="mine">
+          <Tabs.TabPane tab="我的签到记录" key="mine">
             {myList}
-          </TabPane>
-          <TabPane tab="签到排行" key="rank">
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="签到排行" key="rank">
             {rankView}
-          </TabPane>
+          </Tabs.TabPane>
         </Tabs>
       </Spin>
     </Card>

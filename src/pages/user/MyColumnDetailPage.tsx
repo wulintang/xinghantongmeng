@@ -201,7 +201,7 @@ const MyColumnDetailPage: React.FC = () => {
       {articles.length === 0 ? (
         <Empty description="该专栏暂无文章，点击右上角投稿" />
       ) : (
-        {articles.map((a) => (
+        articles.map((a) => (
           <Card key={a.id}>
             <Flex gap={12} align="center" wrap>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -243,7 +243,7 @@ const MyColumnDetailPage: React.FC = () => {
               </Popconfirm>
             </Flex>
           </Card>
-        ))}
+        ))
       )}
       </Flex>
     </Card>

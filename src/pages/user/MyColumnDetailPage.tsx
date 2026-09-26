@@ -209,9 +209,6 @@ const MyColumnDetailPage: React.FC = () => {
             <List.Item>
               <Card>
                 <Flex gap={12} align="center" wrap>
-                  <Avatar shape="square" size={48} src={assetUrl(a.pic) || undefined}>
-                    {(a.title || '?').slice(0, 1)}
-                  </Avatar>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <Flex align="center" gap={8} wrap>
                       <Text strong ellipsis>
@@ -231,11 +228,11 @@ const MyColumnDetailPage: React.FC = () => {
                     </Text>
                   </div>
                 </Flex>
-                <Flex gap={8} style={{ marginTop: 12 }} wrap>
-                  <Button size="small" onClick={() => navigate(`/article/detail/${a.id}`)}>
+                <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
+                  <Button size="small" onClick={() => window.open(`/article/detail/${a.id}`, '_blank')}>
                     查看
                   </Button>
-                  <Button size="small" onClick={() => openEdit(a)} disabled={a.status === 1}>
+                  <Button size="small" onClick={() => openEdit(a)}>
                     编辑
                   </Button>
                   <Popconfirm

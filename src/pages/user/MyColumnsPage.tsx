@@ -239,7 +239,18 @@ const MyColumnsPage: React.FC = () => {
       ) : (
         <div className="my-columns-list">
           {list.map((c) => (
-            <Card key={c.id}>
+            <Card key={c.id} style={{ position: 'relative' }}>
+              <Popconfirm
+                title="确认删除该专栏？"
+                description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
+                onConfirm={() => onDelete(c)}
+                okText="删除"
+                cancelText="取消"
+              >
+                <Button size="small" danger style={{ position: 'absolute', top: 16, left: 16, zIndex: 1 }}>
+                  删除
+                </Button>
+              </Popconfirm>
               <Flex gap={12} align="center" wrap>
                 <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
                   {(c.name || '?').slice(0, 1)}
@@ -279,24 +290,13 @@ const MyColumnsPage: React.FC = () => {
                   </div>
                 </div>
               </Flex>
-              <Flex gap={8} style={{ marginTop: 12 }} wrap>
+              <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
                 <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
                   文章管理
                 </Button>
                 <Button size="small" onClick={() => openEdit(c)}>
-                  编辑
+                  编辑专栏
                 </Button>
-                <Popconfirm
-                  title="确认删除该专栏？"
-                  description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
-                  onConfirm={() => onDelete(c)}
-                  okText="删除"
-                  cancelText="取消"
-                >
-                  <Button size="small" danger>
-                    删除
-                  </Button>
-                </Popconfirm>
               </Flex>
             </Card>
           ))}

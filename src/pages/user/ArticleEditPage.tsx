@@ -237,7 +237,7 @@ const ArticleEditPage: React.FC = () => {
   if (loading) {
     return (
       <div className="article-edit-fullscreen">
-        <Flex justify="center" style={{ padding: 40 }}>
+        <Flex justify="center" style={{ padding: 'var(--space-10)' }}>
           <Spin />
         </Flex>
       </div>
@@ -253,7 +253,7 @@ const ArticleEditPage: React.FC = () => {
           message="你还没有已通过的专栏"
           description="请先在「我的专栏」中创建并通过审核一个专栏，才能投稿。"
         />
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 'var(--space-3)' }}>
           <Button type="link" onClick={() => navigate('/user/columns')}>
             去我的专栏
           </Button>
@@ -366,7 +366,7 @@ const ArticleEditPage: React.FC = () => {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: 12 }}
+          style={{ marginBottom: 'var(--space-3)' }}
           message="将按以下要求生成文章并扣取 AI 生成费，生成结果会追加到正文编辑器。"
         />
         <TextArea

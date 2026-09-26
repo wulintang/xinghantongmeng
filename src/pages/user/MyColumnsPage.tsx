@@ -290,7 +290,7 @@ const MyColumnsPage: React.FC = () => {
                   </div>
                 </div>
               </Flex>
-              <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
+              <Flex justify="flex-end" gap={8} style={{ marginTop: 'var(--space-3)' }} wrap>
                 <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
                   文章管理
                 </Button>
@@ -338,10 +338,10 @@ const MyColumnsPage: React.FC = () => {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: 12 }}
+          style={{ marginBottom: 'var(--space-3)' }}
           message={`自定义URL需付费审核，提交即从余额扣除 ¥${urlFee.toFixed(2)}（禁止纯中文）。`}
         />
-        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)', marginBottom: 12 }}>
+        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)', marginBottom: 'var(--space-3)' }}>
           当前余额：
           {balance === null ? (
             '查询中…'

@@ -185,7 +185,7 @@ const HomePage: React.FC = () => {
                                                           key="col"
                                                           title={
                                                               <div style={{ maxWidth: 240 }}>
-                                                                  {col.description ? <div style={{ marginBottom: 4 }}>{col.description}</div> : null}
+                                                                  {col.description ? <div style={{ marginBottom: 'var(--space-1)' }}>{col.description}</div> : null}
                                                                   <div>作者：{col.author || '官方'}</div>
                                                               </div>
                                                           }

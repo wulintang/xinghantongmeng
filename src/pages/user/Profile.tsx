@@ -195,7 +195,7 @@ export default function ProfilePage() {
 
   return (
     <Card className="user-center-card">
-      <Title level={5} style={{ marginBottom: 16 }}>个人资料</Title>
+      <Title level={5} style={{ marginBottom: 'var(--space-4)' }}>个人资料</Title>
       <Form form={form} layout="vertical" onFinish={onSave}>
         <Form.Item name="name" label="用户名" rules={[{ required: true }]}>
           <Input />
@@ -225,7 +225,7 @@ export default function ProfilePage() {
           </Space>
         </Form.Item>
       </Form>
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 'var(--space-4)' }}>
         <Title level={5}>账号安全</Title>
         <List bordered>
           <List.Item

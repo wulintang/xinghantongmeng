@@ -223,7 +223,7 @@ const MyColumnDetailPage: React.FC = () => {
                 </Text>
               </div>
             </Flex>
-            <Flex justify="flex-end" gap={8} style={{ marginTop: 12 }} wrap>
+            <Flex justify="flex-end" gap={8} style={{ marginTop: 'var(--space-3)' }} wrap>
               <Button size="small" onClick={() => window.open(`/article/detail/${a.id}`, '_blank')}>
                 查看
               </Button>

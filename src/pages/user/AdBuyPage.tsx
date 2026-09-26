@@ -101,7 +101,7 @@ export default function AdBuyPage(): React.JSX.Element {
             <Button type="primary" htmlType="submit" loading={submitting}>
               提交申请并支付 ¥{price || 0}
             </Button>
-            <Button style={{ marginLeft: 12 }} onClick={() => navigate(-1)}>
+            <Button style={{ marginLeft: 'var(--space-3)' }} onClick={() => navigate(-1)}>
               返回
             </Button>
           </Form.Item>

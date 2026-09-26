@@ -42,7 +42,7 @@ export default function BalancePage() {
           navigate('/login');
         }
       })
-      .catch(() => {})
+      .catch((e: any) => message.error('余额明细加载失败：' + (e?.message || '未知错误')))
       .finally(() => setLoading(false));
     // 充值下单要 uid（好道 Pay::alipay 按 uid 建订单）
     getUserProfile(key)
@@ -55,7 +55,7 @@ export default function BalancePage() {
       .then((r: any) => {
         if (r.code === 1) setOrders(r.data || []);
       })
-      .catch(() => {})
+      .catch((e: any) => message.error('充值记录加载失败：' + (e?.message || '未知错误')))
       .finally(() => setOrdersLoading(false));
   };
 

@@ -1775,6 +1775,16 @@ body {
   min-width: 0;
   overflow: hidden;
 }
+
+/* foot 作者链接：PC 端左侧作者列已展示，故隐藏；手机端左侧作者列隐藏，才显示 */
+.feed-bubble-author {
+  display: none;
+}
+@media (max-width: 768px) {
+  .feed-bubble-author {
+    display: inline;
+  }
+}
 .feed-bubble-time,
 .feed-bubble-views {
   display: inline-flex;

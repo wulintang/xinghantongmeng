@@ -110,7 +110,7 @@ class ErrorBoundary extends React.Component<
             }}
             style={{
               padding: '6px 18px',
-              borderRadius: 8,
+              borderRadius: 14,
               border: '1px solid var(--c-border)',
               background: 'var(--c-link)',
               color: '#fff',
@@ -128,7 +128,7 @@ class ErrorBoundary extends React.Component<
 
 const theme = {
     token: {
-        borderRadius: 8,
+        borderRadius: 14,
     },
 };
 

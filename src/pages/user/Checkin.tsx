@@ -76,9 +76,11 @@ export default function CheckinPage() {
         </Space>
         <div>
           {data?.today_done ? (
-            <Tag color="green">今日已签到</Tag>
+            <Button type="primary" onClick={() => navigate('/user/checkin')}>
+              今日已签到
+            </Button>
           ) : (
-            <Button type="primary" loading={doing} onClick={onCheckin}>
+            <Button type="primary" ghost loading={doing} onClick={onCheckin}>
               立即签到
             </Button>
           )}

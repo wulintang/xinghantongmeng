@@ -169,9 +169,11 @@ export default function Header(): React.JSX.Element {
     const userArea = token ? (
         <Space size={10} align="center">
             {checkinDone === true ? (
-                <Tag color="green">已签到</Tag>
+                <Button size="small" type="primary" onClick={() => navigate('/user/checkin')}>
+                    已签到
+                </Button>
             ) : checkinDone === false ? (
-                <Button size="small" onClick={onCheckin}>
+                <Button size="small" type="primary" ghost onClick={() => navigate('/user/checkin')}>
                     签到
                 </Button>
             ) : null}

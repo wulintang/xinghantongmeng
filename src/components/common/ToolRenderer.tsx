@@ -29,8 +29,14 @@ const TOOLBOX_VARS = `
 /* 后端 toolbox CSS 把按钮文字与背景都设成同一个变量，会白底白字看不见，强制可读 */
 .toolbox-embed button,
 .toolbox-embed .btn-primary,
-.toolbox-embed .btn-danger{
+.toolbox-embed .btn-danger,
+.toolbox-embed input[type="submit"],
+.toolbox-embed input[type="button"],
+.toolbox-embed .btn{
   color:#fff !important;
+  border-radius:999px !important;
+  padding-left:24px !important;
+  padding-right:24px !important;
 }
 `;
 
@@ -107,7 +113,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           const box = document.createElement('div');
           const aw = Array.isArray(opt.area) ? opt.area[0] : '320px';
           const ah = Array.isArray(opt.area) ? opt.area[1] : '';
-          box.style.cssText = `background:#fff;border-radius:8px;max-width:92vw;max-height:92vh;overflow:auto;width:${aw};${ah ? 'height:' + ah + ';' : ''}`;
+          box.style.cssText = `background:#fff;border-radius:14px;max-width:92vw;max-height:92vh;overflow:auto;width:${aw};${ah ? 'height:' + ah + ';' : ''}`;
           const title = document.createElement('div');
           title.style.cssText = 'padding:12px 16px;font-weight:600;border-bottom:1px solid #eee;';
           title.textContent = opt.title || '';
@@ -121,7 +127,7 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           btns.forEach((label: string, i: number) => {
             const b = document.createElement('button');
             b.textContent = label;
-            b.style.cssText = 'margin-left:8px;padding:4px 14px;cursor:pointer;border:1px solid #1677ff;background:#1677ff;color:#fff;border-radius:4px;';
+            b.style.cssText = 'margin-left:8px;padding:4px 14px;cursor:pointer;border:1px solid #1677ff;background:#1677ff;color:#fff;border-radius:999px;';
             b.onclick = () => {
               if (i === 0 && typeof opt.yes === 'function') opt.yes(idx, jq ? jq(box) : box);
               else if (i > 0 && typeof opt.cancel === 'function') opt.cancel(idx, jq ? jq(box) : box);

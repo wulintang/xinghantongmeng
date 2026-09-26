@@ -317,7 +317,7 @@ const BlogsPage: React.FC = () => {
                                                     </span>
                                                     {p.recommended ? <Tag color="red">推荐</Tag> : null}
                                                     {p.pinned ? <Tag color="orange">置顶</Tag> : null}
-                                                    <Link to={domainRoute} className="feed-bubble-author">作者（{p.blogName || domain}）</Link>
+                                                    <Link to={domainRoute} className="feed-bubble-author">{p.blogName || domain}</Link>
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
                                                     <Tooltip title="进入原文">

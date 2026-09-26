@@ -53,6 +53,8 @@ export default function BalancePage() {
     setOrdersLoading(true);
     getOrders(key)
       .then((r: any) => {
+        // eslint-disable-next-line no-console
+        console.log('[balance] orders response:', r);
         if (r.code === 1) setOrders(r.data || []);
       })
       .catch((e: any) => message.error('充值记录加载失败：' + (e?.message || '未知错误')))

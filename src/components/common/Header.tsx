@@ -138,17 +138,31 @@ export default function Header(): React.JSX.Element {
 
     const userMenu = {
         items: [
-            { key: 'submit', label: '提交站点' },
             { key: 'mysites', label: '我的站点' },
-            { type: 'divider' as const },
-            { key: 'profile', label: '个人中心' },
+            { key: 'columns', label: '我的专栏' },
+            { key: 'ad/my', label: '我的广告' },
+            { key: 'tools', label: '我的工具（待做）' },
             { key: 'favorites', label: '我的收藏' },
+            { key: 'reports', label: '我的举报' },
             { type: 'divider' as const },
+            { key: 'account', label: '账号管理' },
             { key: 'logout', label: '退出登录' },
         ],
         onClick: ({ key }: { key: string }) => {
-            if (key === 'logout') logout();
-            else navigate(`/user${key === 'profile' ? '' : `/${key}`}`);
+            if (key === 'logout') {
+                logout();
+                return;
+            }
+            const map: Record<string, string> = {
+                mysites: '/user/mysites',
+                columns: '/user/columns',
+                'ad/my': '/user/ad/my',
+                tools: '/user/tools',
+                favorites: '/user/favorites',
+                reports: '/user/reports',
+                account: '/user',
+            };
+            navigate(map[key] || '/user');
         },
     };
 
@@ -241,7 +255,7 @@ export default function Header(): React.JSX.Element {
                         }}
                     >
                         <Button type="primary" block>
-                            {token ? '个人中心' : '登录 / 注册'}
+                            {token ? '账号管理' : '登录 / 注册'}
                         </Button>
                     </div>
                 </Flex>

@@ -15,14 +15,15 @@ const MENU = [
     children: [
       { key: '/user/mysites', label: <Link to="/user/mysites">我的站点</Link> },
       { key: '/user/columns', label: <Link to="/user/columns">我的专栏</Link> },
-      { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/ad/my', label: <Link to="/user/ad/my">我的广告</Link> },
+      { key: '/user/tools', label: <Link to="/user/tools">我的工具（待做）</Link> },
+      { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
     ],
   },
   {
     type: 'group' as const,
-    label: '账户',
+    label: '账号',
     children: [
       { key: '/user', label: <Link to="/user">个人资料</Link> },
       { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
@@ -45,6 +46,7 @@ const TITLE_MAP: Record<string, string> = {
   '/user/ad/buy': '申请广告位',
   '/user/favorites': '我的收藏',
   '/user/reports': '我的举报',
+  '/user/tools': '我的工具',
   '/user/checkin': '每日签到',
   '/user/messages': '消息中心',
   '/user/balance': '余额明细',

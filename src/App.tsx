@@ -38,6 +38,7 @@ import ColumnDetailPage from '@pages/ColumnDetailPage';
 import ColumnArticleDetailPage from '@pages/ColumnArticleDetailPage';
 import MyColumnsPage from '@pages/user/MyColumnsPage';
 import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
+import MyToolsPage from '@pages/user/MyTools';
 import ArticleEditPage from '@pages/user/ArticleEditPage';
 import { SiteProvider } from '@/context/SiteContext';
 import { getCustomConfig } from '@/services/userCenter';
@@ -181,6 +182,7 @@ const App: React.FC = () => {
                             <Route path="columns/:id" element={<MyColumnDetailPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
+                            <Route path="tools" element={<MyToolsPage />} />
                         </Route>
 
                             <Route path="/user/article/create" element={<ArticleEditPage />} />

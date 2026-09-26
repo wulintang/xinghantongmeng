@@ -1009,6 +1009,9 @@ body {
   font-weight: 600;
   color: var(--c-text);
   line-height: var(--lh-snug);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .column-card-name a {
   color: inherit;

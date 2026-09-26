@@ -111,7 +111,7 @@ const WebsitesPage: React.FC = () => {
                     <Flex justify="space-between" align="center" wrap gap={8}>
                         <Text type="secondary">共 {total} 个站点</Text>
                     </Flex>
-                    <Row gutter={[16, 16]}>
+                    <Row gutter={[16, 16]} align="stretch">
                         {list.map((w, i) => (
                             <React.Fragment key={w.id}>
                                 <Col xs={24} sm={12} md={8}>

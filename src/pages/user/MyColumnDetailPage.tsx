@@ -203,7 +203,7 @@ const MyColumnDetailPage: React.FC = () => {
         <Empty description="该专栏暂无文章，点击右上角投稿" />
       ) : (
         <List
-          grid={{ gutter: 16, xs: 1, sm: 1, md: 2 }}
+          grid={{ gutter: 16, xs: 1, sm: 1, md: 1 }}
           dataSource={articles}
           renderItem={(a) => (
             <List.Item>

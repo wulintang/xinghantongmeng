@@ -55,7 +55,7 @@ const ColumnsPage: React.FC = () => {
       />
 
       {loading ? (
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} align="stretch">
           {Array.from({ length: 6 }).map((_, i) => (
             <Col key={i} xs={24} sm={12} md={8}>
               <Card loading />
@@ -65,14 +65,15 @@ const ColumnsPage: React.FC = () => {
       ) : list.length === 0 ? (
         <Empty description="暂无专栏" />
       ) : (
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} align="stretch">
           {list.map((c) => (
             <Col key={c.id} xs={24} sm={12} md={8}>
               <Card
                 hoverable
                 className="column-card"
+                style={{ height: '100%' }}
                 onClick={() => navigate(columnLink(c))}
-                styles={{ body: { padding: 16 } }}
+                styles={{ body: { padding: 16, height: '100%' } }}
               >
                 <Flex gap={14} align="center">
                   <Avatar shape="square" size={56} src={assetUrl(c.pic) || undefined}>

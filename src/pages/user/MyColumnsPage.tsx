@@ -247,7 +247,7 @@ const MyColumnsPage: React.FC = () => {
                 okText="删除"
                 cancelText="取消"
               >
-                <Button size="small" danger style={{ position: 'absolute', top: 16, left: 16, zIndex: 1 }}>
+                <Button size="small" danger style={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}>
                   删除
                 </Button>
               </Popconfirm>

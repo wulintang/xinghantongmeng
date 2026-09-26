@@ -93,16 +93,13 @@ body {
   border-radius: var(--capsule-radius) !important;
 }
 
-/* 选项式胶囊：Segmented / Radio.Group / Tabs 统一为选中填充、未选中线框 */
+/* 选项式胶囊：单个选项项统一为选中填充、未选中线框；容器本身不加边框 */
 .ant-segmented,
 .ant-radio-group,
 .ant-tabs-nav {
   --capsule-option-pad-x: 16px;
   --capsule-option-pad-y: 5px;
-  border: 1px solid var(--capsule-brand) !important;
-  border-radius: var(--capsule-radius) !important;
   background: transparent !important;
-  padding: 2px !important;
 }
 
 /* Segmented */

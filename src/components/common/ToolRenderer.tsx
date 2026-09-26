@@ -38,6 +38,23 @@ const TOOLBOX_VARS = `
   padding-left:24px !important;
   padding-right:24px !important;
 }
+/* 去掉工具内部层叠的外边框，避免"一圈又一圈" */
+.toolbox-embed,
+.toolbox-embed .card,
+.toolbox-embed .panel,
+.toolbox-embed .box,
+.toolbox-embed .layui-card,
+.toolbox-embed .layui-form-item,
+.toolbox-embed .layui-input-block,
+.toolbox-embed .layui-form{
+  border:none !important;
+  box-shadow:none !important;
+}
+.toolbox-embed hr,
+.toolbox-embed .divider,
+.toolbox-embed .layui-form-mid{
+  border-color:var(--c-border) !important;
+}
 `;
 
 function loadScript(src: string): Promise<void> {

@@ -1671,8 +1671,6 @@ body {
 .feed-timeline {
   display: flex;
   flex-direction: column;
-  padding-left: var(--space-4);
-  padding-right: var(--space-4);
 }
 .feed-timeline-item {
   display: flex;

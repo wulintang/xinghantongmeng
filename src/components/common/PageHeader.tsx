@@ -1,6 +1,6 @@
 import React from 'react';
 import { Breadcrumb, Flex, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;

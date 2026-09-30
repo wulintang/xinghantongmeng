@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Space, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { sendCode, userRegister } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 
@@ -63,13 +63,19 @@ export default function RegisterPage() {
         >
           <Input placeholder="用于短信验证" />
         </Form.Item>
-        <Form.Item>
-          <Button onClick={() => onSendCode('sms')} loading={codeLoading}>
-            获取短信验证码
-          </Button>
-        </Form.Item>
-        <Form.Item name="sms_code" label="短信验证码">
-          <Input placeholder="手机验证码" />
+        <Form.Item label="短信验证码" className="mb-16">
+          <Space.Compact block className="verify-code-compact">
+            <Form.Item
+              name="sms_code"
+              noStyle
+              rules={[{ required: true, message: '请输入短信验证码' }]}
+            >
+              <Input placeholder="手机验证码" />
+            </Form.Item>
+            <Button onClick={() => onSendCode('sms')} loading={codeLoading}>
+              获取验证码
+            </Button>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
@@ -79,13 +85,19 @@ export default function RegisterPage() {
         >
           <Input placeholder="用于邮箱验证" />
         </Form.Item>
-        <Form.Item>
-          <Button onClick={() => onSendCode('email')} loading={codeLoading}>
-            获取邮箱验证码
-          </Button>
-        </Form.Item>
-        <Form.Item name="email_code" label="邮箱验证码">
-          <Input placeholder="邮箱验证码" />
+        <Form.Item label="邮箱验证码" className="mb-16">
+          <Space.Compact block className="verify-code-compact">
+            <Form.Item
+              name="email_code"
+              noStyle
+              rules={[{ required: true, message: '请输入邮箱验证码' }]}
+            >
+              <Input placeholder="邮箱验证码" />
+            </Form.Item>
+            <Button onClick={() => onSendCode('email')} loading={codeLoading}>
+              获取验证码
+            </Button>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Alert, Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import {

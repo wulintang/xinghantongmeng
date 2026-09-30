@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, Flex, Input, Modal, Space, Typography, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 

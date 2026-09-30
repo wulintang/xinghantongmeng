@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
 import { Button, Card, Form, Input, List, Space, Tag, Typography, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { addSite, captchaUrl, getBalance, getDan, getMyLinks, getCustomConfig, type CustomConfig, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';

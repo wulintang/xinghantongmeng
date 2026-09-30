@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, List, Typography, Empty, Tag, Alert, Checkbox, Button, Space, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { getFavorites, toggleFavorite } from '@/services/userCenter';
 import { FavoriteItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';

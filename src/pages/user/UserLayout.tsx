@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Menu, Spin, Typography, Upload, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { userLogout, uploadFile } from '@/services/userCenter';
 import { getToken, setToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';

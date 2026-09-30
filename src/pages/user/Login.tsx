@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Radio, Card, Typography, Space, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { sendCode, userLogin } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 

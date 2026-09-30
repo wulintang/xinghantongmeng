@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {

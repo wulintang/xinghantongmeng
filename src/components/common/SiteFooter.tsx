@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Col, Divider, Flex, Row, Space, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
 import { fetchLatestSha } from '@/utils/gitCommits';

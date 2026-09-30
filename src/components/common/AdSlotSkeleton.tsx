@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
 import AdImgUpload from './AdImgUpload';
 import { Form, Input, InputNumber, Modal, Typography, message } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 
 const { Text } = Typography;
 

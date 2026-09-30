@@ -182,19 +182,22 @@ body {
   color: #fff;
 }
 
-/* 登录/注册验证码 Space.Compact：左侧输入框圆角、右侧按钮直角，按钮品牌蓝底白字 */
-.verify-code-compact .ant-space-compact-first-item.ant-input {
+/* 登录/注册验证码 Space.Compact：左侧输入框左圆右直，右侧按钮左直右圆，按钮品牌蓝底白字 */
+.verify-code-compact .ant-input-compact-first-item,
+.verify-code-compact .ant-input:first-child {
   border-radius: var(--container-radius) 0 0 var(--container-radius) !important;
 }
-.verify-code-compact .ant-space-compact-last-item.ant-btn {
+.verify-code-compact .ant-btn-compact-last-item,
+.verify-code-compact .ant-btn:last-child {
   border-radius: 0 var(--container-radius) var(--container-radius) 0 !important;
-  background: var(--capsule-brand);
-  border-color: var(--capsule-brand);
-  color: #fff;
+  background: var(--capsule-brand) !important;
+  border-color: var(--capsule-brand) !important;
+  color: #fff !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  .verify-code-compact .ant-space-compact-last-item.ant-btn:hover {
-    background: var(--capsule-brand);
+  .verify-code-compact .ant-btn-compact-last-item:hover,
+  .verify-code-compact .ant-btn:last-child:hover {
+    background: var(--capsule-brand) !important;
     opacity: 0.88;
   }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Tag, Space, Popconfirm, message, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';;
+import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
 import { getMySites, delMySite, delMySiteApply } from '@/services/userCenter';

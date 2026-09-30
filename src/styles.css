@@ -1681,7 +1681,6 @@ body {
 }
 /* 作者栏：居左竖排（默认显示，仅手机模式隐藏） */
 .feed-author-col {
-  width: 120px;
   flex-shrink: 0;
   padding-top: 20px;
   z-index: 1;

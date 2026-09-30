@@ -75,10 +75,13 @@ body {
   border-color: var(--capsule-brand);
   color: #fff;
 }
+@media (hover: hover) and (pointer: fine) {
 .ant-btn-primary:hover {
   background: var(--capsule-brand);
   opacity: 0.88;
 }
+}
+
 .ant-btn-dangerous {
   background: var(--capsule-danger);
   border-color: var(--capsule-danger);
@@ -119,9 +122,12 @@ body {
   background: var(--capsule-brand) !important;
   color: #fff !important;
 }
+@media (hover: hover) and (pointer: fine) {
 .ant-segmented-item:hover:not(.ant-segmented-item-selected):not(.ant-segmented-item-disabled) {
   color: var(--capsule-brand) !important;
 }
+}
+
 .ant-segmented-thumb {
   background: var(--capsule-brand) !important;
 }
@@ -416,9 +422,12 @@ body {
   color: var(--c-text-3);
   text-decoration: none;
 }
+@media (hover: hover) and (pointer: fine) {
 .change-hash:hover {
   color: var(--c-link);
 }
+}
+
 .change-message {
   font-size: var(--fs-base);
   color: var(--c-text);
@@ -432,9 +441,12 @@ body {
   color: var(--c-text-3);
   text-decoration: none;
 }
+@media (hover: hover) and (pointer: fine) {
 .change-author:hover {
   color: var(--c-link);
 }
+}
+
 
 @media (max-width: 768px) {
   .update-page {
@@ -457,9 +469,12 @@ body {
   flex-direction: column;
   gap: var(--space-1-5);
 }
+@media (hover: hover) and (pointer: fine) {
 .ad-slot-apply:hover {
   border-color: var(--c-link);
 }
+}
+
 .ad-slot-apply-tip {
   color: var(--c-link);
   font-size: var(--fs-xs);
@@ -614,9 +629,12 @@ body {
   color: var(--c-link);
   font-size: var(--fs-sm);
 }
+@media (hover: hover) and (pointer: fine) {
 .home-grid-more:hover {
   text-decoration: underline;
 }
+}
+
 
 @media (max-width: 768px) {
   .container {
@@ -717,9 +735,12 @@ body {
   color: var(--c-text-2);
 }
 
+@media (hover: hover) and (pointer: fine) {
 .site-footer a:hover {
   color: var(--c-link);
 }
+}
+
 
 .site-footer-divider {
   margin: var(--page-gap) 0;
@@ -874,9 +895,12 @@ body {
   overflow: hidden;
   text-decoration: none;
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-card-title:hover {
   color: var(--c-link);
 }
+}
+
 
 /* ============================================================
    详情页
@@ -1214,9 +1238,12 @@ body {
   color: inherit;
   text-decoration: none;
 }
+@media (hover: hover) and (pointer: fine) {
 .column-card-name a:hover {
   color: var(--c-link);
 }
+}
+
 .column-card-desc {
   font-size: var(--fs-sm);
   color: var(--c-text-3);
@@ -1275,9 +1302,12 @@ body {
 .member-column-card .ant-avatar {
   flex-shrink: 0;
 }
+@media (hover: hover) and (pointer: fine) {
 .member-column-card:hover {
   border-color: var(--c-link);
 }
+}
+
 .member-column-body {
   min-width: 0;
 }
@@ -1540,9 +1570,12 @@ body {
   transition: opacity 0.2s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .user-avatar-upload:hover .user-avatar-mask {
   opacity: 1;
 }
+}
+
 
 .msg-toolbar {
   display: flex;
@@ -1664,9 +1697,12 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-author-name:hover {
   color: var(--c-link);
 }
+}
+
 .feed-author-meta {
   display: inline-flex;
   align-items: center;
@@ -1699,10 +1735,13 @@ body {
   cursor: pointer;
   box-shadow: none;
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-bubble:hover {
   border-color: var(--c-link);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
+}
+
 /* 左箭头（两个三角：外灰边框 + 内白填充） */
 .feed-bubble-arrow {
   position: absolute;
@@ -1739,9 +1778,12 @@ body {
   white-space: nowrap;
   display: block;
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-bubble-title:hover {
   color: var(--c-link);
 }
+}
+
 .feed-bubble-desc {
   margin: 0;
   font-size: var(--fs-sm);
@@ -1809,18 +1851,24 @@ body {
   cursor: pointer;
   font-size: var(--fs-sm);
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-bubble-action:hover {
   color: var(--c-link);
 }
+}
+
 .feed-bubble-action.feed-bubble-icon-only {
   gap: 0;
   padding: var(--space-1);
   border-radius: 4px;
   line-height: var(--lh-none);
 }
+@media (hover: hover) and (pointer: fine) {
 .feed-bubble-action.feed-bubble-icon-only:hover {
   background: rgba(0, 0, 0, 0.04);
 }
+}
+
 .feed-bubble-more {
   cursor: pointer;
 }
@@ -1857,9 +1905,12 @@ body {
   color: var(--c-text-3);
   word-break: break-all;
 }
+@media (hover: hover) and (pointer: fine) {
 .mylink-url:hover {
   color: var(--c-link);
 }
+}
+
 .mylink-time {
   font-size: var(--fs-xs);
   color: var(--c-text-3);
@@ -2064,10 +2115,13 @@ body {
   transition: border-color 0.3s, box-shadow 0.3s;
   height: 100%;
 }
+@media (hover: hover) and (pointer: fine) {
 .related-site-card:hover {
   border-color: var(--c-link);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
+}
+
 .related-site-avatar {
   flex-shrink: 0;
   border-radius: 6px;
@@ -2116,10 +2170,13 @@ body {
   height: 100%;
   color: var(--c-text);
 }
+@media (hover: hover) and (pointer: fine) {
 .member-site-card:hover {
   border-color: var(--c-link);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
+}
+
 .member-site-body {
   display: flex;
   flex-direction: column;

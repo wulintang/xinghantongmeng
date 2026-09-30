@@ -140,6 +140,9 @@ body {
   border-radius: var(--capsule-radius) !important;
   padding-inline: var(--capsule-option-pad-x) !important;
   padding-block: var(--capsule-option-pad-y) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 .ant-radio-group .ant-radio-button-wrapper-checked {
   background: var(--capsule-brand) !important;
@@ -177,6 +180,23 @@ body {
   background: var(--capsule-brand);
   border-color: var(--capsule-brand);
   color: #fff;
+}
+
+/* 登录/注册验证码 Space.Compact：左侧输入框圆角、右侧按钮直角，按钮品牌蓝底白字 */
+.verify-code-compact .ant-space-compact-first-item.ant-input {
+  border-radius: var(--container-radius) 0 0 var(--container-radius) !important;
+}
+.verify-code-compact .ant-space-compact-last-item.ant-btn {
+  border-radius: 0 var(--container-radius) var(--container-radius) 0 !important;
+  background: var(--capsule-brand);
+  border-color: var(--capsule-brand);
+  color: #fff;
+}
+@media (hover: hover) and (pointer: fine) {
+  .verify-code-compact .ant-space-compact-last-item.ant-btn:hover {
+    background: var(--capsule-brand);
+    opacity: 0.88;
+  }
 }
 
 /* 余额页顶部卡片：左右分栏，避免左侧堆叠、右侧留白 */

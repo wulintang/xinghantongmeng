@@ -87,7 +87,7 @@ export default function LoginPage() {
               <Input placeholder="用于接收短信验证码" />
             </Form.Item>
             <Form.Item label="短信验证码" className="mb-16">
-              <Space.Compact block>
+              <Space.Compact block className="verify-code-compact">
                 <Form.Item
                   name="sms_code"
                   noStyle
@@ -111,7 +111,7 @@ export default function LoginPage() {
               <Input placeholder="用于接收邮箱验证码" />
             </Form.Item>
             <Form.Item label="邮箱验证码" className="mb-16">
-              <Space.Compact block>
+              <Space.Compact block className="verify-code-compact">
                 <Form.Item
                   name="email_code"
                   noStyle

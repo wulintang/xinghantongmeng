@@ -5,6 +5,7 @@ import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
 import { getMySites, delMySite, delMySiteApply } from '@/services/userCenter';
+import { domainOf } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import CardTable from '@components/common/CardTable';
@@ -67,7 +68,7 @@ export default function MySitesPage() {
             </AppTooltip>
           ) : (
             <AppTooltip title={row.title || row.www || row.domain || v}>
-              <Link to={`/${row.www || row.domain}`}>{v}</Link>
+              <Link to={`/${domainOf(row)}`}>{v}</Link>
             </AppTooltip>
           )}
         </Space>

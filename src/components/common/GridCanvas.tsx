@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Tooltip } from 'antd';
+import AppTooltip from '@/components/common/AppTooltip';
 import type { AdPayGrid, AdPayGridRect } from '@/services/adpay';
 
 interface Props {
@@ -44,11 +44,11 @@ function RectView({ r, cols, rows }: { r: AdPayGridRect; cols: number; rows: num
     >
       {r.img ? (
         r.link ? (
-          <Tooltip title={title}>
+          <AppTooltip title={title}>
             <a href={r.link} target="_blank" rel="noreferrer" className="grid-rect-link">
               <img src={r.img} alt={title} className="grid-rect-img" />
             </a>
-          </Tooltip>
+          </AppTooltip>
         ) : (
           <img src={r.img} alt={title} className="grid-rect-img" />
         )

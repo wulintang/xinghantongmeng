@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Form, Input, Button, Radio, Card, Typography, Space, message, Tooltip } from 'antd';
+import { Form, Input, Button, Radio, Card, Typography, Space, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { sendCode, userLogin } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 
@@ -139,7 +140,7 @@ export default function LoginPage() {
         </Form.Item>
       </Form>
       <Text>
-        还没有账号？<Tooltip title="去注册"><Link to="/register">去注册</Link></Tooltip>
+        还没有账号？<AppTooltip title="去注册"><Link to="/register">去注册</Link></AppTooltip>
       </Text>
     </Card>
   );

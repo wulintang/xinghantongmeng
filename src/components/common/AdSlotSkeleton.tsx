@@ -5,7 +5,8 @@ import { getAd, getGrid, applyGrid, type AdPayGrid, type AdPayAd } from '@/servi
 import { getToken } from '@/utils/auth';
 import GridCanvas from './GridCanvas';
 import AdImgUpload from './AdImgUpload';
-import { Form, Input, InputNumber, Modal, Tooltip, Typography, message } from 'antd';
+import { Form, Input, InputNumber, Modal, Typography, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 
 const { Text } = Typography;
 
@@ -154,9 +155,9 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
       return (
         <div className="ad-slot-filled">
           {ad.title ? (
-            <Tooltip title={ad.title}>
+            <AppTooltip title={ad.title}>
               <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
-            </Tooltip>
+            </AppTooltip>
           ) : (
             <div className="ad-banner" dangerouslySetInnerHTML={{ __html: sanitizeHtml(ad.content) }} />
           )}
@@ -170,29 +171,29 @@ export default function AdSlotSkeleton({ label = '广告位', variant = 'banner'
           onClick={() => navigate('/user/ad/my')}
           role="button"
         >
-          <Tooltip title={label}>
+          <AppTooltip title={label}>
             <span className="ad-slot-skeleton-label">{label}</span>
-          </Tooltip>
-          <Tooltip title="点击申请投放广告">
+          </AppTooltip>
+          <AppTooltip title="点击申请投放广告">
             <span className="ad-slot-apply-tip">点击申请投放广告</span>
-          </Tooltip>
+          </AppTooltip>
         </div>
       );
     }
     return (
       <div className="ad-slot-skeleton ad-slot-skeleton-banner">
-        <Tooltip title={label}>
+        <AppTooltip title={label}>
           <span className="ad-slot-skeleton-label">{label}</span>
-        </Tooltip>
+        </AppTooltip>
       </div>
     );
   }
 
   return (
     <div className={`ad-slot-skeleton ad-slot-skeleton-${variant}`}>
-      <Tooltip title={label}>
+      <AppTooltip title={label}>
         <span className="ad-slot-skeleton-label">{label}</span>
-      </Tooltip>
+      </AppTooltip>
     </div>
   );
 }

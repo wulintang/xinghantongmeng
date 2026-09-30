@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Tooltip, Typography } from 'antd';
+import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
 import {
@@ -136,9 +137,9 @@ export default function AdMyPage(): React.JSX.Element {
       dataIndex: 'title',
       ellipsis: { showTitle: false },
       render: (v: string) => (
-        <Tooltip title={v}>
+        <AppTooltip title={v}>
           <Typography.Text ellipsis>{v}</Typography.Text>
-        </Tooltip>
+        </AppTooltip>
       ),
     },
     { title: '时长(天)', dataIndex: 'duration_day' },
@@ -148,7 +149,7 @@ export default function AdMyPage(): React.JSX.Element {
       dataIndex: 'status',
       render: (s: number, r: AdPayApply) => {
         const tag = <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag>;
-        return s === 2 && r.refuse_reason ? <Tooltip title={r.refuse_reason}>{tag}</Tooltip> : tag;
+        return s === 2 && r.refuse_reason ? <AppTooltip title={r.refuse_reason}>{tag}</AppTooltip> : tag;
       },
     },
     {
@@ -179,9 +180,9 @@ export default function AdMyPage(): React.JSX.Element {
       dataIndex: 'title',
       ellipsis: { showTitle: false },
       render: (v: string) => (
-        <Tooltip title={v}>
+        <AppTooltip title={v}>
           <Typography.Text ellipsis>{v}</Typography.Text>
-        </Tooltip>
+        </AppTooltip>
       ),
     },
     {
@@ -195,7 +196,7 @@ export default function AdMyPage(): React.JSX.Element {
       dataIndex: 'status',
       render: (s: number, r: AdPayGridApply) => {
         const tag = <Tag color={STATUS_COLOR[s]}>{AD_STATUS_TEXT[s]}</Tag>;
-        return s === 2 && r.refuse_reason ? <Tooltip title={r.refuse_reason}>{tag}</Tooltip> : tag;
+        return s === 2 && r.refuse_reason ? <AppTooltip title={r.refuse_reason}>{tag}</AppTooltip> : tag;
       },
     },
     {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, List, Typography, Empty, Tag, Alert, Checkbox, Button, Space, message, Tooltip } from 'antd';
+import { Card, List, Typography, Empty, Tag, Alert, Checkbox, Button, Space, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { getFavorites, toggleFavorite } from '@/services/userCenter';
 import { FavoriteItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
@@ -153,7 +154,7 @@ export default function FavoritesPage() {
                     (() => {
                       const href = linkOf(it);
                       const label = nameOf(it);
-                      return href === '#' ? <span>{label}</span> : <Tooltip title={label}><a href={href} target={it.m === 'website' ? '_blank' : undefined} rel={it.m === 'website' ? 'noreferrer' : undefined}>{label}</a></Tooltip>;
+                      return href === '#' ? <span>{label}</span> : <AppTooltip title={label}><a href={href} target={it.m === 'website' ? '_blank' : undefined} rel={it.m === 'website' ? 'noreferrer' : undefined}>{label}</a></AppTooltip>;
                     })()
                   }
                   description={

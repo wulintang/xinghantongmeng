@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Tooltip, Typography } from 'antd';
+import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
@@ -122,11 +123,11 @@ const WebsitesPage: React.FC = () => {
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
                                             <Flex vertical gap={2} className="site-card-body">
-                                            <Tooltip title={w.title || w.name}>
+                                            <AppTooltip title={w.title || w.name}>
                                                 <Link to={`/${domainOf(w)}`} className="site-card-name">
                                                     {w.title || w.name}
                                                 </Link>
-                                            </Tooltip>
+                                            </AppTooltip>
                                                 <Text type="secondary" className="site-card-domain">
                                                     {w.domain || w.www}
                                                 </Text>
@@ -141,13 +142,13 @@ const WebsitesPage: React.FC = () => {
                                             </Text>
                                             <Flex gap={4}>
                                                 {w.url ? (
-                                                    <Tooltip title={w.title || w.name}>
+                                                    <AppTooltip title={w.title || w.name}>
                                                     <Link to={`/${domainOf(w)}`}>
                                                         <Button type="link" size="small">
                                                             {w.feed_url ? '查看文章' : '访问'}
                                                         </Button>
                                                     </Link>
-                                                </Tooltip>
+                                                </AppTooltip>
                                                 ) : null}
                                             </Flex>
                                         </Flex>

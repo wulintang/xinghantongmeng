@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Alert, Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message, Tooltip } from 'antd';
+import { Alert, Button, Card, Form, Input, Modal, Select, Space, Spin, Typography, Upload, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import {
@@ -488,11 +489,11 @@ const SubmitSite: React.FC = () => {
             <Form.Item label="域名归属验证（任选其一）" required>
               <Space size="middle" wrap>
                 {(['file', 'dns', 'meta', 'manual'] as VerifyType[]).map((t) => (
-                  <Tooltip title={VERIFY_LABELS[t]} key={t}>
+                  <AppTooltip title={VERIFY_LABELS[t]} key={t}>
                     <span style={dotStyle(verifyType === t)} onClick={() => openVerify(t)}>
                       {verifyType === t ? '✓' : VERIFY_LABELS[t]}
                     </span>
-                  </Tooltip>
+                  </AppTooltip>
                 ))}
               </Space>
               {!verifyType && (
@@ -507,9 +508,9 @@ const SubmitSite: React.FC = () => {
             <Form.Item label="图形验证码" name="code" rules={[{ required: true, message: '请输入图形验证码' }]}>
               <Space.Compact className="captcha-compact">
                 <Input placeholder="请输入右侧验证码" />
-                <Tooltip title="点击刷新">
+                <AppTooltip title="点击刷新">
                   <img src={codeSrc} alt="验证码" className="captcha-img" onClick={refreshCode} />
-                </Tooltip>
+                </AppTooltip>
               </Space.Compact>
             </Form.Item>
           )}

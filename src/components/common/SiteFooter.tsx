@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Col, Divider, Flex, Row, Space, Tooltip, Typography } from 'antd';
+import { Col, Divider, Flex, Row, Space, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link } from 'react-router-dom';
 
 import { fetchLatestSha } from '@/utils/gitCommits';
@@ -18,19 +19,19 @@ function FooterLink({ item }: { item: LinkItem }): React.JSX.Element {
 
     if (target.external) {
         return (
-            <Tooltip title={item.name}>
+            <AppTooltip title={item.name}>
                 <a href={target.href} target="_blank" rel="noreferrer noopener">
                     {item.name}
                 </a>
-            </Tooltip>
+            </AppTooltip>
         );
     }
     return (
-        <Tooltip title={item.name}>
+        <AppTooltip title={item.name}>
             <Link to={target.to || '/'} {...(external ? { target: '_blank' } : {})}>
                 {item.name}
             </Link>
-        </Tooltip>
+        </AppTooltip>
     );
 }
 
@@ -160,16 +161,16 @@ export default function SiteFooter(): React.JSX.Element {
                     </Text>
                     <Space split={<Divider type="vertical" />} wrap>
                         {site?.beian ? (
-                            <Tooltip title="ICP备案查询">
+                            <AppTooltip title="ICP备案查询">
                                 <a className="site-footer-beian" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
                                     {site.beian}
                                 </a>
-                            </Tooltip>
+                            </AppTooltip>
                         ) : null}
                         {gonganHtml ? (
-                            <Tooltip title="公安备案查询">
+                            <AppTooltip title="公安备案查询">
                                 <span dangerouslySetInnerHTML={{ __html: gonganHtml }} />
-                            </Tooltip>
+                            </AppTooltip>
                         ) : null}
                     </Space>
                 </Flex>

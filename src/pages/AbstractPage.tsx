@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Avatar, Button, Divider, Flex, Input, Modal, Space, Tag, Tooltip, Typography, message } from 'antd';
+import { Alert, Avatar, Button, Divider, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -189,18 +190,18 @@ const AbstractPage: React.FC = () => {
 
             <div className="feed-timeline-item abstract-timeline-item">
                 <div className="feed-author-col">
-                    <Tooltip title={p.blogName || domain}>
+                    <AppTooltip title={p.blogName || domain}>
                         <Link to={domainRoute}>
                             <Avatar className="feed-author-avatar" shape="circle" src={icon || undefined}>
                                 {(p.blogName || domain || '?').slice(0, 1)}
                             </Avatar>
                         </Link>
-                    </Tooltip>
-                    <Tooltip title={p.blogName || domain}>
+                    </AppTooltip>
+                    <AppTooltip title={p.blogName || domain}>
                         <Link to={domainRoute} className="feed-author-name">
                             {p.blogName || domain}
                         </Link>
-                    </Tooltip>
+                    </AppTooltip>
                     {p.blogJoinYears ? (
                         <div className="feed-author-meta feed-author-meta-blue">
                             <StarIcon /> 已履约 {p.blogJoinYears} 年
@@ -243,7 +244,7 @@ const AbstractPage: React.FC = () => {
                                 <Link to={domainRoute} className="feed-bubble-author">{p.blogName || domain}</Link>
                             </Space>
                             <Space size={12} className="feed-bubble-actions">
-                                <Tooltip title="原文">
+                                <AppTooltip title="原文">
                                     <a
                                         className="feed-bubble-action feed-bubble-icon-only"
                                         href={jumpUrl(p.link)}
@@ -253,8 +254,8 @@ const AbstractPage: React.FC = () => {
                                     >
                                         <ShareIcon />
                                     </a>
-                                </Tooltip>
-                                <Tooltip title="举报">
+                                </AppTooltip>
+                                <AppTooltip title="举报">
                                     <span
                                         className="feed-bubble-action feed-bubble-icon-only feed-bubble-more"
                                         onClick={(e) => {
@@ -264,7 +265,7 @@ const AbstractPage: React.FC = () => {
                                     >
                                         <MoreIcon />
                                     </span>
-                                </Tooltip>
+                                </AppTooltip>
                             </Space>
                         </div>
                     </div>

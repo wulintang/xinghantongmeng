@@ -1,5 +1,6 @@
 import React from 'react';
-import { Breadcrumb, Flex, Tooltip, Typography } from 'antd';
+import { Breadcrumb, Flex, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
@@ -23,7 +24,7 @@ export default function PageHeader({ title, description, crumbs, extra }: PageHe
             {crumbs && crumbs.length > 0 ? (
                 <Breadcrumb
                     items={crumbs.map((c) => ({
-                        title: c.to ? <Tooltip title={c.label}><Link to={c.to}>{c.label}</Link></Tooltip> : c.label,
+                        title: c.to ? <AppTooltip title={c.label}><Link to={c.to}>{c.label}</Link></AppTooltip> : c.label,
                     }))}
                 />
             ) : null}

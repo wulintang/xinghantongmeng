@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSite } from '@/context/SiteContext';
-import { Button, Card, Form, Input, List, Space, Tag, Tooltip, Typography, message } from 'antd';
+import { Button, Card, Form, Input, List, Space, Tag, Typography, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { addSite, captchaUrl, getBalance, getDan, getMyLinks, getCustomConfig, type CustomConfig, type MyLinkItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -129,11 +130,11 @@ export default function LinksPage() {
                 <Space size={[12, 12]} wrap className="mt-16">
                     {friendLinks.map((l) => (
                     <Tag key={l.id} color="blue" className="link-tag">
-                        <Tooltip title={l.name}>
+                        <AppTooltip title={l.name}>
                             <a href={l.lianjie} target="_blank" rel="noreferrer noopener">
                                 {l.name}
                             </a>
-                        </Tooltip>
+                        </AppTooltip>
                     </Tag>
                     ))}
                 </Space>
@@ -280,14 +281,14 @@ export default function LinksPage() {
                         >
                             <Space.Compact className="captcha-compact">
                                 <Input placeholder="请输入右侧验证码" />
-                                <Tooltip title="点击刷新">
+                                <AppTooltip title="点击刷新">
                                     <img
                                         src={codeSrc}
                                         alt="验证码"
                                         className="captcha-img"
                                         onClick={refreshCode}
                                     />
-                                </Tooltip>
+                                </AppTooltip>
                             </Space.Compact>
                         </Form.Item>
                         <Form.Item>
@@ -318,7 +319,7 @@ export default function LinksPage() {
                                             <Tag color={st.color}>{st.text}</Tag>
                                         </div>
                                         <div className="mylink-line">
-                                            <Tooltip title={l.name}>
+                                            <AppTooltip title={l.name}>
                                                 <a
                                                     href={l.url}
                                                     target="_blank"
@@ -327,7 +328,7 @@ export default function LinksPage() {
                                                 >
                                                     {l.url}
                                                 </a>
-                                            </Tooltip>
+                                            </AppTooltip>
                                         </div>
                                         <div className="mylink-line mylink-time">
                                             {l.time ? dayjs.unix(Number(l.time)).format('YYYY-MM-DD HH:mm') : ''}

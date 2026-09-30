@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Divider, Flex, Space, Tag, Tooltip, Typography } from 'antd';
+import { Alert, Avatar, Button, Card, Divider, Flex, Space, Tag, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -227,7 +228,7 @@ const ColumnDetailPage: React.FC = () => {
                         <Link to={a.uid === 0 ? '/dan/about' : `/user/${a.uid}`} className="feed-bubble-author">{a.uid === 0 ? (site?.title || '官方') : (a.author || '匿名')}</Link>
                       </Space>
                       <Space size={12} className="feed-bubble-actions">
-                        <Tooltip title="查看文章">
+                        <AppTooltip title="查看文章">
                           <Link
                             to={detailRoute}
                             className="feed-bubble-action feed-bubble-icon-only"
@@ -235,7 +236,7 @@ const ColumnDetailPage: React.FC = () => {
                           >
                             <EyeIcon />
                           </Link>
-                        </Tooltip>
+                        </AppTooltip>
                       </Space>
                     </div>
                   </div>

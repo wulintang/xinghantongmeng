@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Alert,
-    Avatar,
-    Button,
-    Card,
-    Col,
-    Flex,
-    List,
-    Row,
-    Space,
-    Tag,
-    Tooltip,
-    Typography,
-} from 'antd';
+import { Alert, Avatar, Button, Card, Col, Flex, List, Row, Space, Tag, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -92,11 +80,11 @@ const HomePage: React.FC = () => {
                     <Space size={[8, 8]} wrap className="home-hero-cates">
                         <Text type="secondary">网址分类：</Text>
                         {cates.map((c) => (
-                            <Tooltip title={c.name}>
+                            <AppTooltip title={c.name}>
                                 <Link key={c.id} to={`/websites?cate=${c.id}`}>
                                     <Tag color="processing">{c.name}</Tag>
                                 </Link>
-                            </Tooltip>
+                            </AppTooltip>
                         ))}
                     </Space>
                 ) : null}
@@ -125,11 +113,11 @@ const HomePage: React.FC = () => {
                                             <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
                                                 {(w.title || w.name || '?').slice(0, 1)}
                                             </Avatar>
-                                            <Tooltip title={w.title || w.name}>
+                                            <AppTooltip title={w.title || w.name}>
                                                 <Link to={`/${domainOf(w)}`} className="site-card-name">
                                                     {w.title || w.name}
                                                 </Link>
-                                            </Tooltip>
+                                            </AppTooltip>
                                         </Flex>
                                         <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
                                             {w.keywords || w.content || w.domain}
@@ -139,13 +127,13 @@ const HomePage: React.FC = () => {
                                                 浏览 {w.view} · 点赞 {w.zan}
                                             </Text>
                                             {w.url ? (
-                                                <Tooltip title={w.title || w.name || '访问'}>
+                                                <AppTooltip title={w.title || w.name || '访问'}>
                                                     <Link to={`/${domainOf(w)}`} className="site-card-visit">
                                                         <Button type="link" size="small">
                                                             访问
                                                         </Button>
                                                     </Link>
-                                                </Tooltip>
+                                                </AppTooltip>
                                             ) : null}
                                         </Flex>
                                     </Flex>
@@ -181,7 +169,7 @@ const HomePage: React.FC = () => {
                                         actions={
                                             col
                                                 ? [
-                                                      <Tooltip
+                                                      <AppTooltip
                                                           key="col"
                                                           title={
                                                               <div style={{ maxWidth: 240 }}>
@@ -196,13 +184,13 @@ const HomePage: React.FC = () => {
                                                           >
                                                               {col.name}
                                                           </Link>
-                                                      </Tooltip>,
+                                                      </AppTooltip>,
                                                   ]
                                                 : []
                                         }
                                     >
                                         <List.Item.Meta
-                                            title={<Tooltip title={a.title}><Link to={`/article/detail/${a.id}`}>{a.title}</Link></Tooltip>}
+                                            title={<AppTooltip title={a.title}><Link to={`/article/detail/${a.id}`}>{a.title}</Link></AppTooltip>}
                                             description={
                                                 <Text type="secondary">
                                                     {dayjs.unix(a.time).format('YYYY-MM-DD')} · 浏览 {a.view}
@@ -237,19 +225,19 @@ const HomePage: React.FC = () => {
                                 <List.Item>
                                     <List.Item.Meta
                                         title={
-                                                <Tooltip title={p.title}>
+                                                <AppTooltip title={p.title}>
                                                     <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
                                                         {p.title}
                                                     </a>
-                                                </Tooltip>
+                                                </AppTooltip>
                                         }
                                         description={
                                             <Text type="secondary">
-                                                    <Tooltip title={p.blogName || domainOf(p)}>
+                                                    <AppTooltip title={p.blogName || domainOf(p)}>
                                                         <Link to={`/${domainOf(p)}`}>
                                                             {p.blogName || domainOf(p)}
                                                         </Link>
-                                                    </Tooltip>
+                                                    </AppTooltip>
                                                 {' · '}
                                                 {p.publishedAt ? dayjs(p.publishedAt).format('YYYY-MM-DD') : ''}
                                             </Text>
@@ -276,7 +264,7 @@ const HomePage: React.FC = () => {
                 </div>
                 <AdSlotSkeleton variant="grid" page="home" label="广告位（格子）" />
                 <div className="home-grid-footer">
-                    <Tooltip title="查看更多格子广告"><Link to="/grid" className="home-grid-more">查看更多格子广告 &raquo;</Link></Tooltip>
+                    <AppTooltip title="查看更多格子广告"><Link to="/grid" className="home-grid-more">查看更多格子广告 &raquo;</Link></AppTooltip>
                 </div>
             </section>
         </Flex>

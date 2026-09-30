@@ -1,18 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-    Avatar,
-    Divider,
-    Flex,
-    Input,
-    Modal,
-    Pagination,
-    Segmented,
-    Space,
-    Tag,
-    Tooltip,
-    Typography,
-    message,
-} from 'antd';
+import { Avatar, Divider, Flex, Input, Modal, Pagination, Segmented, Space, Tag, Typography, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -267,7 +255,7 @@ const BlogsPage: React.FC = () => {
                             return (
                                 <>
                                 <div className="feed-timeline-item" key={p.link || `${domain}-${p.title}`}>
-                                    <Tooltip title={p.blogName || domain}>
+                                    <AppTooltip title={p.blogName || domain}>
                                         <Link to={domainRoute} className="feed-author-col">
                                         <Avatar
                                             className="feed-author-avatar"
@@ -288,7 +276,7 @@ const BlogsPage: React.FC = () => {
                                             </span>
                                         ) : null}
                                     </Link>
-                                    </Tooltip>
+                                    </AppTooltip>
 
                                     <div
                                         className="feed-bubble"
@@ -297,10 +285,10 @@ const BlogsPage: React.FC = () => {
                                         <div className="feed-bubble-arrow feed-bubble-arrow-border" />
                                         <div className="feed-bubble-arrow feed-bubble-arrow-fill" />
                                         <div className="feed-bubble-inner">
-                                            <Tooltip title={p.title || '无标题'}>
+                                            <AppTooltip title={p.title || '无标题'}>
                                                 <Link to={abstractRoute} className="feed-bubble-title" onClick={(e) => e.stopPropagation()}>
                                                     {p.title || '无标题'}</Link>
-                                            </Tooltip>
+                                            </AppTooltip>
                                             {p.description ? (
                                                 <div className="feed-bubble-desc">
                                                     {htmlToText(p.description, 140)}
@@ -320,11 +308,11 @@ const BlogsPage: React.FC = () => {
                                                     <Link to={domainRoute} className="feed-bubble-author">{p.blogName || domain}</Link>
                                                 </Space>
                                                 <Space size={12} className="feed-bubble-actions">
-                                                    <Tooltip title="进入原文">
+                                                    <AppTooltip title="进入原文">
                                                         <Link to={abstractRoute} className="feed-bubble-action feed-bubble-icon-only" onClick={(e) => e.stopPropagation()}>
                                                             <ShareIcon /></Link>
-                                                    </Tooltip>
-                                                    <Tooltip title="举报">
+                                                    </AppTooltip>
+                                                    <AppTooltip title="举报">
                                                         <span
                                                             className="feed-bubble-action feed-bubble-icon-only feed-bubble-more"
                                                             onClick={(e) => {
@@ -334,7 +322,7 @@ const BlogsPage: React.FC = () => {
                                                         >
                                                             <MoreIcon />
                                                         </span>
-                                                    </Tooltip>
+                                                    </AppTooltip>
                                                 </Space>
                                             </div>
                                         </div>

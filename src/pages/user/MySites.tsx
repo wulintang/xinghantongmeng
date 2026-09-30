@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Tag, Space, Popconfirm, Tooltip, message, Typography } from 'antd';
+import { Button, Card, Tag, Space, Popconfirm, message, Typography } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link } from 'react-router-dom';
 
 import { getMySites, delMySite, delMySiteApply } from '@/services/userCenter';
@@ -61,13 +62,13 @@ export default function MySitesPage() {
         <Space>
           {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
           {row.pending ? (
-            <Tooltip title={row.title || row.www || row.domain || v}>
+            <AppTooltip title={row.title || row.www || row.domain || v}>
               <span>{v}</span>
-            </Tooltip>
+            </AppTooltip>
           ) : (
-            <Tooltip title={row.title || row.www || row.domain || v}>
+            <AppTooltip title={row.title || row.www || row.domain || v}>
               <Link to={`/${row.www || row.domain}`}>{v}</Link>
-            </Tooltip>
+            </AppTooltip>
           )}
         </Space>
       ),

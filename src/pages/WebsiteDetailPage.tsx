@@ -1,22 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Alert,
-    Avatar,
-    Button,
-    Card,
-    Col,
-    Descriptions,
-    Flex,
-    Input,
-    List,
-    Modal,
-    Row,
-    Space,
-    Tag,
-    Tooltip,
-    Typography,
-    message,
-} from 'antd';
+import { Alert, Avatar, Button, Card, Col, Descriptions, Flex, Input, List, Modal, Row, Space, Tag, Typography, message } from 'antd'
+import AppTooltip from '@/components/common/AppTooltip';;
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
@@ -231,9 +215,9 @@ const WebsiteDetailPage: React.FC = () => {
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>
                             {faved ? '★' : '☆'} 收藏
                         </Button>
-                        <Tooltip title="举报">
+                        <AppTooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
-                        </Tooltip>
+                        </AppTooltip>
                     </Space>
                 }
             />
@@ -302,11 +286,11 @@ const WebsiteDetailPage: React.FC = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="RSS" span={2}>
                         {item.feed_url ? (
-                            <Tooltip title="RSS 订阅">
+                            <AppTooltip title="RSS 订阅">
                                 <a href={jumpUrl(item.feed_url)} target="_blank" rel="noreferrer">
                                     {item.feed_url}
                                 </a>
-                            </Tooltip>
+                            </AppTooltip>
                         ) : (
                             '未提供'
                         )}
@@ -331,11 +315,11 @@ const WebsiteDetailPage: React.FC = () => {
                             <List.Item>
                                 <List.Item.Meta
                                     title={
-                                        <Tooltip title={p.title}>
+                                        <AppTooltip title={p.title}>
                                             <a href={jumpUrl(p.link)} target="_blank" rel="noreferrer">
                                                 {p.title || '无标题'}
                                             </a>
-                                        </Tooltip>
+                                        </AppTooltip>
                                     }
                                     description={
                                         <Text type="secondary">
@@ -354,7 +338,7 @@ const WebsiteDetailPage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {related.map((r) => (
                             <Col key={r.id} xs={24} sm={12} md={8}>
-                                <Tooltip title={r.name || r.title}>
+                                <AppTooltip title={r.name || r.title}>
                                     <Link to={`/${domainOf(r)}`} className="related-site-card">
                                     <Avatar
                                         shape="square"
@@ -372,7 +356,7 @@ const WebsiteDetailPage: React.FC = () => {
                                         <div className="related-site-url">{r.domain || r.www || r.url}</div>
                                     </div>
                                 </Link>
-                                </Tooltip>
+                                </AppTooltip>
                             </Col>
                         ))}
                     </Row>

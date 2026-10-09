@@ -27,6 +27,33 @@ const JSON_EXAMPLE = `{
 
 type ParamRow = { name: string; label: string };
 
+// 按名称首字/首字母生成一张纯色首字图标图片（自动上传用，用户无需手动传图）
+const genInitialIcon = (text: string): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const ch = (text.trim()[0] || 'S').toUpperCase();
+    const palette = ['#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1', '#13c2c2', '#f5222d', '#2f54eb'];
+    let hash = 0;
+    for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+    const bg = palette[hash % palette.length];
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) { reject(new Error('canvas not supported')); return; }
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, 200, 200);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 120px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ch, 100, 108);
+    canvas.toBlob((blob) => {
+      if (!blob) { reject(new Error('toBlob failed')); return; }
+      resolve(new File([blob], `${Date.now()}.png`, { type: 'image/png' }));
+    }, 'image/png');
+  });
+};
+
 const SubmitSkillPage: React.FC = () => {
   usePageMeta({ title: '提交技能' });
   const [form] = Form.useForm();
@@ -93,26 +120,35 @@ const SubmitSkillPage: React.FC = () => {
       .finally(() => setUploading(false));
   };
 
-  const onFinish = (values: { title: string; alias: string; tid?: number }) => {
+  const onFinish = async (values: { title: string; alias: string; tid?: number }) => {
     const key = getToken();
     if (!key) { message.warning('请先登录'); return; }
-    if (!pic) { message.warning('请上传技能图标'); return; }
     if (!assembled) { message.warning('请填写指令模板'); return; }
     setSubmitting(true);
-    addSkill(key, {
-      title: values.title,
-      alias: values.alias,
-      tid: values.tid ?? 0,
-      pic,
-      content: assembled,
-      rmb,
-    })
-      .then((r) => {
-        if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/skills'); }
-        else message.error(r.msg || '提交失败');
-      })
-      .catch(() => message.error('提交失败，请稍后重试'))
-      .finally(() => setSubmitting(false));
+    try {
+      let finalPic = pic;
+      if (!finalPic) {
+        const name = values.title || values.alias || 'S';
+        const file = await genInitialIcon(name);
+        const up = await uploadFile(key, file);
+        if (up.code === 1 && up.data?.url) finalPic = up.data.url;
+        else { message.error(up.msg || '自动生成图标失败'); setSubmitting(false); return; }
+      }
+      const r = await addSkill(key, {
+        title: values.title,
+        alias: values.alias,
+        tid: values.tid ?? 0,
+        pic: finalPic,
+        content: assembled,
+        rmb,
+      });
+      if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/skills'); }
+      else message.error(r.msg || '提交失败');
+    } catch {
+      message.error('提交失败，请稍后重试');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // ===== 一键导入解析 =====
@@ -226,7 +262,7 @@ const SubmitSkillPage: React.FC = () => {
                   </Upload>
                   {pic ? <img src={pic} alt="pic" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
                 </Space>
-                {!pic && <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请上传技能图标（禁止手写图片地址）</div>}
+                {!pic && <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未上传则提交时自动生成首字图标（也可手动上传）</div>}
               </Form.Item>
 
               <Form.Item label="指令模板（prompt 本体）" required>

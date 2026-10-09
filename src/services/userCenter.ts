@@ -653,6 +653,47 @@ export function getTool(id: number | string, key = '') {
   return request<ApiResp<ToolItem>>(`${OPEN}/tool.html` + qs({ id, key }));
 }
 
+// ===================== 用户技能（skills）提交（独立 skills 插件） =====================
+//   提交/审核/通过/拒绝与网站、专栏、友链流程一致、各自独立：
+//   提交写 my_app_skills_apply（status=0），审核在 skills 插件内，通过写 my_app_toolbox（默认工具箱目录表，使其可被 AI 引擎执行）。
+const SKILLS = '/index.php/skills/index';
+
+/** 我的技能申请记录（my_app_skills_apply，按 uid 过滤） */
+export interface SkillApplyItem {
+  id: number;
+  uid: number;
+  tid: number;
+  title: string;
+  alias: string;
+  pic: string;
+  content: string;
+  ai: number;
+  rmb: string;
+  px: number;
+  config: string;
+  /** 审核通过后写入的 my_app_toolbox.id（0=尚未通过） */
+  toolbox_id: number;
+  /** 审核状态：0 待审 / 1 通过 / 2 拒绝 */
+  status: number;
+  reason: string;
+  time: number;
+}
+
+/** 提交技能（前端组装 content 后传入；pic 为上传回传 URL） */
+export function addSkill(key: string, data: Record<string, any>) {
+  return post<ApiResp>('/submit.html', { key, ...data }, SKILLS);
+}
+
+/** 我的技能申请列表（按 uid 查 my_app_skills_apply） */
+export function getMySkillApplies(key: string) {
+  return request<ApiResp<SkillApplyItem[]>>(`${SKILLS}/myApplies.html?key=${encodeURIComponent(key)}`);
+}
+
+/** 编辑已通过技能（直接改 my_app_toolbox，open 保持 1，不重新审核） */
+export function editSkill(key: string, data: Record<string, any>) {
+  return post<ApiResp>('/editSkill.html', { key, ...data }, SKILLS);
+}
+
 // ===================== 公开会员主页（/user/:id） =====================
 //   user 插件 memberInfo / memberSites：无需登录，只读 my_member / my_website
 export function getMemberHome(id: number | string) {

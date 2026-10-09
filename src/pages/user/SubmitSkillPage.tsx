@@ -1,0 +1,304 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Alert, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message,
+} from 'antd';
+import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { addSkill, getToolCates, uploadFile, type CateItem } from '@/services/userCenter';
+import { getToken } from '@/utils/auth';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { useNavigate } from 'react-router-dom';
+
+const { Title, Text, Paragraph } = Typography;
+
+// 前端拼装为 Markdown 的 prompt 模板（一键导入的 JSON 与之对应）
+const JSON_EXAMPLE = `{
+  "title": "文章润色",
+  "alias": "polish",
+  "tid": 3,
+  "pic": "",
+  "instruction": "把下面文章改成更书面、逻辑更清晰的版本，保留原意。",
+  "whenUse": "",
+  "whenNot": "",
+  "params": [{ "name": "article", "label": "原文" }],
+  "outputFormat": "只返回润色后的全文。",
+  "example": "",
+  "rmb": 0
+}`;
+
+type ParamRow = { name: string; label: string };
+
+const SubmitSkillPage: React.FC = () => {
+  usePageMeta({ title: '提交技能' });
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+
+  const [cates, setCates] = useState<CateItem[]>([]);
+  const [catesLoading, setCatesLoading] = useState(true);
+  const [pic, setPic] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // 表单其余可见字段（不直接走 Form.Item 受控，便于实时预览拼装）
+  const [instruction, setInstruction] = useState('');
+  const [whenUse, setWhenUse] = useState('');
+  const [whenNot, setWhenNot] = useState('');
+  const [params, setParams] = useState<ParamRow[]>([{ name: '', label: '' }]);
+  const [outputFormat, setOutputFormat] = useState('');
+  const [example, setExample] = useState('');
+  const [rmb, setRmb] = useState(0);
+
+  // 导入区
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    getToolCates()
+      .then((r) => { if (alive && r.code === 1 && Array.isArray(r.data)) setCates(r.data); })
+      .catch(() => {})
+      .finally(() => alive && setCatesLoading(false));
+    return () => { alive = false; };
+  }, []);
+
+  // 实时拼装预览
+  const watchedTitle = Form.useWatch('title', form) || '';
+  const assembled = useMemo(() => {
+    const lines: string[] = [];
+    const title = watchedTitle || '';
+    if (title) lines.push(`# ${title}`, '');
+    if (instruction.trim()) lines.push(instruction.trim(), '');
+    if (whenUse.trim()) lines.push('## 何时使用', whenUse.trim(), '');
+    if (whenNot.trim()) lines.push('## 何时不使用', whenNot.trim(), '');
+    const validParams = params.filter((p) => p.name.trim());
+    if (validParams.length) {
+      lines.push('## 参数');
+      validParams.forEach((p) => lines.push(`- ${p.name.trim()}：${p.label.trim()}`));
+      lines.push('');
+    }
+    if (outputFormat.trim()) lines.push('## 输出格式', outputFormat.trim(), '');
+    if (example.trim()) lines.push('## 示例', example.trim(), '');
+    return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }, [watchedTitle, instruction, whenUse, whenNot, params, outputFormat, example]);
+
+  const doUpload = (file: File) => {
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    setUploading(true);
+    uploadFile(key, file)
+      .then((r) => {
+        if (r.code === 1 && r.data?.url) { setPic(r.data.url); message.success('上传成功'); }
+        else message.error(r.msg || '上传失败');
+      })
+      .catch(() => message.error('上传失败'))
+      .finally(() => setUploading(false));
+  };
+
+  const onFinish = (values: { title: string; alias: string; tid?: number }) => {
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    if (!pic) { message.warning('请上传技能图标'); return; }
+    if (!assembled) { message.warning('请填写指令模板'); return; }
+    setSubmitting(true);
+    addSkill(key, {
+      title: values.title,
+      alias: values.alias,
+      tid: values.tid ?? 0,
+      pic,
+      content: assembled,
+      rmb,
+    })
+      .then((r) => {
+        if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/tools'); }
+        else message.error(r.msg || '提交失败');
+      })
+      .catch(() => message.error('提交失败，请稍后重试'))
+      .finally(() => setSubmitting(false));
+  };
+
+  // ===== 一键导入解析 =====
+  const parseImport = () => {
+    const text = importText.trim();
+    if (!text) { message.warning('请先粘贴内容'); return; }
+    try {
+      if (text.startsWith('{')) {
+        const obj = JSON.parse(text);
+        fillFromObject(obj);
+      } else {
+        fillFromMarkdown(text);
+      }
+      message.success('已填充表单');
+      setImportOpen(false);
+    } catch {
+      message.error('解析失败，请检查格式');
+    }
+  };
+
+  const fillFromObject = (obj: any) => {
+    if (obj.title) form.setFieldValue('title', obj.title);
+    if (obj.alias) form.setFieldValue('alias', obj.alias);
+    if (obj.tid) form.setFieldValue('tid', Number(obj.tid));
+    if (obj.pic) setPic(String(obj.pic));
+    if (obj.instruction) setInstruction(String(obj.instruction));
+    if (obj.whenUse) setWhenUse(String(obj.whenUse));
+    if (obj.whenNot) setWhenNot(String(obj.whenNot));
+    if (Array.isArray(obj.params) && obj.params.length) {
+      setParams(obj.params.map((p: any) => ({ name: String(p.name || ''), label: String(p.label || '') })));
+    } else {
+      setParams([{ name: '', label: '' }]);
+    }
+    if (obj.outputFormat) setOutputFormat(String(obj.outputFormat));
+    if (obj.example) setExample(String(obj.example));
+    if (typeof obj.rmb === 'number') setRmb(obj.rmb);
+  };
+
+  const fillFromMarkdown = (text: string) => {
+    const lines = text.split(/\r?\n/);
+    let title = '';
+    let buf: string[] = [];
+    const section: Record<string, string[]> = {};
+    let cur = '';
+    for (const ln of lines) {
+      const h1 = ln.match(/^#\s+(.*)$/);
+      const h2 = ln.match(/^##\s+(.*)$/);
+      if (h1) { title = h1[1].trim(); continue; }
+      if (h2) { if (cur) section[cur] = buf; cur = h2[1].trim(); buf = []; continue; }
+      buf.push(ln);
+    }
+    if (cur) section[cur] = buf;
+    if (title) form.setFieldValue('title', title);
+    const norm = (s?: string) => (s ? s.trim() : '');
+    setInstruction(norm((section['指令模板'] || section[''] || []).join('\n')));
+    setWhenUse(norm(section['何时使用']?.join('\n')));
+    setWhenNot(norm(section['何时不使用']?.join('\n')));
+    setOutputFormat(norm(section['输出格式']?.join('\n')));
+    setExample(norm(section['示例']?.join('\n')));
+    const ps = (section['参数'] || []).map((l) => l.replace(/^[-*]\s*/, '')).filter(Boolean)
+      .map((l) => { const [n, ...rest] = l.split('：'); return { name: (n || '').trim(), label: rest.join('：').trim() }; });
+    setParams(ps.length ? ps : [{ name: '', label: '' }]);
+  };
+
+  const downloadTemplate = () => {
+    const blob = new Blob([JSON_EXAMPLE], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'skill-template.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const updateParam = (i: number, key: 'name' | 'label', val: string) => {
+    setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
+  };
+
+  return (
+    <Card className="user-center-card">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <Title level={4} style={{ margin: 0 }}>提交技能</Title>
+        <Space>
+          <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>
+          <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>
+        </Space>
+      </div>
+      <Text type="secondary">填写结构化字段，由系统自动拼装为 AI 指令模板并生成运行界面；你也可以粘贴 JSON 或 Markdown 一键填充。</Text>
+
+      <div style={{ display: 'flex', gap: 'var(--space-6)', flexWrap: 'wrap', marginTop: 'var(--space-4)' }}>
+        <div style={{ flex: '1 1 480px', minWidth: 320 }}>
+          <Spin spinning={catesLoading}>
+            <Form form={form} layout="vertical" onFinish={onFinish}>
+              <Form.Item label="技能名称" name="title" rules={[{ required: true, message: '请输入技能名称' }]}>
+                <Input placeholder="例如：文章润色" />
+              </Form.Item>
+              <Form.Item label="调用标识（alias）" name="alias" rules={[
+                { required: true, message: '请输入调用标识' },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: '只能含字母、数字、下划线' },
+              ]}>
+                <Input placeholder="例如：polish（唯一，作为工具地址）" />
+              </Form.Item>
+              <Form.Item label="技能分类" name="tid" rules={[{ required: true, message: '请选择技能分类' }]}>
+                <Select placeholder="选择技能分类" loading={catesLoading}>
+                  {cates.map((c) => <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>)}
+                </Select>
+              </Form.Item>
+              <Form.Item label="技能图标" required>
+                <Space wrap>
+                  <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { doUpload(file); return false; }}>
+                    <Button size="small" loading={uploading} icon={<UploadOutlined />}>上传图标</Button>
+                  </Upload>
+                  {pic ? <img src={pic} alt="pic" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
+                </Space>
+                {!pic && <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请上传技能图标（禁止手写图片地址）</div>}
+              </Form.Item>
+
+              <Form.Item label="指令模板（prompt 本体）" required>
+                <Input.TextArea rows={5} value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="描述这个技能要做什么、输入输出约束等。" />
+              </Form.Item>
+              <Form.Item label="何时使用">
+                <Input.TextArea rows={2} value={whenUse} onChange={(e) => setWhenUse(e.target.value)} placeholder="选填" />
+              </Form.Item>
+              <Form.Item label="何时不使用">
+                <Input.TextArea rows={2} value={whenNot} onChange={(e) => setWhenNot(e.target.value)} placeholder="选填" />
+              </Form.Item>
+
+              <Form.Item label="参数">
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  {params.map((p, i) => (
+                    <Space key={i} wrap>
+                      <Input placeholder="参数名" value={p.name} onChange={(e) => updateParam(i, 'name', e.target.value)} style={{ width: 140 }} />
+                      <Input placeholder="说明" value={p.label} onChange={(e) => updateParam(i, 'label', e.target.value)} style={{ width: 220 }} />
+                      <Button size="small" danger onClick={() => setParams((prev) => prev.filter((_, idx) => idx !== i))} disabled={params.length === 1}>删除</Button>
+                    </Space>
+                  ))}
+                  <Button size="small" icon={<PlusOutlined />} onClick={() => setParams((prev) => [...prev, { name: '', label: '' }])}>添加参数</Button>
+                </Space>
+              </Form.Item>
+
+              <Form.Item label="输出格式">
+                <Input.TextArea rows={2} value={outputFormat} onChange={(e) => setOutputFormat(e.target.value)} placeholder="选填" />
+              </Form.Item>
+              <Form.Item label="使用示例">
+                <Input.TextArea rows={2} value={example} onChange={(e) => setExample(e.target.value)} placeholder="选填" />
+              </Form.Item>
+              <Form.Item label="使用一次金额（元）" required>
+                <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
+                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
+              </Form.Item>
+
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />}>提交审核</Button>
+              </Form.Item>
+            </Form>
+          </Spin>
+        </div>
+
+        <div style={{ flex: '1 1 360px', minWidth: 300 }}>
+          <Text strong>实时预览（提交内容将拼装为以下 Markdown）</Text>
+          <pre className="skill-preview" style={{
+            marginTop: 'var(--space-2)', padding: 'var(--space-4)', background: 'var(--c-bg, #f7f8fa)',
+            border: '1px solid var(--c-border, #eee)', borderRadius: 8, whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word', minHeight: 240, fontSize: 'var(--fs-sm)', lineHeight: 1.7,
+          }}>{assembled || '填写左侧字段后，这里会实时显示拼好的内容…'}</pre>
+        </div>
+      </div>
+
+      <Modal open={importOpen} title="一键导入技能定义" onCancel={() => setImportOpen(false)} onOk={parseImport} okText="解析填充" width={560}>
+        <Alert type="info" showIcon style={{ marginBottom: 'var(--space-3)' }}
+          message="支持粘贴 JSON（与下方示例一致）或 Markdown（按 # / ## 标题切分）；也可选择本地文件导入。" />
+        <Paragraph copyable={{ text: JSON_EXAMPLE }} className="verify-code-block" style={{ fontSize: 'var(--fs-xs)' }}>
+          <Text type="secondary">JSON 示例：</Text>
+        </Paragraph>
+        <pre style={{ fontSize: 'var(--fs-xs)', background: '#f7f8fa', padding: 'var(--space-3)', borderRadius: 6, maxHeight: 160, overflow: 'auto' }}>{JSON_EXAMPLE}</pre>
+        <Input.TextArea rows={6} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="在此粘贴 JSON 或 Markdown…" style={{ marginTop: 'var(--space-3)' }} />
+        <Upload accept=".json,.md,.txt,.markdown" showUploadList={false} beforeUpload={(file) => {
+          const reader = new FileReader();
+          reader.onload = () => { setImportText(String(reader.result || '')); };
+          reader.readAsText(file);
+          return false;
+        }} style={{ marginTop: 'var(--space-3)' }}>
+          <Button icon={<UploadOutlined />}>选择本地文件导入</Button>
+        </Upload>
+      </Modal>
+    </Card>
+  );
+};
+
+export default SubmitSkillPage;

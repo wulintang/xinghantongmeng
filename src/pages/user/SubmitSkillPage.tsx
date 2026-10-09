@@ -108,7 +108,7 @@ const SubmitSkillPage: React.FC = () => {
       rmb,
     })
       .then((r) => {
-        if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/tools'); }
+        if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/skills'); }
         else message.error(r.msg || '提交失败');
       })
       .catch(() => message.error('提交失败，请稍后重试'))

@@ -183,7 +183,7 @@ const App: React.FC = () => {
                             <Route path="columns/:id" element={<MyColumnDetailPage />} />
                             <Route path="ad/buy" element={<AdBuyPage />} />
                             <Route path="ad/my" element={<AdMyPage />} />
-                            <Route path="tools" element={<MyToolsPage />} />
+                            <Route path="skills" element={<MyToolsPage />} />
                             <Route path="submit-skill" element={<SubmitSkillPage />} />
                         </Route>
 

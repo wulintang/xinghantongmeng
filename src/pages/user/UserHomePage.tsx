@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typography, Alert } from 'antd';
 
 import { PageHeader } from '@components/common';
-import { getMemberHome, getMemberSites, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
+import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { domainOf, assetUrl } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -14,14 +14,6 @@ function sexIcon(sex: number): string {
     if (sex === 1) return '♂';
     if (sex === 2) return '♀';
     return '';
-}
-
-function PlaceholderTip({ text }: { text: string }) {
-    return (
-        <Flex justify="center" style={{ padding: '48px 0' }}>
-            <Text type="secondary">{text}</Text>
-        </Flex>
-    );
 }
 
 function UserSitesTab({ loading, sites }: { loading: boolean; sites: MemberSiteItem[] }) {
@@ -71,6 +63,30 @@ function UserColumnsTab({ loading, columns }: { loading: boolean; columns: Colum
     );
 }
 
+function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] }) {
+    if (loading) return <Spin />;
+    if (!skills.length) return <Empty description="该会员暂无已上线的技能" />;
+    return (
+        <Row gutter={[16, 16]}>
+            {skills.map((s) => (
+                <Col key={s.id} xs={24} sm={12} md={8}>
+                    <Link to={`/tools/${s.id}`} className="member-site-card">
+                        <Avatar shape="square" size={48} src={s.pic || undefined}>
+                            {(s.title || '?').slice(0, 1)}
+                        </Avatar>
+                        <div className="member-site-body">
+                            <div className="member-site-title">{s.title || '未命名技能'}</div>
+                            <div className="member-site-desc">
+                                {s.content ? s.content.replace(/<[^>]+>/g, '').slice(0, 40) + '…' : '暂无描述'}
+                            </div>
+                        </div>
+                    </Link>
+                </Col>
+            ))}
+        </Row>
+    );
+}
+
 const UserHomePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -80,6 +96,8 @@ const UserHomePage: React.FC = () => {
     const [sitesLoading, setSitesLoading] = useState(true);
     const [columns, setColumns] = useState<ColumnItem[]>([]);
     const [columnsLoading, setColumnsLoading] = useState(true);
+    const [skills, setSkills] = useState<any[]>([]);
+    const [skillsLoading, setSkillsLoading] = useState(true);
     const [error, setError] = useState('');
 
     usePageMeta({ title: info?.name ? `${info.name} 的主页` : '会员主页' });
@@ -141,6 +159,23 @@ const UserHomePage: React.FC = () => {
             })
             .finally(() => {
                 if (alive) setColumnsLoading(false);
+            });
+        return () => {
+            alive = false;
+        };
+    }, [info, id]);
+
+    useEffect(() => {
+        if (!info) return;
+        let alive = true;
+        setSkillsLoading(true);
+        getSkillsByUser(id || '')
+            .then((r: any) => {
+                if (alive) setSkills(r.code === 1 ? r.data || [] : []);
+            })
+            .catch(() => {})
+            .finally(() => {
+                if (alive) setSkillsLoading(false);
             });
         return () => {
             alive = false;
@@ -216,9 +251,9 @@ const UserHomePage: React.FC = () => {
                             children: <UserColumnsTab loading={columnsLoading} columns={columns} />,
                         },
                         {
-                            key: 'tools',
-                            label: '工具',
-                            children: <PlaceholderTip text="工具功能开发中，敬请期待。" />,
+                            key: 'skills',
+                            label: '技能',
+                            children: <UserSkillsTab loading={skillsLoading} skills={skills} />,
                         },
                     ]}
                 />

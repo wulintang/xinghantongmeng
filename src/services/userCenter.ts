@@ -694,6 +694,11 @@ export function editSkill(key: string, data: Record<string, any>) {
   return post<ApiResp>('/editSkill.html', { key, ...data }, SKILLS);
 }
 
+/** 公开：某用户已通过的技能（个人主页「技能」标签展示，无需登录） */
+export function getSkillsByUser(id: number | string) {
+  return request<ApiResp<any[]>>(`${SKILLS}/skillList.html?uid=${encodeURIComponent(id)}`);
+}
+
 // ===================== 公开会员主页（/user/:id） =====================
 //   user 插件 memberInfo / memberSites：无需登录，只读 my_member / my_website
 export function getMemberHome(id: number | string) {

@@ -18,7 +18,6 @@ const MENU = [
       { key: '/user/columns', label: <Link to="/user/columns">我的专栏</Link> },
       { key: '/user/ad/my', label: <Link to="/user/ad/my">我的广告</Link> },
       { key: '/user/skills', label: <Link to="/user/skills">我的技能</Link> },
-      { key: '/user/submit-skill', label: <Link to="/user/submit-skill">提交技能</Link> },
       { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
     ],
@@ -96,6 +95,7 @@ function UserLayoutInner() {
     const p = location.pathname;
     if (p.startsWith('/user/ad/')) return '/user/ad/my';
     if (p === '/user/submit' || p.startsWith('/user/submit/')) return '/user/mysites';
+    if (p === '/user/submit-skill') return '/user/skills';
     const matched = MENU_KEYS.find((k) => p === k || (k !== '/user' && p.startsWith(k + '/')));
     return matched || '/user';
   }, [location.pathname]);

@@ -55,8 +55,8 @@ const genInitialIcon = (text: string): Promise<File> => {
 };
 
 const SubmitSkillPage: React.FC = () => {
-  const [params] = useSearchParams();
-  const editId = params.get('id');
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('id');
   const isEdit = !!editId;
   usePageMeta({ title: isEdit ? '编辑技能' : '提交技能' });
   const [form] = Form.useForm();

@@ -272,7 +272,7 @@ const SubmitSkillPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
         <Title level={4} style={{ margin: 0 }}>{isEdit ? '编辑技能' : '提交技能'}</Title>
         <Space>
-          {!isEdit && <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>}
+          <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>
           {!isEdit && <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>}
         </Space>
       </div>

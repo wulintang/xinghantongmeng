@@ -22,9 +22,9 @@ const ToolsPage: React.FC = () => {
     const [total, setTotal] = useState(0);
 
     usePageMeta({
-        title: '常用工具',
-        keywords: '在线工具, 常用工具, 工具箱',
-        description: '兴汉同盟收录的在线常用工具。',
+        title: '技能广场',
+        keywords: '在线技能, 技能广场',
+        description: '兴汉同盟收录的在线技能。',
     });
 
     useEffect(() => {
@@ -77,9 +77,9 @@ const ToolsPage: React.FC = () => {
     return (
         <Flex vertical gap={20}>
             <PageHeader
-                title="常用工具"
-                description="后台工具箱里已开放的全部工具"
-                crumbs={[{ label: '首页', to: '/' }, { label: '常用工具', to: '/tools' }]}
+                title="技能广场"
+                description="已开放的全部技能"
+                crumbs={[{ label: '首页', to: '/' }, { label: '技能广场', to: '/tools' }]}
             />
 
             <AdSlotSkeleton slot="list_tool_top" />
@@ -89,10 +89,10 @@ const ToolsPage: React.FC = () => {
             {loading ? (
                 <ToolsSkeleton />
             ) : list.length === 0 ? (
-                <Alert type="info" showIcon message="暂无工具" />
+                <Alert type="info" showIcon message="暂无技能" />
             ) : (
                 <>
-                    <Text type="secondary">共 {total} 个工具</Text>
+                    <Text type="secondary">共 {total} 个技能</Text>
                     <Row gutter={[16, 16]}>
                         {list.map((t, i) => (
                             <React.Fragment key={t.id}>

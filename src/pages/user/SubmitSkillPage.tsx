@@ -3,10 +3,10 @@ import {
   Alert, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
-import { addSkill, getToolCates, uploadFile, type CateItem } from '@/services/userCenter';
+import { addSkill, editSkill, getTool, getToolCates, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -55,9 +55,13 @@ const genInitialIcon = (text: string): Promise<File> => {
 };
 
 const SubmitSkillPage: React.FC = () => {
-  usePageMeta({ title: '提交技能' });
+  const [params] = useSearchParams();
+  const editId = params.get('id');
+  const isEdit = !!editId;
+  usePageMeta({ title: isEdit ? '编辑技能' : '提交技能' });
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [editLoading, setEditLoading] = useState(false);
 
   const [cates, setCates] = useState<CateItem[]>([]);
   const [catesLoading, setCatesLoading] = useState(true);
@@ -86,6 +90,30 @@ const SubmitSkillPage: React.FC = () => {
       .finally(() => alive && setCatesLoading(false));
     return () => { alive = false; };
   }, []);
+
+  // 编辑模式：按 toolbox_id 拉取已通过技能回填表单
+  useEffect(() => {
+    if (!isEdit || !editId) return;
+    const key = getToken();
+    if (!key) return;
+    setEditLoading(true);
+    getTool(editId, key)
+      .then((r) => {
+        if (r.code === 1 && r.data) {
+          const t = r.data;
+          if (t.title) form.setFieldValue('title', t.title);
+          if (t.alias) form.setFieldValue('alias', t.alias);
+          if (t.tid) form.setFieldValue('tid', Number(t.tid));
+          setPic(t.pic || '');
+          setRmb(parseFloat(t.rmb) || 0);
+          if (t.content) fillFromMarkdown(t.content);
+        } else {
+          message.error(r.msg || '加载失败');
+        }
+      })
+      .catch(() => message.error('加载失败'))
+      .finally(() => setEditLoading(false));
+  }, [isEdit, editId]);
 
   // 实时拼装预览
   const watchedTitle = Form.useWatch('title', form) || '';
@@ -134,16 +162,11 @@ const SubmitSkillPage: React.FC = () => {
         if (up.code === 1 && up.data?.url) finalPic = up.data.url;
         else { message.error(up.msg || '自动生成图标失败'); setSubmitting(false); return; }
       }
-      const r = await addSkill(key, {
-        title: values.title,
-        alias: values.alias,
-        tid: values.tid ?? 0,
-        pic: finalPic,
-        content: assembled,
-        rmb,
-      });
-      if (r.code === 1) { message.success(r.msg || '提交成功，等待审核'); navigate('/user/skills'); }
-      else message.error(r.msg || '提交失败');
+      const r = isEdit
+        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled })
+        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb });
+      if (r.code === 1) { message.success(r.msg || (isEdit ? '保存成功' : '提交成功，等待审核')); navigate('/user/skills'); }
+      else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
       message.error('提交失败，请稍后重试');
     } finally {
@@ -222,6 +245,24 @@ const SubmitSkillPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  // 编辑模式下，按当前名称重新生成首字图标并上传
+  const regenIcon = async () => {
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    const name = form.getFieldValue('title') || 'S';
+    setEditLoading(true);
+    try {
+      const file = await genInitialIcon(name);
+      const up = await uploadFile(key, file);
+      if (up.code === 1 && up.data?.url) { setPic(up.data.url); message.success('已重新生成图标'); }
+      else message.error(up.msg || '生成失败');
+    } catch {
+      message.error('生成失败');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const updateParam = (i: number, key: 'name' | 'label', val: string) => {
     setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
   };
@@ -229,10 +270,10 @@ const SubmitSkillPage: React.FC = () => {
   return (
     <Card className="user-center-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <Title level={4} style={{ margin: 0 }}>提交技能</Title>
+        <Title level={4} style={{ margin: 0 }}>{isEdit ? '编辑技能' : '提交技能'}</Title>
         <Space>
-          <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>
-          <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>
+          {!isEdit && <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>}
+          {!isEdit && <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>}
         </Space>
       </div>
       <Text type="secondary">填写结构化字段，由系统自动拼装为 AI 指令模板并生成运行界面；你也可以粘贴 JSON 或 Markdown 一键填充。</Text>
@@ -248,7 +289,7 @@ const SubmitSkillPage: React.FC = () => {
                 { required: true, message: '请输入调用标识' },
                 { pattern: /^[a-zA-Z0-9_]+$/, message: '只能含字母、数字、下划线' },
               ]}>
-                <Input placeholder="例如：polish（唯一，作为工具地址）" />
+                <Input placeholder="例如：polish（唯一，作为工具地址）" disabled={isEdit} />
               </Form.Item>
               <Form.Item label="技能分类" name="tid" rules={[{ required: true, message: '请选择技能分类' }]}>
                 <Select placeholder="选择技能分类" loading={catesLoading}>
@@ -260,6 +301,7 @@ const SubmitSkillPage: React.FC = () => {
                   <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { doUpload(file); return false; }}>
                     <Button size="small" loading={uploading} icon={<UploadOutlined />}>上传图标</Button>
                   </Upload>
+                  {isEdit && <Button size="small" onClick={regenIcon} disabled={editLoading}>重新生成首字图标</Button>}
                   {pic ? <img src={pic} alt="pic" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
                 </Space>
                 {!pic && <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未上传则提交时自动生成首字图标（也可手动上传）</div>}
@@ -300,7 +342,7 @@ const SubmitSkillPage: React.FC = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />}>提交审核</Button>
+                <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />}>{isEdit ? '保存' : '提交审核'}</Button>
               </Form.Item>
             </Form>
           </Spin>

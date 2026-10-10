@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Empty, Input, Modal, Select, Space, Spin, Tag, Typography, Upload, message,
+  Button, Card, Empty, Popconfirm, Space, Spin, Tag, Typography, message,
 } from 'antd';
-import { EditOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  editSkill, getMySkillApplies, getToolCates, uploadFile, type CateItem, type SkillApplyItem,
+  delSkill, getMySkillApplies, type SkillApplyItem,
 } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -23,29 +23,16 @@ const MyToolsPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [list, setList] = useState<SkillApplyItem[]>([]);
-  const [cates, setCates] = useState<CateItem[]>([]);
-
-  const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState<SkillApplyItem | null>(null);
-  const [eTitle, setETitle] = useState('');
-  const [ePic, setEPic] = useState('');
-  const [eContent, setEContent] = useState('');
-  const [eRmb, setERmb] = useState(0);
-  const [eTid, setETid] = useState<number | undefined>();
-  const [eUploading, setEUploading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [delId, setDelId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () => {
     const key = getToken();
     if (!key) { setLoading(false); return; }
     setLoading(true);
-    Promise.all([
-      getMySkillApplies(key),
-      getToolCates(),
-    ])
-      .then(([r, c]) => {
+    getMySkillApplies(key)
+      .then((r) => {
         if (r.code === 1 && Array.isArray(r.data)) setList(r.data);
-        if (c.code === 1 && Array.isArray(c.data)) setCates(c.data);
       })
       .catch(() => message.error('加载失败'))
       .finally(() => setLoading(false));
@@ -53,46 +40,18 @@ const MyToolsPage: React.FC = () => {
 
   useEffect(load, []);
 
-  const openEdit = (item: SkillApplyItem) => {
-    setEditing(item);
-    setETitle(item.title);
-    setEPic(item.pic);
-    setEContent(item.content);
-    setERmb(parseFloat(item.rmb) || 0);
-    setETid(item.tid ? Number(item.tid) : undefined);
-    setEditOpen(true);
-  };
-
-  const doUpload = (file: File) => {
+  const doDelete = (id: number) => {
     const key = getToken();
     if (!key) { message.warning('请先登录'); return; }
-    setEUploading(true);
-    uploadFile(key, file)
-      .then((r) => { if (r.code === 1 && r.data?.url) { setEPic(r.data.url); message.success('上传成功'); } else message.error(r.msg || '上传失败'); })
-      .catch(() => message.error('上传失败'))
-      .finally(() => setEUploading(false));
-  };
-
-  const saveEdit = () => {
-    const key = getToken();
-    if (!key || !editing) return;
-    if (!eTitle.trim()) { message.warning('请填写技能名称'); return; }
-    if (!eContent.trim()) { message.warning('请填写指令模板'); return; }
-    setSaving(true);
-    editSkill(key, {
-      id: editing.toolbox_id,
-      title: eTitle,
-      pic: ePic,
-      tid: eTid ?? 0,
-      rmb: eRmb,
-      content: eContent,
-    })
+    setDeleting(true);
+    setDelId(id);
+    delSkill(key, id)
       .then((r) => {
-        if (r.code === 1) { message.success(r.msg || '保存成功'); setEditOpen(false); load(); }
-        else message.error(r.msg || '保存失败');
+        if (r.code === 1) { message.success(r.msg || '已删除'); load(); }
+        else message.error(r.msg || '删除失败');
       })
-      .catch(() => message.error('保存失败，请稍后重试'))
-      .finally(() => setSaving(false));
+      .catch(() => message.error('删除失败，请稍后重试'))
+      .finally(() => { setDeleting(false); setDelId(null); });
   };
 
   return (
@@ -101,7 +60,7 @@ const MyToolsPage: React.FC = () => {
         <Title level={4} style={{ margin: 0 }}>我的技能</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/submit-skill')}>提交技能</Button>
       </div>
-      <Text type="secondary">提交后由管理员审核；通过即上线，拒绝会给出原因。已通过的技能可在此直接编辑（即时生效，无需重新审核）。</Text>
+      <Text type="secondary">提交后由管理员审核；通过即上线，拒绝会给出原因。已通过的技能可在此直接编辑（即时生效，无需重新审核），也可删除。</Text>
 
       <Spin spinning={loading}>
         {list.length === 0 && !loading ? (
@@ -130,9 +89,21 @@ const MyToolsPage: React.FC = () => {
                         </Paragraph>
                       ) : null}
                     </div>
-                    {it.status === 1 && it.toolbox_id > 0 ? (
-                      <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(it)}>编辑</Button>
-                    ) : null}
+                    <Space wrap>
+                      {it.status === 1 && it.toolbox_id > 0 ? (
+                        <Button size="small" icon={<EditOutlined />} onClick={() => navigate('/user/submit-skill?id=' + it.toolbox_id)}>编辑</Button>
+                      ) : null}
+                      <Popconfirm
+                        title="确认删除该技能？"
+                        description="删除后已上线技能也将从广场移除，且不可恢复。"
+                        okText="删除"
+                        okButtonProps={{ danger: true, loading: deleting && delId === it.id }}
+                        cancelText="取消"
+                        onConfirm={() => doDelete(it.id)}
+                      >
+                        <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                      </Popconfirm>
+                    </Space>
                   </div>
                 </Card>
               );
@@ -140,38 +111,6 @@ const MyToolsPage: React.FC = () => {
           </Space>
         )}
       </Spin>
-
-      <Modal open={editOpen} title={`编辑技能：${editing?.title || ''}`} onCancel={() => setEditOpen(false)} onOk={saveEdit} okText="保存" confirmLoading={saving} width={600}>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div>
-            <Text>技能名称</Text>
-            <Input value={eTitle} onChange={(e) => setETitle(e.target.value)} placeholder="技能名称" />
-          </div>
-          <div>
-            <Text>技能图标</Text>
-            <Space wrap>
-              <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { doUpload(file); return false; }}>
-                <Button size="small" loading={eUploading} icon={<UploadOutlined />}>上传图标</Button>
-              </Upload>
-              {ePic ? <img src={ePic} alt="pic" style={{ width: 40, height: 40, borderRadius: 6, objectFit: 'cover' }} /> : null}
-            </Space>
-          </div>
-          <div>
-            <Text>技能分类</Text>
-            <Select style={{ width: '100%' }} value={eTid} onChange={(v) => setETid(v)} placeholder="选择技能分类" allowClear>
-              {cates.map((c) => <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>)}
-            </Select>
-          </div>
-          <div>
-            <Text>指令模板（prompt 本体 / Markdown）</Text>
-            <Input.TextArea rows={6} value={eContent} onChange={(e) => setEContent(e.target.value)} placeholder="技能说明 + 指令" />
-          </div>
-          <div>
-            <Text>使用一次金额（元，0=免费）</Text>
-            <Input style={{ width: 200 }} type="number" min={0} step={0.01} value={eRmb} onChange={(e) => setERmb(parseFloat(e.target.value) || 0)} addonAfter="元/次" />
-          </div>
-        </Space>
-      </Modal>
     </Card>
   );
 };

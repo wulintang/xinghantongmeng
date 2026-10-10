@@ -70,7 +70,7 @@ function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] })
         <Row gutter={[16, 16]}>
             {skills.map((s) => (
                 <Col key={s.id} xs={24} sm={12} md={8}>
-                    <Link to={`/tools/${s.id}`} className="member-site-card">
+                    <Link to={s.toolbox_id ? `/tools/${s.toolbox_id}` : '/tools'} className="member-site-card">
                         <Avatar shape="square" size={48} src={s.pic || undefined}>
                             {(s.title || '?').slice(0, 1)}
                         </Avatar>

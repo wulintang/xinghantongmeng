@@ -30,7 +30,7 @@ const ToolDetailPage: React.FC = () => {
     const [faved, setFaved] = useState(false);
 
     usePageMeta({
-        title: item?.title || '工具详情',
+        title: item?.title || '技能详情',
         description: item?.content || undefined,
     });
 
@@ -103,12 +103,12 @@ const ToolDetailPage: React.FC = () => {
         return (
             <Flex vertical gap={16}>
                 <PageHeader
-                    title="工具详情"
-                    crumbs={[{ label: '首页', to: '/' }, { label: '常用工具', to: '/tools' }, { label: '详情' }]}
+                    title="技能详情"
+                    crumbs={[{ label: '首页', to: '/' }, { label: '技能广场', to: '/tools' }, { label: '详情' }]}
                 />
-                <Alert type="warning" showIcon message={error || '工具不存在'} />
+                <Alert type="warning" showIcon message={error || '技能不存在'} />
                 <div>
-                    <Button onClick={() => navigate('/tools')}>返回常用工具</Button>
+                    <Button onClick={() => navigate('/tools')}>返回技能广场</Button>
                 </div>
             </Flex>
         );
@@ -120,12 +120,12 @@ const ToolDetailPage: React.FC = () => {
                 title={item.title}
                 crumbs={[
                     { label: '首页', to: '/' },
-                    { label: '常用工具', to: '/tools' },
+                    { label: '技能广场', to: '/tools' },
                     { label: item.title },
                 ]}
                 extra={
                     <Space>
-                        <Button onClick={() => navigate('/tools')}>返回列表</Button>
+                        <Button onClick={() => navigate('/tools')}>返回技能广场</Button>
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>{faved ? '★' : '☆'} 收藏</Button>
                         <AppTooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
@@ -141,26 +141,26 @@ const ToolDetailPage: React.FC = () => {
                     {item.pic ? <img src={assetUrl(item.pic)} alt={item.title} className="tool-detail-ico" /> : null}
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap>
-                            {item.ai === 1 ? <Tag color="purple">AI 工具</Tag> : <Tag color="blue">在线工具</Tag>}
+                            {item.ai === 1 ? <Tag color="purple">AI 技能</Tag> : <Tag color="blue">在线技能</Tag>}
                             {Number(item.rmb) > 0 ? <Tag color="gold">￥{item.rmb}</Tag> : <Tag color="green">免费</Tag>}
                             <Tag>标识 {item.alias}</Tag>
                         </Space>
                         <Title level={5} className="detail-subtitle">
-                            工具说明
+                            技能说明
                         </Title>
                         <div className="detail-content md-content"><MdPreview id="tool-preview" modelValue={item.content || ''} /></div>
                     </Flex>
                 </Flex>
             </Card>
 
-            <Card title="工具信息">
+            <Card title="技能信息">
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
-                    <Descriptions.Item label="工具名称">{item.title}</Descriptions.Item>
+                    <Descriptions.Item label="技能名称">{item.title}</Descriptions.Item>
                     <Descriptions.Item label="调用标识">{item.alias}</Descriptions.Item>
                     <Descriptions.Item label="价格">
                         {Number(item.rmb) > 0 ? `￥${item.rmb}` : '免费'}
                     </Descriptions.Item>
-                    <Descriptions.Item label="类型">{item.ai === 1 ? 'AI 智能工具' : '在线工具'}</Descriptions.Item>
+                    <Descriptions.Item label="类型">{item.ai === 1 ? 'AI 智能技能' : '在线技能'}</Descriptions.Item>
                     <Descriptions.Item label="排序">{item.px}</Descriptions.Item>
                     <Descriptions.Item label="发布时间">
                         {item.time ? dayjs.unix(item.time).format('YYYY-MM-DD HH:mm') : '-'}
@@ -175,7 +175,7 @@ const ToolDetailPage: React.FC = () => {
             <AdSlotSkeleton slot="detail_tool_bottom" />
 
             <Modal
-                title={`举报「${item?.title || '工具'}」`}
+                title={`举报「${item?.title || '技能'}」`}
                 open={reportOpen}
                 onCancel={() => {
                     setReportOpen(false);

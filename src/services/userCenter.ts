@@ -696,6 +696,11 @@ export function editSkill(key: string, data: Record<string, any>) {
   return post<ApiResp>('/editSkill.html', { key, ...data }, SKILLS);
 }
 
+/** 删除自己提交的技能（同时清理已上线的 app_toolbox 记录） */
+export function delSkill(key: string, id: number) {
+  return post<ApiResp>('/delSkill.html', { key, id }, SKILLS);
+}
+
 /** 公开：某用户已通过的技能（个人主页「技能」标签展示，无需登录） */
 export function getSkillsByUser(id: number | string) {
   return request<ApiResp<any[]>>(`${SKILLS}/skillList.html?uid=${encodeURIComponent(id)}`);

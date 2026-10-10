@@ -57,6 +57,7 @@ const SubmitSkillPage: React.FC = () => {
   const [cates, setCates] = useState<CateItem[]>([]);
   const [catesLoading, setCatesLoading] = useState(true);
   const [pic, setPic] = useState('');
+  const [isUserPic, setIsUserPic] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -139,7 +140,7 @@ const SubmitSkillPage: React.FC = () => {
     setUploading(true);
     uploadFile(key, file)
       .then((r) => {
-        if (r.code === 1 && r.data?.url) { setPic(r.data.url); message.success('上传成功'); }
+        if (r.code === 1 && r.data?.url) { setPic(r.data.url); setIsUserPic(true); message.success('上传成功'); }
         else message.error(r.msg || '上传失败');
       })
       .catch(() => message.error('上传失败'))
@@ -153,7 +154,7 @@ const SubmitSkillPage: React.FC = () => {
     setSubmitting(true);
     try {
       let finalPic = pic;
-      if (!finalPic) {
+      if (!isUserPic) {
         const name = values.title || values.alias || 'S';
         const file = await genInitialIcon(name);
         const up = await uploadFile(key, file);
@@ -269,24 +270,6 @@ const SubmitSkillPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  // 编辑模式下，按当前名称重新生成首字图标并上传
-  const regenIcon = async () => {
-    const key = getToken();
-    if (!key) { message.warning('请先登录'); return; }
-    const name = form.getFieldValue('title') || 'S';
-    setEditLoading(true);
-    try {
-      const file = await genInitialIcon(name);
-      const up = await uploadFile(key, file);
-      if (up.code === 1 && up.data?.url) { setPic(up.data.url); message.success('已重新生成图标'); }
-      else message.error(up.msg || '生成失败');
-    } catch {
-      message.error('生成失败');
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
   const updateParam = (i: number, key: 'name' | 'label' | 'type' | 'options', val: any) => {
     setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
   };
@@ -334,10 +317,9 @@ const SubmitSkillPage: React.FC = () => {
                   <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { doUpload(file); return false; }}>
                     <Button size="small" loading={uploading} icon={<UploadOutlined />}>上传图标</Button>
                   </Upload>
-                  {isEdit && <Button size="small" onClick={regenIcon} disabled={editLoading}>重新生成首字图标</Button>}
                   {pic ? <img src={pic} alt="pic" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
                 </Space>
-                {!pic && <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未上传则提交时自动生成首字图标（也可手动上传）</div>}
+                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未手动上传则提交时自动按当前名称生成首字图标</div>
               </Form.Item>
 
               <Form.Item label="指令模板（prompt 本体）" required>

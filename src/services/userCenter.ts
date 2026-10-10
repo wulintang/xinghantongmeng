@@ -162,7 +162,7 @@ export function sendCode(type: 'sms' | 'email', target: string, scene = 'reg') {
   );
 }
 
-// 注册（好道 Api.php::reg：手机+邮箱双必验）
+// 注册（好道 Api.php::reg：手机+邮箱双必验 + 图形验证码 captcha）
 export function userRegister(data: {
   mail: string;
   phone: string;
@@ -170,17 +170,19 @@ export function userRegister(data: {
   passwords: string;
   sms_code: string;
   email_code: string;
+  captcha: string;
 }) {
   return post<ApiResp<{ key: string }>>('/reg.html', data);
 }
 
-// 登录（好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码）
+// 登录（好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码 + 图形验证码 captcha）
 export function userLogin(data: {
   phone?: string;
   mail?: string;
   password: string;
   sms_code?: string;
   email_code?: string;
+  captcha?: string;
 }) {
   return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data);
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Space, message } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
-import { sendCode, userRegister } from '@/services/userCenter';
+import { sendCode, userRegister, captchaUrl } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 
 const { Title, Text } = Typography;
@@ -12,6 +12,8 @@ export default function RegisterPage() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [codeLoading, setCodeLoading] = useState(false);
+  const [captchaSrc, setCaptchaSrc] = useState(captchaUrl());
+  const refreshCaptcha = () => setCaptchaSrc(captchaUrl());
 
   // 好道 Api.php::reg：邮箱 + 手机 都必验
   const onSendCode = (scene: 'sms' | 'email') => {
@@ -37,6 +39,7 @@ export default function RegisterPage() {
       passwords: values.passwords,
       sms_code: values.sms_code,
       email_code: values.email_code,
+      captcha: values.captcha,
     })
       .then((r: any) => {
         if (r.code === 1) {
@@ -122,6 +125,22 @@ export default function RegisterPage() {
           ]}
         >
           <Input.Password />
+        </Form.Item>
+        <Form.Item
+          name="captcha"
+          label="图形验证码"
+          rules={[{ required: true, message: '请输入图形验证码' }]}
+        >
+          <Space.Compact block>
+            <Input placeholder="请输入右侧图形验证码" />
+            <img
+              src={captchaSrc}
+              alt="图形验证码"
+              title="点击刷新"
+              onClick={refreshCaptcha}
+              style={{ width: 100, height: 32, cursor: 'pointer', borderRadius: 4, border: '1px solid var(--c-border, #e5e7eb)' }}
+            />
+          </Space.Compact>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} block>

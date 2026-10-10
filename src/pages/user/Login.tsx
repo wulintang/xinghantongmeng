@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Radio, Card, Typography, Space, message } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
-import { sendCode, userLogin } from '@/services/userCenter';
+import { sendCode, userLogin, captchaUrl } from '@/services/userCenter';
 import { setToken } from '@/utils/auth';
 
 const { Title, Text } = Typography;
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [mode, setMode] = useState<'phone' | 'mail'>('phone');
   const [loading, setLoading] = useState(false);
   const [codeLoading, setCodeLoading] = useState(false);
+  const [captchaSrc, setCaptchaSrc] = useState(captchaUrl());
+  const refreshCaptcha = () => setCaptchaSrc(captchaUrl());
 
   // 好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码
   const onSendCode = () => {
@@ -50,6 +52,7 @@ export default function LoginPage() {
       payload.mail = values.mail;
       payload.email_code = values.email_code;
     }
+    payload.captcha = values.captcha;
     userLogin(payload)
       .then((r: any) => {
         if (r.code === 1) {
@@ -132,6 +135,22 @@ export default function LoginPage() {
           rules={[{ required: true, message: '请输入密码' }]}
         >
           <Input.Password placeholder="每次登录都需输入密码" />
+        </Form.Item>
+        <Form.Item
+          name="captcha"
+          label="图形验证码"
+          rules={[{ required: true, message: '请输入图形验证码' }]}
+        >
+          <Space.Compact block>
+            <Input placeholder="请输入右侧图形验证码" />
+            <img
+              src={captchaSrc}
+              alt="图形验证码"
+              title="点击刷新"
+              onClick={refreshCaptcha}
+              style={{ width: 100, height: 32, cursor: 'pointer', borderRadius: 4, border: '1px solid var(--c-border, #e5e7eb)' }}
+            />
+          </Space.Compact>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading} block>

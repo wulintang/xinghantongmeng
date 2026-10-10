@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd'
+import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -187,19 +187,18 @@ const ToolDetailPage: React.FC = () => {
                     </Descriptions.Item>
                     <Descriptions.Item label="类型">{item.ai === 1 ? 'AI 智能技能' : '在线技能'}</Descriptions.Item>
                     <Descriptions.Item label="作者">
-                        {!item.uid ? (
-                            <Link to="/dan/about" style={{ color: 'inherit' }}>
-                                {site?.title || '官方'}
-                            </Link>
+                        {Number(item.uid) === 0 ? (
+                            <Tag color="blue">
+                                <Link to="/dan/about" style={{ color: 'inherit' }}>
+                                    {site?.title || '官方'}
+                                </Link>
+                            </Tag>
                         ) : (
-                            <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
-                                <Space>
-                                    <Avatar size="small" src={assetUrl(item.author_head) || undefined}>
-                                        {(item.author || '会').slice(0, 1)}
-                                    </Avatar>
-                                    {item.author || `会员 ${item.uid}`}
-                                </Space>
-                            </Link>
+                            <Tag color="blue">
+                                <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+                                    {item.author || `会员${item.uid}`}
+                                </Link>
+                            </Tag>
                         )}
                     </Descriptions.Item>
                     <Descriptions.Item label="排序">{item.px}</Descriptions.Item>

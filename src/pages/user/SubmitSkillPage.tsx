@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Tabs, Typography, Upload, message,
+  Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Switch, Tabs, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { addSkill, editSkill, getTool, getToolCates, importSkillFromGit, uploadFile, type CateItem } from '@/services/userCenter';
@@ -140,6 +140,7 @@ const SubmitSkillPage: React.FC = () => {
   const [importText, setImportText] = useState('');
   const [gitUrl, setGitUrl] = useState('');
   const [gitToken, setGitToken] = useState('');
+  const [gitPrivate, setGitPrivate] = useState(false);
   const [gitLoading, setGitLoading] = useState(false);
 
   useEffect(() => {
@@ -256,7 +257,7 @@ const SubmitSkillPage: React.FC = () => {
     if (!url) { message.warning('请填写 Git 仓库地址'); return; }
     setGitLoading(true);
     try {
-      const r = await importSkillFromGit(url, gitToken.trim());
+      const r = await importSkillFromGit(url, gitPrivate ? gitToken.trim() : '', gitPrivate);
       if (r.code === 1 && r.data) {
         const d = r.data;
         if (d.title) form.setFieldValue('title', d.title);
@@ -488,17 +489,23 @@ const SubmitSkillPage: React.FC = () => {
                 <Input
                   value={gitUrl}
                   onChange={(e) => setGitUrl(e.target.value)}
-                  placeholder="https://github.com/owner/repo"
+                  placeholder="粘贴标准 agent skill 仓库地址，如 https://cnb.cool/ytecn/zblog-agent-skills"
                 />
-                <Input.Password
-                  value={gitToken}
-                  onChange={(e) => setGitToken(e.target.value)}
-                  placeholder="私有仓库填 Token，公开仓库留空"
-                />
+                <Space>
+                  <Switch checked={gitPrivate} onChange={setGitPrivate} />
+                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>私有仓库（需填访问令牌）</Text>
+                </Space>
+                {gitPrivate ? (
+                  <Input.Password
+                    value={gitToken}
+                    onChange={(e) => setGitToken(e.target.value)}
+                    placeholder="填写私有仓库访问令牌"
+                  />
+                ) : null}
                 <Button type="primary" loading={gitLoading} block onClick={handleGitImport}>
-                  从 Git 拉取并填充
+                  {gitPrivate ? '拉取并填充' : '直接导入（公开仓库）'}
                 </Button>
-                <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库。</Text>
+                <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库；公开仓库无需令牌，粘贴地址即可直接导入。</Text>
               </Space>
             ),
           },

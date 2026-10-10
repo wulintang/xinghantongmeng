@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd'
+import { Alert, Avatar, Button, Card, Descriptions, Flex, Input, Modal, Space, Tag, Typography, message } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
+import { useSite } from '@/context/SiteContext';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -20,6 +21,7 @@ const ToolDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const toolId = stripHtmlSuffix(id);
+    const { site } = useSite();
 
     const [loading, setLoading] = useState(true);
     const [item, setItem] = useState<ToolItem | null>(null);
@@ -161,6 +163,22 @@ const ToolDetailPage: React.FC = () => {
                         {Number(item.rmb) > 0 ? `￥${item.rmb}` : '免费'}
                     </Descriptions.Item>
                     <Descriptions.Item label="类型">{item.ai === 1 ? 'AI 智能技能' : '在线技能'}</Descriptions.Item>
+                    <Descriptions.Item label="作者">
+                        {!item.uid ? (
+                            <Link to="/dan/about" style={{ color: 'inherit' }}>
+                                {site?.title || '官方'}
+                            </Link>
+                        ) : (
+                            <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+                                <Space>
+                                    <Avatar size="small" src={assetUrl(item.author_head) || undefined}>
+                                        {(item.author || '匿').slice(0, 1)}
+                                    </Avatar>
+                                    {item.author || '匿名'}
+                                </Space>
+                            </Link>
+                        )}
+                    </Descriptions.Item>
                     <Descriptions.Item label="排序">{item.px}</Descriptions.Item>
                     <Descriptions.Item label="发布时间">
                         {item.time ? dayjs.unix(item.time).format('YYYY-MM-DD HH:mm') : '-'}

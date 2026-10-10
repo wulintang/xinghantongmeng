@@ -10,9 +10,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const { Title, Text, Paragraph } = Typography;
 
-// 前端拼装为 Markdown 的 prompt 模板（一键导入的 JSON 与之对应）
-// params 支持 type：text(单行) / textarea(多行) / select(下拉) / radio(单选) / date / time
-// select / radio 需带 options 数组；提交时 ## 参数 段以 ```json 代码块存储，后端按类型渲染。
+// 一键导入的 JSON 与之对应；params 支持 type：text(单行) / textarea(多行) / select(下拉) / radio(单选) / date / time
+// select / radio 需带 options 数组。提交时 params 被序列化进 content 的自然语言参数行，由后端按类型渲染。
 const JSON_EXAMPLE = `{
   "title": "文章润色",
   "alias": "polish",
@@ -32,6 +31,72 @@ const JSON_EXAMPLE = `{
 
 type ParamType = 'text' | 'textarea' | 'select' | 'radio' | 'date' | 'time';
 type ParamRow = { name: string; label: string; type: ParamType; options: string[] };
+
+const serializeParams = (ps: ParamRow[]): string =>
+  ps
+    .map((p) => {
+      const label = p.label.trim() || p.name.trim();
+      if (!label) return '';
+      const opts = (p.options || []).filter(Boolean);
+      switch (p.type) {
+        case 'textarea':
+          return `${label}：用户可以填写${label}。`;
+        case 'select':
+        case 'radio': {
+          if (opts.length < 2) return `${label}：用户选择${label}。`;
+          const head = opts.slice(0, -1).join('、');
+          const tail = opts[opts.length - 1];
+          const joined = opts.length > 2 ? `${head}、或${tail}` : `${head}或${tail}`;
+          return `${label}：用户选择${label}（${joined}）。`;
+        }
+        case 'date':
+          return `${label}：用户选择${label}日期。`;
+        case 'time':
+          return `${label}：用户选择${label}时间。`;
+        case 'text':
+        default:
+          return `${label}：用户输入${label}。`;
+      }
+    })
+    .filter(Boolean)
+    .join('\n');
+
+const TEXTAREA_HINT = /(描述|要求|需求|内容|详情|分析|特长|条款|理由|经历|方案|计划|建议|说明|备注|经验|技能|行为|原因|影响|措施|承诺|信息|标的|付款方式|感受|总结|反馈|意见|问题|具体)/;
+
+const parseParamsFromText = (text: string): ParamRow[] => {
+  const out: ParamRow[] = [];
+  for (const raw of text.split(/\r?\n/)) {
+    const s = raw.trim();
+    if (!s || s.startsWith('#')) continue;
+    if (/^开始生成[：:]/.test(s)) continue;
+    const m = s.match(/^(.+?)[：:]\s*用户(?:可以)?(输入|选择|填写)(.*)$/);
+    if (!m) continue;
+    const label = m[1].trim();
+    const action = m[2];
+    const rest = m[3].trim();
+    if (!label) continue;
+    let type: ParamType = 'text';
+    let options: string[] = [];
+    if (action === '填写' || TEXTAREA_HINT.test(label)) {
+      type = 'textarea';
+    }
+    if (action === '选择') {
+      if (/(日期|date)/i.test(`${label} ${rest}`)) type = 'date';
+      else if (/(时间|time)/i.test(`${label} ${rest}`)) type = 'time';
+      else {
+        const om = rest.match(/[（(]([^)）]+)[)）]/);
+        if (om) {
+          options = om[1].split(/[,，、]|或|或者|\/|\|/).map((x) => x.trim()).filter(Boolean);
+          type = options.length === 2 ? 'radio' : 'select';
+        } else {
+          type = 'select';
+        }
+      }
+    }
+    out.push({ name: label, label, type, options });
+  }
+  return out.length ? out : [{ name: '', label: '', type: 'text', options: [] }];
+};
 
 const genInitialIcon = (text: string): Promise<File> => {
   const ch = (text.trim()[0] || 'S').toUpperCase();
@@ -116,17 +181,9 @@ const SubmitSkillPage: React.FC = () => {
     if (instruction.trim()) lines.push(instruction.trim(), '');
     if (whenUse.trim()) lines.push('## 何时使用', whenUse.trim(), '');
     if (whenNot.trim()) lines.push('## 何时不使用', whenNot.trim(), '');
-    const validParams = params.filter((p) => p.name.trim());
+    const validParams = params.filter((p) => p.name.trim() || p.label.trim());
     if (validParams.length) {
-      lines.push('## 参数');
-      lines.push('```json');
-      lines.push(JSON.stringify(validParams.map((p) => ({
-        name: p.name.trim(),
-        label: p.label.trim() || p.name.trim(),
-        type: p.type || 'text',
-        ...(p.options && p.options.length ? { options: p.options } : {}),
-      }))));
-      lines.push('```');
+      lines.push(serializeParams(validParams));
       lines.push('');
     }
     if (outputFormat.trim()) lines.push('## 输出格式', outputFormat.trim(), '');
@@ -249,15 +306,17 @@ const SubmitSkillPage: React.FC = () => {
             options: Array.isArray(p.options) ? p.options.map(String) : [],
           })));
         } else {
-          setParams([{ name: '', label: '', type: 'text', options: [] }]);
+          setParams(parseParamsFromText(text));
         }
       } catch {
-        setParams([{ name: '', label: '', type: 'text', options: [] }]);
+        setParams(parseParamsFromText(text));
       }
-    } else {
+    } else if (psRaw.length) {
       const ps = psRaw.map((l: string) => l.replace(/^[-*]\s*/, '')).filter(Boolean)
         .map((l: string) => { const [n, ...rest] = l.split('：'); return { name: (n || '').trim(), label: rest.join('：').trim(), type: 'textarea' as ParamType, options: [] as string[] }; });
-      setParams(ps.length ? ps : [{ name: '', label: '', type: 'text', options: [] }]);
+      setParams(ps.length ? ps : parseParamsFromText(text));
+    } else {
+      setParams(parseParamsFromText(text));
     }
   };
 

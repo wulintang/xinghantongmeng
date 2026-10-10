@@ -508,6 +508,9 @@ export interface ToolItem {
   px: number;
   time: number;
   config?: string;
+  uid?: number;
+  author?: string;
+  author_head?: string;
 }
 
 export interface TagItem {

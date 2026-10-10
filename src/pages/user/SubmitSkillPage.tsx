@@ -27,31 +27,16 @@ const JSON_EXAMPLE = `{
 
 type ParamRow = { name: string; label: string };
 
-// 按名称首字/首字母生成一张纯色首字图标图片（自动上传用，用户无需手动传图）
 const genInitialIcon = (text: string): Promise<File> => {
-  return new Promise((resolve, reject) => {
-    const ch = (text.trim()[0] || 'S').toUpperCase();
-    const palette = ['#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1', '#13c2c2', '#f5222d', '#2f54eb'];
-    let hash = 0;
-    for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
-    const bg = palette[hash % palette.length];
-    const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 200;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) { reject(new Error('canvas not supported')); return; }
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 200, 200);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 120px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(ch, 100, 108);
-    canvas.toBlob((blob) => {
-      if (!blob) { reject(new Error('toBlob failed')); return; }
-      resolve(new File([blob], `${Date.now()}.png`, { type: 'image/png' }));
-    }, 'image/png');
-  });
+  const ch = (text.trim()[0] || 'S').toUpperCase();
+  const palette = ['#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1', '#13c2c2', '#f5222d', '#2f54eb'];
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+  const bg = palette[hash % palette.length];
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${bg}"/><text x="32" y="33" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="32" font-weight="700" fill="#ffffff" text-anchor="middle" dominant-baseline="central">${esc(ch)}</text></svg>`;
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  return Promise.resolve(new File([blob], `${Date.now()}.svg`, { type: 'image/svg+xml' }));
 };
 
 const SubmitSkillPage: React.FC = () => {

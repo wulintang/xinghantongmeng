@@ -514,9 +514,32 @@ const SubmitSkillPage: React.FC = () => {
             label: '粘贴 / 上传导入',
             children: (
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Paragraph copyable={{ text: JSON_EXAMPLE }} className="verify-code-block" style={{ marginBottom: 0 }}>
-                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>JSON 示例（点击右侧复制）</Text>
-                </Paragraph>
+                <div className="verify-code-block" style={{ position: 'relative' }}>
+                  <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--c-text-2)', marginBottom: 4 }}>
+                    JSON 示例（点击右侧复制）
+                  </div>
+                  <pre
+                    style={{
+                      margin: 0,
+                      background: 'transparent',
+                      border: 'none',
+                      padding: 0,
+                      color: 'var(--c-text)',
+                      fontSize: 'var(--fs-xs)',
+                      lineHeight: 'var(--lh-base)',
+                      maxHeight: 160,
+                      overflow: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {JSON_EXAMPLE}
+                  </pre>
+                  <Text
+                    copyable={{ text: JSON_EXAMPLE }}
+                    style={{ position: 'absolute', top: 8, right: 8, color: 'var(--c-link)' }}
+                  />
+                </div>
                 <Input.TextArea rows={5} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="在此粘贴 JSON 或 Markdown…" />
                 <Upload accept=".json,.md,.txt,.markdown" showUploadList={false} beforeUpload={(file) => {
                   const reader = new FileReader();

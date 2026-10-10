@@ -195,9 +195,9 @@ const ToolDetailPage: React.FC = () => {
                             <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
                                 <Space>
                                     <Avatar size="small" src={assetUrl(item.author_head) || undefined}>
-                                        {(item.author || '匿').slice(0, 1)}
+                                        {(item.author || '会').slice(0, 1)}
                                     </Avatar>
-                                    {item.author || '匿名'}
+                                    {item.author || `会员 ${item.uid}`}
                                 </Space>
                             </Link>
                         )}

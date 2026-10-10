@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Alert, Button, Card, Divider, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message,
+  Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Tabs, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { addSkill, editSkill, getTool, getToolCates, importSkillFromGit, uploadFile, type CateItem } from '@/services/userCenter';
@@ -478,40 +478,52 @@ const SubmitSkillPage: React.FC = () => {
         </div>
       </div>
 
-      <Modal open={importOpen} title="一键导入技能定义" onCancel={() => setImportOpen(false)} onOk={parseImport} okText="解析填充" width={560}>
-        <Alert type="info" showIcon style={{ marginBottom: 'var(--space-3)' }}
-          message="支持粘贴 JSON（与下方示例一致）或 Markdown（按 # / ## 标题切分）；也可选择本地文件导入；或从 Git 仓库直接导入标准 agent skill。" />
-        <Divider>从 Git 仓库导入（支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库）</Divider>
-        <Input
-          addonBefore="仓库地址"
-          value={gitUrl}
-          onChange={(e) => setGitUrl(e.target.value)}
-          placeholder="https://github.com/owner/repo 等"
-        />
-        <Input.Password
-          addonBefore="Token"
-          value={gitToken}
-          onChange={(e) => setGitToken(e.target.value)}
-          placeholder="公开仓库留空；私有仓库填访问令牌"
-          style={{ marginTop: 'var(--space-3)' }}
-        />
-        <Button type="primary" loading={gitLoading} block onClick={handleGitImport} style={{ marginTop: 'var(--space-3)' }}>
-          从 Git 拉取并填充
-        </Button>
-        <Divider>或粘贴 / 上传文件导入</Divider>
-        <Paragraph copyable={{ text: JSON_EXAMPLE }} className="verify-code-block" style={{ fontSize: 'var(--fs-xs)' }}>
-          <Text type="secondary">JSON 示例：</Text>
-        </Paragraph>
-        <pre style={{ fontSize: 'var(--fs-xs)', background: '#f7f8fa', padding: 'var(--space-3)', borderRadius: 6, maxHeight: 160, overflow: 'auto' }}>{JSON_EXAMPLE}</pre>
-        <Input.TextArea rows={6} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="在此粘贴 JSON 或 Markdown…" style={{ marginTop: 'var(--space-3)' }} />
-        <Upload accept=".json,.md,.txt,.markdown" showUploadList={false} beforeUpload={(file) => {
-          const reader = new FileReader();
-          reader.onload = () => { setImportText(String(reader.result || '')); };
-          reader.readAsText(file);
-          return false;
-        }} style={{ marginTop: 'var(--space-3)' }}>
-          <Button icon={<UploadOutlined />}>选择本地文件导入</Button>
-        </Upload>
+      <Modal open={importOpen} title="一键导入技能定义" onCancel={() => setImportOpen(false)} footer={null} width={560}>
+        <Tabs defaultActiveKey="git" items={[
+          {
+            key: 'git',
+            label: 'Git 仓库导入',
+            children: (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Input
+                  value={gitUrl}
+                  onChange={(e) => setGitUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                />
+                <Input.Password
+                  value={gitToken}
+                  onChange={(e) => setGitToken(e.target.value)}
+                  placeholder="私有仓库填 Token，公开仓库留空"
+                />
+                <Button type="primary" loading={gitLoading} block onClick={handleGitImport}>
+                  从 Git 拉取并填充
+                </Button>
+                <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库。</Text>
+              </Space>
+            ),
+          },
+          {
+            key: 'paste',
+            label: '粘贴 / 上传导入',
+            children: (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Paragraph copyable={{ text: JSON_EXAMPLE }} className="verify-code-block" style={{ marginBottom: 0 }}>
+                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>JSON 示例（点击右侧复制）</Text>
+                </Paragraph>
+                <Input.TextArea rows={5} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="在此粘贴 JSON 或 Markdown…" />
+                <Upload accept=".json,.md,.txt,.markdown" showUploadList={false} beforeUpload={(file) => {
+                  const reader = new FileReader();
+                  reader.onload = () => { setImportText(String(reader.result || '')); };
+                  reader.readAsText(file);
+                  return false;
+                }}>
+                  <Button icon={<UploadOutlined />}>选择本地文件</Button>
+                </Upload>
+                <Button type="primary" block onClick={parseImport}>解析填充</Button>
+              </Space>
+            ),
+          },
+        ]} />
       </Modal>
     </Card>
   );

@@ -11,21 +11,27 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 const { Title, Text, Paragraph } = Typography;
 
 // 前端拼装为 Markdown 的 prompt 模板（一键导入的 JSON 与之对应）
+// params 支持 type：text(单行) / textarea(多行) / select(下拉) / radio(单选) / date / time
+// select / radio 需带 options 数组；提交时 ## 参数 段以 ```json 代码块存储，后端按类型渲染。
 const JSON_EXAMPLE = `{
   "title": "文章润色",
   "alias": "polish",
   "tid": 3,
   "pic": "",
-  "instruction": "把下面文章改成更书面、逻辑更清晰的版本，保留原意。",
-  "whenUse": "",
-  "whenNot": "",
-  "params": [{ "name": "article", "label": "原文" }],
-  "outputFormat": "只返回润色后的全文。",
-  "example": "",
+  "instruction": "把下面文章改成更书面、逻辑更清晰、保留原意的版本。",
+  "whenUse": "已有草稿需要润色、纠错、提升可读性时使用。",
+  "whenNot": "需要从零原创写作时请用其他技能。",
+  "params": [
+    { "name": "article", "label": "原文", "type": "textarea" },
+    { "name": "tone", "label": "语气风格", "type": "select", "options": ["正式", "轻松", "专业"] }
+  ],
+  "outputFormat": "只返回润色后的全文，不要解释。",
+  "example": "原文：今天天气很好，我们去公园玩。",
   "rmb": 0
 }`;
 
-type ParamRow = { name: string; label: string };
+type ParamType = 'text' | 'textarea' | 'select' | 'radio' | 'date' | 'time';
+type ParamRow = { name: string; label: string; type: ParamType; options: string[] };
 
 const genInitialIcon = (text: string): Promise<File> => {
   const ch = (text.trim()[0] || 'S').toUpperCase();
@@ -58,7 +64,7 @@ const SubmitSkillPage: React.FC = () => {
   const [instruction, setInstruction] = useState('');
   const [whenUse, setWhenUse] = useState('');
   const [whenNot, setWhenNot] = useState('');
-  const [params, setParams] = useState<ParamRow[]>([{ name: '', label: '' }]);
+  const [params, setParams] = useState<ParamRow[]>([{ name: '', label: '', type: 'text', options: [] }]);
   const [outputFormat, setOutputFormat] = useState('');
   const [example, setExample] = useState('');
   const [rmb, setRmb] = useState(0);
@@ -112,7 +118,14 @@ const SubmitSkillPage: React.FC = () => {
     const validParams = params.filter((p) => p.name.trim());
     if (validParams.length) {
       lines.push('## 参数');
-      validParams.forEach((p) => lines.push(`- ${p.name.trim()}：${p.label.trim()}`));
+      lines.push('```json');
+      lines.push(JSON.stringify(validParams.map((p) => ({
+        name: p.name.trim(),
+        label: p.label.trim() || p.name.trim(),
+        type: p.type || 'text',
+        ...(p.options && p.options.length ? { options: p.options } : {}),
+      }))));
+      lines.push('```');
       lines.push('');
     }
     if (outputFormat.trim()) lines.push('## 输出格式', outputFormat.trim(), '');
@@ -186,9 +199,14 @@ const SubmitSkillPage: React.FC = () => {
     if (obj.whenUse) setWhenUse(String(obj.whenUse));
     if (obj.whenNot) setWhenNot(String(obj.whenNot));
     if (Array.isArray(obj.params) && obj.params.length) {
-      setParams(obj.params.map((p: any) => ({ name: String(p.name || ''), label: String(p.label || '') })));
+      setParams(obj.params.map((p: any) => ({
+        name: String(p.name || ''),
+        label: String(p.label || ''),
+        type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
+        options: Array.isArray(p.options) ? p.options.map(String) : [],
+      })));
     } else {
-      setParams([{ name: '', label: '' }]);
+      setParams([{ name: '', label: '', type: 'text', options: [] }]);
     }
     if (obj.outputFormat) setOutputFormat(String(obj.outputFormat));
     if (obj.example) setExample(String(obj.example));
@@ -205,10 +223,10 @@ const SubmitSkillPage: React.FC = () => {
       const h1 = ln.match(/^#\s+(.*)$/);
       const h2 = ln.match(/^##\s+(.*)$/);
       if (h1) { title = h1[1].trim(); continue; }
-      if (h2) { if (cur) section[cur] = buf; cur = h2[1].trim(); buf = []; continue; }
+      if (h2) { section[cur] = buf; cur = h2[1].trim(); buf = []; continue; }
       buf.push(ln);
     }
-    if (cur) section[cur] = buf;
+    section[cur] = buf;
     if (title) form.setFieldValue('title', title);
     const norm = (s?: string) => (s ? s.trim() : '');
     setInstruction(norm((section['指令模板'] || section[''] || []).join('\n')));
@@ -216,9 +234,30 @@ const SubmitSkillPage: React.FC = () => {
     setWhenNot(norm(section['何时不使用']?.join('\n')));
     setOutputFormat(norm(section['输出格式']?.join('\n')));
     setExample(norm(section['示例']?.join('\n')));
-    const ps = (section['参数'] || []).map((l) => l.replace(/^[-*]\s*/, '')).filter(Boolean)
-      .map((l) => { const [n, ...rest] = l.split('：'); return { name: (n || '').trim(), label: rest.join('：').trim() }; });
-    setParams(ps.length ? ps : [{ name: '', label: '' }]);
+    const psRaw = section['参数'] || [];
+    const psBlock = psRaw.join('\n');
+    const jm = psBlock.match(/```json\s*([\s\S]*?)\s*```/);
+    if (jm) {
+      try {
+        const arr = JSON.parse(jm[1]);
+        if (Array.isArray(arr) && arr.length) {
+          setParams(arr.map((p: any) => ({
+            name: String(p.name || ''),
+            label: String(p.label || ''),
+            type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
+            options: Array.isArray(p.options) ? p.options.map(String) : [],
+          })));
+        } else {
+          setParams([{ name: '', label: '', type: 'text', options: [] }]);
+        }
+      } catch {
+        setParams([{ name: '', label: '', type: 'text', options: [] }]);
+      }
+    } else {
+      const ps = psRaw.map((l: string) => l.replace(/^[-*]\s*/, '')).filter(Boolean)
+        .map((l: string) => { const [n, ...rest] = l.split('：'); return { name: (n || '').trim(), label: rest.join('：').trim(), type: 'textarea' as ParamType, options: [] as string[] }; });
+      setParams(ps.length ? ps : [{ name: '', label: '', type: 'text', options: [] }]);
+    }
   };
 
   const downloadTemplate = () => {
@@ -248,9 +287,18 @@ const SubmitSkillPage: React.FC = () => {
     }
   };
 
-  const updateParam = (i: number, key: 'name' | 'label', val: string) => {
+  const updateParam = (i: number, key: 'name' | 'label' | 'type' | 'options', val: any) => {
     setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
   };
+
+  const PARAM_TYPE_OPTIONS = [
+    { value: 'text', label: '单行文本' },
+    { value: 'textarea', label: '多行文本' },
+    { value: 'select', label: '下拉选择' },
+    { value: 'radio', label: '单选' },
+    { value: 'date', label: '日期' },
+    { value: 'time', label: '时间' },
+  ];
 
   return (
     <Card className="user-center-card">
@@ -305,13 +353,22 @@ const SubmitSkillPage: React.FC = () => {
               <Form.Item label="参数">
                 <Space direction="vertical" style={{ width: '100%' }}>
                   {params.map((p, i) => (
-                    <Space key={i} wrap>
-                      <Input placeholder="参数名" value={p.name} onChange={(e) => updateParam(i, 'name', e.target.value)} style={{ width: 140 }} />
-                      <Input placeholder="说明" value={p.label} onChange={(e) => updateParam(i, 'label', e.target.value)} style={{ width: 220 }} />
+                    <Space key={i} wrap align="start">
+                      <Input placeholder="参数名" value={p.name} onChange={(e) => updateParam(i, 'name', e.target.value)} style={{ width: 130 }} />
+                      <Input placeholder="说明" value={p.label} onChange={(e) => updateParam(i, 'label', e.target.value)} style={{ width: 180 }} />
+                      <Select value={p.type} onChange={(v) => updateParam(i, 'type', v)} style={{ width: 110 }} options={PARAM_TYPE_OPTIONS} />
+                      {(p.type === 'select' || p.type === 'radio') && (
+                        <Input
+                          placeholder="选项，逗号分隔"
+                          value={(p.options || []).join(', ')}
+                          onChange={(e) => updateParam(i, 'options', e.target.value.split(/[,，]/).map((s) => s.trim()).filter(Boolean))}
+                          style={{ width: 200 }}
+                        />
+                      )}
                       <Button size="small" danger onClick={() => setParams((prev) => prev.filter((_, idx) => idx !== i))} disabled={params.length === 1}>删除</Button>
                     </Space>
                   ))}
-                  <Button size="small" icon={<PlusOutlined />} onClick={() => setParams((prev) => [...prev, { name: '', label: '' }])}>添加参数</Button>
+                  <Button size="small" icon={<PlusOutlined />} onClick={() => setParams((prev) => [...prev, { name: '', label: '', type: 'text', options: [] }])}>添加参数</Button>
                 </Space>
               </Form.Item>
 

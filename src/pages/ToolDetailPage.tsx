@@ -3,6 +3,7 @@ import { Alert, Avatar, Button, Card, Descriptions, Flex, Input, Modal, Space, T
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { DownloadOutlined } from '@ant-design/icons';
 
 import { useSite } from '@/context/SiteContext';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
@@ -99,6 +100,25 @@ const ToolDetailPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '网络错误'));
     };
 
+    // 导出为标准 agent skill（SKILL.md：YAML frontmatter name/description + 正文 content）
+    const onExport = () => {
+        if (!item) return;
+        const raw = item.content || '';
+        const body = raw.replace(/^#\s+.*\r?\n/, '').trim();
+        let description = item.title || '';
+        const wu = body.match(/##\s*何时使用\s*\r?\n([\s\S]*?)(?:\r?\n##\s|$)/);
+        if (wu && wu[1].trim()) description = wu[1].trim();
+        const md = `---\nname: ${item.title || 'skill'}\ndescription: ${description}\n---\n\n${body}\n`;
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${item.alias || 'skill'}.skill.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+        message.success('已导出为标准 agent skill（SKILL.md）');
+    };
+
     if (loading) return <ToolDetailSkeleton />;
 
     if (error || !item) {
@@ -131,6 +151,9 @@ const ToolDetailPage: React.FC = () => {
                         <Button type={faved ? 'primary' : 'default'} onClick={onFav}>{faved ? '★' : '☆'} 收藏</Button>
                         <AppTooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
+                        </AppTooltip>
+                        <AppTooltip title="导出为标准 agent skill（SKILL.md）">
+                            <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能</Button>
                         </AppTooltip>
                     </Space>
                 }

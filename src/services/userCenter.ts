@@ -663,6 +663,18 @@ export function getTool(id: number | string, key = '') {
 //   提交写 my_app_skills_apply（status=0），审核在 skills 插件内，通过写 my_app_toolbox（默认工具箱目录表，使其可被 AI 引擎执行）。
 const SKILLS = '/index.php/skills/index';
 
+/** 从 Git 仓库导入标准 agent skill：后端 clone + 解析 SKILL.md + references，返回结构化技能数据 */
+export function importSkillFromGit(url: string, token = '') {
+  return post<ApiResp<{
+    title: string;
+    instruction: string;
+    whenUse: string;
+    whenNot: string;
+    params: { name: string; label: string; type: string; options?: string[] }[];
+    references: string;
+  }>>('/importSkillFromGit.html', { url, token });
+}
+
 /** 我的技能申请记录（my_app_skills_apply，按 uid 过滤） */
 export interface SkillApplyItem {
   id: number;

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Alert, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message,
+  Alert, Button, Card, Divider, Form, Input, InputNumber, Modal, Select, Space, Spin, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
-import { addSkill, editSkill, getTool, getToolCates, uploadFile, type CateItem } from '@/services/userCenter';
+import { addSkill, editSkill, getTool, getToolCates, importSkillFromGit, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,7 +17,7 @@ const JSON_EXAMPLE = `{
   "alias": "polish",
   "tid": 3,
   "pic": "",
-  "instruction": "把下面文章改成更书面、逻辑更清晰、保留原意的版本。",
+  "instruction": "把下面文章改成更书面、逻辑更清晰、保留原意，语气风格为{语气风格}。\n\n原文：\n{原文}",
   "whenUse": "已有草稿需要润色、纠错、提升可读性时使用。",
   "whenNot": "需要从零原创写作时请用其他技能。",
   "params": [
@@ -138,6 +138,9 @@ const SubmitSkillPage: React.FC = () => {
   // 导入区
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
+  const [gitUrl, setGitUrl] = useState('');
+  const [gitToken, setGitToken] = useState('');
+  const [gitLoading, setGitLoading] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -245,6 +248,40 @@ const SubmitSkillPage: React.FC = () => {
       setImportOpen(false);
     } catch {
       message.error('解析失败，请检查格式');
+    }
+  };
+
+  const handleGitImport = async () => {
+    const url = gitUrl.trim();
+    if (!url) { message.warning('请填写 Git 仓库地址'); return; }
+    setGitLoading(true);
+    try {
+      const r = await importSkillFromGit(url, gitToken.trim());
+      if (r.code === 1 && r.data) {
+        const d = r.data;
+        if (d.title) form.setFieldValue('title', d.title);
+        if (d.instruction) setInstruction(d.instruction);
+        if (d.whenUse) setWhenUse(d.whenUse);
+        if (d.whenNot) setWhenNot(d.whenNot);
+        if (Array.isArray(d.params) && d.params.length) {
+          setParams(d.params.map((p: any) => ({
+            name: String(p.name || ''),
+            label: String(p.label || ''),
+            type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
+            options: Array.isArray(p.options) ? p.options.map(String) : [],
+          })));
+        } else {
+          setParams([{ name: '', label: '', type: 'text', options: [] }]);
+        }
+        message.success('已从 Git 仓库导入并填充表单');
+        setImportOpen(false);
+      } else {
+        message.error(r.msg || '导入失败');
+      }
+    } catch {
+      message.error('导入失败，请检查仓库地址或网络');
+    } finally {
+      setGitLoading(false);
     }
   };
 
@@ -443,7 +480,25 @@ const SubmitSkillPage: React.FC = () => {
 
       <Modal open={importOpen} title="一键导入技能定义" onCancel={() => setImportOpen(false)} onOk={parseImport} okText="解析填充" width={560}>
         <Alert type="info" showIcon style={{ marginBottom: 'var(--space-3)' }}
-          message="支持粘贴 JSON（与下方示例一致）或 Markdown（按 # / ## 标题切分）；也可选择本地文件导入。" />
+          message="支持粘贴 JSON（与下方示例一致）或 Markdown（按 # / ## 标题切分）；也可选择本地文件导入；或从 Git 仓库直接导入标准 agent skill。" />
+        <Divider>从 Git 仓库导入（支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库）</Divider>
+        <Input
+          addonBefore="仓库地址"
+          value={gitUrl}
+          onChange={(e) => setGitUrl(e.target.value)}
+          placeholder="https://github.com/owner/repo 等"
+        />
+        <Input.Password
+          addonBefore="Token"
+          value={gitToken}
+          onChange={(e) => setGitToken(e.target.value)}
+          placeholder="公开仓库留空；私有仓库填访问令牌"
+          style={{ marginTop: 'var(--space-3)' }}
+        />
+        <Button type="primary" loading={gitLoading} block onClick={handleGitImport} style={{ marginTop: 'var(--space-3)' }}>
+          从 Git 拉取并填充
+        </Button>
+        <Divider>或粘贴 / 上传文件导入</Divider>
         <Paragraph copyable={{ text: JSON_EXAMPLE }} className="verify-code-block" style={{ fontSize: 'var(--fs-xs)' }}>
           <Text type="secondary">JSON 示例：</Text>
         </Paragraph>

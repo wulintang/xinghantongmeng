@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Button, Card, Empty, Popconfirm, Space, Spin, Tag, Typography, message,
 } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   delSkill, getMySkillApplies, type SkillApplyItem,
 } from '@/services/userCenter';
@@ -54,6 +54,24 @@ const MyToolsPage: React.FC = () => {
       .finally(() => { setDeleting(false); setDelId(null); });
   };
 
+  // 导出为标准 agent skill（SKILL.md：YAML frontmatter name/description + 正文 content）
+  const onExport = (it: SkillApplyItem) => {
+    const raw = it.content || '';
+    const body = raw.replace(/^#\s+.*\r?\n/, '').trim();
+    let description = it.title || '';
+    const wu = body.match(/##\s*何时使用\s*\r?\n([\s\S]*?)(?:\r?\n##\s|$)/);
+    if (wu && wu[1].trim()) description = wu[1].trim();
+    const md = `---\nname: ${it.title || 'skill'}\ndescription: ${description}\n---\n\n${body}\n`;
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${it.alias || 'skill'}.skill.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    message.success('已导出为标准 agent skill（SKILL.md）');
+  };
+
   return (
     <Card className="user-center-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
@@ -93,6 +111,7 @@ const MyToolsPage: React.FC = () => {
                       {(it.status === 1 || it.status === 2) && it.toolbox_id > 0 ? (
                         <Button size="small" icon={<EditOutlined />} onClick={() => navigate('/user/submit-skill?id=' + it.toolbox_id)}>编辑</Button>
                       ) : null}
+                      <Button size="small" icon={<DownloadOutlined />} onClick={() => onExport(it)}>导出</Button>
                       <Popconfirm
                         title="确认删除该技能？"
                         description="删除后已上线技能也将从广场移除，且不可恢复。"

@@ -279,8 +279,8 @@ const SubmitSkillPage: React.FC = () => {
       } else {
         message.error(r.msg || '导入失败');
       }
-    } catch {
-      message.error('导入失败，请检查仓库地址或网络');
+    } catch (e: any) {
+      message.error(e?.message || '导入失败，请检查仓库地址或网络');
     } finally {
       setGitLoading(false);
     }

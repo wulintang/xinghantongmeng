@@ -172,7 +172,7 @@ export function userRegister(data: {
   email_code: string;
   captcha: string;
 }) {
-  return post<ApiResp<{ key: string }>>('/reg.html', data);
+  return post<ApiResp<{ key: string }>>('/reg.html', { ...data, sid: getCaptchaSid() });
 }
 
 // 登录（好道 Api.php::login：手机或邮箱二选一 + 密码 + 对应验证码 + 图形验证码 captcha）
@@ -184,7 +184,7 @@ export function userLogin(data: {
   email_code?: string;
   captcha?: string;
 }) {
-  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', data);
+  return post<ApiResp<{ key: string; data: MemberInfo }>>('/login.html', { ...data, sid: getCaptchaSid() });
 }
 
 // 换绑手机号（已绑定账号，校验短信验证码；scene=bind）

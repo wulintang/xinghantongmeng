@@ -691,7 +691,7 @@ export function getMySkillApplies(key: string) {
   return request<ApiResp<SkillApplyItem[]>>(`${SKILLS}/myApplies.html?key=${encodeURIComponent(key)}`);
 }
 
-/** 编辑已通过技能（直接改 my_app_toolbox，open 保持 1，不重新审核） */
+/** 编辑已通过技能（重新提交审核：置对应申请为待审，审核通过后才更新线上） */
 export function editSkill(key: string, data: Record<string, any>) {
   return post<ApiResp>('/editSkill.html', { key, ...data }, SKILLS);
 }

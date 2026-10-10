@@ -165,7 +165,7 @@ const SubmitSkillPage: React.FC = () => {
       const r = isEdit
         ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled })
         : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb });
-      if (r.code === 1) { message.success(r.msg || (isEdit ? '保存成功' : '提交成功，等待审核')); navigate('/user/skills'); }
+      if (r.code === 1) { message.success(r.msg || (isEdit ? '已提交重新审核，等待管理员审核' : '提交成功，等待审核')); navigate('/user/skills'); }
       else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
       message.error('提交失败，请稍后重试');
@@ -342,7 +342,7 @@ const SubmitSkillPage: React.FC = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />}>{isEdit ? '保存' : '提交审核'}</Button>
+                <Button type="primary" htmlType="submit" loading={submitting} icon={<PlusOutlined />}>{isEdit ? '提交重新审核' : '提交审核'}</Button>
               </Form.Item>
             </Form>
           </Spin>

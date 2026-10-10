@@ -60,7 +60,7 @@ const MyToolsPage: React.FC = () => {
         <Title level={4} style={{ margin: 0 }}>我的技能</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/submit-skill')}>提交技能</Button>
       </div>
-      <Text type="secondary">提交后由管理员审核；通过即上线，拒绝会给出原因。已通过的技能可在此直接编辑（即时生效，无需重新审核），也可删除。</Text>
+      <Text type="secondary">提交后由管理员审核；通过即上线，拒绝会给出原因。已通过的技能可在此重新编辑，修改后需再次审核通过才会更新上线（审核期间线上保留旧版），也可删除。</Text>
 
       <Spin spinning={loading}>
         {list.length === 0 && !loading ? (
@@ -90,7 +90,7 @@ const MyToolsPage: React.FC = () => {
                       ) : null}
                     </div>
                     <Space wrap>
-                      {it.status === 1 && it.toolbox_id > 0 ? (
+                      {(it.status === 1 || it.status === 2) && it.toolbox_id > 0 ? (
                         <Button size="small" icon={<EditOutlined />} onClick={() => navigate('/user/submit-skill?id=' + it.toolbox_id)}>编辑</Button>
                       ) : null}
                       <Popconfirm

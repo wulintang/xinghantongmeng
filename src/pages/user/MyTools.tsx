@@ -102,7 +102,7 @@ const MyToolsPage: React.FC = () => {
                         <span>提交时间：{it.time ? new Date(it.time * 1000).toLocaleString() : '-'}</span>
                       </div>
                       {it.status === 2 && it.reason ? (
-                        <Paragraph style={{ color: '#b91c1c', fontSize: 'var(--fs-sm)', margin: '4px 0 0' }}>
+                        <Paragraph style={{ color: 'var(--capsule-danger)', fontSize: 'var(--fs-sm)', margin: '4px 0 0' }}>
                           拒绝原因：{it.reason}
                         </Paragraph>
                       ) : null}

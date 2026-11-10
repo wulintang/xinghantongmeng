@@ -50,6 +50,19 @@ function darkText(): Record<string, any> {
 }
 
 /**
+ * 纯色 / 渐变背景值白名单：只允许预设色与 CSS 渐变，杜绝 url()/javascript:/@import
+ * 等任意 CSS 注入（尤其是渲染他人主页背景时，不能信任存储内容）。
+ */
+function isSafeCssBackground(v: string): boolean {
+    const s = (v || '').trim();
+    if (/url\s*\(|javascript:|expression\s*\(|@import|;|\{|\}/i.test(s)) return false;
+    if (/^#[0-9a-f]{3,8}$/i.test(s)) return true;
+    if (/^rgba?\([0-9.,%\s]+\)$/i.test(s)) return true;
+    if (/^(linear|radial|conic)-gradient\([0-9a-zA-Z.,%()#\s\-]+\)$/i.test(s)) return true;
+    return false;
+}
+
+/**
  * 计算用户主页背景 + 前景文字的 Card body 内联样式（严格限定在 /user/:id 的 card body 内）。
  * 关键铁律：只走 CSS background（background / backgroundImage / 多重背景遮罩），绝不渲染 <img>，
  * 因此背景对卡片高度零贡献——卡片高度永远由内容决定，与背景图尺寸无关（cover 仅裁剪填充）。
@@ -64,6 +77,8 @@ export function buildCardBodyStyle(bg?: MyRender | null): CSSProperties {
     if (!bg || bg.bg_type === 0) return style as CSSProperties;
 
     if (bg.bg_type === 1 || bg.bg_type === 2) {
+        // 他人主页背景也要防注入；预设色板生成的值天然合法
+        if (!isSafeCssBackground(bg.bg_value)) return style as CSSProperties;
         style.background = bg.bg_value;
     } else if (bg.bg_type === 3) {
         // 图片：客户端再次校验（/ 相对路径或 http(s)，他人内容防御）；叠半透明遮罩保障对比度

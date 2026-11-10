@@ -472,8 +472,8 @@ const SubmitSkillPage: React.FC = () => {
         <div style={{ flex: '1 1 360px', minWidth: 300 }}>
           <Text strong>实时预览（提交内容将拼装为以下 Markdown）</Text>
           <pre className="skill-preview" style={{
-            marginTop: 'var(--space-2)', padding: 'var(--space-4)', background: 'var(--c-bg, #f7f8fa)',
-            border: '1px solid var(--c-border, #eee)', borderRadius: 8, whiteSpace: 'pre-wrap',
+            marginTop: 'var(--space-2)', padding: 'var(--space-4)', background: 'var(--c-bg-soft)',
+            border: '1px solid var(--c-border)', borderRadius: 8, whiteSpace: 'pre-wrap',
             wordBreak: 'break-word', minHeight: 240, fontSize: 'var(--fs-sm)', lineHeight: 1.7,
           }}>{assembled || '填写左侧字段后，这里会实时显示拼好的内容…'}</pre>
         </div>

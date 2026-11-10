@@ -213,11 +213,11 @@ export default function Header(): React.JSX.Element {
                 <Link to="/" className="site-logo">
                     {site?.logo ? (
                         <img src={site.logo} alt={site.title || ''} className="site-logo-img" />
-                    ) : (
-                        <Text strong className="site-logo-text">
-                            {site?.title || '兴汉同盟'}
-                        </Text>
-                    )}
+                    ) : null}
+                    {/* logo 旁始终显示站点标题（统一：不再「有图就没字」） */}
+                    <Text strong className="site-logo-text">
+                        {site?.title || '兴汉同盟'}
+                    </Text>
                 </Link>
 
                 {isMobile ? (

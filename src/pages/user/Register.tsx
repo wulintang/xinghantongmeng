@@ -138,7 +138,7 @@ export default function RegisterPage() {
               alt="图形验证码"
               title="点击刷新"
               onClick={refreshCaptcha}
-              style={{ width: 100, height: 32, cursor: 'pointer', borderRadius: 4, border: '1px solid var(--c-border, #e5e7eb)' }}
+              style={{ width: 100, height: 32, cursor: 'pointer', borderRadius: 4, border: '1px solid var(--c-border)' }}
             />
           </Space.Compact>
         </Form.Item>

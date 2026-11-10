@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Avatar, Button, Card, Divider, Flex, Space, Tag, Typography } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -61,8 +61,13 @@ const ColumnDetailPage: React.FC = () => {
   const [error, setError] = useState('');
   const [showAll, setShowAll] = useState(false);
 
-  /** 所有专栏默认展示最新 10 篇（按发布时间倒序），其余提供展开 */
+  /** 每个专栏默认展示它自己最新的 10 篇（按发布时间倒序），其余提供展开 */
   const LATEST_LIMIT = 10;
+  const sortedArticles = useMemo(
+    () => [...articles].sort((x, y) => (y.time || 0) - (x.time || 0)),
+    [articles]
+  );
+  const visibleArticles = showAll ? sortedArticles : sortedArticles.slice(0, LATEST_LIMIT);
 
   usePageMeta({
     title: column?.name || '专栏详情',
@@ -186,10 +191,8 @@ const ColumnDetailPage: React.FC = () => {
         <div className="feed-empty">该专栏暂无文章</div>
       ) : (
         <div className="feed-timeline">
-          {(showAll
-            ? articles
-            : [...articles].sort((x, y) => (y.time || 0) - (x.time || 0)).slice(0, LATEST_LIMIT)
-          ).map((a) => {
+          {/* 本专栏自己的文章：按发布时间倒序，默认最新 10 篇，可展开全部 */}
+          {visibleArticles.map((a) => {
             const detailRoute = `/article/detail/${a.id}`;
             return (
               <div className="feed-timeline-item" key={a.id}>

@@ -12,22 +12,65 @@ interface ToolRendererProps {
 
 const EMBED_STYLE_ID = 'toolbox-embed-style';
 
-// toolbox 主题变量（后端 style.html 注入的 wulintang 变量），内嵌时需手动补，否则样式全崩
+// toolbox 主题变量（后端 style.html 注入的 wulintang 变量），内嵌时需手动补，否则样式全崩。
+// 统一化：所有颜色桥接到站点 --c-tool-* / --c-* 令牌，深浅只翻变量，
+// 不在这里写死任何浅色值（否则深色模式下"在线使用"整块白底）。
 const TOOLBOX_VARS = `
 .toolbox-embed{
   --radius:8px;
   --border-w:1px;
-  --c-page:#f5f7fa;
-  --c-card:#ffffff;
-  --c-text:#333333;
-  --c-subtext:#888888;
-  --c-border:#e5e7eb;
-  --c-fg-invert:#1677ff;
-  --c-link:#1677ff;
-  --c-primary:#1677ff;
+  --c-page:var(--c-tool-bg);
+  --c-card:var(--c-tool-card);
+  --c-text:var(--c-tool-text);
+  --c-subtext:var(--c-tool-subtext);
+  --c-border:var(--c-tool-border);
+  --c-fg-invert:var(--c-link);
+  --c-link:var(--c-link);
+  --c-primary:var(--c-link);
 }
+/* 工具自带 style.css 里写死的白底/浅灰底，统一覆盖为站点表面（深浅只翻变量） */
+.toolbox-embed,
+.toolbox-embed .card,
+.toolbox-embed .panel,
+.toolbox-embed .box,
+.toolbox-embed .layui-card,
+.toolbox-embed .layui-card-body,
+.toolbox-embed .layui-form,
+.toolbox-embed .container,
+.toolbox-embed .wrapper,
+.toolbox-embed .preview,
+.toolbox-embed .result,
+.toolbox-embed .output,
+.toolbox-embed textarea,
+.toolbox-embed select,
+.toolbox-embed input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]){
+  background-color:var(--c-tool-card) !important;
+  color:var(--c-tool-text) !important;
+  border-color:var(--c-tool-border) !important;
+}
+.toolbox-embed .card,
+.toolbox-embed .panel,
+.toolbox-embed .box,
+.toolbox-embed .layui-card{
+  background:var(--c-tool-card) !important;
+}
+.toolbox-embed,
+.toolbox-embed .layui-form-label,
+.toolbox-embed label,
+.toolbox-embed h1,
+.toolbox-embed h2,
+.toolbox-embed h3,
+.toolbox-embed h4,
+.toolbox-embed p,
+.toolbox-embed span,
+.toolbox-embed div{
+  color:var(--c-tool-text);
+}
+.toolbox-embed ::placeholder{ color:var(--c-tool-subtext); }
+`;
 /* 后端 toolbox CSS 把按钮文字与背景都设成同一个变量，会白底白字看不见，强制可读 */
 .toolbox-embed button,
+.toolbox-embed button *,
 .toolbox-embed .btn-primary,
 .toolbox-embed .btn-danger,
 .toolbox-embed input[type="submit"],
@@ -38,6 +81,7 @@ const TOOLBOX_VARS = `
   padding-left:24px !important;
   padding-right:24px !important;
 }
+.toolbox-embed button *{ padding-left:0 !important; padding-right:0 !important; }
 /* 去掉工具内部层叠的外边框，避免"一圈又一圈" */
 .toolbox-embed,
 .toolbox-embed .card,
@@ -130,21 +174,21 @@ const ToolRenderer: React.FC<ToolRendererProps> = ({ config, ai, toolId, token }
           const box = document.createElement('div');
           const aw = Array.isArray(opt.area) ? opt.area[0] : '320px';
           const ah = Array.isArray(opt.area) ? opt.area[1] : '';
-          box.style.cssText = `background:#fff;border-radius:14px;max-width:92vw;max-height:92vh;overflow:auto;width:${aw};${ah ? 'height:' + ah + ';' : ''}`;
+          box.style.cssText = `background:var(--c-tool-card);color:var(--c-tool-text);border:1px solid var(--c-tool-border);border-radius:14px;max-width:92vw;max-height:92vh;overflow:auto;width:${aw};${ah ? 'height:' + ah + ';' : ''}`;
           const title = document.createElement('div');
-          title.style.cssText = 'padding:12px 16px;font-weight:600;border-bottom:1px solid #eee;';
+          title.style.cssText = 'padding:12px 16px;font-weight:600;border-bottom:1px solid var(--c-tool-border);color:var(--c-tool-text);';
           title.textContent = opt.title || '';
           const content = document.createElement('div');
           content.style.cssText = 'padding:16px;';
           content.innerHTML = opt.content || '';
           const foot = document.createElement('div');
-          foot.style.cssText = 'padding:8px 16px;text-align:right;border-top:1px solid #eee;';
+          foot.style.cssText = 'padding:8px 16px;text-align:right;border-top:1px solid var(--c-tool-border);';
           const btns = Array.isArray(opt.btn) ? opt.btn : [];
           const jq = (window as any).jQuery;
           btns.forEach((label: string, i: number) => {
             const b = document.createElement('button');
             b.textContent = label;
-            b.style.cssText = 'margin-left:8px;padding:4px 14px;cursor:pointer;border:1px solid #1677ff;background:#1677ff;color:#fff;border-radius:999px;';
+            b.style.cssText = 'margin-left:8px;padding:4px 14px;cursor:pointer;border:1px solid var(--c-link);background:var(--c-link);color:#fff;border-radius:999px;';
             b.onclick = () => {
               if (i === 0 && typeof opt.yes === 'function') opt.yes(idx, jq ? jq(box) : box);
               else if (i > 0 && typeof opt.cancel === 'function') opt.cancel(idx, jq ? jq(box) : box);

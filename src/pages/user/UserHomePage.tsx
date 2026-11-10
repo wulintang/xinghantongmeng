@@ -1,110 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typography, Alert } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Alert, Button, Flex, Spin } from 'antd';
 
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
-import { getColumns, columnLink, type ColumnItem } from '@/services/column';
+import { getColumns, type ColumnItem } from '@/services/column';
 import { getUserRender, type MyRender } from '@/services/renderx';
-import { buildCardBodyStyle, fgClassName } from '@/utils/renderxBg';
-import { domainOf, assetUrl } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
-
-const { Text } = Typography;
-
-function sexIcon(sex: number): string {
-    if (sex === 1) return '♂';
-    if (sex === 2) return '♀';
-    return '';
-}
-
-function UserSitesTab({ loading, sites }: { loading: boolean; sites: MemberSiteItem[] }) {
-    if (loading) return <Spin />;
-    if (!sites.length) return <Empty description="该会员暂无已收录的站点" />;
-    return (
-        <Row gutter={[16, 16]}>
-            {sites.map((s) => (
-                <Col key={s.id} xs={24} sm={12} md={8}>
-                    <Link to={`/${domainOf(s)}`} className="member-site-card">
-                        <Avatar shape="square" size={48} src={s.ico || s.pic || undefined}>
-                            {(s.title || s.www || '?').slice(0, 1)}
-                        </Avatar>
-                        <div className="member-site-body">
-                            <div className="member-site-title">{s.title || s.www}</div>
-                            <div className="member-site-desc">
-                                {s.content ? s.content.replace(/<[^>]+>/g, '').slice(0, 40) + '…' : '暂无描述'}
-                            </div>
-                            <div className="member-site-url">{s.domain || s.www}</div>
-                        </div>
-                    </Link>
-                </Col>
-            ))}
-        </Row>
-    );
-}
-
-function UserColumnsTab({ loading, columns }: { loading: boolean; columns: ColumnItem[] }) {
-    if (loading) return <Spin />;
-    if (!columns.length) return <Empty description="该会员暂无专栏" />;
-    return (
-        <Row gutter={[16, 16]}>
-            {columns.map((c) => (
-                <Col key={c.id} xs={24} sm={12} md={8}>
-                    <Link to={columnLink(c)} className="member-column-card">
-                        <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
-                            {(c.name || '?').slice(0, 1)}
-                        </Avatar>
-                        <div className="member-column-body">
-                            <div className="member-column-title">{c.name}</div>
-                            <div className="member-column-desc">{c.description || '暂无简介'}</div>
-                        </div>
-                    </Link>
-                </Col>
-            ))}
-        </Row>
-    );
-}
-
-function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] }) {
-    if (loading) return <Spin />;
-    if (!skills.length) return <Empty description="该会员暂无已上线的技能" />;
-    return (
-        <Row gutter={[16, 16]}>
-            {skills.map((s) => (
-                <Col key={s.id} xs={24} sm={12} md={8}>
-                    <Link to={s.toolbox_id ? `/tools/${s.toolbox_id}` : '/tools'} className="member-site-card">
-                        <Avatar shape="square" size={48} src={s.pic || undefined}>
-                            {(s.title || '?').slice(0, 1)}
-                        </Avatar>
-                        <div className="member-site-body">
-                            <div className="member-site-title">{s.title || '未命名技能'}</div>
-                            <div className="member-site-desc">
-                                {s.content ? s.content.replace(/<[^>]+>/g, '').slice(0, 40) + '…' : '暂无描述'}
-                            </div>
-                        </div>
-                    </Link>
-                </Col>
-            ))}
-        </Row>
-    );
-}
+import { UserHomeCards } from './UserHomeCards';
 
 const UserHomePage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [info, setInfo] = useState<MemberHomeInfo | null>(null);
     const [sites, setSites] = useState<MemberSiteItem[]>([]);
-    const [sitesLoading, setSitesLoading] = useState(true);
     const [columns, setColumns] = useState<ColumnItem[]>([]);
-    const [columnsLoading, setColumnsLoading] = useState(true);
     const [skills, setSkills] = useState<any[]>([]);
-    const [skillsLoading, setSkillsLoading] = useState(true);
-    const [error, setError] = useState('');
+    const [loadingState, setLoadingState] = useState({ sites: true, columns: true, skills: true });
     const [bg, setBg] = useState<MyRender | null>(null);
 
     usePageMeta({ title: info?.name ? `${info.name} 的主页` : '会员主页' });
 
+    // 基本资料：失败即整页错误态
     useEffect(() => {
         let alive = true;
         setLoading(true);
@@ -127,65 +46,59 @@ const UserHomePage: React.FC = () => {
     }, [id]);
 
     useEffect(() => {
-        if (!info) return;
+        if (!id) return;
         let alive = true;
-        setSitesLoading(true);
-        getMemberSites(id || '')
+        setLoadingState((v) => ({ ...v, sites: true }));
+        getMemberSites(id)
             .then((r: any) => {
                 if (alive) setSites(r.code === 1 ? r.data || [] : []);
             })
             .catch(() => {})
             .finally(() => {
-                if (alive) setSitesLoading(false);
+                if (alive) setLoadingState((v) => ({ ...v, sites: false }));
             });
         return () => {
             alive = false;
         };
-    }, [info, id]);
+    }, [id]);
 
     // 该会员的专栏（已通过才对外展示）
     useEffect(() => {
-        if (!info) return;
+        if (!id) return;
         let alive = true;
-        setColumnsLoading(true);
         const uid = Number(id) || 0;
+        setLoadingState((v) => ({ ...v, columns: true }));
         getColumns()
             .then((r) => {
-                if (alive && r.code === 1 && r.data) {
-                    setColumns(r.data.filter((c) => c.uid === uid));
-                } else if (alive) {
-                    setColumns([]);
-                }
+                if (alive) setColumns(r.code === 1 && r.data ? r.data.filter((c) => c.uid === uid) : []);
             })
-            .catch(() => {
-                if (alive) setColumns([]);
-            })
+            .catch(() => {})
             .finally(() => {
-                if (alive) setColumnsLoading(false);
+                if (alive) setLoadingState((v) => ({ ...v, columns: false }));
             });
         return () => {
             alive = false;
         };
-    }, [info, id]);
+    }, [id]);
 
     useEffect(() => {
-        if (!info) return;
+        if (!id) return;
         let alive = true;
-        setSkillsLoading(true);
-        getSkillsByUser(id || '')
+        setLoadingState((v) => ({ ...v, skills: true }));
+        getSkillsByUser(id)
             .then((r: any) => {
                 if (alive) setSkills(r.code === 1 ? r.data || [] : []);
             })
             .catch(() => {})
             .finally(() => {
-                if (alive) setSkillsLoading(false);
+                if (alive) setLoadingState((v) => ({ ...v, skills: false }));
             });
         return () => {
             alive = false;
         };
-    }, [info, id]);
+    }, [id]);
 
-    // 该会员的主页背景（公开接口，供 /user/:id 装修；严格限定本页两张 Card 的 body）
+    // 公开主页背景：只作用于下面两张 Card 的 body
     useEffect(() => {
         if (!id) return;
         let alive = true;
@@ -199,22 +112,16 @@ const UserHomePage: React.FC = () => {
         };
     }, [id]);
 
-    if (loading) {
-        return <Spin style={{ display: 'block', margin: '80px auto' }} />;
-    }
+    if (loading) return <Spin style={{ display: 'block', margin: '80px auto' }} />;
     if (error || !info) {
         return (
             <Flex vertical gap={16}>
                 <PageHeader title="会员主页" crumbs={[{ label: '首页', to: '/' }, { label: '会员主页', to: '/user' }]} />
                 <Alert type="warning" showIcon message={error || '用户不存在'} />
-                <div>
-                    <Button onClick={() => navigate('/')}>返回首页</Button>
-                </div>
+                <div><Button onClick={() => navigate('/')}>返回首页</Button></div>
             </Flex>
         );
     }
-
-    const icon = sexIcon(info.sex);
 
     return (
         <Flex vertical gap={20}>
@@ -222,59 +129,15 @@ const UserHomePage: React.FC = () => {
                 title={info.name}
                 crumbs={[{ label: '首页', to: '/' }, { label: '会员主页', to: '/user' }, { label: info.name }]}
             />
-
-            <Card className={fgClassName(bg)} styles={{ body: buildCardBodyStyle(bg) }}>
-                <Flex gap={20} align="center" wrap>
-                    <Avatar shape="square" size={72} src={info.head || undefined}>
-                        {(info.name || '?').slice(0, 1)}
-                    </Avatar>
-                    <Flex vertical gap={6}>
-                        <Flex align="center" gap={8}>
-                            <Text strong style={{ fontSize: 'var(--fs-xl)' }}>
-                                {info.name}
-                            </Text>
-                            {icon ? (
-                                <Tag color={info.sex === 1 ? 'blue' : 'magenta'} style={{ marginInlineEnd: 0 }}>
-                                    {icon}
-                                </Tag>
-                            ) : null}
-                            {info.home ? (
-                                <Button size="small" type="link" href={info.home} target="_blank" rel="noreferrer">
-                                    个人主页
-                                </Button>
-                            ) : null}
-                        </Flex>
-                        {info.description ? (
-                            <Text type="secondary" style={{ fontSize: 'var(--fs-base)' }}>
-                                {info.description}
-                            </Text>
-                        ) : null}
-                    </Flex>
-                </Flex>
-            </Card>
-
-            <Card className={fgClassName(bg)} styles={{ body: buildCardBodyStyle(bg) }}>
-                <Tabs
-                    defaultActiveKey="sites"
-                    items={[
-                        {
-                            key: 'sites',
-                            label: '站点',
-                            children: <UserSitesTab loading={sitesLoading} sites={sites} />,
-                        },
-                        {
-                            key: 'columns',
-                            label: '专栏',
-                            children: <UserColumnsTab loading={columnsLoading} columns={columns} />,
-                        },
-                        {
-                            key: 'skills',
-                            label: '技能',
-                            children: <UserSkillsTab loading={skillsLoading} skills={skills} />,
-                        },
-                    ]}
-                />
-            </Card>
+            {/* 与「主页背景」设置页预览共用同一份卡片实现，视觉与数据永远一致 */}
+            <UserHomeCards
+                info={info}
+                sites={sites}
+                columns={columns}
+                skills={skills}
+                loading={loadingState}
+                bg={bg}
+            />
         </Flex>
     );
 };

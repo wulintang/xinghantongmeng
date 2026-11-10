@@ -46,14 +46,9 @@ if (!rootElement) {
 
 ReactDOMClient.createRoot(rootElement).render(
     <React.StrictMode>
-        <ConfigProvider
-            theme={{
-                token: {
-                    colorBgLayout: '#ffffff',
-                    zIndex: { message: 2001 },
-                    // colorLink: '#000000',
-                },
-            }}>
+        {/* 表面色由 App 内 ThemedShell 的 ConfigProvider 统一控制（深浅只翻变量），
+            这里只配 message 层级，不写死任何背景色，避免两套主题令牌打架。 */}
+        <ConfigProvider theme={{ token: { zIndex: { message: 2001 } } }}>
             <App />
         </ConfigProvider>
     </React.StrictMode>

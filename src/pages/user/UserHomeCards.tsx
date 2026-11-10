@@ -5,7 +5,7 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { getUserRender, type MyRender } from '@/services/renderx';
-import { buildCardBodyStyle, fgClassName } from '@/utils/renderxBg';
+import { buildCardBodyStyle, buildCardBackgroundValue, fgClassName } from '@/utils/renderxBg';
 import { domainOf, assetUrl } from '@/utils/route';
 
 const { Text } = Typography;
@@ -105,11 +105,18 @@ function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] })
 export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }: UserHomeCardsProps) {
   const cardClass = fgClassName(bg);
   const cardBody = buildCardBodyStyle(bg);
+  // 背景严格只作用于顶部「用户信息」卡：由根元素 --rx-user-bg 单一变量驱动，
+  // antd 表面 token 不参与，浅色/深色主题下都一致显示。
+  const bgValue = buildCardBackgroundValue(bg);
+  const topCardClass = bgValue ? `rx-user-card ${cardClass}`.trim() : cardClass;
+  const topCardStyle = bgValue
+    ? ({ '--rx-user-bg': bgValue } as React.CSSProperties)
+    : undefined;
   const icon = sexIcon(info?.sex ?? 0);
 
   return (
     <Flex vertical gap={16}>
-      <Card className={cardClass} styles={{ body: cardBody }}>
+      <Card className={topCardClass} style={topCardStyle} styles={{ body: cardBody }}>
         <Flex gap={20} align="center" wrap>
           <Avatar shape="square" size={72} src={info?.head || undefined}>
             {(info?.name || '?').slice(0, 1)}
@@ -140,7 +147,8 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
         </Flex>
       </Card>
 
-      <Card className={cardClass} styles={{ body: cardBody }}>
+      {/* 下方内容卡不是用户信息：保持站点统一表面，不注入任何背景或前景色 */}
+      <Card>
         <Tabs
           defaultActiveKey="sites"
           items={[

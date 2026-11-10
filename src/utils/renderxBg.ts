@@ -108,6 +108,25 @@ export function buildCardBodyStyle(bg?: MyRender | null): CSSProperties {
 }
 
 /**
+ * 顶部用户信息卡的根级背景 CSS 值（供 --rx-user-bg 变量使用）。
+ * 与 buildCardBodyStyle 共用同一套白名单，杜绝任意 CSS 注入。
+ * 返回空串表示「不设置背景」，此时卡片完全用站点统一表面。
+ */
+export function buildCardBackgroundValue(bg?: MyRender | null): string {
+    if (!bg || bg.bg_type === 0) return '';
+    if (bg.bg_type === 1 || bg.bg_type === 2) {
+        if (!isSafeCssBackground(bg.bg_value)) return '';
+        return bg.bg_value.trim();
+    }
+    if (bg.bg_type === 3) {
+        if (!/^(https?:\/\/|\/)/i.test(bg.bg_value)) return '';
+        const u = bg.bg_value.replace(/["']/g, '');
+        return `linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)), url("${u}")`;
+    }
+    return '';
+}
+
+/**
  * 前景文字对应的卡片 className（驱动 styles.css 中 .rx-fg-* 规则，使 antd Typography
  * 的 secondary 文字也随背景翻色，保证任意背景上文字可读）。
  */

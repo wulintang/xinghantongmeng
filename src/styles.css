@@ -123,6 +123,19 @@ body {
 }
 
 /* ============================================================
+   用户主页顶部信息卡背景（renderx）：严格只作用于顶部「用户信息」卡。
+   由 --rx-user-bg 单一变量驱动，antd 表面 token 不参与，
+   保证浅色/深色主题下都一致显示；下方内容卡用站点统一表面。
+   ============================================================ */
+.rx-user-card,
+.rx-user-card .ant-card-body {
+  background: var(--rx-user-bg) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* ============================================================
    用户主页背景前景文字（renderx）：局部作用域内由一套 --rx-fg* 变量
    统一驱动所有文字（含 antd Typography / Tabs / Empty / 链接 / 标签），
    保证任意背景上文字都可读。深浅只翻变量，不逐类名写死颜色。

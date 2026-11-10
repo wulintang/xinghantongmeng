@@ -5,6 +5,7 @@ import {
 import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { addSkill, editSkill, getTool, getToolCates, importSkillFromGit, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
+import { parseSkillOptions } from '@/utils/skillFields';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -39,12 +40,15 @@ const serializeParams = (ps: ParamRow[]): string =>
       if (!label) return '';
       const opts = (p.options || []).filter(Boolean);
       const hint = (p.example || '').trim() ? `例如“${(p.example || '').trim()}”。` : '';
+      // 参考候选写进纯文本（不带括号、不带「用户选择」），否则会被后端解析成下拉框
+      const ref = opts.length ? `可参考 ${opts.join('、')}。` : '';
       switch (p.type) {
         case 'textarea':
-          return `${label}：用户可以填写${label}。${hint}`;
+          return `${label}：用户可以填写${label}。${ref}${hint}`;
         case 'select':
         case 'radio': {
-          if (opts.length < 2) return `${label}：用户选择${label}。${hint}`;
+          // 选项不足 2 个时不做下拉，写成可自由填写，避免生成空/残缺下拉
+          if (opts.length < 2) return `${label}：用户输入${label}。${ref}${hint}`;
           const head = opts.slice(0, -1).join('、');
           const tail = opts[opts.length - 1];
           const joined = opts.length > 2 ? `${head}、或${tail}` : `${head}或${tail}`;
@@ -56,13 +60,15 @@ const serializeParams = (ps: ParamRow[]): string =>
           return `${label}：用户选择${label}时间。${hint}`;
         case 'text':
         default:
-          return `${label}：用户输入${label}。${hint}`;
+          return `${label}：用户输入${label}。${ref}${hint}`;
       }
     })
     .filter(Boolean)
     .join('\n');
 
 const TEXTAREA_HINT = /(描述|要求|需求|内容|详情|分析|特长|条款|理由|经历|方案|计划|建议|说明|备注|经验|技能|行为|原因|影响|后果|措施|承诺|信息|标的|付款方式|感受|总结|反馈|意见|问题|具体|故事|材料)/;
+
+// 常见枚举词典与候选项解析统一放在 utils/skillFields.ts，与 SkillForm、后端 SkillCommon 共用一套规则。
 
 // 参数行判定必须与后端 SkillCommon 一致：动词不限（输入/填写/选择/详细描述/分析/提出…），
 // 只认「用户/请」开头，排除「开始生成：点击按钮后…」这类按钮说明。
@@ -85,17 +91,21 @@ const parseParamsFromText = (text: string): ParamRow[] => {
       type = 'textarea';
     }
     if (/^选择/.test(desc)) {
-      if (/(日期|date)/i.test(`${label} ${desc}`)) type = 'date';
-      else if (/(时间|time)/i.test(`${label} ${desc}`)) type = 'time';
+      // 日期/时间只按字段名或「选择…日期/时间」短语判断，避免正文里的 date/time 子串误判
+      const isDate = /日期|\bdate\b/i.test(label) || /^选择[^，。；]{0,8}日期/.test(desc);
+      const isTime = /时间|\btime\b/i.test(label) || /^选择[^，。；]{0,8}时间/.test(desc);
+      if (isDate) type = 'date';
+      else if (isTime) type = 'time';
       else {
-        const om = desc.match(/[（(]([^)）]+)[)）]/);
-        if (om) {
-          options = om[1].split(/[,，、]|或|或者|\/|\|/).map((x) => x.trim()).filter(Boolean);
-          type = options.length === 2 ? 'radio' : 'select';
-        } else {
-          type = 'select';
-        }
+        const op = parseSkillOptions(label, desc);
+        options = op.options;
+        // 只有 ≥2 个完整确定的选项才是下拉/单选；没写选项或写「…等」都退回输入框
+        if (!op.open && options.length >= 2) type = options.length === 2 ? 'radio' : 'select';
       }
+    }
+    // 「可参考 A、B。」是填写参考而非下拉选项，还原成输入框候选
+    if (!['select', 'radio', 'date', 'time'].includes(type) && /可参考/.test(desc)) {
+      options = parseSkillOptions(label, desc).options;
     }
     const em = desc.match(/例如\s*[:：]?\s*[“"「]([^”"」]+)[”"」]/)
       || desc.match(/例如\s*[:：]?\s*([^\n，。；]+)/);

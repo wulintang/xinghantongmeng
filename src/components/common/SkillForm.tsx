@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Form, Input, Radio, Select, Space, Typography, message } from 'antd';
 import { ClearOutlined, ExperimentOutlined, ThunderboltOutlined } from '@ant-design/icons';
 
 import type { SkillField } from '@/services/userCenter';
+import { normalizeSkillFields } from '@/utils/skillFields';
 
 const { Text } = Typography;
 
@@ -21,10 +22,11 @@ export interface SkillFormProps {
 
 export default function SkillForm({ fields, template, disabled, onGenerate }: SkillFormProps): React.JSX.Element | null {
     const [values, setValues] = useState<Record<string, string>>({});
+    const safeFields = useMemo(() => normalizeSkillFields(fields), [fields]);
 
     useEffect(() => {
         setValues({});
-    }, [fields]);
+    }, [safeFields]);
 
     const setValue = (name: string, v: string) => {
         setValues((prev) => ({ ...prev, [name]: v }));
@@ -33,7 +35,7 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
     /** 用字段的示例值 / 提示 / 首个选项一键填充，解决「不知道该输入什么」 */
     const fillExample = () => {
         const next: Record<string, string> = {};
-        fields.forEach((f) => {
+        safeFields.forEach((f) => {
             const v = String(f.example || f.placeholder || (f.options && f.options[0]) || '').trim();
             if (v) next[f.name] = v;
         });
@@ -43,19 +45,19 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
 
     /** 把字段表拼成结构化输入，模板占位符就地替换，末尾附上防照抄约束 */
     const generate = () => {
-        const missing = fields.filter((f) => f.required && !String(values[f.name] || '').trim());
+        const missing = safeFields.filter((f) => f.required && !String(values[f.name] || '').trim());
         if (missing.length) {
             message.warning('请填写：' + missing.map((f) => f.label).join('、'));
             return;
         }
-        const lines = fields.map(
+        const lines = safeFields.map(
             (f) => `${f.label}：${String(values[f.name] || '').trim() || '（未提供）'}`
         );
         let text = `【本次填写的信息】\n${lines.join('\n')}`;
         if (template && template.trim()) {
             const tpl = template.replace(/\{([^}]+)\}/g, (_m, key: string) => {
                 const k = String(key).trim();
-                const f = fields.find((x) => x.name === k || x.label === k);
+                const f = safeFields.find((x) => x.name === k || x.label === k);
                 return f ? String(values[f.name] || '').trim() : '';
             });
             text = `${tpl.trim()}\n\n${text}`;
@@ -64,7 +66,7 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
         onGenerate(text);
     };
 
-    if (!fields.length) return null;
+    if (!safeFields.length) return null;
 
     return (
         <div className="skill-form">
@@ -76,9 +78,16 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
             </div>
 
             <Form layout="vertical" disabled={disabled}>
-                {fields.map((f, i) => {
+                {safeFields.map((f, i) => {
                     const opts = (f.options || []).map((o) => ({ label: o, value: o }));
-                    const extra = f.example || f.placeholder || (opts.length ? `可选：${(f.options || []).join(' / ')}` : '');
+                    const isChoice = f.type === 'select' || f.type === 'radio';
+                    const extra = (f.example || f.placeholder)
+                        ? `示例：${String(f.example || f.placeholder).trim()}`
+                        : isChoice
+                            ? `可选：${(f.options || []).join(' / ')}`
+                            : opts.length
+                                ? `可参考：${(f.options || []).join(' / ')}，也可自行填写`
+                                : '';
                     let control: React.ReactNode;
                     switch (f.type) {
                         case 'textarea':
@@ -122,11 +131,15 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
                             );
                             break;
                         default:
+                            // 开放式列举（如「A、B 等」）不做成残缺下拉，用可自由填写的输入框，
+                            // 候选项在下方 extra 里提示，用户可填任意值
                             control = (
                                 <Input
                                     value={values[f.name] || ''}
                                     onChange={(e) => setValue(f.name, e.target.value)}
-                                    placeholder={f.placeholder || `请输入${f.label}`}
+                                    placeholder={f.placeholder || (opts.length
+                                        ? `请输入${f.label}，也可自行填写`
+                                        : `请输入${f.label}`)}
                                 />
                             );
                     }
@@ -135,7 +148,7 @@ export default function SkillForm({ fields, template, disabled, onGenerate }: Sk
                             key={`${f.name}-${i}`}
                             label={f.label}
                             required={!!f.required}
-                            extra={extra ? <span className="skill-form-extra">示例：{extra}</span> : undefined}
+                            extra={extra ? <span className="skill-form-extra">{extra}</span> : undefined}
                         >
                             {control}
                         </Form.Item>

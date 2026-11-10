@@ -6,8 +6,9 @@ const RENDERX = '/index.php/renderx/index';
 
 /** 站点渲染配置（公开只读） */
 export interface RenderConfig {
+    /** 后台两个框：head / foot 内任意自定义代码（JS / CSS / HTML 混合） */
+    head_code: string;
     foot_code: string;
-    custom_css: string;
     default_mode: number; // 0 浅 / 1 深 / 2 跟随定时
     dark_start: string; // HH:MM
     dark_end: string; // HH:MM（可跨午夜）
@@ -36,7 +37,7 @@ function post<T>(path: string, data: Record<string, any> = {}): Promise<T> {
     });
 }
 
-/** 站点渲染配置（foot_code/custom_css/default_mode/dark_schedule/font） */
+/** 站点渲染配置（head_code / foot_code / 定时深浅 / 字体字号） */
 export function getRenderConfig() {
     return request<ApiResp<RenderConfig>>(`${RENDERX}/config.html`);
 }

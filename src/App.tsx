@@ -47,6 +47,8 @@ import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
 import CustomFoot from '@components/common/CustomFoot';
 import CustomCss from '@components/common/CustomCss';
 import { getCustomConfig } from '@/services/userCenter';
+import { getRenderConfig } from '@/services/renderx';
+import { injectCode } from '@/utils/injectCode';
 
 /** 路由切换后回到页面顶部，否则从长页面跳转会停在半空 */
 function ScrollToTop(): null {
@@ -57,31 +59,27 @@ function ScrollToTop(): null {
     return null;
 }
 
-/** 自定义 Head 代码注入：读取后台自定义配置，把 head_code 注入到全站 <head>（管理员专属） */
+/**
+ * 全站 <head> 注入：renderx 后台「Head 自定义代码」一个框，
+ * 外加兼容 openapi 插件旧「自定义 Head 代码」head_code（统计代码常贴在这里）。
+ * 全部走统一注入器，保证 <script> 真正执行。
+ */
 function CustomHead(): null {
     useEffect(() => {
         let alive = true;
-        getCustomConfig()
-            .then((r: any) => {
-                if (!alive || !r || r.code !== 1 || !r.data?.head_code) return;
-                if (document.getElementById('custom-head-code')) return;
-                const doc = new DOMParser().parseFromString(
-                    `<!DOCTYPE html><html><head>${r.data.head_code}</head><body></body></html>`,
-                    'text/html'
-                );
-                const fragment = document.createDocumentFragment();
-                doc.head.childNodes.forEach((node: ChildNode) => {
-                    // 原样保留：后台写的 <link>/<script>/<style>/<meta> 等标签及其全部属性（defer、data-*、crossorigin...）
-                    const clone = document.importNode(node, true);
-                    fragment.appendChild(clone);
-                });
-                // 用 <meta> 占位作去重标记，真正的节点直接追加到 document.head
-                const marker = document.createElement('meta');
-                marker.id = 'custom-head-code';
-                document.head.appendChild(marker);
-                document.head.appendChild(fragment);
-            })
-            .catch(() => {});
+        Promise.all([
+            getRenderConfig().catch(() => null),
+            getCustomConfig().catch(() => null),
+        ]).then(([rx, custom]) => {
+            if (!alive) return;
+            const r: any = rx?.data || {};
+            const c: any = custom?.data || {};
+            if (r.head_code) injectCode(r.head_code, 'head', 'rx-head-code');
+            // openapi 旧框里已填的代码同样重建执行；两处内容相同时只注入一次，避免统计重复计数
+            if (c.head_code && c.head_code.trim() !== (r.head_code || '').trim()) {
+                injectCode(c.head_code, 'head', 'custom-head-code');
+            }
+        });
         return () => {
             alive = false;
         };

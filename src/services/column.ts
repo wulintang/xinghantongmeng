@@ -122,6 +122,30 @@ export function getColumnArticles(tid: number | string) {
   );
 }
 
+/** 广场聚合文章（跨所有专栏，按置顶 + 时间倒序） */
+export interface SquareArticleItem {
+  id: number;
+  tid: number;
+  title: string;
+  pic: string;
+  description: string | null;
+  view: number;
+  zan: number;
+  time: number;
+  uid: number;
+  author: string;
+  author_head: string;
+  /** 所属专栏名（后端 square 附加） */
+  cate_name?: string;
+}
+
+/** 所有专栏的最新文章（分页，默认最新 10 篇） */
+export function getSquareArticles(page = 1, limit = 10) {
+  return request<{ code: number; msg: string; data: SquareArticleItem[] }>(
+    `${COL}/square.html` + qs({ page, limit })
+  );
+}
+
 /** 插件公开配置（URL 审核费、AI 扣费、最低字数为前端展示与校验用） */
 export function getColumnConfig() {
   return request<{

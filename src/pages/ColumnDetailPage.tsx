@@ -59,6 +59,10 @@ const ColumnDetailPage: React.FC = () => {
   const [column, setColumn] = useState<ColumnItem | null>(null);
   const [articles, setArticles] = useState<ColumnArticleItem[]>([]);
   const [error, setError] = useState('');
+  const [showAll, setShowAll] = useState(false);
+
+  /** 所有专栏默认展示最新 10 篇（按发布时间倒序），其余提供展开 */
+  const LATEST_LIMIT = 10;
 
   usePageMeta({
     title: column?.name || '专栏详情',
@@ -173,13 +177,19 @@ const ColumnDetailPage: React.FC = () => {
         </Flex>
       </Card>
 
-      <Text type="secondary">共 {articles.length} 篇</Text>
+      <Text type="secondary">
+        共 {articles.length} 篇
+        {articles.length > LATEST_LIMIT && !showAll ? ` · 默认展示最新 ${LATEST_LIMIT} 篇` : ''}
+      </Text>
 
       {articles.length === 0 ? (
         <div className="feed-empty">该专栏暂无文章</div>
       ) : (
         <div className="feed-timeline">
-          {articles.map((a) => {
+          {(showAll
+            ? articles
+            : [...articles].sort((x, y) => (y.time || 0) - (x.time || 0)).slice(0, LATEST_LIMIT)
+          ).map((a) => {
             const detailRoute = `/article/detail/${a.id}`;
             return (
               <div className="feed-timeline-item" key={a.id}>
@@ -246,6 +256,14 @@ const ColumnDetailPage: React.FC = () => {
           })}
         </div>
       )}
+
+      {articles.length > LATEST_LIMIT ? (
+        <div style={{ textAlign: 'center' }}>
+          <Button onClick={() => setShowAll((v) => !v)}>
+            {showAll ? `收起（仅看最新 ${LATEST_LIMIT} 篇）` : `展开全部 ${articles.length} 篇`}
+          </Button>
+        </div>
+      ) : null}
     </Flex>
   );
 };

@@ -20,7 +20,6 @@ const MENU = [
       { key: '/user/skills', label: <Link to="/user/skills">我的技能</Link> },
       { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
-      { key: '/user/appearance', label: <Link to="/user/appearance">主页背景</Link> },
     ],
   },
   {
@@ -28,6 +27,7 @@ const MENU = [
     label: '账号',
     children: [
       { key: '/user', label: <Link to="/user">个人资料</Link> },
+      { key: '/user/appearance', label: <Link to="/user/appearance">主页背景</Link> },
       { key: '/user/checkin', label: <Link to="/user/checkin">每日签到</Link> },
       { key: '/user/messages', label: <Link to="/user/messages">消息中心</Link> },
       { key: '/user/balance', label: <Link to="/user/balance">余额明细</Link> },

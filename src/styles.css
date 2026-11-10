@@ -94,28 +94,87 @@ body {
 }
 
 /* ============================================================
-   用户主页背景前景文字（renderx）：保证任意背景上文字/链接可读
-   配合 Card 上的 .rx-fg-light / .rx-fg-dark 使用
+   用户主页背景前景文字（renderx）：局部作用域内由一套 --rx-fg* 变量
+   统一驱动所有文字（含 antd Typography / Tabs / Empty / 链接 / 标签），
+   保证任意背景上文字都可读。深浅只翻变量，不逐类名写死颜色。
    ============================================================ */
-.rx-fg-light .ant-card-body {
-  color: rgba(255, 255, 255, 0.92);
+.rx-fg-light {
+  --rx-fg: rgba(255, 255, 255, 0.94);
+  --rx-fg-2: rgba(255, 255, 255, 0.68);
+  --rx-fg-3: rgba(255, 255, 255, 0.45);
 }
-.rx-fg-light .ant-card-body .ant-typography.ant-typography-secondary {
-  color: rgba(255, 255, 255, 0.65) !important;
+.rx-fg-dark {
+  --rx-fg: rgba(0, 0, 0, 0.90);
+  --rx-fg-2: rgba(0, 0, 0, 0.66);
+  --rx-fg-3: rgba(0, 0, 0, 0.45);
+}
+.rx-fg-light,
+.rx-fg-light .ant-card-body,
+.rx-fg-dark,
+.rx-fg-dark .ant-card-body {
+  color: var(--rx-fg);
 }
 .rx-fg-light .ant-card-body .ant-typography,
-.rx-fg-light .ant-card-body .ant-typography a {
-  color: rgba(255, 255, 255, 0.92);
-}
-.rx-fg-dark .ant-card-body {
-  color: rgba(0, 0, 0, 0.92);
-}
-.rx-fg-dark .ant-card-body .ant-typography.ant-typography-secondary {
-  color: rgba(0, 0, 0, 0.65) !important;
-}
+.rx-fg-light .ant-card-body .ant-tabs-tab-btn,
+.rx-fg-light .ant-card-body .ant-empty-description,
+.rx-fg-light .ant-card-body .ant-btn-link,
+.rx-fg-light .ant-card-body .ant-avatar-string,
+.rx-fg-light .ant-card-body a,
 .rx-fg-dark .ant-card-body .ant-typography,
-.rx-fg-dark .ant-card-body .ant-typography a {
-  color: rgba(0, 0, 0, 0.92);
+.rx-fg-dark .ant-card-body .ant-tabs-tab-btn,
+.rx-fg-dark .ant-card-body .ant-empty-description,
+.rx-fg-dark .ant-card-body .ant-btn-link,
+.rx-fg-dark .ant-card-body .ant-avatar-string,
+.rx-fg-dark .ant-card-body a {
+  color: var(--rx-fg) !important;
+}
+.rx-fg-light .ant-card-body .ant-typography.ant-typography-secondary,
+.rx-fg-light .ant-card-body .ant-empty-description,
+.rx-fg-dark .ant-card-body .ant-typography.ant-typography-secondary,
+.rx-fg-dark .ant-card-body .ant-empty-description {
+  color: var(--rx-fg-2) !important;
+}
+.rx-fg-light .ant-card-body .ant-tabs-nav::before,
+.rx-fg-light .ant-card-body .ant-divider,
+.rx-fg-dark .ant-card-body .ant-tabs-nav::before,
+.rx-fg-dark .ant-card-body .ant-divider {
+  border-color: var(--rx-fg-3) !important;
+}
+.rx-fg-light .ant-card-body .ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn,
+.rx-fg-dark .ant-card-body .ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--rx-fg) !important;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Markdown 预览（md-editor-rt）跟随统一表面（renderx 统一化）：
+   md-editor 主题自带一套纯黑/纯白背景，与站点表面不是一套，导致
+   "文章区黑、代码块白"的不统一。这里把它的主题变量桥接到站点统一
+   表面/边线变量（深浅各一套，仅由变量翻转，不逐主题打补丁），
+   并用 .rx-md-view 包裹（不依赖 MdPreview 透传任何 prop）。
+   ============================================================ */
+.rx-md-view .md-editor,
+.rx-md-view .md-editor-preview,
+.rx-md-view .md-editor-preview-wrapper {
+  /* 主背景 / 文字 / 边线：桥接到站点统一变量 */
+  --md-bk-color: var(--c-surface);
+  --md-color: var(--c-text);
+  --md-border-color: var(--c-border);
+  --md-hover-color: var(--c-bg-2);
+  /* 代码块 / 引用块 / 行内码：不同版本变量名不同，一并桥接到 --c-bg-2 */
+  --md-bk-color-outstand: var(--c-bg-2);
+  --md-bk-hover-color: var(--c-bg-2);
+  --md-pre-bg: var(--c-bg-2);
+  --md-code-bg: var(--c-bg-2);
+  --md-code-bk-color: var(--c-bg-2);
+  --md-code-color: var(--c-text);
+}
+/* 根容器强制跟随站点表面（防止 md-editor 主题用更高优先级写死纯黑/纯白） */
+.rx-md-view .md-editor,
+.rx-md-view .md-editor-preview,
+.rx-md-view .md-editor-preview-wrapper {
+  background: var(--c-surface) !important;
+  color: var(--c-text) !important;
 }
 
 /* ============================================================

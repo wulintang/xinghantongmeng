@@ -1,15 +1,89 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Card, Col, Empty, Flex, Row, Tag, Typography, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Avatar, Card, Col, Empty, Flex, List, Row, Space, Tag, Typography, message } from 'antd';
+import { useNavigate, Link } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useSite } from '@/context/SiteContext';
-import { getColumns, columnLink, type ColumnItem } from '@/services/column';
+import {
+  getColumns,
+  getSquareArticles,
+  columnLink,
+  type ColumnItem,
+  type SquareArticleItem,
+} from '@/services/column';
 import { assetUrl } from '@/utils/route';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
+
+/** 所有专栏默认展示的最新文章条数 */
+const LATEST_LIMIT = 10;
+
+/** 所有专栏的最新 10 篇文章（后端 square 聚合，按置顶 + 时间倒序） */
+function LatestArticles({ siteTitle }: { siteTitle?: string }) {
+  const [loading, setLoading] = useState(true);
+  const [list, setList] = useState<SquareArticleItem[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    getSquareArticles(1, LATEST_LIMIT)
+      .then((r) => {
+        if (alive) setList(r.code === 1 ? r.data || [] : []);
+      })
+      .catch(() => {
+        if (alive) setList([]);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <Card
+      title={<Title level={5} style={{ margin: 0 }}>最新文章</Title>}
+      extra={
+        <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+          所有专栏 · 最新 {LATEST_LIMIT} 篇
+        </Text>
+      }
+    >
+      <List
+        loading={loading}
+        dataSource={list}
+        locale={{ emptyText: <Empty description="暂无文章" /> }}
+        renderItem={(a) => (
+          <List.Item
+            actions={[
+              <Text key="view" type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+                {a.view || 0} 浏览
+              </Text>,
+            ]}
+          >
+            <List.Item.Meta
+              title={<Link to={`/article/detail/${a.id}`}>{a.title}</Link>}
+              description={
+                <Space size={[8, 8]} wrap style={{ fontSize: 'var(--fs-xs)' }}>
+                  {a.cate_name ? <Tag color="blue">{a.cate_name}</Tag> : null}
+                  <Text type="secondary">
+                    {a.uid === 0 ? siteTitle || '官方' : a.author || '匿名'}
+                  </Text>
+                  {a.time ? (
+                    <Text type="secondary">{dayjs.unix(a.time).format('YYYY-MM-DD')}</Text>
+                  ) : null}
+                </Space>
+              }
+            />
+          </List.Item>
+        )}
+      />
+    </Card>
+  );
+}
 
 const ColumnsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -53,6 +127,11 @@ const ColumnsPage: React.FC = () => {
         description="作者与官方创建的专栏矩阵"
         crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }]}
       />
+
+      {/* 所有专栏默认展示最新十条文章内容 */}
+      <LatestArticles siteTitle={site?.title} />
+
+      <Title level={5} style={{ margin: 0 }}>全部专栏</Title>
 
       {loading ? (
         <Row gutter={[16, 16]} align="stretch">

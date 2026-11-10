@@ -50,6 +50,15 @@
   --capsule-brand: var(--c-link);  /* 品牌色 #1677ff */
   --capsule-danger: #ff4d4f;
   --container-radius: 14px;        /* 卡片 / 弹窗 / 气泡 / 输入等大容器统一圆角（大胶囊） */
+
+  /* ============ 表面 / 背景语义令牌（深浅模式统一驱动，renderx 插件覆盖） ============ */
+  --c-bg: #ffffff;          /* 页面底色 */
+  --c-bg-soft: #f6f8fa;     /* 浅灰区块 */
+  --c-bg-2: #f5f5f5;        /* 次级灰底 */
+  --c-surface: #ffffff;     /* 卡片 / 浮层表面 */
+  --c-surface-2: #fafafa;   /* 卡片内次级表面 */
+  --c-border: rgba(0, 0, 0, 0.08);
+  --c-divider: rgba(0, 0, 0, 0.06);
 }
 
 body {
@@ -65,15 +74,53 @@ body {
    data-theme 由前端 ThemeProvider 写到 <html>
    ============================================================ */
 :root[data-theme='dark'] {
+  /* 文字 / 链接 / 边框 */
   --c-text: rgba(255, 255, 255, 0.88);
   --c-text-2: rgba(255, 255, 255, 0.65);
   --c-text-3: rgba(255, 255, 255, 0.45);
   --c-link: #4c9bff;            /* 深色下提亮的强调色（站点统一，不向用户开放） */
-  --c-border: rgba(255, 255, 255, 0.15);
+  --c-border: rgba(255, 255, 255, 0.14);
+  --c-divider: rgba(255, 255, 255, 0.10);
+  /* 表面 / 背景：站点所有卡片、区块、内容区统一翻面 */
+  --c-bg: #0f1115;
+  --c-bg-soft: #161a21;
+  --c-bg-2: #1a1d24;
+  --c-surface: #171a21;
+  --c-surface-2: #20242c;
 }
 :root[data-theme='dark'] body {
-  background: #0f1115;
+  background: var(--c-bg);
   color: var(--c-text);
+}
+
+/* 结构性表面跟随深色翻面（覆盖原硬编码 #fff / #fafafa / #f5f5f5） */
+:root[data-theme='dark'] .site-layout,
+:root[data-theme='dark'] .site-header,
+:root[data-theme='dark'] .home-list,
+:root[data-theme='dark'] .site-card,
+:root[data-theme='dark'] .version-card,
+:root[data-theme='dark'] .tool-card,
+:root[data-theme='dark'] .related-site-card,
+:root[data-theme='dark'] .member-site-card,
+:root[data-theme='dark'] .links-center-card,
+:root[data-theme='dark'] .column-card,
+:root[data-theme='dark'] .blogs-card,
+:root[data-theme='dark'] .feed-card,
+:root[data-theme='dark'] .grid-card {
+  background: var(--c-surface);
+}
+:root[data-theme='dark'] .site-footer,
+:root[data-theme='dark'] .links-code-block {
+  background: var(--c-bg-soft);
+}
+:root[data-theme='dark'] .ad-slot-skeleton {
+  background: var(--c-bg-2);
+}
+/* 深色下减弱阴影，避免黑块 */
+:root[data-theme='dark'] .site-card,
+:root[data-theme='dark'] .version-card,
+:root[data-theme='dark'] .tool-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 /* ============================================================

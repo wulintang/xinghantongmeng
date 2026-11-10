@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme as antdTheme } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 
 import MainLayout from '@layouts/MainLayout';
@@ -139,6 +139,7 @@ class ErrorBoundary extends React.Component<
 function ThemedShell(): React.JSX.Element {
     const { dark } = useTheme();
     const theme = {
+        algorithm: dark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
             borderRadius: 14,
             colorBgLayout: dark ? '#0f1115' : '#ffffff',

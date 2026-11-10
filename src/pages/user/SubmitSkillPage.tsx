@@ -2,17 +2,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Switch, Tabs, Typography, Upload, message,
 } from 'antd';
-import { PlusOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, DownloadOutlined, FileTextOutlined, CodeOutlined } from '@ant-design/icons';
 import { addSkill, editSkill, getTool, getToolCates, importSkillFromGit, uploadFile, type CateItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
-import { parseSkillOptions } from '@/utils/skillFields';
+import {
+  ensureFieldsDeclared, FIELDS_SNIPPET, parseSkillFieldsFromMd,
+  SKILL_MD_PLACEHOLDER, SKILL_MD_TEMPLATE, skillMdFromObject,
+} from '@/utils/skillDoc';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
-// 一键导入的 JSON 与之对应；params 支持 type：text(单行) / textarea(多行) / select(下拉) / radio(单选) / date / time
-// select / radio 需带 options 数组。提交时 params 被序列化进 content 的自然语言参数行，由后端按类型渲染。
+/** 一键导入弹窗里的 JSON 示例：导入后会被转成一份 SKILL.md 原文，不再拆成 7 个表单框 */
 const JSON_EXAMPLE = `{
   "title": "文章润色",
   "alias": "polish",
@@ -29,90 +31,6 @@ const JSON_EXAMPLE = `{
   "example": "原文：今天天气很好，我们去公园玩。",
   "rmb": 0
 }`;
-
-type ParamType = 'text' | 'textarea' | 'select' | 'radio' | 'date' | 'time';
-type ParamRow = { name: string; label: string; type: ParamType; options: string[]; example?: string };
-
-const serializeParams = (ps: ParamRow[]): string =>
-  ps
-    .map((p) => {
-      const label = p.label.trim() || p.name.trim();
-      if (!label) return '';
-      const opts = (p.options || []).filter(Boolean);
-      const hint = (p.example || '').trim() ? `例如“${(p.example || '').trim()}”。` : '';
-      // 参考候选写进纯文本（不带括号、不带「用户选择」），否则会被后端解析成下拉框
-      const ref = opts.length ? `可参考 ${opts.join('、')}。` : '';
-      switch (p.type) {
-        case 'textarea':
-          return `${label}：用户可以填写${label}。${ref}${hint}`;
-        case 'select':
-        case 'radio': {
-          // 选项不足 2 个时不做下拉，写成可自由填写，避免生成空/残缺下拉
-          if (opts.length < 2) return `${label}：用户输入${label}。${ref}${hint}`;
-          const head = opts.slice(0, -1).join('、');
-          const tail = opts[opts.length - 1];
-          const joined = opts.length > 2 ? `${head}、或${tail}` : `${head}或${tail}`;
-          return `${label}：用户选择${label}（${joined}）。${hint}`;
-        }
-        case 'date':
-          return `${label}：用户选择${label}日期。${hint}`;
-        case 'time':
-          return `${label}：用户选择${label}时间。${hint}`;
-        case 'text':
-        default:
-          return `${label}：用户输入${label}。${ref}${hint}`;
-      }
-    })
-    .filter(Boolean)
-    .join('\n');
-
-const TEXTAREA_HINT = /(描述|要求|需求|内容|详情|分析|特长|条款|理由|经历|方案|计划|建议|说明|备注|经验|技能|行为|原因|影响|后果|措施|承诺|信息|标的|付款方式|感受|总结|反馈|意见|问题|具体|故事|材料)/;
-
-// 常见枚举词典与候选项解析统一放在 utils/skillFields.ts，与 SkillForm、后端 SkillCommon 共用一套规则。
-
-// 参数行判定必须与后端 SkillCommon 一致：动词不限（输入/填写/选择/详细描述/分析/提出…），
-// 只认「用户/请」开头，排除「开始生成：点击按钮后…」这类按钮说明。
-const parseParamsFromText = (text: string): ParamRow[] => {
-  const out: ParamRow[] = [];
-  for (const raw of text.split(/\r?\n/)) {
-    const s = raw.trim();
-    if (!s || s.startsWith('#') || s.startsWith('- ') || s.startsWith('* ')) continue;
-    const m = s.match(/^(.{1,40}?)[：:]\s*(?:用户|请)(?:可以)?\s*(.*)$/);
-    if (!m) continue;
-    const label = m[1].trim();
-    const desc = m[2].trim();
-    if (!label || !desc) continue;
-    if (/^(开始生成|点击|按钮|提交|生成|注意|说明|提示|输出|示例|例如|何时|不要)/.test(label)) continue;
-    if (/^(点击按钮|点击|生成结果|提交后|按钮后)/.test(desc)) continue;
-    let type: ParamType = 'text';
-    let options: string[] = [];
-    if (/^(填写|详细描述|详细|具体|简述|写明|列举|写下|补充|粘贴|输入完整|写出)/.test(desc)
-      || TEXTAREA_HINT.test(`${label} ${desc.slice(0, 16)}`)) {
-      type = 'textarea';
-    }
-    if (/^选择/.test(desc)) {
-      // 日期/时间只按字段名或「选择…日期/时间」短语判断，避免正文里的 date/time 子串误判
-      const isDate = /日期|\bdate\b/i.test(label) || /^选择[^，。；]{0,8}日期/.test(desc);
-      const isTime = /时间|\btime\b/i.test(label) || /^选择[^，。；]{0,8}时间/.test(desc);
-      if (isDate) type = 'date';
-      else if (isTime) type = 'time';
-      else {
-        const op = parseSkillOptions(label, desc);
-        options = op.options;
-        // 只有 ≥2 个完整确定的选项才是下拉/单选；没写选项或写「…等」都退回输入框
-        if (!op.open && options.length >= 2) type = options.length === 2 ? 'radio' : 'select';
-      }
-    }
-    // 「可参考 A、B。」是填写参考而非下拉选项，还原成输入框候选
-    if (!['select', 'radio', 'date', 'time'].includes(type) && /可参考/.test(desc)) {
-      options = parseSkillOptions(label, desc).options;
-    }
-    const em = desc.match(/例如\s*[:：]?\s*[“"「]([^”"」]+)[”"」]/)
-      || desc.match(/例如\s*[:：]?\s*([^\n，。；]+)/);
-    out.push({ name: label, label, type, options, example: em ? em[1].trim() : '' });
-  }
-  return out.length ? out : [{ name: '', label: '', type: 'text', options: [], example: '' }];
-};
 
 const genInitialIcon = (text: string): Promise<File> => {
   const ch = (text.trim()[0] || 'S').toUpperCase();
@@ -142,13 +60,8 @@ const SubmitSkillPage: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // 表单其余可见字段（不直接走 Form.Item 受控，便于实时预览拼装）
-  const [instruction, setInstruction] = useState('');
-  const [whenUse, setWhenUse] = useState('');
-  const [whenNot, setWhenNot] = useState('');
-  const [params, setParams] = useState<ParamRow[]>([{ name: '', label: '', type: 'text', options: [] }]);
-  const [outputFormat, setOutputFormat] = useState('');
-  const [example, setExample] = useState('');
+  // 技能正文：一份 SKILL.md 原文。md 本身就是唯一数据源，不再拆成 7 个 state 再拼回去。
+  const [skillMd, setSkillMd] = useState('');
   const [rmb, setRmb] = useState(0);
   // 导出权限默认关闭，作者在提交页或「我的技能」里主动开启
   const [allowExport, setAllowExport] = useState(false);
@@ -186,22 +99,8 @@ const SubmitSkillPage: React.FC = () => {
           setPic(t.pic || '');
           setRmb(parseFloat(t.rmb) || 0);
           setAllowExport(Number(t.allow_export) === 1);
-          if (t.content) fillFromMarkdown(t.content);
-          // 已保存的独立字段表优先回填（比从 md 反解析更精确）
-          if (t.fields) {
-            try {
-              const arr = JSON.parse(t.fields);
-              if (Array.isArray(arr) && arr.length) {
-                setParams(arr.map((p: any) => ({
-                  name: String(p.name || ''),
-                  label: String(p.label || ''),
-                  type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
-                  options: Array.isArray(p.options) ? p.options.map(String) : [],
-                  example: String(p.example || p.placeholder || ''),
-                })));
-              }
-            } catch { /* 字段表损坏时沿用 md 解析结果 */ }
-          }
+          // 整份 md 原文直接灌进正文框（老技能若只有结构化 fields，自动补一段显式声明）
+          if (t.content) setSkillMd(ensureFieldsDeclared(t.content, t.fields));
         } else {
           message.error(r.msg || '加载失败');
         }
@@ -210,24 +109,8 @@ const SubmitSkillPage: React.FC = () => {
       .finally(() => setEditLoading(false));
   }, [isEdit, editId]);
 
-  // 实时拼装预览
-  const watchedTitle = Form.useWatch('title', form) || '';
-  const assembled = useMemo(() => {
-    const lines: string[] = [];
-    const title = watchedTitle || '';
-    if (title) lines.push(`# ${title}`, '');
-    if (instruction.trim()) lines.push(instruction.trim(), '');
-    if (whenUse.trim()) lines.push('## 何时使用', whenUse.trim(), '');
-    if (whenNot.trim()) lines.push('## 何时不使用', whenNot.trim(), '');
-    const validParams = params.filter((p) => p.name.trim() || p.label.trim());
-    if (validParams.length) {
-      lines.push(serializeParams(validParams));
-      lines.push('');
-    }
-    if (outputFormat.trim()) lines.push('## 输出格式', outputFormat.trim(), '');
-    if (example.trim()) lines.push('## 示例', example.trim(), '');
-    return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  }, [watchedTitle, instruction, whenUse, whenNot, params, outputFormat, example]);
+  // 实时识别：md 里的「## 参数」声明直接决定前台填写表单，作者所见即使用者所得
+  const parsedFields = useMemo(() => parseSkillFieldsFromMd(skillMd), [skillMd]);
 
   const doUpload = (file: File) => {
     const key = getToken();
@@ -245,7 +128,7 @@ const SubmitSkillPage: React.FC = () => {
   const onFinish = async (values: { title: string; alias: string; tid?: number }) => {
     const key = getToken();
     if (!key) { message.warning('请先登录'); return; }
-    if (!assembled) { message.warning('请填写指令模板'); return; }
+    if (!skillMd.trim()) { message.warning('请填写或上传技能正文 SKILL.md'); return; }
     setSubmitting(true);
     try {
       let finalPic = pic;
@@ -256,22 +139,12 @@ const SubmitSkillPage: React.FC = () => {
         if (up.code === 1 && up.data?.url) finalPic = up.data.url;
         else { message.error(up.msg || '自动生成图标失败'); setSubmitting(false); return; }
       }
-      // 独立技能信息表：结构化保存，前台据此渲染填写表单，不再只序列化成 md 自然语言行
-      const fieldRows = params
-        .filter((p) => p.label.trim() || p.name.trim())
-        .map((p) => ({
-          name: p.name.trim() || p.label.trim(),
-          label: p.label.trim() || p.name.trim(),
-          type: p.type,
-          options: (p.options || []).filter(Boolean),
-          placeholder: String(p.example || '').trim(),
-          example: String(p.example || '').trim(),
-          required: false,
-        }));
-      const fields = JSON.stringify(fieldRows);
+      // md 原文原样提交；字段表从 md 的「## 参数」显式声明解析，老写法交给后端兼容兜底
+      const content = skillMd.trim();
+      const fields = parsedFields.length ? JSON.stringify(parsedFields) : '';
       const r = isEdit
-        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled, fields, allow_export: allowExport ? 1 : 0 })
-        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb, fields, allow_export: allowExport ? 1 : 0 });
+        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content, fields, allow_export: allowExport ? 1 : 0 })
+        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content, rmb, fields, allow_export: allowExport ? 1 : 0 });
       if (r.code === 1) { message.success(r.msg || (isEdit ? '已提交重新审核，等待管理员审核' : '提交成功，等待审核')); navigate('/user/skills'); }
       else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
@@ -287,12 +160,14 @@ const SubmitSkillPage: React.FC = () => {
     if (!text) { message.warning('请先粘贴内容'); return; }
     try {
       if (text.startsWith('{')) {
-        const obj = JSON.parse(text);
-        fillFromObject(obj);
+        fillFromObject(JSON.parse(text));
       } else {
-        fillFromMarkdown(text);
+        // Markdown 原文直接进正文框，不再拆成 7 个表单分区
+        setSkillMd(text);
+        const h1 = text.match(/^#\s+(.+)$/m);
+        if (h1) form.setFieldValue('title', h1[1].trim());
       }
-      message.success('已填充表单');
+      message.success('已导入技能正文');
       setImportOpen(false);
     } catch {
       message.error('解析失败，请检查格式');
@@ -306,23 +181,8 @@ const SubmitSkillPage: React.FC = () => {
     try {
       const r = await importSkillFromGit(url, gitPrivate ? gitToken.trim() : '', gitPrivate);
       if (r.code === 1 && r.data) {
-        const d = r.data;
-        if (d.title) form.setFieldValue('title', d.title);
-        if (d.instruction) setInstruction(d.instruction);
-        if (d.whenUse) setWhenUse(d.whenUse);
-        if (d.whenNot) setWhenNot(d.whenNot);
-        if (Array.isArray(d.params) && d.params.length) {
-          setParams(d.params.map((p: any) => ({
-            name: String(p.name || ''),
-            label: String(p.label || ''),
-            type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
-            options: Array.isArray(p.options) ? p.options.map(String) : [],
-            example: String(p.example || p.placeholder || ''),
-          })));
-        } else {
-          setParams([{ name: '', label: '', type: 'text', options: [] }]);
-        }
-        message.success('已从 Git 仓库导入并填充表单');
+        fillFromObject(r.data);
+        message.success('已从 Git 仓库导入技能正文');
         setImportOpen(false);
       } else {
         message.error(r.msg || '导入失败');
@@ -334,77 +194,14 @@ const SubmitSkillPage: React.FC = () => {
     }
   };
 
+  /** JSON 模板 / Git 仓库返回的结构化数据 → 一份 SKILL.md 原文；元数据仍回填到底部表单 */
   const fillFromObject = (obj: any) => {
     if (obj.title) form.setFieldValue('title', obj.title);
     if (obj.alias) form.setFieldValue('alias', obj.alias);
     if (obj.tid) form.setFieldValue('tid', Number(obj.tid));
     if (obj.pic) setPic(String(obj.pic));
-    if (obj.instruction) setInstruction(String(obj.instruction));
-    if (obj.whenUse) setWhenUse(String(obj.whenUse));
-    if (obj.whenNot) setWhenNot(String(obj.whenNot));
-    if (Array.isArray(obj.params) && obj.params.length) {
-      setParams(obj.params.map((p: any) => ({
-        name: String(p.name || ''),
-        label: String(p.label || ''),
-        type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
-        options: Array.isArray(p.options) ? p.options.map(String) : [],
-      })));
-    } else {
-      setParams([{ name: '', label: '', type: 'text', options: [] }]);
-    }
-    if (obj.outputFormat) setOutputFormat(String(obj.outputFormat));
-    if (obj.example) setExample(String(obj.example));
     if (typeof obj.rmb === 'number') setRmb(obj.rmb);
-  };
-
-  const fillFromMarkdown = (text: string) => {
-    const lines = text.split(/\r?\n/);
-    let title = '';
-    let buf: string[] = [];
-    const section: Record<string, string[]> = {};
-    let cur = '';
-    for (const ln of lines) {
-      const h1 = ln.match(/^#\s+(.*)$/);
-      const h2 = ln.match(/^##\s+(.*)$/);
-      if (h1) { title = h1[1].trim(); continue; }
-      if (h2) { section[cur] = buf; cur = h2[1].trim(); buf = []; continue; }
-      buf.push(ln);
-    }
-    section[cur] = buf;
-    if (title) form.setFieldValue('title', title);
-    const norm = (s?: string) => (s ? s.trim() : '');
-    setInstruction(norm((section['指令模板'] || section[''] || []).join('\n')));
-    setWhenUse(norm(section['何时使用']?.join('\n')));
-    setWhenNot(norm(section['何时不使用']?.join('\n')));
-    setOutputFormat(norm(section['输出格式']?.join('\n')));
-    setExample(norm(section['示例']?.join('\n')));
-    const psRaw = section['参数'] || [];
-    const psBlock = psRaw.join('\n');
-    const jm = psBlock.match(/```json\s*([\s\S]*?)\s*```/);
-    if (jm) {
-      try {
-        const arr = JSON.parse(jm[1]);
-        if (Array.isArray(arr) && arr.length) {
-          setParams(arr.map((p: any) => ({
-            name: String(p.name || ''),
-            label: String(p.label || ''),
-            type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
-            options: Array.isArray(p.options) ? p.options.map(String) : [],
-            example: String(p.example || p.placeholder || ''),
-          })));
-        } else {
-          setParams(parseParamsFromText(text));
-        }
-      } catch {
-        setParams(parseParamsFromText(text));
-      }
-    } else if (psRaw.length) {
-      const ps = psRaw.map((l: string) => l.replace(/^[-*]\s*/, '')).filter(Boolean)
-        .map((l: string) => { const [n, ...rest] = l.split('：'); return { name: (n || '').trim(), label: rest.join('：').trim(), type: 'textarea' as ParamType, options: [] as string[] }; });
-      setParams(ps.length ? ps : parseParamsFromText(text));
-    } else {
-      setParams(parseParamsFromText(text));
-    }
+    setSkillMd(skillMdFromObject(obj));
   };
 
   const downloadTemplate = () => {
@@ -416,18 +213,39 @@ const SubmitSkillPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const updateParam = (i: number, key: 'name' | 'label' | 'type' | 'options' | 'example', val: any) => {
-    setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
+  const downloadMdTemplate = () => {
+    const blob = new Blob([SKILL_MD_TEMPLATE], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'SKILL.md';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  const PARAM_TYPE_OPTIONS = [
-    { value: 'text', label: '单行文本' },
-    { value: 'textarea', label: '多行文本' },
-    { value: 'select', label: '下拉选择' },
-    { value: 'radio', label: '单选' },
-    { value: 'date', label: '日期' },
-    { value: 'time', label: '时间' },
-  ];
+  const readMdFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || '');
+      setSkillMd(text);
+      const h1 = text.match(/^#\s+(.+)$/m);
+      if (h1) form.setFieldValue('title', h1[1].trim());
+      message.success('已载入 SKILL.md');
+    };
+    reader.readAsText(file);
+    return false;
+  };
+
+  const insertFieldsSnippet = () => {
+    if (/^##\s*(参数|字段|输入项|Fields|Inputs)/im.test(skillMd)) {
+      message.info('正文里已有「## 参数」段');
+      return;
+    }
+    setSkillMd((prev) => `${(prev || '').replace(/\s+$/, '')}\n\n${FIELDS_SNIPPET}`);
+  };
+
+  const TYPE_TEXT: Record<string, string> = {
+    text: '单行', textarea: '多行', select: '下拉', radio: '单选', date: '日期', time: '时间',
+  };
 
   return (
     <Card className="user-center-card">
@@ -438,11 +256,11 @@ const SubmitSkillPage: React.FC = () => {
           {!isEdit && <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>}
         </Space>
       </div>
-      <Text type="secondary">填写结构化字段，由系统自动拼装为 AI 指令模板并生成运行界面；你也可以粘贴 JSON 或 Markdown 一键填充。</Text>
+      <Text type="secondary">技能正文是一份 SKILL.md：可上传 .md、从 Git 仓库导入或直接粘贴；在「## 参数」段里声明要填什么，系统据此生成运行界面。名称、分类等基本信息在下方填写。</Text>
 
       <div style={{ display: 'flex', gap: 'var(--space-6)', flexWrap: 'wrap', marginTop: 'var(--space-4)' }}>
         <div style={{ flex: '1 1 480px', minWidth: 320 }}>
-          <Spin spinning={catesLoading}>
+          <Spin spinning={catesLoading || editLoading}>
             <Form form={form} layout="vertical" onFinish={onFinish}>
               <Form.Item label="技能名称" name="title" rules={[{ required: true, message: '请输入技能名称' }]}>
                 <Input placeholder="例如：文章润色" />
@@ -468,49 +286,49 @@ const SubmitSkillPage: React.FC = () => {
                 <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未手动上传则提交时自动按当前名称生成首字图标</div>
               </Form.Item>
 
-              <Form.Item label="指令模板（prompt 本体）" required>
-                <Input.TextArea rows={5} value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="描述这个技能要做什么、输入输出约束等。" />
-              </Form.Item>
-              <Form.Item label="何时使用">
-                <Input.TextArea rows={2} value={whenUse} onChange={(e) => setWhenUse(e.target.value)} placeholder="选填" />
-              </Form.Item>
-              <Form.Item label="何时不使用">
-                <Input.TextArea rows={2} value={whenNot} onChange={(e) => setWhenNot(e.target.value)} placeholder="选填" />
-              </Form.Item>
-
-              <Form.Item label="参数（技能独立信息表）">
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  {params.map((p, i) => (
-                    <Space key={i} wrap align="start">
-                      <Input placeholder="参数名" value={p.name} onChange={(e) => updateParam(i, 'name', e.target.value)} style={{ width: 130 }} />
-                      <Input placeholder="说明" value={p.label} onChange={(e) => updateParam(i, 'label', e.target.value)} style={{ width: 180 }} />
-                      <Select value={p.type} onChange={(v) => updateParam(i, 'type', v)} style={{ width: 110 }} options={PARAM_TYPE_OPTIONS} />
-                      <Input
-                        placeholder="示例值（引导填写）"
-                        value={p.example || ''}
-                        onChange={(e) => updateParam(i, 'example', e.target.value)}
-                        style={{ width: 170 }}
-                      />
-                      {(p.type === 'select' || p.type === 'radio') && (
-                        <Input
-                          placeholder="选项，逗号分隔"
-                          value={(p.options || []).join(', ')}
-                          onChange={(e) => updateParam(i, 'options', e.target.value.split(/[,，]/).map((s) => s.trim()).filter(Boolean))}
-                          style={{ width: 200 }}
-                        />
-                      )}
-                      <Button size="small" danger onClick={() => setParams((prev) => prev.filter((_, idx) => idx !== i))} disabled={params.length === 1}>删除</Button>
-                    </Space>
-                  ))}
-                  <Button size="small" icon={<PlusOutlined />} onClick={() => setParams((prev) => [...prev, { name: '', label: '', type: 'text', options: [] }])}>添加参数</Button>
+              <Form.Item label="技能正文（SKILL.md）" required>
+                <Space direction="vertical" style={{ width: '100%' }} size="small">
+                  <Space wrap size="small">
+                    <Upload accept=".md,.markdown,.txt" showUploadList={false} beforeUpload={readMdFile}>
+                      <Button size="small" icon={<UploadOutlined />}>上传 .md</Button>
+                    </Upload>
+                    <Button size="small" icon={<FileTextOutlined />} onClick={() => setImportOpen(true)}>一键导入 / Git 仓库</Button>
+                    <Button size="small" icon={<CodeOutlined />} onClick={insertFieldsSnippet}>插入参数模板</Button>
+                    <Button size="small" onClick={() => setSkillMd(SKILL_MD_TEMPLATE)}>填入示例</Button>
+                    <Button size="small" type="link" onClick={downloadMdTemplate}>下载 SKILL.md 模板</Button>
+                  </Space>
+                  <Input.TextArea
+                    rows={16}
+                    value={skillMd}
+                    onChange={(e) => setSkillMd(e.target.value)}
+                    placeholder={SKILL_MD_PLACEHOLDER}
+                    style={{ fontFamily: 'ui-monospace, SFMono-Regular, Consolas, monospace', fontSize: 'var(--fs-sm)' }}
+                  />
+                  <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', lineHeight: 1.7 }}>
+                    正文自由写；用户要填什么，在 <code>## 参数</code> 段里逐行声明即可。
+                    <code>- 字段名：单行/多行/下拉/单选/日期/时间，必填，示例 xxx</code>。
+                    这份 md 会原样保存，导出时也是同一份，不再拆分、拼装或反猜。
+                  </div>
+                  <div className="skill-doc-fields">
+                    <Text strong style={{ fontSize: 'var(--fs-sm)' }}>
+                      自动识别的字段（{parsedFields.length}）
+                    </Text>
+                    {parsedFields.length ? (
+                      <Space wrap size={[6, 6]} style={{ marginTop: 6 }}>
+                        {parsedFields.map((f, i) => (
+                          <span className="skill-doc-field" key={`${f.name}-${i}`}>
+                            {f.label}{f.required ? ' *' : ''} · {TYPE_TEXT[f.type] || f.type}
+                            {(f.options || []).length ? `（${(f.options || []).join(' / ')}）` : ''}
+                          </span>
+                        ))}
+                      </Space>
+                    ) : (
+                      <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 4 }}>
+                        未声明「## 参数」段：老技能会按历史写法兼容解析；新技能建议显式声明，表单才完全可控。
+                      </div>
+                    )}
+                  </div>
                 </Space>
-              </Form.Item>
-
-              <Form.Item label="输出格式">
-                <Input.TextArea rows={2} value={outputFormat} onChange={(e) => setOutputFormat(e.target.value)} placeholder="选填" />
-              </Form.Item>
-              <Form.Item label="使用示例">
-                <Input.TextArea rows={2} value={example} onChange={(e) => setExample(e.target.value)} placeholder="选填" />
               </Form.Item>
               <Form.Item label="使用一次金额（元）" required>
                 <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
@@ -534,12 +352,12 @@ const SubmitSkillPage: React.FC = () => {
         </div>
 
         <div style={{ flex: '1 1 360px', minWidth: 300 }}>
-          <Text strong>实时预览（提交内容将拼装为以下 Markdown）</Text>
+          <Text strong>实时预览（提交内容即以下 SKILL.md 原文）</Text>
           <pre className="skill-preview" style={{
             marginTop: 'var(--space-2)', padding: 'var(--space-4)', background: 'var(--c-bg-soft)',
             border: '1px solid var(--c-border)', borderRadius: 8, whiteSpace: 'pre-wrap',
             wordBreak: 'break-word', minHeight: 240, fontSize: 'var(--fs-sm)', lineHeight: 1.7,
-          }}>{assembled || '填写左侧字段后，这里会实时显示拼好的内容…'}</pre>
+          }}>{skillMd || '上传 / 粘贴 SKILL.md 后，这里实时显示原文…'}</pre>
         </div>
       </div>
 

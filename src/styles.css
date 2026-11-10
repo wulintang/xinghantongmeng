@@ -2720,3 +2720,21 @@ body {
 .skill-form .ant-form-item { margin-bottom: var(--space-3); }
 .skill-form .ant-form-item-label > label { color: var(--c-text-2); }
 .skill-form-extra { font-size: var(--fs-xs); color: var(--c-text-3); }
+
+/* ===== 提交页 SKILL.md 正文区：字段自动识别结果（沿用同一套表面/边线变量） ===== */
+.skill-doc-fields {
+  padding: var(--space-3);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: var(--c-bg-soft);
+}
+.skill-doc-field {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  background: var(--c-surface);
+  color: var(--c-text-2);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}

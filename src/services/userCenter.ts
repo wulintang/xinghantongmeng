@@ -511,6 +511,8 @@ export interface ToolItem {
   uid?: number;
   author?: string;
   author_head?: string;
+  /** 作者是否允许导出：0 禁止 / 1 允许（缺省按允许处理） */
+  allow_export?: number;
 }
 
 export interface TagItem {
@@ -571,12 +573,20 @@ export function getInit() {
   );
 }
 
-/** 自定义配置：友情链接页用 domain/logo，全站 head 注入用 head_code */
+/** 自定义配置：友情链接页用 domain/logo，全站 head 注入用 head_code，主题/字体用下面 5 项 */
 export interface CustomConfig {
   domain: string;
   logo: string;
   head_code: string;
   footer_left?: string;
+  /** 默认深浅：0 浅 / 1 深 / 2 跟随时间段 */
+  default_mode: number;
+  dark_start: string;
+  dark_end: string;
+  /** 全站统一字体（空＝系统默认） */
+  font_family: string;
+  /** 全站字号缩放 0.8–1.5 */
+  font_size_scale: number;
 }
 export function getCustomConfig() {
   return request<ApiResp<CustomConfig>>(`${OPEN}/customConfig.html`);
@@ -694,6 +704,8 @@ export interface SkillApplyItem {
   status: number;
   reason: string;
   time: number;
+  /** 作者是否允许导出：0 禁止 / 1 允许 */
+  allow_export?: number;
 }
 
 /** 提交技能（前端组装 content 后传入；pic 为上传回传 URL） */
@@ -714,6 +726,16 @@ export function editSkill(key: string, data: Record<string, any>) {
 /** 删除自己提交的技能（同时清理已上线的 app_toolbox 记录） */
 export function delSkill(key: string, id: number) {
   return post<ApiResp>('/delSkill.html', { key, id }, SKILLS);
+}
+
+/** 作者设置某个技能「允许导出」（用户中心 / 我的技能里逐个开关） */
+export function setSkillExport(key: string, id: number, allow: 0 | 1) {
+  return post<ApiResp>('/setExport.html', { key, id, allow }, SKILLS);
+}
+
+/** 导出标准 Agent Skill：后端按 allow_export 校验并输出 SKILL.md */
+export function exportSkillUrl(toolboxId: number) {
+  return `${apiBase()}/index.php/skills/index/exportSkill.html?id=${toolboxId}`;
 }
 
 /** 公开：某用户已通过的技能（个人主页「技能」标签展示，无需登录） */

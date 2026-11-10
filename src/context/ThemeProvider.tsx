@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getRenderConfig, type RenderConfig } from '@/services/renderx';
+import { getCustomConfig, type CustomConfig } from '@/services/userCenter';
 
 type Mode = 'light' | 'dark';
 
@@ -11,8 +11,8 @@ interface ThemeContextValue {
     dark: boolean;
     /** 点击切换（写 localStorage，手动优先于定时） */
     toggle: () => void;
-    /** 站点渲染配置（可能为 null，未加载完） */
-    config: RenderConfig | null;
+    /** 站点自定义配置（可能为 null，未加载完） */
+    config: CustomConfig | null;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
@@ -25,9 +25,9 @@ const ThemeContext = createContext<ThemeContextValue>({
 const LS_KEY = 'renderx_theme';
 
 /** 当前分钟是否处在深色时间段（支持跨午夜，如 18:00–06:00） */
-function inDarkSchedule(cfg: RenderConfig, now = new Date()): boolean {
-    const [sh, sm] = cfg.dark_start.split(':').map(Number);
-    const [eh, em] = cfg.dark_end.split(':').map(Number);
+function inDarkSchedule(cfg: CustomConfig, now = new Date()): boolean {
+    const [sh, sm] = String(cfg.dark_start || '18:00').split(':').map(Number);
+    const [eh, em] = String(cfg.dark_end || '06:00').split(':').map(Number);
     const s = sh * 60 + sm;
     const e = eh * 60 + em;
     if (s === e) return false;
@@ -37,17 +37,17 @@ function inDarkSchedule(cfg: RenderConfig, now = new Date()): boolean {
 }
 
 /** 解析最终模式：localStorage 手动优先；否则按站点 default_mode（0 浅 / 1 深 / 2 定时） */
-function resolveMode(cfg: RenderConfig | null): Mode {
+function resolveMode(cfg: CustomConfig | null): Mode {
     const saved = localStorage.getItem(LS_KEY);
     if (saved === 'light' || saved === 'dark') return saved;
     if (!cfg) return 'light';
-    if (cfg.default_mode === 1) return 'dark';
-    if (cfg.default_mode === 2) return inDarkSchedule(cfg) ? 'dark' : 'light';
+    if (Number(cfg.default_mode) === 1) return 'dark';
+    if (Number(cfg.default_mode) === 2) return inDarkSchedule(cfg) ? 'dark' : 'light';
     return 'light';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
-    const [config, setConfig] = useState<RenderConfig | null>(null);
+    const [config, setConfig] = useState<CustomConfig | null>(null);
     const [mode, setMode] = useState<Mode>(() => resolveMode(null));
     const timerRef = useRef<number | null>(null);
 
@@ -58,7 +58,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         }
     };
 
-    const startSchedule = (cfg: RenderConfig) => {
+    const startSchedule = (cfg: CustomConfig) => {
         stopSchedule();
         timerRef.current = window.setInterval(() => {
             // 一旦用户手动切换（写了 localStorage），停止定时跟随
@@ -72,7 +72,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
 
     useEffect(() => {
         let alive = true;
-        getRenderConfig()
+        getCustomConfig()
             .then((r: any) => {
                 if (!alive || !r || r.code !== 1 || !r.data) return;
                 setConfig(r.data);

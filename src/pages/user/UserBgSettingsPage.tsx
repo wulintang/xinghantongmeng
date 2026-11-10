@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Form, Select, Typography, Upload, message } from 'antd';
+import { Alert, Button, Card, Form, Select, Typography, Upload, message } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { getToken } from '@/utils/auth';
-import { getMyRender, saveMyRender, type MyRender } from '@/services/renderx';
+import { getMyRender, saveMyRender, type MyRender } from '@/services/userBg';
 // 图片一律走上传（长记忆第 0.5 条图片录入铁律：禁止填 URL），复用站点通用上传
 import { uploadFile } from '@/services/userCenter';
 import { useMember } from '@/context/MemberContext';
@@ -101,6 +101,8 @@ export default function UserBgSettingsPage(): React.JSX.Element {
     const [fgMode, setFgMode] = useState(0);
     const [uploadList, setUploadList] = useState<UploadFile[]>([]);
     const [uploading, setUploading] = useState(false);
+    /** 图片背景审核状态：0 待审 / 1 通过 / 2 拒绝 */
+    const [audit, setAudit] = useState<{ status: number; reason: string }>({ status: 1, reason: '' });
 
     useEffect(() => {
         const key = getToken();
@@ -115,6 +117,7 @@ export default function UserBgSettingsPage(): React.JSX.Element {
                     setBgType(Number(r.data.bg_type) || 0);
                     setBgValue(r.data.bg_value || '');
                     setFgMode(Number(r.data.fg_mode) || 0);
+                    setAudit({ status: Number(r.data.status ?? 1), reason: r.data.reason || '' });
                     if (r.data.bg_type === 3 && r.data.bg_value) {
                         setUploadList([{ uid: '-1', name: 'bg', status: 'done', url: r.data.bg_value }]);
                     }
@@ -189,8 +192,12 @@ export default function UserBgSettingsPage(): React.JSX.Element {
         setSaving(true);
         saveMyRender(key, { bg_type: bgType, bg_value: bgValue, fg_mode: fgMode })
             .then((r: any) => {
-                if (r.code === 1) message.success(r.msg || '保存成功');
-                else message.error(r.msg || '保存失败');
+                if (r.code === 1) {
+                    const st = Number(r.data?.status ?? (bgType === 3 ? 0 : 1));
+                    setAudit({ status: st, reason: '' });
+                    if (st === 0) message.info('图片已提交，管理员审核通过后访客才能看到');
+                    else message.success(r.msg || '保存成功');
+                } else message.error(r.msg || '保存失败');
             })
             .catch(() => message.error('保存失败'))
             .finally(() => setSaving(false));
@@ -204,6 +211,25 @@ export default function UserBgSettingsPage(): React.JSX.Element {
             <Text type="secondary" style={{ fontSize: 'var(--fs-sm)', display: 'block', marginBottom: 'var(--space-4)' }}>
                 仅用于你的公开主页（/user/{uid || '你的ID'}）。背景只作装饰，不会改变卡片高度；图片必须上传，不支持填写网络地址。
             </Text>
+
+            {audit.status === 0 ? (
+                <Alert
+                    type="info"
+                    showIcon
+                    message="图片背景待审核"
+                    description="你上传的图片已提交，下方可以正常预览；管理员审核通过后，访客访问你的公开主页才会看到。纯色与渐变无需审核。"
+                    style={{ marginBottom: 'var(--space-4)' }}
+                />
+            ) : null}
+            {audit.status === 2 ? (
+                <Alert
+                    type="error"
+                    showIcon
+                    message="图片背景未通过审核"
+                    description={audit.reason || '请更换图片后重新提交。'}
+                    style={{ marginBottom: 'var(--space-4)' }}
+                />
+            ) : null}
 
             <Form layout="vertical">
                 <Form.Item label="背景类型" extra="默认＝使用站点统一背景；纯色、渐变从下方色板点选，图片通过上传获得。">

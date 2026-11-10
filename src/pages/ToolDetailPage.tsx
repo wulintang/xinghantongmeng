@@ -9,9 +9,9 @@ import { useSite } from '@/context/SiteContext';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getTool, submitReport, toggleFavorite, readFaved, type ToolItem } from '@/services/userCenter';
+import { getTool, submitReport, toggleFavorite, readFaved, exportSkillUrl, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix } from '@/utils/route';
-import ToolRenderer from '@/components/common/ToolRenderer';
+import SkillChat from '@/components/common/SkillChat';
 import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { getToken } from '@/utils/auth';
@@ -100,23 +100,15 @@ const ToolDetailPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '网络错误'));
     };
 
-    // 导出为标准 agent skill（SKILL.md：YAML frontmatter name/description + 正文 content）
+    // 导出交给后端生成标准 Agent Skill（SKILL.md），并按作者设置的 allow_export 校验
     const onExport = () => {
         if (!item) return;
-        const raw = item.content || '';
-        const body = raw.replace(/^#\s+.*\r?\n/, '').trim();
-        let description = item.title || '';
-        const wu = body.match(/##\s*何时使用\s*\r?\n([\s\S]*?)(?:\r?\n##\s|$)/);
-        if (wu && wu[1].trim()) description = wu[1].trim();
-        const md = `---\nname: ${item.title || 'skill'}\ndescription: ${description}\n---\n\n${body}\n`;
-        const blob = new Blob([md], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `${item.alias || 'skill'}.skill.md`;
+        a.href = exportSkillUrl(item.id);
+        a.download = 'SKILL.md';
+        document.body.appendChild(a);
         a.click();
-        URL.revokeObjectURL(url);
-        message.success('已导出为标准 agent skill（SKILL.md）');
+        a.remove();
     };
 
     if (loading) return <ToolDetailSkeleton />;
@@ -152,9 +144,11 @@ const ToolDetailPage: React.FC = () => {
                         <AppTooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
                         </AppTooltip>
-                        <AppTooltip title="导出为标准 agent skill（SKILL.md）">
-                            <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能</Button>
-                        </AppTooltip>
+                        {Number(item.allow_export ?? 1) === 1 ? (
+                            <AppTooltip title="导出为标准 Agent Skill（SKILL.md），可直接放进任意 AI 的技能目录">
+                                <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能</Button>
+                            </AppTooltip>
+                        ) : null}
                     </Space>
                 }
             />
@@ -176,6 +170,11 @@ const ToolDetailPage: React.FC = () => {
                         <div className="detail-content md-content"><MdView id="tool-preview" modelValue={item.content || ''} /></div>
                     </Flex>
                 </Flex>
+            </Card>
+
+            {/* 全站统一：所有技能共用一个聊天框，不再按 md 生成各不相同的表单 */}
+            <Card title="与技能对话">
+                <SkillChat toolId={Number(item.id)} title={item.title} />
             </Card>
 
             <Card title="技能信息">
@@ -206,10 +205,6 @@ const ToolDetailPage: React.FC = () => {
                         {item.time ? dayjs.unix(item.time).format('YYYY-MM-DD HH:mm') : '-'}
                     </Descriptions.Item>
                 </Descriptions>
-            </Card>
-
-            <Card title="在线使用">
-                <ToolRenderer config={item.config || ''} ai={item.ai} toolId={Number(item.id)} token={getToken() || ''} />
             </Card>
 
             <AdSlotSkeleton slot="detail_tool_bottom" />

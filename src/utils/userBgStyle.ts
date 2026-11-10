@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import type { MyRender } from '@/services/renderx';
+import type { MyRender } from '@/services/userBg';
 
 /**
  * 计算颜色亮度（近似 0~255）。用于纯色背景自动选前景色，保证任意背景上文字可读。

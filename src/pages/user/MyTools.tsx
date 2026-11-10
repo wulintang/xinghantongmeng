@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Empty, Popconfirm, Space, Spin, Tag, Typography, message,
+  Button, Card, Empty, Popconfirm, Space, Spin, Switch, Tag, Tooltip, Typography, message,
 } from 'antd';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  delSkill, getMySkillApplies, type SkillApplyItem,
+  delSkill, getMySkillApplies, setSkillExport, exportSkillUrl, type SkillApplyItem,
 } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -54,22 +54,48 @@ const MyToolsPage: React.FC = () => {
       .finally(() => { setDeleting(false); setDelId(null); });
   };
 
-  // 导出为标准 agent skill（SKILL.md：YAML frontmatter name/description + 正文 content）
+  // 作者逐个控制「允许导出」：同时影响前台详情页按钮与后端导出接口
+  const toggleExport = (it: SkillApplyItem, allow: boolean) => {
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    setSkillExport(key, it.id, allow ? 1 : 0)
+      .then((r) => {
+        if (r.code === 1) {
+          setList((prev) => prev.map((x) => x.id === it.id ? { ...x, allow_export: allow ? 1 : 0 } : x));
+          message.success(r.msg || '已更新');
+        } else message.error(r.msg || '设置失败');
+      })
+      .catch(() => message.error('设置失败'));
+  };
+
+  // 导出标准 Agent Skill（SKILL.md）：已上线走后端校验，草稿本地生成同格式
   const onExport = (it: SkillApplyItem) => {
+    if (it.allow_export === 0) { message.warning('你已关闭该技能的导出权限'); return; }
+    if (it.toolbox_id > 0) {
+      const a = document.createElement('a');
+      a.href = exportSkillUrl(it.toolbox_id);
+      a.download = 'SKILL.md';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
     const raw = it.content || '';
-    const body = raw.replace(/^#\s+.*\r?\n/, '').trim();
-    let description = it.title || '';
+    const lines = raw.split(/\r?\n/).filter((l) => !/^#\s+/.test(l));
+    const body = lines.join('\n').trim();
     const wu = body.match(/##\s*何时使用\s*\r?\n([\s\S]*?)(?:\r?\n##\s|$)/);
-    if (wu && wu[1].trim()) description = wu[1].trim();
-    const md = `---\nname: ${it.title || 'skill'}\ndescription: ${description}\n---\n\n${body}\n`;
+    const description = (wu && wu[1].trim()) ? wu[1].trim() : (it.title || 'skill');
+    const name = (it.alias || 'skill').toLowerCase().replace(/_/g, '-');
+    const q = (s: string) => `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\r\n]/g, ' ')}"`;
+    const md = `---\nname: ${q(name)}\ndescription: ${q(description)}\n---\n\n${body}\n`;
     const blob = new Blob([md], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${it.alias || 'skill'}.skill.md`;
+    a.download = 'SKILL.md';
     a.click();
     URL.revokeObjectURL(url);
-    message.success('已导出为标准 agent skill（SKILL.md）');
+    message.success('已导出 SKILL.md');
   };
 
   return (
@@ -111,7 +137,18 @@ const MyToolsPage: React.FC = () => {
                       {(it.status === 1 || it.status === 2) && it.toolbox_id > 0 ? (
                         <Button size="small" icon={<EditOutlined />} onClick={() => navigate('/user/submit-skill?id=' + it.toolbox_id)}>编辑</Button>
                       ) : null}
-                      <Button size="small" icon={<DownloadOutlined />} onClick={() => onExport(it)}>导出</Button>
+                      <Tooltip title="关闭后，技能详情页不再显示导出按钮，后端导出接口也会拒绝">
+                        <Space size={4}>
+                          <Switch size="small" checked={it.allow_export !== 0} onChange={(v) => toggleExport(it, v)} />
+                          <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>允许导出</Text>
+                        </Space>
+                      </Tooltip>
+                      <Button
+                        size="small"
+                        icon={<DownloadOutlined />}
+                        disabled={it.allow_export === 0}
+                        onClick={() => onExport(it)}
+                      >导出</Button>
                       <Popconfirm
                         title="确认删除该技能？"
                         description="删除后已上线技能也将从广场移除，且不可恢复。"

@@ -4,8 +4,8 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
-import { getUserRender, type MyRender } from '@/services/renderx';
-import { buildCardBodyStyle, buildCardBackgroundValue, fgClassName } from '@/utils/renderxBg';
+import { getUserRender, type MyRender } from '@/services/userBg';
+import { buildCardBodyStyle, buildCardBackgroundValue, fgClassName } from '@/utils/userBgStyle';
 import { domainOf, assetUrl } from '@/utils/route';
 
 const { Text } = Typography;

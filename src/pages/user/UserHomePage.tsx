@@ -5,7 +5,7 @@ import { Alert, Button, Flex, Spin } from 'antd';
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, type ColumnItem } from '@/services/column';
-import { getUserRender, type MyRender } from '@/services/renderx';
+import { getUserRender, type MyRender } from '@/services/userBg';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { UserHomeCards } from './UserHomeCards';
 

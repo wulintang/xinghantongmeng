@@ -44,10 +44,8 @@ import ArticleEditPage from '@pages/user/ArticleEditPage';
 import UserBgSettingsPage from '@pages/user/UserBgSettingsPage';
 import { SiteProvider } from '@/context/SiteContext';
 import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
-import CustomFoot from '@components/common/CustomFoot';
 import CustomCss from '@components/common/CustomCss';
 import { getCustomConfig } from '@/services/userCenter';
-import { getRenderConfig } from '@/services/renderx';
 import { injectCode } from '@/utils/injectCode';
 
 /** 路由切换后回到页面顶部，否则从长页面跳转会停在半空 */
@@ -60,26 +58,18 @@ function ScrollToTop(): null {
 }
 
 /**
- * 全站 <head> 注入：renderx 后台「Head 自定义代码」一个框，
- * 外加兼容 openapi 插件旧「自定义 Head 代码」head_code（统计代码常贴在这里）。
- * 全部走统一注入器，保证 <script> 真正执行。
+ * 全站 <head> 注入：后台「自定义配置」里的「自定义 Head 代码」一个框。
+ * 走统一注入器重建 <script> 节点，统计代码贴这里能真正执行。
  */
 function CustomHead(): null {
     useEffect(() => {
         let alive = true;
-        Promise.all([
-            getRenderConfig().catch(() => null),
-            getCustomConfig().catch(() => null),
-        ]).then(([rx, custom]) => {
-            if (!alive) return;
-            const r: any = rx?.data || {};
-            const c: any = custom?.data || {};
-            if (r.head_code) injectCode(r.head_code, 'head', 'rx-head-code');
-            // openapi 旧框里已填的代码同样重建执行；两处内容相同时只注入一次，避免统计重复计数
-            if (c.head_code && c.head_code.trim() !== (r.head_code || '').trim()) {
-                injectCode(c.head_code, 'head', 'custom-head-code');
-            }
-        });
+        getCustomConfig()
+            .then((r: any) => {
+                if (!alive || !r || r.code !== 1 || !r.data?.head_code) return;
+                injectCode(r.data.head_code, 'head', 'custom-head-code');
+            })
+            .catch(() => {});
         return () => {
             alive = false;
         };
@@ -159,7 +149,6 @@ function ThemedShell(): React.JSX.Element {
                 <BrowserRouter>
                     <ScrollToTop />
                     <CustomHead />
-                    <CustomFoot />
                     <CustomCss />
                     <ErrorBoundary>
                         <Routes>

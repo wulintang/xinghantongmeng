@@ -2621,3 +2621,83 @@ body {
   min-height: 480px;
   height: 100%;
 }
+
+/* ===== 技能统一聊天框：全站唯一一套，所有技能共用，深浅只翻站点变量 ===== */
+.skill-chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.skill-chat-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.skill-chat-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-text-2);
+}
+.skill-chat-log {
+  min-height: 260px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.skill-chat-empty {
+  margin: auto;
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: var(--fs-sm);
+  max-width: 440px;
+  line-height: 1.8;
+}
+.skill-chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 88%;
+}
+.skill-chat-user { align-self: flex-end; align-items: flex-end; }
+.skill-chat-assistant { align-self: flex-start; align-items: flex-start; }
+.skill-chat-who { font-size: var(--fs-xs); color: var(--c-text-3); }
+.skill-chat-body {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: var(--fs-sm);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.skill-chat-user .skill-chat-body { background: var(--c-surface-2); }
+.skill-chat-body .rx-md-view,
+.skill-chat-body .md-editor-preview {
+  background: transparent !important;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.skill-chat-body .md-editor-preview p { margin: 0 0 8px; }
+.skill-chat-body .md-editor-preview p:last-child { margin-bottom: 0; }
+.skill-chat-typing { color: var(--c-text-3); font-size: var(--fs-sm); }
+.skill-chat-input {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+.skill-chat-input .ant-input-textarea { flex: 1 1 auto; min-width: 0; }
+.skill-chat-input > button { flex: 0 0 auto; }
+@media (max-width: 600px) {
+  .skill-chat-msg { max-width: 100%; }
+}

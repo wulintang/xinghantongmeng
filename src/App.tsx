@@ -138,11 +138,20 @@ class ErrorBoundary extends React.Component<
  */
 function ThemedShell(): React.JSX.Element {
     const { dark } = useTheme();
+    // 统一表面 / 边线：antd 组件与自定义卡片共用同一套令牌（与 styles.css 的 --c-surface / --c-border 完全一致），
+    // 确保全站卡片背景、边线只有"一套"，深浅模式均一致。
     const theme = {
         algorithm: dark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
         token: {
             borderRadius: 14,
             colorBgLayout: dark ? '#0f1115' : '#ffffff',
+            colorBgContainer: dark ? '#171a21' : '#ffffff',
+            colorBgElevated: dark ? '#171a21' : '#ffffff',
+            colorFill: dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.04)',
+            colorFillSecondary: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+            colorFillTertiary: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+            colorBorder: dark ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.08)',
+            colorBorderSecondary: dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)',
             colorTextBase: dark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.88)',
         },
     };

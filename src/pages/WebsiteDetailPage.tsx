@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { WebsiteDetailSkeleton } from '@components/common/skeleton';
-import { MdPreview } from 'md-editor-rt';
+import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
@@ -263,7 +263,7 @@ const WebsiteDetailPage: React.FC = () => {
                                 ))}
                             </Space>
                         ) : null}
-                        <div className="detail-content md-content"><MdPreview id="website-preview" modelValue={item.content || ''} /></div>
+                        <div className="detail-content md-content"><MdView id="website-preview" modelValue={item.content || ''} /></div>
                     </Flex>
                     {item.pic ? (
                         <img src={item.pic} alt={item.title || item.name} className="detail-shot-side" />

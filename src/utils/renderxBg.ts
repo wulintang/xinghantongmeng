@@ -15,8 +15,8 @@ export function buildCardBodyStyle(bg?: MyRender | null): CSSProperties {
         // 纯色 / 渐变：直接设 background
         style.background = bg.bg_value;
     } else if (bg.bg_type === 3) {
-        // 图片：客户端再次校验 http(s)（他人内容防御）；多重背景叠半透明遮罩保障对比度
-        if (!/^https?:\/\//i.test(bg.bg_value)) {
+        // 图片：客户端再次校验（/ 相对路径或 http(s)，他人内容防御）；多重背景叠半透明遮罩保障对比度
+        if (!/^(https?:\/\/|\/)/i.test(bg.bg_value)) {
             return style as CSSProperties; // 非法图片地址：不注入
         }
         style.backgroundImage = `linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)), url("${bg.bg_value}")`;

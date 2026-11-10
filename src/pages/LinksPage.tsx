@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
 import { sanitizeHtml } from '@/utils/CommonUtil';
-import { MdPreview } from 'md-editor-rt';
+import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -152,7 +152,7 @@ export default function LinksPage() {
                     <div className="detail-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }} />
                 ) : (
                     <div className="detail-content md-content">
-                        <MdPreview id="links-preview" modelValue={raw} />
+                        <MdView id="links-preview" modelValue={raw} />
                     </div>
                 );
             })()}

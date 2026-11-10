@@ -9,7 +9,7 @@ import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getDan, submitReport, toggleFavorite, readFaved, type DanItem } from '@/services/userCenter';
 import { sanitizeHtml } from '@/utils/CommonUtil';
-import { MdPreview } from 'md-editor-rt';
+import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { normalizeAlias } from '@/utils/route';
 import { getToken } from '@/utils/auth';
@@ -144,7 +144,7 @@ const DanPage: React.FC = () => {
                     />
                 ) : (
                     <div className="detail-content md-content">
-                        <MdPreview id="dan-preview" modelValue={raw || ''} />
+                        <MdView id="dan-preview" modelValue={raw || ''} />
                     </div>
                 )}
             </Card>

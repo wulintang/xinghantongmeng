@@ -10,7 +10,7 @@ import { useSite } from '@/context/SiteContext';
 import { getColumnDetail, type ColumnArticleItem } from '@/services/column';
 import { getToken } from '@/utils/auth';
 import { stripHtmlSuffix } from '@/utils/route';
-import { MdPreview } from 'md-editor-rt';
+import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { submitReport, toggleLike, toggleFavorite, readFaved } from '@/services/userCenter';
 
@@ -202,7 +202,7 @@ const ColumnArticleDetailPage: React.FC = () => {
         ) : null}
         {item.content ? (
           <div className="detail-content md-content">
-            <MdPreview id="column-article-preview" modelValue={item.content} />
+            <MdView id="column-article-preview" modelValue={item.content} />
           </div>
         ) : (
           <Paragraph className="detail-content">暂无正文</Paragraph>

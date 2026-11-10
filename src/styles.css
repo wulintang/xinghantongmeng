@@ -68,6 +68,7 @@
   --c-tool-text: #333333;
   --c-tool-subtext: #888888;
   --c-tool-border: #e5e7eb;
+  --c-tool-btn-text: #ffffff;       /* 强调色按钮上的文字（深浅同值） */
   --c-skeleton: #f0f0f0;        /* 骨架屏基色 */
   --c-skeleton-shine: #f7f7f7;  /* 骨架屏高光 */
   --c-tooltip-bg: #000000;      /* 气泡浮层 */
@@ -108,6 +109,7 @@ body {
   --c-tool-text: rgba(255, 255, 255, 0.88);
   --c-tool-subtext: rgba(255, 255, 255, 0.55);
   --c-tool-border: rgba(255, 255, 255, 0.14);
+  --c-tool-btn-text: #ffffff;
   --c-skeleton: #20242c;
   --c-skeleton-shine: #2b303a;
   --c-tooltip-bg: #2b303a;

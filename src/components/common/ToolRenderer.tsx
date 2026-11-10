@@ -67,7 +67,6 @@ const TOOLBOX_VARS = `
   color:var(--c-tool-text);
 }
 .toolbox-embed ::placeholder{ color:var(--c-tool-subtext); }
-`;
 /* 后端 toolbox CSS 把按钮文字与背景都设成同一个变量，会白底白字看不见，强制可读 */
 .toolbox-embed button,
 .toolbox-embed button *,
@@ -76,7 +75,7 @@ const TOOLBOX_VARS = `
 .toolbox-embed input[type="submit"],
 .toolbox-embed input[type="button"],
 .toolbox-embed .btn{
-  color:#fff !important;
+  color:var(--c-tool-btn-text) !important;
   border-radius:999px !important;
   padding-left:24px !important;
   padding-right:24px !important;

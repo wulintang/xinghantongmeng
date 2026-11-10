@@ -172,8 +172,8 @@ const ToolDetailPage: React.FC = () => {
                 </Flex>
             </Card>
 
-            {/* 全站统一：所有技能共用一个聊天框，不再按 md 生成各不相同的表单 */}
-            <Card title="与技能对话">
+            {/* 全站统一：一个页面模板 + 一个数据驱动字段表 + 一个聊天框，各技能只差数据 */}
+            <Card title="使用技能">
                 <SkillChat toolId={Number(item.id)} title={item.title} />
             </Card>
 

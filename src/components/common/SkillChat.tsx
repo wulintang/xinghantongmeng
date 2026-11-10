@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, Space, message } from 'antd';
+import { Button, Input, Space, message, Spin } from 'antd';
 import { SendOutlined, ReloadOutlined, PauseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 import MdView from '@components/common/MdView';
+import SkillForm from '@components/common/SkillForm';
 import { apiBase } from '@/utils/request';
 import { getToken } from '@/utils/auth';
+import { getSkillFields, type SkillField } from '@/services/userCenter';
 
-/** 全站唯一一个技能聊天框：所有技能共用此组件，差异只在各自 md 内容（由后端作 system prompt） */
+/**
+ * 全站唯一的技能运行区：每个技能一份独立字段表（数据驱动，由同一个 SkillForm 渲染）
+ * + 一个聊天框。表单负责「按字段生成」，聊天框负责追问，二者共用同一条 SSE 通道。
+ */
 export interface SkillChatProps {
     toolId: number;
     title: string;
@@ -25,8 +30,33 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [streaming, setStreaming] = useState(false);
+    const [fields, setFields] = useState<SkillField[]>([]);
+    const [template, setTemplate] = useState('');
+    const [example, setExample] = useState('');
+    const [fieldsLoading, setFieldsLoading] = useState(true);
     const abortRef = useRef<AbortController | null>(null);
     const logRef = useRef<HTMLDivElement>(null);
+
+    // 每个技能独立加载自己的字段表；老技能由后端从 md 参数行自动解析
+    useEffect(() => {
+        let alive = true;
+        setFieldsLoading(true);
+        setFields([]);
+        setTemplate('');
+        setExample('');
+        getSkillFields(toolId)
+            .then((r) => {
+                if (!alive) return;
+                if (r.code === 1 && r.data) {
+                    setFields(Array.isArray(r.data.fields) ? r.data.fields : []);
+                    setTemplate(r.data.template || '');
+                    setExample(r.data.example || '');
+                }
+            })
+            .catch(() => {})
+            .finally(() => { if (alive) setFieldsLoading(false); });
+        return () => { alive = false; };
+    }, [toolId]);
 
     useEffect(() => {
         const el = logRef.current;
@@ -41,8 +71,9 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
         setStreaming(false);
     };
 
-    const send = async () => {
-        const text = input.trim();
+    /** 表单生成与手动输入走同一个发送函数，保证全站只有一个对话通道 */
+    const send = async (external?: string) => {
+        const text = String(external ?? input).trim();
         if (!text || streaming) return;
         const key = getToken();
         if (!key) {
@@ -121,6 +152,15 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
 
     return (
         <div className="skill-chat">
+            <Spin spinning={fieldsLoading} size="small">
+                <SkillForm
+                    fields={fields}
+                    template={template}
+                    disabled={streaming}
+                    onGenerate={(text) => void send(text)}
+                />
+            </Spin>
+
             <div className="skill-chat-bar">
                 <span className="skill-chat-title">与「{title}」对话</span>
                 <Space size={8}>
@@ -140,7 +180,16 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
             <div className="skill-chat-log" ref={logRef}>
                 {messages.length === 0 ? (
                     <div className="skill-chat-empty">
-                        直接在下方输入内容开始对话。上方技能说明会自动作为系统提示词生效，无需填写任何参数表单。
+                        {fields.length > 0
+                            ? '先填写上方「填写信息」表并点「按此生成」；生成后可在这里继续追问或修改要求。'
+                            : '在下方输入你的需求开始对话。'}
+                        {example ? (
+                            <div>
+                                <Button type="link" size="small" onClick={() => setInput(example)}>
+                                    把示例填入输入框
+                                </Button>
+                            </div>
+                        ) : null}
                     </div>
                 ) : messages.map((m, i) => (
                     <div key={i} className={`skill-chat-msg skill-chat-${m.role}`}>
@@ -163,7 +212,7 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
                     onPressEnter={(e) => {
                         if (!e.shiftKey) { e.preventDefault(); void send(); }
                     }}
-                    placeholder="输入内容，Enter 发送，Shift + Enter 换行"
+                    placeholder={fields.length > 0 ? '补充要求或继续追问；首次使用建议先填上方信息表' : '输入内容，Enter 发送，Shift + Enter 换行'}
                     autoSize={{ minRows: 2, maxRows: 6 }}
                     disabled={streaming}
                 />

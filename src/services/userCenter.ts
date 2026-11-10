@@ -505,6 +505,8 @@ export interface ToolItem {
   pic: string;
   open: number;
   content: string;
+  /** 独立技能字段表（JSON 字符串，编辑回填用） */
+  fields?: string;
   px: number;
   time: number;
   config?: string;
@@ -736,6 +738,28 @@ export function setSkillExport(key: string, id: number, allow: 0 | 1) {
 /** 导出标准 Agent Skill：后端按 allow_export 校验并输出 SKILL.md */
 export function exportSkillUrl(toolboxId: number) {
   return `${apiBase()}/index.php/skills/index/exportSkill.html?id=${toolboxId}`;
+}
+
+/** 技能独立字段表：每个技能一份，全站由同一个数据驱动表单组件渲染 */
+export interface SkillField {
+  name: string;
+  label: string;
+  type: 'text' | 'textarea' | 'select' | 'radio' | 'date' | 'time';
+  options?: string[];
+  placeholder?: string;
+  example?: string;
+  required?: boolean;
+}
+export interface SkillFieldsData {
+  title: string;
+  fields: SkillField[];
+  /** 指令模板（含 {字段名} 占位符），前端替换后与字段值一起作为本次输入 */
+  template: string;
+  /** 用各字段示例值拼成的示例输入，供「填入示例」一键使用 */
+  example: string;
+}
+export function getSkillFields(id: number | string) {
+  return request<ApiResp<SkillFieldsData>>(`${SKILLS}/skillFields.html` + qs({ id }));
 }
 
 /** 公开：某用户已通过的技能（个人主页「技能」标签展示，无需登录） */

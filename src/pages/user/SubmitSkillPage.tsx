@@ -21,8 +21,8 @@ const JSON_EXAMPLE = `{
   "whenUse": "已有草稿需要润色、纠错、提升可读性时使用。",
   "whenNot": "需要从零原创写作时请用其他技能。",
   "params": [
-    { "name": "article", "label": "原文", "type": "textarea" },
-    { "name": "tone", "label": "语气风格", "type": "select", "options": ["正式", "轻松", "专业"] }
+    { "name": "article", "label": "原文", "type": "textarea", "example": "今天天气很好，我们去公园玩。" },
+    { "name": "tone", "label": "语气风格", "type": "select", "options": ["正式", "轻松", "专业"], "example": "正式" }
   ],
   "outputFormat": "只返回润色后的全文，不要解释。",
   "example": "原文：今天天气很好，我们去公园玩。",
@@ -30,7 +30,7 @@ const JSON_EXAMPLE = `{
 }`;
 
 type ParamType = 'text' | 'textarea' | 'select' | 'radio' | 'date' | 'time';
-type ParamRow = { name: string; label: string; type: ParamType; options: string[] };
+type ParamRow = { name: string; label: string; type: ParamType; options: string[]; example?: string };
 
 const serializeParams = (ps: ParamRow[]): string =>
   ps
@@ -38,24 +38,25 @@ const serializeParams = (ps: ParamRow[]): string =>
       const label = p.label.trim() || p.name.trim();
       if (!label) return '';
       const opts = (p.options || []).filter(Boolean);
+      const hint = (p.example || '').trim() ? `例如“${(p.example || '').trim()}”。` : '';
       switch (p.type) {
         case 'textarea':
-          return `${label}：用户可以填写${label}。`;
+          return `${label}：用户可以填写${label}。${hint}`;
         case 'select':
         case 'radio': {
-          if (opts.length < 2) return `${label}：用户选择${label}。`;
+          if (opts.length < 2) return `${label}：用户选择${label}。${hint}`;
           const head = opts.slice(0, -1).join('、');
           const tail = opts[opts.length - 1];
           const joined = opts.length > 2 ? `${head}、或${tail}` : `${head}或${tail}`;
-          return `${label}：用户选择${label}（${joined}）。`;
+          return `${label}：用户选择${label}（${joined}）。${hint}`;
         }
         case 'date':
-          return `${label}：用户选择${label}日期。`;
+          return `${label}：用户选择${label}日期。${hint}`;
         case 'time':
-          return `${label}：用户选择${label}时间。`;
+          return `${label}：用户选择${label}时间。${hint}`;
         case 'text':
         default:
-          return `${label}：用户输入${label}。`;
+          return `${label}：用户输入${label}。${hint}`;
       }
     })
     .filter(Boolean)
@@ -93,9 +94,10 @@ const parseParamsFromText = (text: string): ParamRow[] => {
         }
       }
     }
-    out.push({ name: label, label, type, options });
+    const em = rest.match(/例如[“"]([^”"]+)[”"]/);
+    out.push({ name: label, label, type, options, example: em ? em[1] : '' });
   }
-  return out.length ? out : [{ name: '', label: '', type: 'text', options: [] }];
+  return out.length ? out : [{ name: '', label: '', type: 'text', options: [], example: '' }];
 };
 
 const genInitialIcon = (text: string): Promise<File> => {
@@ -168,6 +170,21 @@ const SubmitSkillPage: React.FC = () => {
           setPic(t.pic || '');
           setRmb(parseFloat(t.rmb) || 0);
           if (t.content) fillFromMarkdown(t.content);
+          // 已保存的独立字段表优先回填（比从 md 反解析更精确）
+          if (t.fields) {
+            try {
+              const arr = JSON.parse(t.fields);
+              if (Array.isArray(arr) && arr.length) {
+                setParams(arr.map((p: any) => ({
+                  name: String(p.name || ''),
+                  label: String(p.label || ''),
+                  type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
+                  options: Array.isArray(p.options) ? p.options.map(String) : [],
+                  example: String(p.example || p.placeholder || ''),
+                })));
+              }
+            } catch { /* 字段表损坏时沿用 md 解析结果 */ }
+          }
         } else {
           message.error(r.msg || '加载失败');
         }
@@ -222,9 +239,22 @@ const SubmitSkillPage: React.FC = () => {
         if (up.code === 1 && up.data?.url) finalPic = up.data.url;
         else { message.error(up.msg || '自动生成图标失败'); setSubmitting(false); return; }
       }
+      // 独立技能信息表：结构化保存，前台据此渲染填写表单，不再只序列化成 md 自然语言行
+      const fieldRows = params
+        .filter((p) => p.label.trim() || p.name.trim())
+        .map((p) => ({
+          name: p.name.trim() || p.label.trim(),
+          label: p.label.trim() || p.name.trim(),
+          type: p.type,
+          options: (p.options || []).filter(Boolean),
+          placeholder: String(p.example || '').trim(),
+          example: String(p.example || '').trim(),
+          required: false,
+        }));
+      const fields = JSON.stringify(fieldRows);
       const r = isEdit
-        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled })
-        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb });
+        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled, fields })
+        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb, fields });
       if (r.code === 1) { message.success(r.msg || (isEdit ? '已提交重新审核，等待管理员审核' : '提交成功，等待审核')); navigate('/user/skills'); }
       else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
@@ -270,6 +300,7 @@ const SubmitSkillPage: React.FC = () => {
             label: String(p.label || ''),
             type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
             options: Array.isArray(p.options) ? p.options.map(String) : [],
+            example: String(p.example || p.placeholder || ''),
           })));
         } else {
           setParams([{ name: '', label: '', type: 'text', options: [] }]);
@@ -342,6 +373,7 @@ const SubmitSkillPage: React.FC = () => {
             label: String(p.label || ''),
             type: (['text', 'textarea', 'select', 'radio', 'date', 'time'].includes(p.type) ? p.type : 'text') as ParamType,
             options: Array.isArray(p.options) ? p.options.map(String) : [],
+            example: String(p.example || p.placeholder || ''),
           })));
         } else {
           setParams(parseParamsFromText(text));
@@ -367,7 +399,7 @@ const SubmitSkillPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const updateParam = (i: number, key: 'name' | 'label' | 'type' | 'options', val: any) => {
+  const updateParam = (i: number, key: 'name' | 'label' | 'type' | 'options' | 'example', val: any) => {
     setParams((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: val } : p)));
   };
 
@@ -429,13 +461,19 @@ const SubmitSkillPage: React.FC = () => {
                 <Input.TextArea rows={2} value={whenNot} onChange={(e) => setWhenNot(e.target.value)} placeholder="选填" />
               </Form.Item>
 
-              <Form.Item label="参数">
+              <Form.Item label="参数（技能独立信息表）">
                 <Space direction="vertical" style={{ width: '100%' }}>
                   {params.map((p, i) => (
                     <Space key={i} wrap align="start">
                       <Input placeholder="参数名" value={p.name} onChange={(e) => updateParam(i, 'name', e.target.value)} style={{ width: 130 }} />
                       <Input placeholder="说明" value={p.label} onChange={(e) => updateParam(i, 'label', e.target.value)} style={{ width: 180 }} />
                       <Select value={p.type} onChange={(v) => updateParam(i, 'type', v)} style={{ width: 110 }} options={PARAM_TYPE_OPTIONS} />
+                      <Input
+                        placeholder="示例值（引导填写）"
+                        value={p.example || ''}
+                        onChange={(e) => updateParam(i, 'example', e.target.value)}
+                        style={{ width: 170 }}
+                      />
                       {(p.type === 'select' || p.type === 'radio') && (
                         <Input
                           placeholder="选项，逗号分隔"

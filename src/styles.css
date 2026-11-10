@@ -2701,3 +2701,22 @@ body {
 @media (max-width: 600px) {
   .skill-chat-msg { max-width: 100%; }
 }
+
+/* ===== 技能独立信息表（全站唯一一个数据驱动表单，深浅模式统一走站点变量） ===== */
+.skill-form {
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-bg-soft);
+}
+.skill-form-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-4);
+}
+.skill-form-hint { font-size: var(--fs-xs); }
+.skill-form .ant-form-item { margin-bottom: var(--space-3); }
+.skill-form .ant-form-item-label > label { color: var(--c-text-2); }
+.skill-form-extra { font-size: var(--fs-xs); color: var(--c-text-3); }

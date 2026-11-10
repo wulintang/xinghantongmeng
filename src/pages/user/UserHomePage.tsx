@@ -5,6 +5,8 @@ import { Avatar, Button, Card, Col, Empty, Flex, Row, Spin, Tabs, Tag, Typograph
 import { PageHeader } from '@components/common';
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
+import { getUserRender, type MyRender } from '@/services/renderx';
+import { buildCardBodyStyle, fgClassName } from '@/utils/renderxBg';
 import { domainOf, assetUrl } from '@/utils/route';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -99,6 +101,7 @@ const UserHomePage: React.FC = () => {
     const [skills, setSkills] = useState<any[]>([]);
     const [skillsLoading, setSkillsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [bg, setBg] = useState<MyRender | null>(null);
 
     usePageMeta({ title: info?.name ? `${info.name} 的主页` : '会员主页' });
 
@@ -182,6 +185,20 @@ const UserHomePage: React.FC = () => {
         };
     }, [info, id]);
 
+    // 该会员的主页背景（公开接口，供 /user/:id 装修；严格限定本页两张 Card 的 body）
+    useEffect(() => {
+        if (!id) return;
+        let alive = true;
+        getUserRender(id)
+            .then((r: any) => {
+                if (alive && r.code === 1 && r.data) setBg(r.data);
+            })
+            .catch(() => {});
+        return () => {
+            alive = false;
+        };
+    }, [id]);
+
     if (loading) {
         return <Spin style={{ display: 'block', margin: '80px auto' }} />;
     }
@@ -206,7 +223,7 @@ const UserHomePage: React.FC = () => {
                 crumbs={[{ label: '首页', to: '/' }, { label: '会员主页', to: '/user' }, { label: info.name }]}
             />
 
-            <Card>
+            <Card className={fgClassName(bg)} styles={{ body: buildCardBodyStyle(bg) }}>
                 <Flex gap={20} align="center" wrap>
                     <Avatar shape="square" size={72} src={info.head || undefined}>
                         {(info.name || '?').slice(0, 1)}
@@ -236,7 +253,7 @@ const UserHomePage: React.FC = () => {
                 </Flex>
             </Card>
 
-            <Card>
+            <Card className={fgClassName(bg)} styles={{ body: buildCardBodyStyle(bg) }}>
                 <Tabs
                     defaultActiveKey="sites"
                     items={[

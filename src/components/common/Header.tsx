@@ -3,6 +3,7 @@ import { Avatar, Badge, Button, Drawer, Dropdown, Flex, Grid, Menu, Space, Tag, 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useSite } from '@/context/SiteContext';
+import ThemeToggle from '@components/common/ThemeToggle';
 import { getToken, clearToken } from '@/utils/auth';
 import { toRoute, assetUrl } from '@/utils/route';
 import {
@@ -233,6 +234,9 @@ export default function Header(): React.JSX.Element {
                     </div>
                 )}
 
+                <div className="site-theme-toggle" style={{ marginRight: 10, display: 'inline-flex', alignItems: 'center' }}>
+                    <ThemeToggle />
+                </div>
                 <div className="site-user">{userArea}</div>
             </div>
 

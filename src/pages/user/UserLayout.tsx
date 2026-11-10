@@ -20,6 +20,7 @@ const MENU = [
       { key: '/user/skills', label: <Link to="/user/skills">我的技能</Link> },
       { key: '/user/favorites', label: <Link to="/user/favorites">我的收藏</Link> },
       { key: '/user/reports', label: <Link to="/user/reports">我的举报</Link> },
+      { key: '/user/appearance', label: <Link to="/user/appearance">主页背景</Link> },
     ],
   },
   {
@@ -47,6 +48,7 @@ const TITLE_MAP: Record<string, string> = {
   '/user/ad/buy': '申请广告位',
   '/user/favorites': '我的收藏',
   '/user/reports': '我的举报',
+  '/user/appearance': '主页背景',
   '/user/skills': '我的技能',
   '/user/submit-skill': '提交技能',
   '/user/checkin': '每日签到',

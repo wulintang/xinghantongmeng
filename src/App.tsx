@@ -13,7 +13,7 @@ import BlogsPage from '@pages/BlogsPage';
 import DanPage from '@pages/DanPage';
 import NotFoundPage from '@pages/NotFoundPage';
 import LoginPage_ from '@pages/user/Login';
-import RegisterPage from '@pages/user/Register';
+import RegisterPage from '@pages/Register';
 import JumpPage from '@pages/JumpPage';
 import AbstractPage from '@pages/AbstractPage';
 import UserLayout from '@pages/user/UserLayout';
@@ -30,7 +30,7 @@ import MySitesPage from '@pages/user/MySites';
 import AdBuyPage from '@pages/user/AdBuyPage';
 import AdMyPage from '@pages/user/AdMyPage';
 import GridPage from '@pages/GridPage';
-import AdPricesPage from '@pages/AdPricesPage';
+import AdPricesPage from '@pages/user/AdPricesPage';
 import LinksPage from '@pages/LinksPage';
 import UpdatePage from '@pages/UpdatePage';
 import ColumnsPage from '@pages/ColumnsPage';
@@ -41,7 +41,11 @@ import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
 import MyToolsPage from '@pages/user/MyTools';
 import SubmitSkillPage from '@pages/user/SubmitSkillPage';
 import ArticleEditPage from '@pages/user/ArticleEditPage';
+import UserBgSettingsPage from '@pages/user/UserBgSettingsPage';
 import { SiteProvider } from '@/context/SiteContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeProvider';
+import CustomFoot from '@components/common/CustomFoot';
+import CustomCss from '@components/common/CustomCss';
 import { getCustomConfig } from '@/services/userCenter';
 
 /** 路由切换后回到页面顶部，否则从长页面跳转会停在半空 */
@@ -128,82 +132,100 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-const theme = {
-    token: {
-        borderRadius: 14,
-    },
-};
-
-const App: React.FC = () => {
+/**
+ * 应用外壳：依据当前深浅模式动态计算 antd token，并挂载站点级注入组件。
+ * 必须位于 ThemeProvider 内部以读取主题。
+ */
+function ThemedShell(): React.JSX.Element {
+    const { dark } = useTheme();
+    const theme = {
+        token: {
+            borderRadius: 14,
+            colorBgLayout: dark ? '#0f1115' : '#ffffff',
+            colorTextBase: dark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.88)',
+        },
+    };
     return (
         <ConfigProvider locale={zhCN} theme={theme}>
             <SiteProvider>
                 <BrowserRouter>
                     <ScrollToTop />
                     <CustomHead />
+                    <CustomFoot />
+                    <CustomCss />
                     <ErrorBoundary>
-                    <Routes>
-                        <Route element={<MainLayout />}>
-                            <Route path="/" element={<HomePage />} />
+                        <Routes>
+                            <Route element={<MainLayout />}>
+                                <Route path="/" element={<HomePage />} />
 
-                            <Route path="/websites" element={<WebsitesPage />} />
+                                <Route path="/websites" element={<WebsitesPage />} />
 
-                            <Route path="/article/detail/:id" element={<ColumnArticleDetailPage />} />
-                            <Route path="/article" element={<ColumnsPage />} />
-                            <Route path="/article/:id" element={<ColumnDetailPage />} />
+                                <Route path="/article/detail/:id" element={<ColumnArticleDetailPage />} />
+                                <Route path="/article" element={<ColumnsPage />} />
+                                <Route path="/article/:id" element={<ColumnDetailPage />} />
 
-                            <Route path="/tools" element={<ToolsPage />} />
-                            <Route path="/tools/:id" element={<ToolDetailPage />} />
+                                <Route path="/tools" element={<ToolsPage />} />
+                                <Route path="/tools/:id" element={<ToolDetailPage />} />
 
-                            <Route path="/feed" element={<BlogsPage />} />
+                                <Route path="/feed" element={<BlogsPage />} />
 
-                            <Route path="/links" element={<LinksPage />} />
-                            <Route path="/dan/update" element={<UpdatePage />} />
+                                <Route path="/links" element={<LinksPage />} />
+                                <Route path="/dan/update" element={<UpdatePage />} />
 
-                            <Route path="/grid" element={<GridPage />} />
-                            <Route path="/dan/ad" element={<AdPricesPage />} />
+                                <Route path="/grid" element={<GridPage />} />
+                                <Route path="/dan/ad" element={<AdPricesPage />} />
 
-                            <Route path="/abstract" element={<AbstractPage />} />
+                                <Route path="/abstract" element={<AbstractPage />} />
 
-                            <Route path="/dan/:alias" element={<DanPage />} />
+                                <Route path="/dan/:alias" element={<DanPage />} />
 
-                            <Route path="/login" element={<LoginPage_ />} />
-                            <Route path="/register" element={<RegisterPage />} />
-                            <Route path="/user" element={<UserLayout />}>
-                                <Route index element={<ProfilePage />} />
-                                <Route path="favorites" element={<FavoritesPage />} />
-                                <Route path="checkin" element={<CheckinPage />} />
-                                <Route path="messages" element={<MessagesPage />} />
-                                <Route path="balance" element={<BalancePage />} />
-                                <Route path="orders" element={<OrdersPage />} />
-                                <Route path="reports" element={<ReportsPage />} />
-                                <Route path="submit" element={<SubmitSitePage />} />
-                            <Route path="mysites" element={<MySitesPage />} />
-                            <Route path="columns" element={<MyColumnsPage />} />
-                            <Route path="columns/:id" element={<MyColumnDetailPage />} />
-                            <Route path="ad/buy" element={<AdBuyPage />} />
-                            <Route path="ad/my" element={<AdMyPage />} />
-                            <Route path="skills" element={<MyToolsPage />} />
-                            <Route path="submit-skill" element={<SubmitSkillPage />} />
-                        </Route>
+                                <Route path="/login" element={<LoginPage_ />} />
+                                <Route path="/register" element={<RegisterPage />} />
+                                <Route path="/user" element={<UserLayout />}>
+                                    <Route index element={<ProfilePage />} />
+                                    <Route path="favorites" element={<FavoritesPage />} />
+                                    <Route path="checkin" element={<CheckinPage />} />
+                                    <Route path="messages" element={<MessagesPage />} />
+                                    <Route path="balance" element={<BalancePage />} />
+                                    <Route path="orders" element={<OrdersPage />} />
+                                    <Route path="reports" element={<ReportsPage />} />
+                                    <Route path="submit" element={<SubmitSitePage />} />
+                                <Route path="mysites" element={<MySitesPage />} />
+                                <Route path="columns" element={<MyColumnsPage />} />
+                                <Route path="columns/:id" element={<MyColumnDetailPage />} />
+                                <Route path="ad/buy" element={<AdBuyPage />} />
+                                <Route path="ad/my" element={<AdMyPage />} />
+                                <Route path="skills" element={<MyToolsPage />} />
+                                <Route path="submit-skill" element={<SubmitSkillPage />} />
+                                {/* 用户唯一可自定义的视觉项：自己公开主页的背景 */}
+                                <Route path="appearance" element={<UserBgSettingsPage />} />
+                            </Route>
 
-                            <Route path="/user/article/create" element={<ArticleEditPage />} />
-                            <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
+                                <Route path="/user/article/create" element={<ArticleEditPage />} />
+                                <Route path="/user/article/edit/:id" element={<ArticleEditPage />} />
 
-                            {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
-                            <Route path="/user/:id" element={<UserHomePage />} />
+                                {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
+                                <Route path="/user/:id" element={<UserHomePage />} />
 
-                            {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
-                            <Route path="/jump" element={<JumpPage />} />
-                            <Route path="/:id" element={<WebsiteDetailPage />} />
+                                {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
+                                <Route path="/jump" element={<JumpPage />} />
+                                <Route path="/:id" element={<WebsiteDetailPage />} />
 
-                            <Route path="*" element={<NotFoundPage />} />
-                        </Route>
-                    </Routes>
+                                <Route path="*" element={<NotFoundPage />} />
+                            </Route>
+                        </Routes>
                     </ErrorBoundary>
                 </BrowserRouter>
             </SiteProvider>
         </ConfigProvider>
+    );
+}
+
+const App: React.FC = () => {
+    return (
+        <ThemeProvider>
+            <ThemedShell />
+        </ThemeProvider>
     );
 };
 

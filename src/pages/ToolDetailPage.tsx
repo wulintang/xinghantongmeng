@@ -12,11 +12,17 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getTool, submitReport, toggleFavorite, readFaved, exportSkillUrl, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix } from '@/utils/route';
 import SkillChat from '@/components/common/SkillChat';
+import ToolRenderer from '@/components/common/ToolRenderer';
 import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { getToken } from '@/utils/auth';
 
 const { Title } = Typography;
+
+// AI 技能（ai=1）走「独立字段表 + 一个聊天框」；
+// 非 AI 的在线工具（MD5 / JS 美化 / 九宫格切图等）是本地功能工具，
+// 必须恢复渲染后端自带的 config 工具页，绝不能一律塞进 AI 对话。
+const isAiSkill = (item: ToolItem) => Number(item.ai) === 1;
 
 const ToolDetailPage: React.FC = () => {
     const navigate = useNavigate();
@@ -144,7 +150,8 @@ const ToolDetailPage: React.FC = () => {
                         <AppTooltip title="举报">
                             <Button onClick={() => setReportOpen(true)}>举报</Button>
                         </AppTooltip>
-                        {Number(item.allow_export ?? 1) === 1 ? (
+                        {/* 只有作者明确开启、且是 AI 技能，才允许导出 SKILL.md */}
+                        {isAiSkill(item) && Number(item.allow_export) === 1 ? (
                             <AppTooltip title="导出为标准 Agent Skill（SKILL.md），可直接放进任意 AI 的技能目录">
                                 <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能</Button>
                             </AppTooltip>
@@ -160,7 +167,7 @@ const ToolDetailPage: React.FC = () => {
                     {item.pic ? <img src={assetUrl(item.pic)} alt={item.title} className="tool-detail-ico" /> : null}
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap>
-                            {item.ai === 1 ? <Tag color="purple">AI 技能</Tag> : <Tag color="blue">在线技能</Tag>}
+                            {isAiSkill(item) ? <Tag color="purple">AI 技能</Tag> : <Tag color="blue">在线工具</Tag>}
                             {Number(item.rmb) > 0 ? <Tag color="gold">￥{item.rmb}</Tag> : <Tag color="green">免费</Tag>}
                             <Tag>标识 {item.alias}</Tag>
                         </Space>
@@ -172,10 +179,21 @@ const ToolDetailPage: React.FC = () => {
                 </Flex>
             </Card>
 
-            {/* 全站统一：一个页面模板 + 一个数据驱动字段表 + 一个聊天框，各技能只差数据 */}
-            <Card title="使用技能">
-                <SkillChat toolId={Number(item.id)} title={item.title} />
-            </Card>
+            {/* AI 技能：全站一个通用字段表 + 一个聊天框；非 AI 工具：还原本地工具页 */}
+            {isAiSkill(item) ? (
+                <Card title="使用技能">
+                    <SkillChat toolId={Number(item.id)} title={item.title} />
+                </Card>
+            ) : (
+                <Card title="在线使用">
+                    <ToolRenderer
+                        config={item.config || ''}
+                        ai={Number(item.ai)}
+                        toolId={Number(item.id)}
+                        token={getToken() || ''}
+                    />
+                </Card>
+            )}
 
             <Card title="技能信息">
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
@@ -184,7 +202,7 @@ const ToolDetailPage: React.FC = () => {
                     <Descriptions.Item label="价格">
                         {Number(item.rmb) > 0 ? `￥${item.rmb}` : '免费'}
                     </Descriptions.Item>
-                    <Descriptions.Item label="类型">{item.ai === 1 ? 'AI 智能技能' : '在线技能'}</Descriptions.Item>
+                    <Descriptions.Item label="类型">{isAiSkill(item) ? 'AI 智能技能' : '在线工具'}</Descriptions.Item>
                     <Descriptions.Item label="作者">
                         {Number(item.uid) === 0 ? (
                             <Tag color="blue">

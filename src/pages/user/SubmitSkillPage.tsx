@@ -62,30 +62,33 @@ const serializeParams = (ps: ParamRow[]): string =>
     .filter(Boolean)
     .join('\n');
 
-const TEXTAREA_HINT = /(描述|要求|需求|内容|详情|分析|特长|条款|理由|经历|方案|计划|建议|说明|备注|经验|技能|行为|原因|影响|措施|承诺|信息|标的|付款方式|感受|总结|反馈|意见|问题|具体)/;
+const TEXTAREA_HINT = /(描述|要求|需求|内容|详情|分析|特长|条款|理由|经历|方案|计划|建议|说明|备注|经验|技能|行为|原因|影响|后果|措施|承诺|信息|标的|付款方式|感受|总结|反馈|意见|问题|具体|故事|材料)/;
 
+// 参数行判定必须与后端 SkillCommon 一致：动词不限（输入/填写/选择/详细描述/分析/提出…），
+// 只认「用户/请」开头，排除「开始生成：点击按钮后…」这类按钮说明。
 const parseParamsFromText = (text: string): ParamRow[] => {
   const out: ParamRow[] = [];
   for (const raw of text.split(/\r?\n/)) {
     const s = raw.trim();
-    if (!s || s.startsWith('#')) continue;
-    if (/^开始生成[：:]/.test(s)) continue;
-    const m = s.match(/^(.+?)[：:]\s*用户(?:可以)?(输入|选择|填写)(.*)$/);
+    if (!s || s.startsWith('#') || s.startsWith('- ') || s.startsWith('* ')) continue;
+    const m = s.match(/^(.{1,40}?)[：:]\s*(?:用户|请)(?:可以)?\s*(.*)$/);
     if (!m) continue;
     const label = m[1].trim();
-    const action = m[2];
-    const rest = m[3].trim();
-    if (!label) continue;
+    const desc = m[2].trim();
+    if (!label || !desc) continue;
+    if (/^(开始生成|点击|按钮|提交|生成|注意|说明|提示|输出|示例|例如|何时|不要)/.test(label)) continue;
+    if (/^(点击按钮|点击|生成结果|提交后|按钮后)/.test(desc)) continue;
     let type: ParamType = 'text';
     let options: string[] = [];
-    if (action === '填写' || TEXTAREA_HINT.test(label)) {
+    if (/^(填写|详细描述|详细|具体|简述|写明|列举|写下|补充|粘贴|输入完整|写出)/.test(desc)
+      || TEXTAREA_HINT.test(`${label} ${desc.slice(0, 16)}`)) {
       type = 'textarea';
     }
-    if (action === '选择') {
-      if (/(日期|date)/i.test(`${label} ${rest}`)) type = 'date';
-      else if (/(时间|time)/i.test(`${label} ${rest}`)) type = 'time';
+    if (/^选择/.test(desc)) {
+      if (/(日期|date)/i.test(`${label} ${desc}`)) type = 'date';
+      else if (/(时间|time)/i.test(`${label} ${desc}`)) type = 'time';
       else {
-        const om = rest.match(/[（(]([^)）]+)[)）]/);
+        const om = desc.match(/[（(]([^)）]+)[)）]/);
         if (om) {
           options = om[1].split(/[,，、]|或|或者|\/|\|/).map((x) => x.trim()).filter(Boolean);
           type = options.length === 2 ? 'radio' : 'select';
@@ -94,8 +97,9 @@ const parseParamsFromText = (text: string): ParamRow[] => {
         }
       }
     }
-    const em = rest.match(/例如[“"]([^”"]+)[”"]/);
-    out.push({ name: label, label, type, options, example: em ? em[1] : '' });
+    const em = desc.match(/例如\s*[:：]?\s*[“"「]([^”"」]+)[”"」]/)
+      || desc.match(/例如\s*[:：]?\s*([^\n，。；]+)/);
+    out.push({ name: label, label, type, options, example: em ? em[1].trim() : '' });
   }
   return out.length ? out : [{ name: '', label: '', type: 'text', options: [], example: '' }];
 };
@@ -136,6 +140,8 @@ const SubmitSkillPage: React.FC = () => {
   const [outputFormat, setOutputFormat] = useState('');
   const [example, setExample] = useState('');
   const [rmb, setRmb] = useState(0);
+  // 导出权限默认关闭，作者在提交页或「我的技能」里主动开启
+  const [allowExport, setAllowExport] = useState(false);
 
   // 导入区
   const [importOpen, setImportOpen] = useState(false);
@@ -169,6 +175,7 @@ const SubmitSkillPage: React.FC = () => {
           if (t.tid) form.setFieldValue('tid', Number(t.tid));
           setPic(t.pic || '');
           setRmb(parseFloat(t.rmb) || 0);
+          setAllowExport(Number(t.allow_export) === 1);
           if (t.content) fillFromMarkdown(t.content);
           // 已保存的独立字段表优先回填（比从 md 反解析更精确）
           if (t.fields) {
@@ -253,8 +260,8 @@ const SubmitSkillPage: React.FC = () => {
         }));
       const fields = JSON.stringify(fieldRows);
       const r = isEdit
-        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled, fields })
-        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb, fields });
+        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content: assembled, fields, allow_export: allowExport ? 1 : 0 })
+        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content: assembled, rmb, fields, allow_export: allowExport ? 1 : 0 });
       if (r.code === 1) { message.success(r.msg || (isEdit ? '已提交重新审核，等待管理员审核' : '提交成功，等待审核')); navigate('/user/skills'); }
       else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
@@ -498,6 +505,15 @@ const SubmitSkillPage: React.FC = () => {
               <Form.Item label="使用一次金额（元）" required>
                 <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
                 <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
+              </Form.Item>
+
+              <Form.Item label="允许导出技能（SKILL.md）">
+                <Space size={8} wrap>
+                  <Switch checked={allowExport} onChange={setAllowExport} />
+                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+                    默认关闭。开启后，技能详情页才显示「导出技能」按钮；也可稍后在「我的技能」里逐个设置。
+                  </Text>
+                </Space>
               </Form.Item>
 
               <Form.Item>

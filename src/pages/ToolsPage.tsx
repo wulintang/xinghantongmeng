@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Card, Col, Flex, Row, Tag, Typography } from 'antd';
+import { Alert, Card, Col, Flex, Row, Space, Tag, Typography } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { CateFilter, PageHeader, AdSlotSkeleton } from '@components/common';
@@ -116,11 +116,16 @@ const ToolsPage: React.FC = () => {
                                         >
                                             {plainText(t.content) || '暂无说明'}
                                         </Paragraph>
-                                        {Number(t.rmb) > 0 ? (
-                                            <Tag color="gold">￥{t.rmb}</Tag>
-                                        ) : (
-                                            <Tag color="green">免费</Tag>
-                                        )}
+                                        <Space size={[4, 4]} wrap style={{ justifyContent: 'center' }}>
+                                            <Tag color={Number(t.ai) === 1 ? 'purple' : 'blue'}>
+                                                {Number(t.ai) === 1 ? 'AI 技能' : '在线工具'}
+                                            </Tag>
+                                            {Number(t.rmb) > 0 ? (
+                                                <Tag color="gold">￥{t.rmb}</Tag>
+                                            ) : (
+                                                <Tag color="green">免费</Tag>
+                                            )}
+                                        </Space>
                                     </Flex>
                                 </Card>
                             </Col>

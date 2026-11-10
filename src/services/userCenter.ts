@@ -513,7 +513,7 @@ export interface ToolItem {
   uid?: number;
   author?: string;
   author_head?: string;
-  /** 作者是否允许导出：0 禁止 / 1 允许（缺省按允许处理） */
+  /** 作者是否允许导出：严格为 1 才允许（缺省/0 一律禁止，默认关闭） */
   allow_export?: number;
 }
 
@@ -706,7 +706,7 @@ export interface SkillApplyItem {
   status: number;
   reason: string;
   time: number;
-  /** 作者是否允许导出：0 禁止 / 1 允许 */
+  /** 作者是否允许导出：严格为 1 才允许（默认关闭） */
   allow_export?: number;
 }
 

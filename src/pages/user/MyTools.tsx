@@ -70,7 +70,8 @@ const MyToolsPage: React.FC = () => {
 
   // 导出标准 Agent Skill（SKILL.md）：已上线走后端校验，草稿本地生成同格式
   const onExport = (it: SkillApplyItem) => {
-    if (it.allow_export === 0) { message.warning('你已关闭该技能的导出权限'); return; }
+    // 默认禁止导出；只有作者在这里主动打开、且后端 allow_export 严格为 1 才放行
+    if (it.allow_export !== 1) { message.warning('该技能未开启导出权限，请先在上方打开「允许导出」'); return; }
     if (it.toolbox_id > 0) {
       const a = document.createElement('a');
       a.href = exportSkillUrl(it.toolbox_id);
@@ -139,14 +140,14 @@ const MyToolsPage: React.FC = () => {
                       ) : null}
                       <Tooltip title="关闭后，技能详情页不再显示导出按钮，后端导出接口也会拒绝">
                         <Space size={4}>
-                          <Switch size="small" checked={it.allow_export !== 0} onChange={(v) => toggleExport(it, v)} />
+                          <Switch size="small" checked={it.allow_export === 1} onChange={(v) => toggleExport(it, v)} />
                           <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>允许导出</Text>
                         </Space>
                       </Tooltip>
                       <Button
                         size="small"
                         icon={<DownloadOutlined />}
-                        disabled={it.allow_export === 0}
+                        disabled={it.allow_export !== 1}
                         onClick={() => onExport(it)}
                       >导出</Button>
                       <Popconfirm

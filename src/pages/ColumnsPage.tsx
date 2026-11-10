@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Avatar, Card, Col, Empty, Flex, Row, Tag, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -169,14 +170,29 @@ const ColumnsPage: React.FC = () => {
                           to={`/article/detail/${a.id}`}
                           onClick={(e) => e.stopPropagation()}
                           style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
                             fontSize: 'var(--fs-xs)',
                             color: 'var(--c-text-2)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
                           }}
                         >
-                          {a.title}
+                          <span
+                            style={{
+                              flex: 1,
+                              minWidth: 0,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {a.title}
+                          </span>
+                          {a.time ? (
+                            <span style={{ flex: 'none', color: 'var(--c-text-3)' }}>
+                              {dayjs.unix(Number(a.time)).format('YYYY-MM-DD')}
+                            </span>
+                          ) : null}
                         </Link>
                       ))}
                     </Flex>

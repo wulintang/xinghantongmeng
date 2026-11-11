@@ -43,14 +43,22 @@ const ShopManagePage: React.FC = () => {
       setLoading(false);
       return;
     }
+    // 配置与店铺/商品/订单分开加载：避免任一接口 500 时把整页拖垮、
+    // 误报「插件配置未就绪」。配置单独决定页面能否渲染。
     setLoading(true);
-    Promise.all([getShopConfig(), getMyShop()])
-      .then(([c, s]) => {
+    getShopConfig()
+      .then((c: any) => {
         if (c.code === 1) setCfg(c.data || null);
+        else message.warning(c.msg || '插件配置读取失败');
+      })
+      .catch(() => message.warning('插件配置接口请求失败（请确认后端已部署最新版 app/shop）'))
+      .finally(() => setLoading(false));
+
+    getMyShop()
+      .then((s: any) => {
         if (s.code === 1) setShop(s.data || null);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   };
 
   const loadGoods = () => {

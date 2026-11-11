@@ -31,7 +31,7 @@ const ColumnsPage: React.FC = () => {
   usePageMeta({
     title: '专栏',
     keywords: '专栏, 用户专栏, 作者专栏',
-    description: '兴汉同盟用户与官方创建的专栏矩阵。',
+    description: '兴汉联盟用户与官方创建的专栏矩阵。',
   });
 
   useEffect(() => {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Empty, Flex, Form, Input, Modal, Select, Space, Spin, Table, Tabs, Tag, Typography, message,
+  Alert, Button, Card, Empty, Form, Input, Modal, Select, Space, Spin, Table, Tabs, Tag, Typography, message,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, CATE_NAME, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
+import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, CATE_NAME, CATE_WHITELIST, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
 import { useMember } from '@/context/MemberContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -19,12 +19,14 @@ const STATUS_AUDIT: Record<number, { color: string; label: string }> = {
 };
 
 const ShopManagePage: React.FC = () => {
-  usePageMeta({ title: '我的商城' });
+  usePageMeta({ title: '我的集市' });
   const navigate = useNavigate();
   const { info } = useMember();
   const uid = info?.id || 0;
 
   const [cfg, setCfg] = useState<ShopConfig | null>(null);
+  // 配置接口异常不再把整页变成「插件未开启/未就绪」，页面照常渲染，只给一条提示
+  const [cfgError, setCfgError] = useState(false);
   const [shop, setShop] = useState<any | null>(null);
   const [goods, setGoods] = useState<GoodsItem[]>([]);
   const [orders, setOrders] = useState<ShopOrderItem[]>([]);
@@ -48,17 +50,26 @@ const ShopManagePage: React.FC = () => {
     setLoading(true);
     getShopConfig()
       .then((c: any) => {
-        if (c.code === 1) setCfg(c.data || null);
-        else message.warning(c.msg || '插件配置读取失败');
+        if (c.code === 1) {
+          setCfg(c.data || null);
+          setCfgError(false);
+        } else {
+          setCfgError(true);
+          message.warning(c.msg || '插件配置读取失败');
+        }
       })
-      .catch(() => message.warning('插件配置接口请求失败（请确认后端已部署最新版 app/shop）'))
+      .catch(() => {
+        setCfgError(true);
+        message.warning('插件配置接口请求失败（请确认后端已部署最新版 app/shop）');
+      })
       .finally(() => setLoading(false));
 
     getMyShop()
       .then((s: any) => {
         if (s.code === 1) setShop(s.data || null);
+        else message.warning(s.msg || '店铺信息读取失败');
       })
-      .catch(() => {});
+      .catch(() => message.warning('店铺接口请求失败（请确认后端已部署最新版 app/shop）'));
   };
 
   const loadGoods = () => {
@@ -144,10 +155,19 @@ const ShopManagePage: React.FC = () => {
   };
 
   if (loading) return <Card className="user-center-card"><Spin /></Card>;
-  if (!cfg) return <Card className="user-center-card"><Empty description="插件配置未就绪" /></Card>;
 
-  const cateOptions = (cfg.allow_cate || []).map((c) => ({ value: c, label: CATE_NAME[c] || c }));
-  const depositNeed = Number(cfg.deposit_amount) || 0;
+  // 配置接口异常时按站点默认值渲染，不再误报「插件未开启 / 未就绪」
+  const cfgSafe: ShopConfig = cfg || {
+    enabled: 1,
+    commission_rate: 0,
+    deposit_amount: 0,
+    shop_audit: 1,
+    goods_audit: 1,
+    allow_cate: CATE_WHITELIST,
+  };
+
+  const cateOptions = (cfgSafe.allow_cate || CATE_WHITELIST).map((c) => ({ value: c, label: CATE_NAME[c] || c }));
+  const depositNeed = Number(cfgSafe.deposit_amount) || 0;
   const depositPaid = shop ? Number(shop.deposit_paid) || 0 : 0;
   const depositEnough = depositPaid >= depositNeed;
   const goodsMap = new Map(goods.map((g) => [g.id, g]));
@@ -236,14 +256,56 @@ const ShopManagePage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 'var(--space-3)' }}>
-        <Title level={4} style={{ margin: 0 }}>我的商城</Title>
-        {shop ? (
-          <Tag color={shop.audit_status === 1 ? 'green' : 'orange'}>
-            {shop.audit_status === 1 ? (shop.status === 1 ? '营业中' : '暂停（保证金/审核）') : '店铺待审'}
-          </Tag>
-        ) : null}
+      <Title level={4} style={{ margin: 0, marginBottom: 'var(--space-4)' }}>我的集市</Title>
+
+      <div className="shop-hero">
+        <div className="shop-hero-main">
+          <div className="shop-hero-name">
+            {shop ? shop.shop_name : '还没有店铺'}
+            {shop ? (
+              <Tag color={shop.audit_status === 1 ? (shop.status === 1 ? 'green' : 'orange') : 'orange'} style={{ marginLeft: 8 }}>
+                {shop.audit_status === 1 ? (shop.status === 1 ? '营业中' : '待营业') : '店铺待审'}
+              </Tag>
+            ) : null}
+          </div>
+          <div className="shop-hero-desc">
+            {shop
+              ? `店铺编号 #${shop.id} · ${depositEnough ? '保证金已缴足' : `需缴保证金 ¥${depositNeed.toFixed(2)}（上架商品时缴纳即可）`}`
+              : '填写店铺名称与经营类目即可创建店铺；创建店铺与缴纳保证金互不冲突，保证金推迟到上架商品时再缴。'}
+          </div>
+        </div>
+        <Space wrap>
+          {!shop ? <Button onClick={() => setTab('setting')}>创建店铺</Button> : null}
+          {shop && !depositEnough ? (
+            <Button type="primary" loading={paying} onClick={onPayDeposit}>去缴纳保证金</Button>
+          ) : null}
+          <Button onClick={() => navigate('/shop')}>逛用户集市</Button>
+        </Space>
       </div>
+
+      <div className="shop-stats">
+        <div className="shop-stat">
+          <div className="shop-stat-label">在售商品</div>
+          <div className="shop-stat-value">{goods.filter((g) => g.status === 1).length}</div>
+        </div>
+        <div className="shop-stat">
+          <div className="shop-stat-label">店铺订单</div>
+          <div className="shop-stat-value">{orders.length}</div>
+        </div>
+        <div className="shop-stat">
+          <div className="shop-stat-label">已缴保证金</div>
+          <div className="shop-stat-value">¥{depositPaid.toFixed(2)}</div>
+        </div>
+      </div>
+
+      {cfgError ? (
+        <Alert
+          type="warning"
+          showIcon
+          className="shop-step-hint"
+          message="配置接口暂不可用，已按平台默认设置展示；保存与缴纳以服务端结果为准。"
+        />
+      ) : null}
 
       <Tabs
         activeKey={tab}
@@ -257,16 +319,13 @@ const ShopManagePage: React.FC = () => {
                 {shop && shop.audit_status === 2 ? (
                   <Paragraph style={{ color: 'var(--capsule-danger)' }}>驳回原因：{shop.audit_reject || '（未填写）'}</Paragraph>
                 ) : null}
-                <Card size="small" title="保证金（平台全局统一）" style={{ marginBottom: 'var(--space-4)', background: 'var(--c-bg-soft)', border: 'none' }}>
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Text>应缴保证金：<Text strong>¥{depositNeed.toFixed(2)}</Text>（由平台在插件管理统一设置，所有店铺一致）</Text>
-                    <Text>已缴：¥{depositPaid.toFixed(2)} {depositEnough ? <Tag color="green">已足额</Tag> : <Tag color="red">未足额</Tag>}</Text>
-                    {!depositEnough ? (
-                      <Button type="primary" loading={paying} onClick={onPayDeposit}>去缴纳保证金</Button>
-                    ) : null}
-                    {!shop ? <Text type="secondary">请先创建店铺并缴纳保证金，方可营业。</Text> : null}
-                  </Space>
-                </Card>
+                <Alert
+                  type="info"
+                  showIcon
+                  className="shop-step-hint"
+                  message="开店分两步：先创建店铺，上架商品时再缴保证金"
+                  description={`平台统一保证金 ¥${depositNeed.toFixed(2)}，当前已缴 ¥${depositPaid.toFixed(2)}；${depositEnough ? '已缴足。' : '未缴足，上架商品时会提示「需缴保证金」，缴足后商品才会在用户集市对外展示。'}`}
+                />
 
                 <Form
                   layout="vertical"
@@ -295,7 +354,19 @@ const ShopManagePage: React.FC = () => {
             key: 'goods',
             label: '商品管理',
             children: (
-              <div>
+              <div className="shop-goods-list">
+                {!depositEnough ? (
+                  <Alert
+                    type="warning"
+                    showIcon
+                    className="shop-step-hint"
+                    message={`需缴保证金 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
+                    description="可以先编辑并提交商品；缴足保证金后商品才会在用户集市对外展示。"
+                    action={shop ? (
+                      <Button size="small" type="primary" loading={paying} onClick={onPayDeposit}>去缴纳</Button>
+                    ) : undefined}
+                  />
+                ) : null}
                 <div style={{ marginBottom: 'var(--space-3)' }}>
                   <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/shop/goods-edit')}>新增商品</Button>
                 </div>

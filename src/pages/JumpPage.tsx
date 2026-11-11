@@ -38,7 +38,7 @@ const JumpPage: React.FC = () => {
             <Card>
                 <Flex vertical gap={16} align="center">
                     <Title level={4} className="jump-title-no-margin">
-                        {safe ? '即将离开本站' : '链接无效'}
+                        {safe ? '站外跳转' : '链接失效'}
                     </Title>
                     {safe ? (
                         <Paragraph type="secondary" className="text-center">

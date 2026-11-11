@@ -8,8 +8,8 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { LinksSkeleton } from '@components/common/skeleton';
-import { sanitizeHtml } from '@/utils/CommonUtil';
 import MdView from '@components/common/MdView';
+import ArticleHtml from '@components/common/ArticleHtml';
 import 'md-editor-rt/lib/preview.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -144,12 +144,12 @@ export default function LinksPage() {
 
     const descCard = danContent ? (
         <Card className="links-desc-card">
-            <Title level={4}>申请友链情况说明</Title>
+            <Title level={4}>友链说明</Title>
             {(() => {
                 const raw = danContent || '';
                 const isHtml = /<[a-z][\s\S]*>/i.test(raw);
                 return isHtml ? (
-                    <div className="detail-content" dangerouslySetInnerHTML={{ __html: sanitizeHtml(raw) }} />
+                    <ArticleHtml className="detail-content" html={raw} />
                 ) : (
                     <div className="detail-content md-content">
                         <MdView id="links-preview" modelValue={raw} />
@@ -200,7 +200,8 @@ export default function LinksPage() {
     const applyNotice =
         friendDomain ? (
             <Card className="links-notice-card">
-                <Title level={4}>申请友情链接前，请先在贵站做上本站的友情链接</Title>
+                <Title level={4}>申请须知</Title>
+                <Paragraph type="secondary">申请友情链接前，请先在贵站做上本站的友情链接。</Paragraph>
                 <ul className="links-notice-list">
                     <li>如果在贵站未发现本站文字链接或者贵站不符合本站要求，友情链接将不会生效；本站在贵站上只做文字链接就可以了。</li>
                     <li>如果贵站流量高，贵站友情链接可以排在本站前五位展示。</li>
@@ -262,7 +263,7 @@ export default function LinksPage() {
                             name="name"
                             rules={[{ required: true, message: '请输入站点名称' }]}
                         >
-                            <Input placeholder="例如：兴汉同盟" />
+                            <Input placeholder="例如：兴汉联盟" />
                         </Form.Item>
                         <Form.Item
                             label="站点链接"

@@ -149,9 +149,9 @@ export default function SiteFooter(): React.JSX.Element {
                         {footerLeftHtml ? (
                             <span dangerouslySetInnerHTML={{ __html: footerLeftHtml }} />
                         ) : (
-                            <>© {year} {site?.title || '兴汉同盟'} 版权所有</>
+                            <>© {year} {site?.title || '兴汉联盟'} 版权所有</>
                         )}
-                        、前端：兴汉同盟
+                        、前端：兴汉联盟
                         {version ? (
                             <>
                                 {' '}

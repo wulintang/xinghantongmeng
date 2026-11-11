@@ -415,7 +415,7 @@ const SubmitSite: React.FC = () => {
       <Spin spinning={catesLoading || loadingSite}>
         <Form form={form} layout="vertical" className="submit-site-form" onFinish={onFinish}>
           <Form.Item label="站点名称" name="name" rules={[{ required: true, message: '请输入站点名称' }]}>
-            <Input placeholder="例如：兴汉同盟" disabled={ro} />
+            <Input placeholder="例如：兴汉联盟" disabled={ro} />
           </Form.Item>
           <Form.Item label="站点链接" required>
             <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>

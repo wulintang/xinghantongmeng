@@ -12,7 +12,7 @@ import { domainOf, assetUrl } from '@/utils/route';
 const { Text } = Typography;
 
 /**
- * 会员主页两张卡片（账户信息 + 站点/专栏/技能/商城 Tabs）的唯一渲染实现。
+ * 会员主页两张卡片（账户信息 + 站点/专栏/技能/集市 Tabs）的唯一渲染实现。
  * /user/:id 公开主页与「主页背景」设置页预览共用，因此预览永远等于真实主页：
  * 没有示例文案、没有第二套样式、数据来自同一批接口。
  */
@@ -348,7 +348,7 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
             { key: 'sites', label: '站点', children: <UserSitesTab loading={!!loading.sites} sites={sites} /> },
             { key: 'columns', label: '专栏', children: <UserColumnsTab loading={!!loading.columns} columns={columns} /> },
             { key: 'skills', label: '技能', children: <UserSkillsTab loading={!!loading.skills} skills={skills} /> },
-            { key: 'shop', label: '商城', children: <UserShopTab uid={info?.id ? String(info.id) : ''} /> },
+            { key: 'shop', label: '集市', children: <UserShopTab uid={info?.id ? String(info.id) : ''} /> },
           ]}
         />
       </Card>

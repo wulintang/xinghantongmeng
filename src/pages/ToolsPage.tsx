@@ -24,7 +24,7 @@ const ToolsPage: React.FC = () => {
     usePageMeta({
         title: '技能广场',
         keywords: '在线技能, 技能广场',
-        description: '兴汉同盟收录的在线技能。',
+        description: '兴汉联盟收录的在线技能。',
     });
 
     useEffect(() => {

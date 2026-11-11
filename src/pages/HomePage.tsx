@@ -11,6 +11,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getColumns, columnLink } from '@/services/column';
 import { getPosts } from '@/services/postService';
+import { getMallList, CATE_NAME, type MallGoodsItem } from '@/services/shop';
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
 
@@ -26,6 +27,7 @@ const HomePage: React.FC = () => {
     const [sites, setSites] = useState<WebsiteItem[]>([]);
     const [articles, setArticles] = useState<ArticleItem[]>([]);
     const [posts, setPosts] = useState<PostData[]>([]);
+    const [mallGoods, setMallGoods] = useState<MallGoodsItem[]>([]);
     const [siteIdByDomain, setSiteIdByDomain] = useState<Map<string, number>>(new Map());
     const [columnMap, setColumnMap] = useState<Map<number, { id: number; name: string; description: string | null; author: string; custom_url?: string | null; url_status?: number }>>(new Map());
 
@@ -37,8 +39,10 @@ const HomePage: React.FC = () => {
             getArticles({ page: 1, limit: HOME_SIDE_LIMIT }),
             getPosts(),
             getColumns(),
+            // 用户集市区块单独兜底：后端未部署 mallList 时不影响首页其余数据
+            getMallList({ limit: 4 }).catch(() => null),
         ])
-            .then(([w, a, p, cols]) => {
+            .then(([w, a, p, cols, mall]) => {
                 if (w.code === 1 && w.data?.list) {
                     setSites(w.data.list.slice(0, HOME_SITE_LIMIT));
                     const map = new Map<string, number>();
@@ -52,6 +56,7 @@ const HomePage: React.FC = () => {
                     cols.data.forEach((c) => m.set(c.id, { id: c.id, name: c.name, description: c.description, author: c.author, custom_url: c.custom_url, url_status: c.url_status }));
                     setColumnMap(m);
                 }
+                if (mall && mall.code === 1 && mall.data?.list) setMallGoods(mall.data.list.slice(0, 4));
             })
             .catch(() => {})
             .finally(() => setLoading(false));
@@ -59,7 +64,7 @@ const HomePage: React.FC = () => {
 
     if (loading || siteLoading) return <HomeSkeleton />;
 
-    const heroTitle = site?.titles || site?.title || '兴汉同盟';
+    const heroTitle = site?.titles || site?.title || '兴汉联盟';
     const heroDesc =
         site?.description ||
         '我们深信每个博客背后都是一个独特的灵魂，让我们跨越山海彼此相连，一起用文字打败时间！';
@@ -95,7 +100,7 @@ const HomePage: React.FC = () => {
             <section>
                 <Flex className="section-head" justify="space-between" align="center">
                     <Title level={4} className="section-title">
-                        最新收录站点
+                        最新收录
                     </Title>
                     <Button type="link" onClick={() => navigate('/websites')}>
                         查看全部
@@ -136,6 +141,55 @@ const HomePage: React.FC = () => {
                                                 </AppTooltip>
                                             ) : null}
                                         </Flex>
+                                    </Flex>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+            </section>
+
+            <section>
+                <Flex className="section-head" justify="space-between" align="center">
+                    <Title level={4} className="section-title">
+                        用户集市
+                    </Title>
+                    <Button type="link" onClick={() => navigate('/shop')}>
+                        更多
+                    </Button>
+                </Flex>
+                {mallGoods.length === 0 ? (
+                    <Alert type="info" showIcon message="暂无在售商品" />
+                ) : (
+                    <Row gutter={[16, 16]}>
+                        {mallGoods.map((g) => (
+                            <Col key={g.id} xs={24} sm={12} md={8} lg={6}>
+                                <Card
+                                    hoverable
+                                    className="shop-goods-card"
+                                    onClick={() => navigate(`/shop?goods=${g.id}`)}
+                                    cover={
+                                        g.cover ? (
+                                            <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
+                                        ) : (
+                                            <div className="shop-goods-ico">{CATE_NAME[g.cate]?.[0] || '商'}</div>
+                                        )
+                                    }
+                                >
+                                    <Flex vertical gap={8}>
+                                        <Text strong className="shop-goods-title" title={g.title}>{g.title}</Text>
+                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="shop-goods-desc">
+                                            {g.description || '暂无商品简介'}
+                                        </Paragraph>
+                                        <Flex justify="space-between" align="center" wrap gap={6}>
+                                            <Text className="shop-goods-price">¥{(Number(g.price) || 0).toFixed(2)}</Text>
+                                            <Tag color={g.delivery === 'digital' ? 'cyan' : 'orange'}>
+                                                {g.delivery === 'digital' ? '数字交付' : '实体交付'}
+                                            </Tag>
+                                        </Flex>
+                                        <Text type="secondary" className="shop-goods-meta">
+                                            {g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}
+                                        </Text>
                                     </Flex>
                                 </Card>
                             </Col>

@@ -73,7 +73,7 @@ export default function UpdatePage(): React.JSX.Element {
             <div className="update-hero">
                 <h1 className="update-title">更新日志</h1>
                 <p className="update-subtitle">
-                    当前版本：兴汉同盟{' '}
+                    当前版本：兴汉联盟{' '}
                     {latestSha ? <span className="update-version">{latestSha}</span> : null}
                     <br />
                     共 {total} 次迭代，按日期与类型分组展示。

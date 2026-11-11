@@ -410,7 +410,7 @@ export interface LinkItem {
 
 export interface SiteConfig {
   title: string;
-  /** 完整标题（如「兴汉同盟 - 优质中文网站图鉴」），导航栏/页脚展示用 */
+  /** 完整标题（如「兴汉联盟 - 优质中文网站图鉴」），导航栏/页脚展示用 */
   titles: string;
   logo: string;
   description: string;

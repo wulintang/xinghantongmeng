@@ -11,7 +11,8 @@ import { uploadFile } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
-  saveGoods, getMyGoodsDetail, CATE_NAME, CATE_WHITELIST, type GoodsItem,
+  saveGoods, getMyGoodsDetail, getMyShop, getShopConfig, payDeposit,
+  CATE_NAME, CATE_WHITELIST, type GoodsItem,
 } from '@/services/shop';
 
 const { Text } = Typography;
@@ -52,6 +53,37 @@ const ShopGoodsEditPage: React.FC = () => {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [keywordsLoading, setKeywordsLoading] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
+
+  // 保证金延后到「上架商品」这一步提示：创建店铺与缴纳保证金完全分开，
+  // 这里只提示、不拦截编辑或提交，缴足后商品才会在用户集市对外展示。
+  const [depositNeed, setDepositNeed] = useState(0);
+  const [depositPaid, setDepositPaid] = useState(0);
+  const [payingDeposit, setPayingDeposit] = useState(false);
+  const needDeposit = depositNeed > 0 && depositPaid < depositNeed;
+
+  const refreshDeposit = () => {
+    getShopConfig()
+      .then((r: any) => { if (r.code === 1 && r.data) setDepositNeed(Number(r.data.deposit_amount) || 0); })
+      .catch(() => {});
+    getMyShop()
+      .then((r: any) => { if (r.code === 1 && r.data) setDepositPaid(Number(r.data.deposit_paid) || 0); })
+      .catch(() => {});
+  };
+
+  useEffect(() => { refreshDeposit(); }, []);
+
+  const onPayDeposit = () => {
+    setPayingDeposit(true);
+    payDeposit()
+      .then((r: any) => {
+        if (r.code === 1) {
+          message.success(r.msg || '保证金已缴足');
+          refreshDeposit();
+        } else message.error(r.msg || '缴纳失败，请检查账号余额');
+      })
+      .catch(() => message.error('缴纳失败'))
+      .finally(() => setPayingDeposit(false));
+  };
 
   useEffect(() => {
     if (!key) {
@@ -232,6 +264,21 @@ const ShopGoodsEditPage: React.FC = () => {
           showIcon
           message="复用专栏编辑器：标题 / 类目 / 关键词 / 摘要 / 正文 / AI 写文章；下方为商品交易字段。"
         />
+
+        {needDeposit ? (
+          <Alert
+            type="warning"
+            showIcon
+            className="shop-step-hint"
+            message={`需缴保证金 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
+            description="上架商品前请缴足开店保证金，缴足后商品才会在用户集市对外展示。创建店铺与缴纳保证金互不冲突，现在仍可继续编辑并提交商品。"
+            action={
+              <Button size="small" type="primary" loading={payingDeposit} onClick={onPayDeposit}>
+                去缴纳
+              </Button>
+            }
+          />
+        ) : null}
 
         <Flex gap={16} wrap>
           <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 240 }}>

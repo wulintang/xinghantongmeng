@@ -76,7 +76,7 @@ const AbstractPage: React.FC = () => {
 
     usePageMeta({
         title: '文章详情',
-        description: '兴汉同盟广场聚合文章详情页。',
+        description: '兴汉联盟广场聚合文章详情页。',
     });
 
     useEffect(() => {

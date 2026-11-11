@@ -2296,12 +2296,68 @@ body {
 .md-content p:last-child {
   margin-bottom: 0;
 }
-.md-content img {
+/* 后台只有源码、无法预览排版：正文默认统一两端对齐与行高，
+   图片/图片描述统一居中；作者写的行内 style 优先级更高，仍可单独居中。 */
+.md-content p,
+.detail-content p {
+  text-align: justify;
+  text-indent: inherit;
+  line-height: var(--lh-loose);
+}
+/* 文章正文图片（单页 / 专栏 / 站点详情，Markdown 与 HTML 两种来源）：
+   后台是纯源码编辑器，作者看不到渲染效果，所以居中、70% 宽、统一边线与圆角、
+   深浅模式（只用 --c-border 变量翻转）全部由前端补齐，不允许 100% 撑满的大图。 */
+.md-content img,
+.detail-content img {
+  text-indent: inherit;
+  display: block;
+  max-width: 70%;
+  height: auto;
+  margin: 33px auto;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+/* 图片描述：由 MdView / ArticleHtml 读取 alt 生成，居中显示在图片正下方 */
+.md-figure {
+  display: block;
+  max-width: 70%;
+  margin: 33px auto;
+  text-align: center;
+  text-indent: 0;
+}
+.md-figure img {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.md-figure-caption {
+  margin: 10px auto 0;
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+  word-break: break-word;
+}
+/* md-editor-rt 自带 preview.css 晚于本文件加载，用更高特异性把图片样式锁回站点统一令牌 */
+.rx-md-view .md-editor-preview .md-figure {
+  max-width: 70%;
+  margin: 33px auto;
+  text-align: center;
+  text-indent: 0;
+}
+.rx-md-view .md-editor-preview .md-figure img {
   display: block;
   max-width: 100%;
   height: auto;
-  border-radius: var(--radius, 4px);
-  margin: var(--space-3) auto;
+  margin: 0 auto;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.rx-md-view .md-editor-preview .md-figure-caption {
+  margin: 10px auto 0;
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
 }
 .md-content a {
   color: var(--c-link);
@@ -2738,3 +2794,92 @@ body {
   font-size: var(--fs-xs);
   line-height: 1.6;
 }
+
+/* ===== 用户集市：独立页 / 首页区块 / 我的集市 统一视觉 =====
+   表面、边线、文字全部走站点变量，深浅模式只翻变量，不给具体类名打深色补丁 */
+.shop-filter-card {
+  margin-bottom: var(--space-5);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--container-radius);
+}
+.shop-search { flex: 1 1 280px; max-width: 420px; }
+.shop-cate-segmented { flex-wrap: wrap; }
+.shop-loading { display: flex; justify-content: center; padding: var(--space-15) 0; }
+.shop-pager { margin-top: var(--space-5); }
+
+.shop-goods-card {
+  height: 100%;
+  background: var(--c-surface) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: var(--container-radius) !important;
+  overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.shop-goods-card:hover {
+  border-color: var(--c-link) !important;
+  transform: translateY(-2px);
+}
+.shop-goods-card .ant-card-body { padding: var(--space-4) !important; }
+.shop-goods-cover,
+.shop-goods-ico {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-bg-2);
+  border-bottom: 1px solid var(--c-border);
+  overflow: hidden;
+}
+.shop-goods-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shop-goods-ico { color: var(--c-text-2); font-size: 32px; font-weight: 600; }
+.shop-goods-title {
+  display: block;
+  font-size: var(--fs-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.shop-goods-desc { min-height: 40px; margin: 0 !important; font-size: var(--fs-sm); }
+.shop-goods-price { color: var(--capsule-danger); font-size: var(--fs-lg); font-weight: 600; }
+.shop-goods-meta { font-size: var(--fs-xs); }
+
+.shop-detail-cover {
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--c-bg-2);
+}
+.shop-detail-cover img { display: block; width: 100%; max-height: 340px; object-fit: contain; }
+.shop-detail-price { font-size: var(--fs-xl); font-weight: 600; color: var(--capsule-danger); }
+
+/* 我的集市：店铺概览条 + 统计块 */
+.shop-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-border);
+  border-radius: var(--container-radius);
+}
+.shop-hero-main { flex: 1 1 260px; min-width: 0; }
+.shop-hero-name { font-size: var(--fs-xl); font-weight: 600; color: var(--c-text); }
+.shop-hero-desc { margin-top: 6px; font-size: var(--fs-sm); color: var(--c-text-3); }
+.shop-stats { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
+.shop-stat {
+  flex: 1 1 140px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--container-radius);
+}
+.shop-stat-label { font-size: var(--fs-xs); color: var(--c-text-3); }
+.shop-stat-value { margin-top: 4px; font-size: var(--fs-xl); font-weight: 600; color: var(--c-text); }
+.shop-step-hint {
+  margin-bottom: var(--space-4);
+  border-radius: var(--container-radius);
+}
+.shop-goods-list .ant-table-thead > tr > th { background: var(--c-bg-soft); }

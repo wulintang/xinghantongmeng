@@ -300,7 +300,7 @@ export default function AdMyPage(): React.JSX.Element {
       >
         <Form form={form} layout="vertical" onFinish={onEditFinish}>
           <Form.Item label="广告标题" name="title" rules={[{ required: true, message: '请输入广告标题' }]}>
-            <Input placeholder="如：兴汉同盟官网" maxLength={60} />
+            <Input placeholder="如：兴汉联盟官网" maxLength={60} />
           </Form.Item>
           <Form.Item label="跳转链接" name="link" rules={[{ required: true, message: '请填写跳转链接' }]}>
             <Input placeholder="https://..." />

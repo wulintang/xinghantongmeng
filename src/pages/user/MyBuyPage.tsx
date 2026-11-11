@@ -9,7 +9,7 @@ import {
 } from '@/services/shop';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
-const { Text, Paragraph } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 // 状态 Tab → 订单 status 值（数字交付的 2 即“已交付”，归入“待收货”一组）
@@ -163,7 +163,21 @@ const MyBuyPage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <Text strong style={{ fontSize: 'var(--fs-lg)' }}>我的购买</Text>
+      <Title level={4} style={{ margin: 0, marginBottom: 'var(--space-4)' }}>我的购买</Title>
+      <div className="shop-stats">
+        <div className="shop-stat">
+          <div className="shop-stat-label">全部订单</div>
+          <div className="shop-stat-value">{orders.length}</div>
+        </div>
+        <div className="shop-stat">
+          <div className="shop-stat-label">待收货</div>
+          <div className="shop-stat-value">{orders.filter((o) => o.status === 2).length}</div>
+        </div>
+        <div className="shop-stat">
+          <div className="shop-stat-label">已完成</div>
+          <div className="shop-stat-value">{orders.filter((o) => o.status === 3).length}</div>
+        </div>
+      </div>
       <Tabs
         activeKey={tab}
         onChange={setTab}

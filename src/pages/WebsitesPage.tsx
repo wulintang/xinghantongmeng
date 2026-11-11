@@ -27,7 +27,7 @@ const WebsitesPage: React.FC = () => {
     usePageMeta({
         title: '网址导航',
         keywords: '网址导航, 站点收录, 博客导航',
-        description: '兴汉同盟收录的全部站点，可按分类浏览与搜索。',
+        description: '兴汉联盟收录的全部站点，可按分类浏览与搜索。',
     });
 
     useEffect(() => {

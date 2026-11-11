@@ -30,7 +30,7 @@ export function usePageMeta(meta: PageMeta = {}): void {
 
     useEffect(() => {
         const suffix = siteName ? ` - ${siteName}` : '';
-        document.title = title ? `${title}${suffix}` : siteName || '兴汉同盟';
+        document.title = title ? `${title}${suffix}` : siteName || '兴汉联盟';
         setMetaTag('keywords', keywords || site?.keywords);
         setMetaTag('description', description || site?.description);
     }, [title, keywords, description, siteName, site?.keywords, site?.description]);

@@ -94,7 +94,7 @@ const BlogsPage: React.FC = () => {
     usePageMeta({
         title: '广场聚合',
         keywords: '广场聚合, 文章聚合, 站点圈',
-        description: '兴汉同盟广场聚合的最新文章。',
+        description: '兴汉联盟广场聚合的最新文章。',
     });
 
     useEffect(() => {

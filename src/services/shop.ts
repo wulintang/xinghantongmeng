@@ -2,7 +2,7 @@ import { request } from '@/utils/request';
 import { getToken } from '@/utils/auth';
 import type { ApiResp } from '@/services/userCenter';
 
-// 商户（我的商城）插件：后端 app/shop 插件，路径带 /index.php/
+// 商户（我的集市）插件：后端 app/shop 插件，路径带 /index.php/
 const SHOP = '/index.php/shop/index';
 const SHOP_ADMIN = '/index.php/shop/admin';
 
@@ -76,6 +76,20 @@ export interface AddressItem {
   is_default: number;
 }
 
+/** 独立集市列表项（商品 + 所属店铺名） */
+export interface MallGoodsItem {
+  id: number;
+  shop_id: number;
+  shop_name: string;
+  title: string;
+  cate: ShopCate;
+  description: string;
+  cover: string;
+  price: number;
+  delivery: DeliveryType;
+  created_at: number;
+}
+
 /** 全局配置（后台插件管理设置） */
 export interface ShopConfig {
   enabled: number;
@@ -84,6 +98,9 @@ export interface ShopConfig {
   shop_audit: number;
   goods_audit: number;
   allow_cate: ShopCate[];
+  /** 后端版本指纹（自检用，确认服务器跑的是最新 app/shop） */
+  build?: string;
+  uid_table?: string;
 }
 
 export const CATE_NAME: Record<string, string> = {
@@ -152,6 +169,18 @@ export function getGoodsDetail(id: number | string) {
 /** 公开：插件全局配置（类目白名单 / 保证金应缴额 / 审计开关） */
 export function getShopConfig() {
   return request<ApiResp<ShopConfig>>(`${SHOP}/config.html`);
+}
+
+/** 公开：独立集市 / 首页积分区块的全站在售商品（分页 + 类目 + 关键词） */
+export function getMallList(params: { cate?: string; kw?: string; page?: number; limit?: number } = {}) {
+  const q = new URLSearchParams();
+  if (params.cate && params.cate !== 'all') q.append('cate', params.cate);
+  if (params.kw) q.append('kw', params.kw);
+  q.append('page', String(params.page || 1));
+  q.append('limit', String(params.limit || 12));
+  return request<ApiResp<{ list: MallGoodsItem[]; total: number; page: number; limit: number }>>(
+    `${SHOP}/mallList.html?${q.toString()}`
+  );
 }
 
 // ===================== 商家（需登录 key） =====================

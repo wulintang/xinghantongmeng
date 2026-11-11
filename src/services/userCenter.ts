@@ -735,6 +735,11 @@ export function setSkillExport(key: string, id: number, allow: 0 | 1) {
   return post<ApiResp>('/setExport.html', { key, id, allow }, SKILLS);
 }
 
+/** 作者快捷设置技能单次使用价格（我的技能里内联设价，即时生效、不触发重新审核） */
+export function setSkillPrice(key: string, id: number, rmb: number) {
+  return post<ApiResp>('/setPrice.html', { key, id, rmb }, SKILLS);
+}
+
 /** 导出标准 Agent Skill：后端按 allow_export 校验并输出 SKILL.md */
 export function exportSkillUrl(toolboxId: number) {
   return `${apiBase()}/index.php/skills/index/exportSkill.html?id=${toolboxId}`;

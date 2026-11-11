@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, Empty, Popconfirm, Space, Spin, Switch, Tag, Tooltip, Typography, message,
+  Button, Card, Empty, InputNumber, Modal, Popconfirm, Space, Spin, Switch, Tag, Tooltip, Typography, message,
 } from 'antd';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  delSkill, getMySkillApplies, setSkillExport, exportSkillUrl, type SkillApplyItem,
+  delSkill, getMySkillApplies, setSkillExport, setSkillPrice, exportSkillUrl, type SkillApplyItem,
 } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -25,6 +25,31 @@ const MyToolsPage: React.FC = () => {
   const [list, setList] = useState<SkillApplyItem[]>([]);
   const [delId, setDelId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // 快捷设价：与「允许导出」同处管理，即时生效、不触发重新审核
+  const [priceTarget, setPriceTarget] = useState<SkillApplyItem | null>(null);
+  const [priceVal, setPriceVal] = useState<number>(0);
+  const [priceSaving, setPriceSaving] = useState(false);
+  const openPrice = (it: SkillApplyItem) => {
+    setPriceTarget(it);
+    setPriceVal(Number(it.rmb) || 0);
+  };
+  const savePrice = () => {
+    if (!priceTarget) return;
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    setPriceSaving(true);
+    setSkillPrice(key, priceTarget.id, priceVal)
+      .then((r) => {
+        if (r.code === 1) {
+          setList((prev) => prev.map((x) => x.id === priceTarget.id ? { ...x, rmb: String(priceVal) } : x));
+          message.success(r.msg || '已更新价格');
+          setPriceTarget(null);
+        } else message.error(r.msg || '设置失败');
+      })
+      .catch(() => message.error('设置失败'))
+      .finally(() => setPriceSaving(false));
+  };
 
   const load = () => {
     const key = getToken();
@@ -123,6 +148,7 @@ const MyToolsPage: React.FC = () => {
                         <Text strong>{it.title}</Text>
                         <Tag color={st.color}>{st.label}</Tag>
                         {it.rmb && Number(it.rmb) > 0 ? <Tag color="blue">¥{it.rmb}/次</Tag> : <Tag>免费</Tag>}
+                        <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openPrice(it)}>设价</Button>
                       </Space>
                       <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 2 }}>
                         {it.alias && <span>标识：{it.alias}　</span>}
@@ -168,6 +194,31 @@ const MyToolsPage: React.FC = () => {
           </Space>
         )}
       </Spin>
+      <Modal
+        title={`设置价格：${priceTarget?.title ?? ''}`}
+        open={!!priceTarget}
+        onCancel={() => setPriceTarget(null)}
+        onOk={savePrice}
+        confirmLoading={priceSaving}
+        okText="保存"
+        cancelText="取消"
+        destroyOnClose
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Text type="secondary">设定使用者每次调用该技能需支付的金额（元）。免费请填 0。</Text>
+          <InputNumber
+            min={0}
+            max={999999}
+            step={0.01}
+            precision={2}
+            style={{ width: '100%' }}
+            value={priceVal}
+            onChange={(v) => setPriceVal(typeof v === 'number' ? v : 0)}
+            placeholder="0.00"
+            prefix="¥"
+          />
+        </Space>
+      </Modal>
     </Card>
   );
 };

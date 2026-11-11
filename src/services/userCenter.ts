@@ -1,5 +1,6 @@
 import { request, apiBase } from '@/utils/request';
 import { domainOf, normalizeDomain } from '@/utils/route';
+import { message } from 'antd';
 
 // 好道核心现成接口（app/controller/Api.php），路径带 /index.php/
 const API = '/index.php/api';
@@ -760,7 +761,7 @@ export async function exportSkillDownload(toolboxId: number, key: string) {
   if (!key) {
     throw new Error('请先登录后再导出技能');
   }
-  const r = await post<ApiResp & { data?: { md?: string; filename?: string } }>(
+  const r = await post<ApiResp & { data?: { md?: string; filename?: string; cost?: number } }>(
     '/exportSkill.html',
     { id: toolboxId, key },
     SKILLS
@@ -779,6 +780,13 @@ export async function exportSkillDownload(toolboxId: number, key: string) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+  // 扣费反馈：cost 为本轮实际扣费金额（作者免收 / 免费 / 幂等内已扣时为 0）
+  const cost = Number(r.data.cost) || 0;
+  if (cost > 0) {
+    message.success(`已扣除 ¥${cost.toFixed(2)}，SKILL.md 已导出`);
+  } else {
+    message.success('SKILL.md 已导出（本次免费）');
+  }
 }
 
 /** 技能独立字段表：每个技能一份，全站由同一个数据驱动表单组件渲染 */

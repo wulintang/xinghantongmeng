@@ -34,6 +34,7 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
     const [template, setTemplate] = useState('');
     const [example, setExample] = useState('');
     const [fieldsLoading, setFieldsLoading] = useState(true);
+    const [costTip, setCostTip] = useState<string | null>(null);
     const abortRef = useRef<AbortController | null>(null);
     const logRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +118,13 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
                     const raw = part.slice(5).trim();
                     if (!raw || raw === '[DONE]') continue;
                     try {
-                        const chunk = JSON.parse(raw)?.data?.content;
+                        const parsed = JSON.parse(raw);
+                        if (parsed && parsed.type === 'cost_done') {
+                            const amt = Number(parsed.amount) || 0;
+                            setCostTip(amt > 0 ? `本次对话已消耗 ¥${amt.toFixed(2)}` : '本次对话免费');
+                            continue;
+                        }
+                        const chunk = parsed?.data?.content;
                         if (typeof chunk === 'string' && chunk) {
                             setMessages((prev) => {
                                 const copy = [...prev];
@@ -167,7 +174,7 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
                     <Button
                         size="small"
                         icon={<ReloadOutlined />}
-                        onClick={() => { stop(); setMessages([]); }}
+                        onClick={() => { stop(); setMessages([]); setCostTip(null); }}
                     >
                         新会话
                     </Button>
@@ -177,6 +184,11 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
                 </Space>
             </div>
 
+            {costTip ? (
+                <div style={{ margin: '0 0 10px', padding: '7px 12px', borderRadius: 8, background: 'var(--c-bg-soft)', color: 'var(--c-text-2)', fontSize: 13 }}>
+                    {costTip}
+                </div>
+            ) : null}
             <div className="skill-chat-log" ref={logRef}>
                 {messages.length === 0 ? (
                     <div className="skill-chat-empty">

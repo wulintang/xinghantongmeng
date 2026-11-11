@@ -40,6 +40,9 @@ import MyColumnsPage from '@pages/user/MyColumnsPage';
 import MyColumnDetailPage from '@pages/user/MyColumnDetailPage';
 import MyToolsPage from '@pages/user/MyTools';
 import SubmitSkillPage from '@pages/user/SubmitSkillPage';
+import ShopManagePage from '@pages/user/ShopManagePage';
+import ShopGoodsEditPage from '@pages/user/ShopGoodsEditPage';
+import MyBuyPage from '@pages/user/MyBuyPage';
 import ArticleEditPage from '@pages/user/ArticleEditPage';
 import UserBgSettingsPage from '@pages/user/UserBgSettingsPage';
 import { SiteProvider } from '@/context/SiteContext';
@@ -194,6 +197,10 @@ function ThemedShell(): React.JSX.Element {
                                 <Route path="ad/my" element={<AdMyPage />} />
                                 <Route path="skills" element={<MyToolsPage />} />
                                 <Route path="submit-skill" element={<SubmitSkillPage />} />
+                                <Route path="shop" element={<ShopManagePage />} />
+                                <Route path="shop/goods-edit" element={<ShopGoodsEditPage />} />
+                                <Route path="shop/goods-edit/:id" element={<ShopGoodsEditPage />} />
+                                <Route path="buy" element={<MyBuyPage />} />
                                 {/* 用户唯一可自定义的视觉项：自己公开主页的背景 */}
                                 <Route path="appearance" element={<UserBgSettingsPage />} />
                             </Route>

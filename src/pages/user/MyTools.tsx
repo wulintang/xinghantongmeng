@@ -125,7 +125,6 @@ const MyToolsPage: React.FC = () => {
     if (it.toolbox_id > 0) {
       const key = getToken() || '';
       exportSkillDownload(it.toolbox_id, key)
-        .then(() => message.success('已导出 SKILL.md'))
         .catch((e) => message.error(e?.message || '导出失败'));
       return;
     }

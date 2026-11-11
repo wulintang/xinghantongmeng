@@ -414,7 +414,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
-  background: var(--c-bg-soft);
+  background: var(--c-surface);
   border: none;
   border-radius: var(--container-radius);
   padding: var(--space-6) var(--space-8);

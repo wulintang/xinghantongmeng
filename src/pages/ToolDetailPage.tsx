@@ -111,7 +111,6 @@ const ToolDetailPage: React.FC = () => {
         if (!item) return;
         const key = getToken() || '';
         exportSkillDownload(item.id, key)
-            .then(() => message.success('已导出 SKILL.md'))
             .catch((e) => message.error(e?.message || '导出失败'));
     };
 

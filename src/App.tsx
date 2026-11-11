@@ -6,6 +6,7 @@ import zhCN from 'antd/locale/zh_CN';
 import MainLayout from '@layouts/MainLayout';
 import HomePage from '@pages/HomePage';
 import ShopPage from '@pages/ShopPage';
+import ShopGoodsDetailPage from '@pages/ShopGoodsDetailPage';
 import WebsitesPage from '@pages/WebsitesPage';
 import WebsiteDetailPage from '@pages/WebsiteDetailPage';
 import ToolsPage from '@pages/ToolsPage';
@@ -175,6 +176,7 @@ function ThemedShell(): React.JSX.Element {
 
                                 <Route path="/grid" element={<GridPage />} />
                                 <Route path="/shop" element={<ShopPage />} />
+                                <Route path="/shop/goods/:id" element={<ShopGoodsDetailPage />} />
                                 <Route path="/dan/ad" element={<AdPricesPage />} />
 
                                 <Route path="/abstract" element={<AbstractPage />} />

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { MdEditor } from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
 import {
   Button, Card, Form, Input, InputNumber, Modal, Select, Space, Spin, Switch, Tabs, Typography, Upload, message,
 } from 'antd';
@@ -10,6 +12,7 @@ import {
   SKILL_MD_PLACEHOLDER, SKILL_MD_TEMPLATE, skillMdFromObject,
 } from '@/utils/skillDoc';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useTheme } from '@/context/ThemeProvider';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -52,6 +55,7 @@ const SubmitSkillPage: React.FC = () => {
   usePageMeta({ title: isEdit ? '编辑技能' : '提交技能' });
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { dark } = useTheme();
   const [editLoading, setEditLoading] = useState(false);
 
   const [cates, setCates] = useState<CateItem[]>([]);
@@ -302,13 +306,9 @@ const SubmitSkillPage: React.FC = () => {
                     <Button size="small" onClick={() => setSkillMd(SKILL_MD_TEMPLATE)}>填入示例</Button>
                     <Button size="small" type="link" onClick={downloadMdTemplate}>下载 SKILL.md 模板</Button>
                   </Space>
-                  <Input.TextArea
-                    rows={16}
-                    value={skillMd}
-                    onChange={(e) => setSkillMd(e.target.value)}
-                    placeholder={SKILL_MD_PLACEHOLDER}
-                    style={{ fontFamily: 'ui-monospace, SFMono-Regular, Consolas, monospace', fontSize: 'var(--fs-sm)' }}
-                  />
+                  <div className="rx-md-view">
+                    <MdEditor modelValue={skillMd} onChange={setSkillMd} preview="live" theme={dark ? 'dark' : 'light'} />
+                  </div>
                   <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', lineHeight: 1.7 }}>
                     正文自由写；用户要填什么，在 <code>## 参数</code> 段里逐行声明即可。
                     <code>- 字段名：单行/多行/下拉/单选/日期/时间，必填，示例 xxx</code>。
@@ -361,14 +361,6 @@ const SubmitSkillPage: React.FC = () => {
           </Spin>
         </div>
 
-        <div style={{ flex: '1 1 360px', minWidth: 300 }}>
-          <Text strong>实时预览（提交内容即以下 SKILL.md 原文）</Text>
-          <pre className="skill-preview" style={{
-            marginTop: 'var(--space-2)', padding: 'var(--space-4)', background: 'var(--c-bg-soft)',
-            border: '1px solid var(--c-border)', borderRadius: 8, whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word', minHeight: 240, fontSize: 'var(--fs-sm)', lineHeight: 1.7,
-          }}>{skillMd || '上传 / 粘贴 SKILL.md 后，这里实时显示原文…'}</pre>
-        </div>
       </div>
 
       <Modal open={importOpen} title="一键导入技能定义" onCancel={() => setImportOpen(false)} footer={null} width={560}>

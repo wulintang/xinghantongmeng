@@ -69,6 +69,7 @@ function UserLayoutInner() {
   const onLogout = () => {
     userLogout().catch(() => {});
     setToken('');
+    setInfo(null);
     navigate('/login');
   };
 

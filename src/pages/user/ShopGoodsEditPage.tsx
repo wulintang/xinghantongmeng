@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert, Button, Card, Flex, Input, Modal, Select, Spin, Typography, Upload, message,
 } from 'antd';
@@ -10,6 +10,7 @@ import { aiSummary, aiGenerate, uploadColumnImg } from '@/services/column';
 import { uploadFile } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useTheme } from '@/context/ThemeProvider';
 import {
   saveGoods, getMyGoodsDetail, getMyShop, getShopConfig, payDeposit,
   cateOptionsFrom, type GoodsItem, type ShopConfig,
@@ -30,6 +31,8 @@ const ShopGoodsEditPage: React.FC = () => {
   const isEdit = !!editId;
   const key = getToken();
   usePageMeta({ title: isEdit ? '编辑商品' : '新增商品' });
+  const { dark } = useTheme();
+  const contentAcc = useRef('');
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -185,11 +188,26 @@ const ShopGoodsEditPage: React.FC = () => {
     if (!aiPrompt.trim()) return message.warning('请填写写作要求');
     setAiLoading(true);
     setGenLoading(true);
-    aiGenerate({ key, prompt: aiPrompt.trim(), onChunk: (s: string) => setContent((prev) => prev + s) })
+    contentAcc.current = '';
+    aiGenerate({ key, prompt: aiPrompt.trim(), onChunk: (s: string) => { contentAcc.current += s; setContent((prev) => prev + s); } })
       .then(() => {
         message.success('AI 文章已生成');
         setAiModal(false);
         setAiPrompt('');
+        // 自动回填摘要与关键词；标题为空时尝试取正文首个 # 标题
+        const text = contentAcc.current;
+        if (!title.trim()) {
+          const m = text.match(/^#\s+(.+)$/m);
+          if (m) setTitle(m[1].trim());
+        }
+        aiSummary({ key, title: title || '', content: text })
+          .then((r) => {
+            if (r.code === 1 && r.data) {
+              if (r.data.description) setDescription(r.data.description);
+              if (r.data.keywords) setKeywords(r.data.keywords);
+            }
+          })
+          .catch(() => {});
       })
       .catch((e) => message.error(e?.message || '生成失败'))
       .finally(() => {
@@ -224,6 +242,7 @@ const ShopGoodsEditPage: React.FC = () => {
     if (!title.trim()) return message.error('请填写商品标题');
     if (!cate) return message.error('请选择商品类目');
     if (!content.trim()) return message.error('请填写正文');
+    if (!cover) return message.error('请先上传商品封面，再提交审核');
     if (price < 0) return message.error('价格不合法');
     setSaving(true);
     saveGoods({
@@ -344,7 +363,9 @@ const ShopGoodsEditPage: React.FC = () => {
           <Text strong>正文（Markdown，含商品详情 / 交付说明 / 售后）</Text>
           <Button type="primary" ghost size="small" loading={genLoading} onClick={() => setAiModal(true)}>AI 写商品文案</Button>
         </Flex>
-        <MdEditor modelValue={content} onChange={setContent} preview="live" onUploadImg={onUploadImg} />
+        <div className="rx-md-view">
+          <MdEditor modelValue={content} onChange={setContent} preview="live" onUploadImg={onUploadImg} theme={dark ? 'dark' : 'light'} />
+        </div>
       </div>
 
       <Card size="small" style={{ background: 'var(--c-bg-soft)', border: 'none' }} title="商品交易字段">
@@ -363,7 +384,7 @@ const ShopGoodsEditPage: React.FC = () => {
               <Upload accept="image/*" showUploadList={false} beforeUpload={onCover}>
                 <Button loading={coverUploading}>上传封面</Button>
               </Upload>
-              {cover ? <img src={cover} alt="cover" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8 }} /> : null}
+              {cover ? <img src={cover} alt="cover" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} /> : null}
             </Flex>
           </Flex>
         </Flex>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -15,6 +15,7 @@ import { MdEditor } from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useTheme } from '@/context/ThemeProvider';
 import {
   getMyColumns,
   getMyArticles,
@@ -38,6 +39,8 @@ const ArticleEditPage: React.FC = () => {
   const [search] = useSearchParams();
   const key = getToken();
   const isEdit = !!editId;
+  const { dark } = useTheme();
+  const contentAcc = useRef('');
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -171,15 +174,33 @@ const ArticleEditPage: React.FC = () => {
     }
     setAiLoading(true);
     setGenLoading(true);
+    contentAcc.current = '';
     aiGenerate({
       key,
       prompt: aiPrompt.trim(),
-      onChunk: (s) => setContent((prev) => prev + s),
+      onChunk: (s) => {
+        contentAcc.current += s;
+        setContent((prev) => prev + s);
+      },
     })
       .then(() => {
         message.success('AI 文章已生成');
         setAiModal(false);
         setAiPrompt('');
+        // 自动回填摘要与关键词；标题为空时尝试取正文首个 # 标题
+        const text = contentAcc.current;
+        if (!title.trim()) {
+          const m = text.match(/^#\s+(.+)$/m);
+          if (m) setTitle(m[1].trim());
+        }
+        aiSummary({ key, title: title || '', content: text })
+          .then((r) => {
+            if (r.code === 1 && r.data) {
+              if (r.data.description) setDescription(r.data.description);
+              if (r.data.keywords) setKeywords(r.data.keywords);
+            }
+          })
+          .catch(() => {});
       })
       .catch((e) => message.error(e?.message || '生成失败'))
       .finally(() => {
@@ -351,7 +372,9 @@ const ArticleEditPage: React.FC = () => {
             AI 写文章
           </Button>
         </Flex>
-        <MdEditor modelValue={content} onChange={setContent} preview="live" onUploadImg={onUploadImg} />
+        <div className="rx-md-view">
+          <MdEditor modelValue={content} onChange={setContent} preview="live" onUploadImg={onUploadImg} theme={dark ? 'dark' : 'light'} />
+        </div>
       </div>
 
       <Modal

@@ -136,6 +136,10 @@ export default function Header(): React.JSX.Element {
     const logout = () => {
         clearToken();
         setToken('');
+        // 主动清空右上角登录态，避免依赖 15s 轮询/路径副作用导致信息残留
+        setMe(null);
+        setCheckinDone(null);
+        setUnread(0);
         navigate('/');
     };
 

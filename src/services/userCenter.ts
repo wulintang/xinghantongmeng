@@ -749,46 +749,36 @@ export function setSkillExportPrice(key: string, id: number, rmb: number) {
   return post<ApiResp>('/setExportPrice.html', { key, id, rmb }, SKILLS);
 }
 
-/** 导出标准 Agent Skill：后端按 allow_export 校验、按 export_rmb 扣费并输出 SKILL.md。
- *  key 必须带上（GET 导航不经过请求拦截器），否则后端拿不到登录身份、会拒绝。 */
-export function exportSkillUrl(toolboxId: number, key = '') {
-  const q = key ? `?id=${toolboxId}&key=${encodeURIComponent(key)}` : `?id=${toolboxId}`;
-  return `${apiBase()}/index.php/skills/index/exportSkill.html${q}`;
-}
-
 /**
- * 触发导出：先发起请求，按 Content-Type 分流——
- * 后端成功时返回 text/markdown（真正下载 SKILL.md）；
- * 余额不足/未登录/未开放导出时返回 application/json（含错误 msg）。
- * 用 fetch 而非 <a href> 直接导航，才能把 JSON 错误展示给用户而不是下成一个坏文件。
+ * 触发导出标准 Agent Skill（SKILL.md）。
+ * 直接走与其他接口一致的 post() 通道（POST + key 在 body，无 credentials），
+ * 后端返回 JSON { code, msg, data:{ md, filename } }，前端本地生成文件下载。
+ * 这样彻底规避之前「fetch + credentials + Content-Disposition:attachment」跨域被拦截（Failed to fetch）的问题。
+ * 余额不足 / 未登录 / 未开放导出时，后端返回 code=0 与真实 msg，这里直接抛出展示。
  */
 export async function exportSkillDownload(toolboxId: number, key: string) {
   if (!key) {
     throw new Error('请先登录后再导出技能');
   }
-  const resp = await fetch(exportSkillUrl(toolboxId, key), { credentials: 'include' });
-  const ct = resp.headers.get('Content-Type') || '';
-  if (ct.includes('markdown') || ct.includes('text/plain')) {
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'SKILL.md';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    return;
+  const r = await post<ApiResp & { data?: { md?: string; filename?: string } }>(
+    '/exportSkill.html',
+    { id: toolboxId, key },
+    SKILLS
+  );
+  if (r.code !== 1 || !r.data || !r.data.md) {
+    throw new Error(r.msg || '导出失败，请稍后重试');
   }
-  // 非文件响应：解析 JSON 错误信息
-  let msg = '导出失败，请稍后重试';
-  try {
-    const j = await resp.json();
-    if (j && j.msg) msg = j.msg;
-  } catch {
-    /* 忽略解析失败，沿用默认提示 */
-  }
-  throw new Error(msg);
+  const md = r.data.md;
+  const filename = r.data.filename || 'SKILL.md';
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 /** 技能独立字段表：每个技能一份，全站由同一个数据驱动表单组件渲染 */

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Col, Drawer, Empty, Flex, Input, Modal, Pagination, Row, Segmented,
+  Alert, Avatar, Button, Card, Col, Drawer, Empty, Flex, Modal, Pagination, Row, Segmented,
   Select, Space, Spin, Tag, Typography, message,
 } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 
 import PageHeader from '@components/common/PageHeader';
+import SearchBox from '@components/common/SearchBox';
 import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -29,8 +30,7 @@ const ShopPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [cate, setCate] = useState<string>('all');
-  const [kw, setKw] = useState('');
-  const [inputKw, setInputKw] = useState('');
+  const [kw, setKw] = useState(() => new URLSearchParams(window.location.search).get('keyword') || '');
   const [page, setPage] = useState(1);
   const [list, setList] = useState<MallGoodsItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -157,7 +157,10 @@ const ShopPage: React.FC = () => {
           </Tag>
         </Flex>
         <Flex justify="space-between" align="center" wrap gap={6}>
-          <Text type="secondary" className="shop-goods-meta">{g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}</Text>
+          <Flex align="center" gap={6} wrap>
+            {g.shop_logo ? <Avatar size={16} src={g.shop_logo} /> : null}
+            <Text type="secondary" className="shop-goods-meta">{g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}</Text>
+          </Flex>
           <Button type="link" size="small" onClick={(e) => { e.stopPropagation(); openDetail(g.id); }}>查看详情</Button>
         </Flex>
       </Flex>
@@ -174,21 +177,16 @@ const ShopPage: React.FC = () => {
       />
 
       <Card className="shop-filter-card">
-        <Flex vertical gap={14}>
-          <Flex gap={12} wrap align="center">
-            <div className="shop-search">
-              <Input.Search
-                allowClear
-                value={inputKw}
-                placeholder="搜索商品名称或关键词"
-                onChange={(e) => setInputKw(e.target.value)}
-                onSearch={(v) => { setPage(1); setKw(v.trim()); }}
-              />
-            </div>
-            <Text type="secondary">共 {total} 件在售商品</Text>
-          </Flex>
+        <Flex vertical gap={14} align="center">
+          <div className="shop-search-wrap">
+            <SearchBox
+              placeholder="搜索商品名称或关键词"
+              onSearch={(v) => { setPage(1); setKw(v); }}
+            />
+          </div>
+          <Text type="secondary">共 {total} 件在售商品</Text>
           <Segmented
-            className="shop-cate-segmented"
+            className="cate-filter"
             options={CATE_OPTIONS}
             value={cate}
             onChange={(v) => { setPage(1); setCate(String(v)); }}
@@ -206,7 +204,7 @@ const ShopPage: React.FC = () => {
       ) : loading ? (
         <div className="shop-loading"><Spin size="large" /></div>
       ) : list.length === 0 ? (
-        <Card><Empty description="暂无在售商品" /></Card>
+        <Card className="shop-empty"><Empty description="暂无在售商品" /></Card>
       ) : (
         <>
           <Row gutter={[16, 16]}>

@@ -198,7 +198,7 @@ function UserShopTab({ uid }: { uid: string }) {
   return (
     <div>
       <Flex gap={16} align="center" wrap style={{ marginBottom: 'var(--space-4)' }}>
-        <Avatar shape="square" size={48} style={{ background: 'var(--c-link)' }}>
+        <Avatar shape="square" size={48} src={shop.logo || undefined} style={{ background: 'var(--c-link)' }}>
           {(shop.shop_name || '?').slice(0, 1)}
         </Avatar>
         <Flex vertical gap={2}>
@@ -343,7 +343,7 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
       {/* 下方内容卡不是用户信息：保持站点统一表面，不注入任何背景或前景色 */}
       <Card>
         <Tabs
-          defaultActiveKey="sites"
+          defaultActiveKey={new URLSearchParams(window.location.search).get('tab') === 'shop' ? 'shop' : 'sites'}
           items={[
             { key: 'sites', label: '站点', children: <UserSitesTab loading={!!loading.sites} sites={sites} /> },
             { key: 'columns', label: '专栏', children: <UserColumnsTab loading={!!loading.columns} columns={columns} /> },

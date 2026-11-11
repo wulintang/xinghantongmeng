@@ -14,6 +14,7 @@ export interface ShopItem {
   id: number;
   uid: number;
   shop_name: string;
+  logo: string;
   categories: string | string[]; // 后端存 JSON 字符串
   intro: string;
   status: number; // 0 待审 / 1 营业中 / 2 暂停
@@ -81,6 +82,7 @@ export interface MallGoodsItem {
   id: number;
   shop_id: number;
   shop_name: string;
+  shop_logo?: string;
   title: string;
   cate: ShopCate;
   description: string;
@@ -101,6 +103,8 @@ export interface ShopConfig {
   /** 后端版本指纹（自检用，确认服务器跑的是最新 app/shop） */
   build?: string;
   uid_table?: string;
+  /** 店铺 logo 列是否就绪（后端覆盖后自动补列） */
+  logo_ready?: boolean;
 }
 
 export const CATE_NAME: Record<string, string> = {

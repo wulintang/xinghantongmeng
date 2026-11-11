@@ -5,10 +5,12 @@
  * （Markdown 的 ![]() 里的文字，或 <img alt="">），但前台既看不到描述，
  * 也无法预览图片是否居中、边线深浅是否合适。所以这些统一由前端补齐：
  *
- *  1. 每张正文图片包一层 <figure class="md-figure">，让图片居中；
+ *  1. 每张正文图片归入 <figure class="md-figure">，让图片居中；
  *  2. 用 alt / title 生成 <figcaption class="md-figure-caption">，显示在图片正下方；
  *  3. 图片本身（边线、圆角、70% 宽、深浅模式）由 styles.css 统一控制。
  *
+ * 关键：后台富文本源码或 md-editor 预览里，图片可能已经被 <figure> 包好。
+ * 这种情况下不再搬动 DOM，只补类名与描述，否则「图片正下方的描述」永远不会生成。
  * 只做 DOM 结构，不写任何行内样式，深浅模式只翻 CSS 变量。
  */
 
@@ -23,48 +25,58 @@ export function decorateArticleImages(root: HTMLElement | null): void {
     if (img.dataset.rxFigure === '1') return;
     img.dataset.rxFigure = '1';
 
-    // 验证码、广告位、作者自己写好的 figure 不参与正文排版
-    if (img.classList.contains('captcha-img') || img.closest('.ad-banner') || img.closest('figure')) return;
+    // 验证码、广告位不参与正文排版
+    if (img.classList.contains('captcha-img') || img.closest('.ad-banner')) return;
 
-    // 图片独占一个段落时，把整段内容搬进 figure（保留 <a>/<span> 等原有链接结构）
-    const ownP = img.closest('p');
-    const soloP =
-      ownP && ownP.parentElement && ownP.querySelectorAll('img').length === 1 && !(ownP.textContent || '').trim()
-        ? ownP
-        : null;
-    const ownA = img.closest('a');
-    const soloA =
-      !soloP && ownA && ownA.parentElement && ownA.querySelectorAll('img').length === 1 && !(ownA.textContent || '').trim()
-        ? ownA
-        : null;
-    const node: HTMLElement = soloP || soloA || img;
-    const parent = node.parentElement;
-    if (!parent) return;
-    // 先记下 img 原来的直接父节点，img 移走后它可能是空的包裹层
-    const oldParent = node === img ? img.parentElement : null;
+    let figure = img.closest('figure') as HTMLElement | null;
 
-    const figure = document.createElement('figure');
-    figure.className = 'md-figure';
-    parent.insertBefore(figure, node);
-
-    if (node === img) {
-      figure.appendChild(img);
-      // 清掉搬空后的装饰性包裹（如 md-editor 的 span）；链接 <a> 保留不删
-      if (oldParent && oldParent !== figure && oldParent !== root && !oldParent.childNodes.length
-        && oldParent.tagName !== 'A' && oldParent.tagName !== 'P') {
-        oldParent.remove();
-      }
+    if (figure) {
+      // 图片已被作者写的富文本 figure（或 md-editor 预览生成的 figure）包住：
+      // 保持原有 DOM 结构，仅统一类名，后面照样补 figcaption。
+      figure.classList.add('md-figure');
     } else {
-      Array.from(node.childNodes).forEach((child) => figure.appendChild(child));
-      node.remove();
+      // 图片独占一个段落时，把整段内容搬进 figure（保留 <a>/<span> 等原有链接结构）
+      const ownP = img.closest('p');
+      const soloP =
+        ownP && ownP.parentElement && ownP.querySelectorAll('img').length === 1 && !(ownP.textContent || '').trim()
+          ? ownP
+          : null;
+      const ownA = img.closest('a');
+      const soloA =
+        !soloP && ownA && ownA.parentElement && ownA.querySelectorAll('img').length === 1 && !(ownA.textContent || '').trim()
+          ? ownA
+          : null;
+      const node: HTMLElement = soloP || soloA || img;
+      const parent = node.parentElement;
+      if (!parent) return;
+      // 先记下 img 原来的直接父节点，img 移走后它可能是空的包裹层
+      const oldParent = node === img ? img.parentElement : null;
+
+      figure = document.createElement('figure');
+      figure.className = 'md-figure';
+      parent.insertBefore(figure, node);
+
+      if (node === img) {
+        figure.appendChild(img);
+        // 清掉搬空后的装饰性包裹（如 md-editor 的 span）；链接 <a> 保留不删
+        if (oldParent && oldParent !== figure && oldParent !== root && !oldParent.childNodes.length
+          && oldParent.tagName !== 'A' && oldParent.tagName !== 'P') {
+          oldParent.remove();
+        }
+      } else {
+        Array.from(node.childNodes).forEach((child) => figure.appendChild(child));
+        node.remove();
+      }
     }
 
+    // 作者已经写了 figcaption 就不重复添加
+    if (figure.querySelector('figcaption')) return;
     const caption = (img.getAttribute('alt') || img.getAttribute('title') || '').trim();
-    if (!PLACEHOLDER_ALT.has(caption.toLowerCase())) {
-      const cap = document.createElement('figcaption');
-      cap.className = 'md-figure-caption';
-      cap.textContent = caption;
-      figure.appendChild(cap);
-    }
+    if (!caption || PLACEHOLDER_ALT.has(caption.toLowerCase())) return;
+
+    const cap = document.createElement('figcaption');
+    cap.className = 'md-figure-caption';
+    cap.textContent = caption;
+    figure.appendChild(cap);
   });
 }

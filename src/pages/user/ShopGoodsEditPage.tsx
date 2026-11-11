@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Flex, Input, Modal, Select, Spin, Typography, Upload, message,
+  Alert, Button, Card, Flex, Input, Modal, Select, Spin, Typography, Upload, message,
 } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MdEditor } from 'md-editor-rt';

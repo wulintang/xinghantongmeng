@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Empty, Form, Input, Modal, Select, Space, Spin, Table, Tabs, Tag, Typography, message,
+  Alert, Button, Card, Empty, Form, Input, Modal, Select, Space, Spin, Table, Tabs, Tag, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, CATE_NAME, CATE_WHITELIST, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
+import { uploadFile } from '@/services/userCenter';
+import { getToken } from '@/utils/auth';
 import { useMember } from '@/context/MemberContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -34,6 +36,8 @@ const ShopManagePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [logo, setLogo] = useState('');
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const [shipTarget, setShipTarget] = useState<ShopOrderItem | null>(null);
   const [expressCompany, setExpressCompany] = useState('顺丰速运');
@@ -66,7 +70,10 @@ const ShopManagePage: React.FC = () => {
 
     getMyShop()
       .then((s: any) => {
-        if (s.code === 1) setShop(s.data || null);
+        if (s.code === 1) {
+          setShop(s.data || null);
+          setLogo(s.data?.logo || '');
+        }
         else message.warning(s.msg || '店铺信息读取失败');
       })
       .catch(() => message.warning('店铺接口请求失败（请确认后端已部署最新版 app/shop）'));
@@ -103,6 +110,7 @@ const ShopManagePage: React.FC = () => {
       shop_name: values.shop_name,
       categories: values.categories || [],
       intro: values.intro || '',
+      logo: logo || '',
     })
       .then((r: any) => {
         if (r.code === 1) {
@@ -112,6 +120,21 @@ const ShopManagePage: React.FC = () => {
       })
       .catch(() => message.error('保存失败'))
       .finally(() => setSaving(false));
+  };
+
+  const onLogoUpload = (file: File) => {
+    const key = getToken();
+    if (!key) { message.error('请先登录'); return false; }
+    if (!/^image\//.test(file.type)) { message.error('请选择图片文件'); return false; }
+    setLogoUploading(true);
+    uploadFile(key, file)
+      .then((r: any) => {
+        if (r.code === 1 && r.data?.url) { setLogo(r.data.url); message.success('Logo 上传成功'); }
+        else message.error(r.msg || '上传失败');
+      })
+      .catch(() => message.error('上传失败'))
+      .finally(() => setLogoUploading(false));
+    return false;
   };
 
   const onPayDeposit = () => {
@@ -261,6 +284,7 @@ const ShopManagePage: React.FC = () => {
       <div className="shop-hero">
         <div className="shop-hero-main">
           <div className="shop-hero-name">
+            {shop && logo ? <img src={logo} alt="" style={{ width: 30, height: 30, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--c-border)', marginRight: 8, verticalAlign: 'middle' }} /> : null}
             {shop ? shop.shop_name : '还没有店铺'}
             {shop ? (
               <Tag color={shop.audit_status === 1 ? (shop.status === 1 ? 'green' : 'orange') : 'orange'} style={{ marginLeft: 8 }}>
@@ -279,7 +303,7 @@ const ShopManagePage: React.FC = () => {
           {shop && !depositEnough ? (
             <Button type="primary" loading={paying} onClick={onPayDeposit}>去缴纳保证金</Button>
           ) : null}
-          <Button onClick={() => navigate('/shop')}>逛用户集市</Button>
+          <Button onClick={() => navigate(uid ? `/user/${uid}?tab=shop` : '/user/shop')}>我的主页集市</Button>
         </Space>
       </div>
 
@@ -344,6 +368,14 @@ const ShopManagePage: React.FC = () => {
                   </Form.Item>
                   <Form.Item name="intro" label="店铺简介">
                     <TextArea rows={3} maxLength={500} placeholder="一句话介绍你的店铺" />
+                  </Form.Item>
+                  <Form.Item label="店铺 Logo（图片上传控件，禁止填 URL）">
+                    <Space size={12} align="center">
+                      <Upload accept="image/*" showUploadList={false} beforeUpload={onLogoUpload}>
+                        <Button loading={logoUploading}>上传 Logo</Button>
+                      </Upload>
+                      {logo ? <img src={logo} alt="店铺 Logo" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--c-border)' }} /> : null}
+                    </Space>
                   </Form.Item>
                   <Button type="primary" htmlType="submit" loading={saving}>保存店铺设置</Button>
                 </Form>

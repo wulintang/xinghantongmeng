@@ -28,7 +28,7 @@ interface NavItem {
  *  广场=feed 插件聚合(调 /feed，展示 my_feed_post)；格子=格子广告(调 /grid)。 */
 const BLOG_ENTRY: NavItem = { key: 'feed', name: '广场', external: false, to: '/feed' };
 const GRID_ENTRY: NavItem = { key: 'grid', name: '格子', external: false, to: '/grid' };
-const SHOP_ENTRY: NavItem = { key: 'shop', name: '用户集市', external: false, to: '/shop' };
+const SHOP_ENTRY: NavItem = { key: 'shop', name: '集市', external: false, to: '/shop' };
 
 /** 当前路径是否命中该导航项 */
 function isActive(pathname: string, to?: string): boolean {
@@ -101,7 +101,7 @@ export default function Header(): React.JSX.Element {
             .catch(() => message.error('签到失败，请稍后重试'));
     };
 
-    // 前四项（首页/站点/专栏/工具）由后台 my_link 定义驱动，前端只补「广场、格子、用户集市」三项
+    // 前四项（首页/站点/专栏/工具）由后台 my_link 定义驱动，前端只补「集市、广场、格子」三项（集市在前）
     const navItems = useMemo<NavItem[]>(() => {
         const list: NavItem[] = topLinks.map((l) => {
             const t = toRoute(l.lianjie);
@@ -113,9 +113,9 @@ export default function Header(): React.JSX.Element {
                 href: t.href,
             };
         });
+        if (!list.some((n) => n.to && (n.to === '/shop' || n.to.startsWith('/shop/')))) list.push(SHOP_ENTRY);
         if (!list.some((n) => n.to && (n.to === '/feed' || n.to.startsWith('/feed/')))) list.push(BLOG_ENTRY);
         if (!list.some((n) => n.to && (n.to === '/grid' || n.to.startsWith('/grid/')))) list.push(GRID_ENTRY);
-        if (!list.some((n) => n.to && (n.to === '/shop' || n.to.startsWith('/shop/')))) list.push(SHOP_ENTRY);
         return list;
     }, [topLinks]);
 

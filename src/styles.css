@@ -2304,60 +2304,56 @@ body {
   text-indent: inherit;
   line-height: var(--lh-loose);
 }
-/* 文章正文图片（单页 / 专栏 / 站点详情，Markdown 与 HTML 两种来源）：
+/* 文章正文图片（单页 / 专栏 / 站点详情，Markdown 与 HTML 两种来源，含已被 figure 包裹的图）：
    后台是纯源码编辑器，作者看不到渲染效果，所以居中、70% 宽、统一边线与圆角、
-   深浅模式（只用 --c-border 变量翻转）全部由前端补齐，不允许 100% 撑满的大图。 */
+   深浅模式（只用 --c-border 变量翻转）全部由前端补齐，不允许 100% 撑满的大图。
+
+   这里只保留「一套令牌 + 两条尺寸规则」：md-editor-rt 自带 preview.css 的
+   div.default-theme img 晚于本文件加载，故外观规则的选择器一次性提到 0,2,1 以上，
+   不再另起第二套规则与它互相覆盖；figure 内外的尺寸各归一条，避免三套规则打架。 */
 .md-content img,
-.detail-content img {
+.detail-content img,
+.md-content .md-figure img,
+.detail-content .md-figure img,
+.rx-md-view .md-editor-preview img,
+.rx-md-view .md-editor-preview .md-figure img {
   text-indent: inherit;
   display: block;
-  max-width: 70%;
   height: auto;
-  margin: 33px auto;
   border: 1px solid var(--c-border);
   border-radius: 12px;
+}
+/* 未被 figure 包裹：70% 宽 + 上下留白 */
+.md-content img,
+.detail-content img,
+.rx-md-view .md-editor-preview img {
+  max-width: 70%;
+  margin: 33px auto;
+}
+/* figure 已负责 70% 宽与留白，图片在 figure 内撑满、不再重复留白。
+   .md-figure.md-figure 提权到 0,2,1，稳定压过上面那条尺寸规则与 preview.css。 */
+.md-figure.md-figure img {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.md-figure,
+.rx-md-view .md-editor-preview .md-figure {
+  display: block;
+  max-width: 70%;
+  margin: 33px auto;
+  text-align: center;
+  text-indent: 0;
 }
 /* 图片描述：由 MdView / ArticleHtml 读取 alt 生成，居中显示在图片正下方 */
-.md-figure {
-  display: block;
-  max-width: 70%;
-  margin: 33px auto;
-  text-align: center;
-  text-indent: 0;
-}
-.md-figure img {
-  max-width: 100%;
-  margin: 0 auto;
-}
-.md-figure-caption {
-  margin: 10px auto 0;
-  text-align: center;
-  color: var(--c-text-3);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-base);
-  word-break: break-word;
-}
-/* md-editor-rt 自带 preview.css 晚于本文件加载，用更高特异性把图片样式锁回站点统一令牌 */
-.rx-md-view .md-editor-preview .md-figure {
-  max-width: 70%;
-  margin: 33px auto;
-  text-align: center;
-  text-indent: 0;
-}
-.rx-md-view .md-editor-preview .md-figure img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-}
+.md-figure-caption,
+.detail-content .md-figure-caption,
 .rx-md-view .md-editor-preview .md-figure-caption {
   margin: 10px auto 0;
   text-align: center;
   color: var(--c-text-3);
   font-size: var(--fs-sm);
   line-height: var(--lh-base);
+  word-break: break-word;
 }
 .md-content a {
   color: var(--c-link);
@@ -2803,9 +2799,13 @@ body {
   border: 1px solid var(--c-border);
   border-radius: var(--container-radius);
 }
-.shop-search { flex: 1 1 280px; max-width: 420px; }
-.shop-cate-segmented { flex-wrap: wrap; }
-.shop-loading { display: flex; justify-content: center; padding: var(--space-15) 0; }
+/* 搜索框复用全站 SearchBox（site-search / large / 蓝色搜索按钮），这里只做居中收窄容器 */
+.shop-search-wrap { width: 100%; max-width: 640px; }
+.shop-filter-card,
+.shop-page .shop-empty { max-width: 960px; margin-left: auto; margin-right: auto; }
+.shop-filter-card .ant-segmented { flex-wrap: wrap; justify-content: center; }
+.shop-empty .ant-card-body { padding: var(--space-8) var(--space-4); }
+.shop-loading { display: flex; justify-content: center; padding: var(--space-8) 0; }
 .shop-pager { margin-top: var(--space-5); }
 
 .shop-goods-card {

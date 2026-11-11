@@ -149,55 +149,6 @@ const HomePage: React.FC = () => {
                 )}
             </section>
 
-            <section>
-                <Flex className="section-head" justify="space-between" align="center">
-                    <Title level={4} className="section-title">
-                        用户集市
-                    </Title>
-                    <Button type="link" onClick={() => navigate('/shop')}>
-                        更多
-                    </Button>
-                </Flex>
-                {mallGoods.length === 0 ? (
-                    <Alert type="info" showIcon message="暂无在售商品" />
-                ) : (
-                    <Row gutter={[16, 16]}>
-                        {mallGoods.map((g) => (
-                            <Col key={g.id} xs={24} sm={12} md={8} lg={6}>
-                                <Card
-                                    hoverable
-                                    className="shop-goods-card"
-                                    onClick={() => navigate(`/shop?goods=${g.id}`)}
-                                    cover={
-                                        g.cover ? (
-                                            <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
-                                        ) : (
-                                            <div className="shop-goods-ico">{CATE_NAME[g.cate]?.[0] || '商'}</div>
-                                        )
-                                    }
-                                >
-                                    <Flex vertical gap={8}>
-                                        <Text strong className="shop-goods-title" title={g.title}>{g.title}</Text>
-                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="shop-goods-desc">
-                                            {g.description || '暂无商品简介'}
-                                        </Paragraph>
-                                        <Flex justify="space-between" align="center" wrap gap={6}>
-                                            <Text className="shop-goods-price">¥{(Number(g.price) || 0).toFixed(2)}</Text>
-                                            <Tag color={g.delivery === 'digital' ? 'cyan' : 'orange'}>
-                                                {g.delivery === 'digital' ? '数字交付' : '实体交付'}
-                                            </Tag>
-                                        </Flex>
-                                        <Text type="secondary" className="shop-goods-meta">
-                                            {g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}
-                                        </Text>
-                                    </Flex>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                )}
-            </section>
-
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
@@ -303,6 +254,55 @@ const HomePage: React.FC = () => {
                     )}
                 </Col>
             </Row>
+
+            <section>
+                <Flex className="section-head" justify="space-between" align="center">
+                    <Title level={4} className="section-title">
+                        用户集市
+                    </Title>
+                    <Button type="link" onClick={() => navigate('/shop')}>
+                        更多
+                    </Button>
+                </Flex>
+                {mallGoods.length === 0 ? (
+                    <Alert type="info" showIcon message="暂无在售商品" />
+                ) : (
+                    <Row gutter={[16, 16]}>
+                        {mallGoods.map((g) => (
+                            <Col key={g.id} xs={24} sm={12} md={8} lg={6}>
+                                <Card
+                                    hoverable
+                                    className="shop-goods-card"
+                                    onClick={() => navigate(`/shop?goods=${g.id}`)}
+                                    cover={
+                                        g.cover ? (
+                                            <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
+                                        ) : (
+                                            <div className="shop-goods-ico">{CATE_NAME[g.cate]?.[0] || '商'}</div>
+                                        )
+                                    }
+                                >
+                                    <Flex vertical gap={8}>
+                                        <Text strong className="shop-goods-title" title={g.title}>{g.title}</Text>
+                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="shop-goods-desc">
+                                            {g.description || '暂无商品简介'}
+                                        </Paragraph>
+                                        <Flex justify="space-between" align="center" wrap gap={6}>
+                                            <Text className="shop-goods-price">¥{(Number(g.price) || 0).toFixed(2)}</Text>
+                                            <Tag color={g.delivery === 'digital' ? 'cyan' : 'orange'}>
+                                                {g.delivery === 'digital' ? '数字交付' : '实体交付'}
+                                            </Tag>
+                                        </Flex>
+                                        <Text type="secondary" className="shop-goods-meta">
+                                            {g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}
+                                        </Text>
+                                    </Flex>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+            </section>
 
             <Alert
                 type="warning"

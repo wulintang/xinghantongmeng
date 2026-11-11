@@ -9,7 +9,7 @@ import { useSite } from '@/context/SiteContext';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getTool, submitReport, toggleFavorite, readFaved, exportSkillUrl, type ToolItem } from '@/services/userCenter';
+import { getTool, submitReport, toggleFavorite, readFaved, exportSkillDownload, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix } from '@/utils/route';
 import SkillChat from '@/components/common/SkillChat';
 import ToolRenderer from '@/components/common/ToolRenderer';
@@ -106,15 +106,13 @@ const ToolDetailPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '网络错误'));
     };
 
-    // 导出交给后端生成标准 Agent Skill（SKILL.md），并按作者设置的 allow_export 校验
+    // 导出交给后端生成标准 Agent Skill（SKILL.md），并按 allow_export 校验、export_rmb 扣费
     const onExport = () => {
         if (!item) return;
-        const a = document.createElement('a');
-        a.href = exportSkillUrl(item.id);
-        a.download = 'SKILL.md';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        const key = getToken() || '';
+        exportSkillDownload(item.id, key)
+            .then(() => message.success('已导出 SKILL.md'))
+            .catch((e) => message.error(e?.message || '导出失败'));
     };
 
     if (loading) return <ToolDetailSkeleton />;
@@ -152,8 +150,8 @@ const ToolDetailPage: React.FC = () => {
                         </AppTooltip>
                         {/* 只有作者明确开启、且是 AI 技能，才允许导出 SKILL.md */}
                         {isAiSkill(item) && Number(item.allow_export) === 1 ? (
-                            <AppTooltip title="导出为标准 Agent Skill（SKILL.md），可直接放进任意 AI 的技能目录">
-                                <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能</Button>
+                            <AppTooltip title={`导出为标准 Agent Skill（SKILL.md），可直接放进任意 AI 的技能目录${Number(item.export_rmb) > 0 ? `（导出价 ￥${item.export_rmb}）` : ''}`}>
+                                <Button icon={<DownloadOutlined />} onClick={onExport}>导出技能{Number(item.export_rmb) > 0 ? ` ￥${item.export_rmb}` : ''}</Button>
                             </AppTooltip>
                         ) : null}
                     </Space>
@@ -168,7 +166,8 @@ const ToolDetailPage: React.FC = () => {
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap>
                             {isAiSkill(item) ? <Tag color="purple">AI 技能</Tag> : <Tag color="blue">在线工具</Tag>}
-                            {Number(item.rmb) > 0 ? <Tag color="gold">￥{item.rmb}</Tag> : <Tag color="green">免费</Tag>}
+                            {Number(item.rmb) > 0 ? <Tag color="gold">使用￥{item.rmb}</Tag> : <Tag color="green">使用免费</Tag>}
+                            {Number(item.export_rmb) > 0 ? <Tag color="purple">导出￥{item.export_rmb}</Tag> : null}
                             <Tag>标识 {item.alias}</Tag>
                         </Space>
                         <Title level={5} className="detail-subtitle">
@@ -199,8 +198,11 @@ const ToolDetailPage: React.FC = () => {
                 <Descriptions column={{ xs: 1, sm: 2 }} size="small">
                     <Descriptions.Item label="技能名称">{item.title}</Descriptions.Item>
                     <Descriptions.Item label="调用标识">{item.alias}</Descriptions.Item>
-                    <Descriptions.Item label="价格">
-                        {Number(item.rmb) > 0 ? `￥${item.rmb}` : '免费'}
+                    <Descriptions.Item label="使用价格">
+                        {Number(item.rmb) > 0 ? `￥${item.rmb}/次` : '免费'}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="导出价格">
+                        {Number(item.export_rmb) > 0 ? `￥${item.export_rmb}/次` : '免费'}
                     </Descriptions.Item>
                     <Descriptions.Item label="类型">{isAiSkill(item) ? 'AI 智能技能' : '在线工具'}</Descriptions.Item>
                     <Descriptions.Item label="作者">

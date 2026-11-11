@@ -29,7 +29,8 @@ const JSON_EXAMPLE = `{
   ],
   "outputFormat": "只返回润色后的全文，不要解释。",
   "example": "原文：今天天气很好，我们去公园玩。",
-  "rmb": 0
+  "rmb": 0,
+  "export_rmb": 0
 }`;
 
 const genInitialIcon = (text: string): Promise<File> => {
@@ -63,6 +64,8 @@ const SubmitSkillPage: React.FC = () => {
   // 技能正文：一份 SKILL.md 原文。md 本身就是唯一数据源，不再拆成 7 个 state 再拼回去。
   const [skillMd, setSkillMd] = useState('');
   const [rmb, setRmb] = useState(0);
+  // 导出技能独立收费（与使用价互不影响）：作者可在此设定导出一次金额
+  const [exportRmb, setExportRmb] = useState(0);
   // 导出权限默认关闭，作者在提交页或「我的技能」里主动开启
   const [allowExport, setAllowExport] = useState(false);
 
@@ -98,6 +101,7 @@ const SubmitSkillPage: React.FC = () => {
           if (t.tid) form.setFieldValue('tid', Number(t.tid));
           setPic(t.pic || '');
           setRmb(parseFloat(t.rmb) || 0);
+          setExportRmb(parseFloat(t.export_rmb) || 0);
           setAllowExport(Number(t.allow_export) === 1);
           // 整份 md 原文直接灌进正文框（老技能若只有结构化 fields，自动补一段显式声明）
           if (t.content) setSkillMd(ensureFieldsDeclared(t.content, t.fields));
@@ -143,8 +147,8 @@ const SubmitSkillPage: React.FC = () => {
       const content = skillMd.trim();
       const fields = parsedFields.length ? JSON.stringify(parsedFields) : '';
       const r = isEdit
-        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, content, fields, allow_export: allowExport ? 1 : 0 })
-        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content, rmb, fields, allow_export: allowExport ? 1 : 0 });
+        ? await editSkill(key, { id: Number(editId), title: values.title, pic: finalPic, tid: values.tid ?? 0, rmb, export_rmb: exportRmb, content, fields, allow_export: allowExport ? 1 : 0 })
+        : await addSkill(key, { title: values.title, alias: values.alias, tid: values.tid ?? 0, pic: finalPic, content, rmb, export_rmb: exportRmb, fields, allow_export: allowExport ? 1 : 0 });
       if (r.code === 1) { message.success(r.msg || (isEdit ? '已提交重新审核，等待管理员审核' : '提交成功，等待审核')); navigate('/user/skills'); }
       else message.error(r.msg || (isEdit ? '保存失败' : '提交失败'));
     } catch {
@@ -201,6 +205,7 @@ const SubmitSkillPage: React.FC = () => {
     if (obj.tid) form.setFieldValue('tid', Number(obj.tid));
     if (obj.pic) setPic(String(obj.pic));
     if (typeof obj.rmb === 'number') setRmb(obj.rmb);
+    if (typeof obj.export_rmb === 'number') setExportRmb(obj.export_rmb);
     setSkillMd(skillMdFromObject(obj));
   };
 
@@ -333,6 +338,11 @@ const SubmitSkillPage: React.FC = () => {
               <Form.Item label="使用一次金额（元）" required>
                 <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
                 <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
+              </Form.Item>
+
+              <Form.Item label="导出一次金额（元）">
+                <InputNumber min={0} precision={2} step={0.01} value={exportRmb} onChange={(v) => setExportRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
+                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次导出该技能 SKILL.md 按此金额从余额扣费。开启「允许导出」后此价格对外可见。</div>
               </Form.Item>
 
               <Form.Item label="允许导出技能（SKILL.md）">

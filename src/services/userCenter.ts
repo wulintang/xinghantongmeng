@@ -515,6 +515,8 @@ export interface ToolItem {
   author_head?: string;
   /** 作者是否允许导出：严格为 1 才允许（缺省/0 一律禁止，默认关闭） */
   allow_export?: number;
+  /** 导出技能一次金额（元，0=免费） */
+  export_rmb?: string;
 }
 
 export interface TagItem {
@@ -708,6 +710,8 @@ export interface SkillApplyItem {
   time: number;
   /** 作者是否允许导出：严格为 1 才允许（默认关闭） */
   allow_export?: number;
+  /** 导出技能一次金额（元，0=免费） */
+  export_rmb?: string;
 }
 
 /** 提交技能（前端组装 content 后传入；pic 为上传回传 URL） */
@@ -740,9 +744,51 @@ export function setSkillPrice(key: string, id: number, rmb: number) {
   return post<ApiResp>('/setPrice.html', { key, id, rmb }, SKILLS);
 }
 
-/** 导出标准 Agent Skill：后端按 allow_export 校验并输出 SKILL.md */
-export function exportSkillUrl(toolboxId: number) {
-  return `${apiBase()}/index.php/skills/index/exportSkill.html?id=${toolboxId}`;
+/** 作者快捷设置技能导出价格（与使用价格相互独立；即时生效、不触发重新审核） */
+export function setSkillExportPrice(key: string, id: number, rmb: number) {
+  return post<ApiResp>('/setExportPrice.html', { key, id, rmb }, SKILLS);
+}
+
+/** 导出标准 Agent Skill：后端按 allow_export 校验、按 export_rmb 扣费并输出 SKILL.md。
+ *  key 必须带上（GET 导航不经过请求拦截器），否则后端拿不到登录身份、会拒绝。 */
+export function exportSkillUrl(toolboxId: number, key = '') {
+  const q = key ? `?id=${toolboxId}&key=${encodeURIComponent(key)}` : `?id=${toolboxId}`;
+  return `${apiBase()}/index.php/skills/index/exportSkill.html${q}`;
+}
+
+/**
+ * 触发导出：先发起请求，按 Content-Type 分流——
+ * 后端成功时返回 text/markdown（真正下载 SKILL.md）；
+ * 余额不足/未登录/未开放导出时返回 application/json（含错误 msg）。
+ * 用 fetch 而非 <a href> 直接导航，才能把 JSON 错误展示给用户而不是下成一个坏文件。
+ */
+export async function exportSkillDownload(toolboxId: number, key: string) {
+  if (!key) {
+    throw new Error('请先登录后再导出技能');
+  }
+  const resp = await fetch(exportSkillUrl(toolboxId, key), { credentials: 'include' });
+  const ct = resp.headers.get('Content-Type') || '';
+  if (ct.includes('markdown') || ct.includes('text/plain')) {
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SKILL.md';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    return;
+  }
+  // 非文件响应：解析 JSON 错误信息
+  let msg = '导出失败，请稍后重试';
+  try {
+    const j = await resp.json();
+    if (j && j.msg) msg = j.msg;
+  } catch {
+    /* 忽略解析失败，沿用默认提示 */
+  }
+  throw new Error(msg);
 }
 
 /** 技能独立字段表：每个技能一份，全站由同一个数据驱动表单组件渲染 */

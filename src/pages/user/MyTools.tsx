@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  delSkill, getMySkillApplies, setSkillExport, setSkillPrice, exportSkillUrl, type SkillApplyItem,
+  delSkill, getMySkillApplies, setSkillExport, setSkillPrice, setSkillExportPrice, exportSkillDownload, type SkillApplyItem,
 } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -49,6 +49,31 @@ const MyToolsPage: React.FC = () => {
       })
       .catch(() => message.error('设置失败'))
       .finally(() => setPriceSaving(false));
+  };
+
+  // 快捷设导出价：与「允许导出」同处管理，即时生效、不触发重新审核
+  const [exportPriceTarget, setExportPriceTarget] = useState<SkillApplyItem | null>(null);
+  const [exportPriceVal, setExportPriceVal] = useState<number>(0);
+  const [exportPriceSaving, setExportPriceSaving] = useState(false);
+  const openExportPrice = (it: SkillApplyItem) => {
+    setExportPriceTarget(it);
+    setExportPriceVal(Number(it.export_rmb) || 0);
+  };
+  const saveExportPrice = () => {
+    if (!exportPriceTarget) return;
+    const key = getToken();
+    if (!key) { message.warning('请先登录'); return; }
+    setExportPriceSaving(true);
+    setSkillExportPrice(key, exportPriceTarget.id, exportPriceVal)
+      .then((r) => {
+        if (r.code === 1) {
+          setList((prev) => prev.map((x) => x.id === exportPriceTarget.id ? { ...x, export_rmb: String(exportPriceVal) } : x));
+          message.success(r.msg || '已更新导出价格');
+          setExportPriceTarget(null);
+        } else message.error(r.msg || '设置失败');
+      })
+      .catch(() => message.error('设置失败'))
+      .finally(() => setExportPriceSaving(false));
   };
 
   const load = () => {
@@ -98,12 +123,10 @@ const MyToolsPage: React.FC = () => {
     // 默认禁止导出；只有作者在这里主动打开、且后端 allow_export 严格为 1 才放行
     if (it.allow_export !== 1) { message.warning('该技能未开启导出权限，请先在上方打开「允许导出」'); return; }
     if (it.toolbox_id > 0) {
-      const a = document.createElement('a');
-      a.href = exportSkillUrl(it.toolbox_id);
-      a.download = 'SKILL.md';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      const key = getToken() || '';
+      exportSkillDownload(it.toolbox_id, key)
+        .then(() => message.success('已导出 SKILL.md'))
+        .catch((e) => message.error(e?.message || '导出失败'));
       return;
     }
     const raw = it.content || '';
@@ -147,8 +170,9 @@ const MyToolsPage: React.FC = () => {
                       <Space wrap>
                         <Text strong>{it.title}</Text>
                         <Tag color={st.color}>{st.label}</Tag>
-                        {it.rmb && Number(it.rmb) > 0 ? <Tag color="blue">¥{it.rmb}/次</Tag> : <Tag>免费</Tag>}
-                        <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openPrice(it)}>设价</Button>
+                        {it.rmb && Number(it.rmb) > 0 ? <Tag color="blue">使用¥{it.rmb}/次</Tag> : <Tag>使用免费</Tag>}
+                        {it.export_rmb && Number(it.export_rmb) > 0 ? <Tag color="purple">导出¥{it.export_rmb}/次</Tag> : <Tag>导出免费</Tag>}
+                        <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openPrice(it)}>使用设价</Button>
                       </Space>
                       <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 2 }}>
                         {it.alias && <span>标识：{it.alias}　</span>}
@@ -170,6 +194,7 @@ const MyToolsPage: React.FC = () => {
                           <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>允许导出</Text>
                         </Space>
                       </Tooltip>
+                      <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openExportPrice(it)}>导出设价</Button>
                       <Button
                         size="small"
                         icon={<DownloadOutlined />}
@@ -195,7 +220,7 @@ const MyToolsPage: React.FC = () => {
         )}
       </Spin>
       <Modal
-        title={`设置价格：${priceTarget?.title ?? ''}`}
+        title={`设置使用价格：${priceTarget?.title ?? ''}`}
         open={!!priceTarget}
         onCancel={() => setPriceTarget(null)}
         onOk={savePrice}
@@ -205,7 +230,7 @@ const MyToolsPage: React.FC = () => {
         destroyOnClose
       >
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Text type="secondary">设定使用者每次调用该技能需支付的金额（元）。免费请填 0。</Text>
+          <Text type="secondary">设定使用者每次调用（运行）该技能需支付的金额（元）。免费请填 0。</Text>
           <InputNumber
             min={0}
             max={999999}
@@ -214,6 +239,32 @@ const MyToolsPage: React.FC = () => {
             style={{ width: '100%' }}
             value={priceVal}
             onChange={(v) => setPriceVal(typeof v === 'number' ? v : 0)}
+            placeholder="0.00"
+            prefix="¥"
+          />
+        </Space>
+      </Modal>
+
+      <Modal
+        title={`设置导出价格：${exportPriceTarget?.title ?? ''}`}
+        open={!!exportPriceTarget}
+        onCancel={() => setExportPriceTarget(null)}
+        onOk={saveExportPrice}
+        confirmLoading={exportPriceSaving}
+        okText="保存"
+        cancelText="取消"
+        destroyOnClose
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Text type="secondary">设定使用者每次导出该技能 SKILL.md 需支付的金额（元）。免费请填 0。</Text>
+          <InputNumber
+            min={0}
+            max={999999}
+            step={0.01}
+            precision={2}
+            style={{ width: '100%' }}
+            value={exportPriceVal}
+            onChange={(v) => setExportPriceVal(typeof v === 'number' ? v : 0)}
             placeholder="0.00"
             prefix="¥"
           />

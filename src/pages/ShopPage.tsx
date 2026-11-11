@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Avatar, Button, Card, Col, Drawer, Empty, Flex, Modal, Pagination, Row, Segmented,
+  Alert, Avatar, Button, Card, Col, Drawer, Empty, Flex, Input, Modal, Pagination, Row, Segmented,
   Select, Space, Spin, Tag, Typography, message,
 } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,24 +11,23 @@ import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getToken } from '@/utils/auth';
+import { toggleFavorite, readFaved, submitReport } from '@/services/userCenter';
 import {
-  getMallList, getGoodsDetail, getAddresses, buyGoods, genOrderSn,
-  CATE_NAME, CATE_WHITELIST, type MallGoodsItem, type GoodsItem, type AddressItem,
+  getMallList, getGoodsDetail, getAddresses, buyGoods, genOrderSn, getShopConfig,
+  cateOptionsFrom, cateNameFrom,
+  type MallGoodsItem, type GoodsItem, type AddressItem, type ShopConfig,
 } from '@/services/shop';
 
 const { Text, Paragraph } = Typography;
 
 const PAGE_SIZE = 12;
-const CATE_OPTIONS = [
-  { label: '全部', value: 'all' },
-  ...CATE_WHITELIST.map((c) => ({ label: CATE_NAME[c], value: c })),
-];
 
-/** 独立集市（公开）：全站在售商品、类目筛选、搜索、详情与购买 */
+/** 独立集市（公开）：全站在售商品、后台类目筛选、搜索、详情、购买、收藏与举报 */
 const ShopPage: React.FC = () => {
   usePageMeta({ title: '用户集市' });
   const navigate = useNavigate();
 
+  const [cfg, setCfg] = useState<ShopConfig | null>(null);
   const [cate, setCate] = useState<string>('all');
   const [kw, setKw] = useState(() => new URLSearchParams(window.location.search).get('keyword') || '');
   const [page, setPage] = useState(1);
@@ -40,6 +39,11 @@ const ShopPage: React.FC = () => {
   const [detail, setDetail] = useState<GoodsItem | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [faved, setFaved] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportContent, setReportContent] = useState('');
+  const [reporting, setReporting] = useState(false);
 
   const [buyOpen, setBuyOpen] = useState(false);
   const [buying, setBuying] = useState(false);
@@ -49,10 +53,20 @@ const ShopPage: React.FC = () => {
   // 支持首页「用户集市」区块直达某个商品：/shop?goods=<id>
   const initialGoods = Number(new URLSearchParams(window.location.search).get('goods') || 0);
 
+  const cateOptions = cateOptionsFrom(cfg);
+  const CATE_OPTIONS = [
+    { label: '全部', value: 'all' },
+    ...cateOptions.map((c) => ({ label: c.name, value: c.key })),
+  ];
+  const commission = Number(cfg?.commission_rate ?? 0);
+
   const openDetail = (id: number) => {
     setDrawerOpen(true);
     setDetail(null);
     setDetailLoading(true);
+    setFaved(false);
+    const key = getToken() || '';
+    readFaved(key, id, 'shop').then(setFaved).catch(() => {});
     getGoodsDetail(id)
       .then((r: any) => {
         if (r.code === 1 && r.data) setDetail(r.data);
@@ -61,6 +75,12 @@ const ShopPage: React.FC = () => {
       .catch(() => message.warning('商品详情加载失败'))
       .finally(() => setDetailLoading(false));
   };
+
+  useEffect(() => {
+    getShopConfig()
+      .then((r: any) => { if (r.code === 1 && r.data) setCfg(r.data); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (initialGoods) openDetail(initialGoods);
@@ -77,6 +97,7 @@ const ShopPage: React.FC = () => {
         if (r.code === 1 && r.data) {
           setList(r.data.list || []);
           setTotal(Number(r.data.total) || 0);
+          if (r.data.config) setCfg((prev) => prev || (r.data.config as ShopConfig));
         } else setFailed(true);
       })
       .catch(() => {
@@ -90,6 +111,53 @@ const ShopPage: React.FC = () => {
     };
   }, [cate, kw, page]);
 
+  const onFav = () => {
+    const key = getToken();
+    if (!key) {
+      message.info('请先登录再收藏');
+      navigate('/login');
+      return;
+    }
+    if (!detail) return;
+    setFavLoading(true);
+    toggleFavorite(key, detail.id, 'shop')
+      .then((r: any) => {
+        if (r.code === 1) {
+          const now = r.data?.faved === 1;
+          setFaved(now);
+          message.success(now ? '已收藏' : '已取消收藏');
+        } else message.error(r.msg || '操作失败');
+      })
+      .catch(() => message.error('操作失败，请稍后重试'))
+      .finally(() => setFavLoading(false));
+  };
+
+  const onReport = () => {
+    const key = getToken();
+    if (!key) {
+      message.info('请先登录再举报');
+      navigate('/login');
+      return;
+    }
+    if (!detail || !reportContent.trim()) {
+      message.warning('请填写举报内容');
+      return;
+    }
+    setReporting(true);
+    submitReport(key, {
+      tid: String(detail.id), m: 'shop', title: detail.title || '', content: reportContent.trim(),
+    })
+      .then((r: any) => {
+        if (r.code === 1) {
+          message.success(r.msg || '举报已提交');
+          setReportOpen(false);
+          setReportContent('');
+        } else message.error(r.msg || '提交失败');
+      })
+      .catch(() => message.error('提交失败'))
+      .finally(() => setReporting(false));
+  };
+
   const openBuy = () => {
     if (!getToken()) {
       message.info('请先登录再购买');
@@ -97,6 +165,10 @@ const ShopPage: React.FC = () => {
       return;
     }
     if (!detail) return;
+    if (Number(detail.can_buy) === 0) {
+      message.warning('该店铺保证金未缴足，商品暂不可购买');
+      return;
+    }
     setBuyOpen(true);
     if (detail.delivery === 'physical') {
       getAddresses()
@@ -114,6 +186,10 @@ const ShopPage: React.FC = () => {
 
   const doBuy = () => {
     if (!detail) return;
+    if (Number(detail.can_buy) === 0) {
+      message.warning('该店铺保证金未缴足，商品暂不可购买');
+      return;
+    }
     if (detail.delivery === 'physical' && !addressId) {
       message.warning('请先在「我的购买 → 收货地址」中添加收货地址');
       return;
@@ -141,7 +217,7 @@ const ShopPage: React.FC = () => {
         g.cover ? (
           <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
         ) : (
-          <div className="shop-goods-ico">{CATE_NAME[g.cate]?.[0] || '商'}</div>
+          <div className="shop-goods-ico">{cateNameFrom(cfg, g.cate)?.[0] || '商'}</div>
         )
       }
     >
@@ -159,8 +235,15 @@ const ShopPage: React.FC = () => {
         <Flex justify="space-between" align="center" wrap gap={6}>
           <Flex align="center" gap={6} wrap>
             {g.shop_logo ? <Avatar size={16} src={g.shop_logo} /> : null}
-            <Text type="secondary" className="shop-goods-meta">{g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}</Text>
+            <Text type="secondary" className="shop-goods-meta">
+              {g.shop_name || '店铺'} · {cateNameFrom(cfg, g.cate)}
+            </Text>
           </Flex>
+          <Tag color={Number(g.can_buy) === 0 ? 'red' : 'green'}>
+            {Number(g.can_buy) === 0 ? '保证金未缴' : '保证金已缴'}
+          </Tag>
+        </Flex>
+        <Flex justify="flex-end">
           <Button type="link" size="small" onClick={(e) => { e.stopPropagation(); openDetail(g.id); }}>查看详情</Button>
         </Flex>
       </Flex>
@@ -168,10 +251,10 @@ const ShopPage: React.FC = () => {
   );
 
   return (
-    <div className="container site-content shop-page">
+    <div className="shop-page">
       <PageHeader
         title="用户集市"
-        description="域名、商标、软著、作品著作权与源码等虚拟资产交易，使用账号余额结算，平台统一担保与审核。"
+        description={cfg?.mall_notice || '域名、商标、软著、作品著作权与源码等虚拟资产交易，使用账号余额结算，平台统一担保与审核。'}
         crumbs={[{ label: '首页', to: '/' }]}
         extra={<Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
       />
@@ -184,7 +267,9 @@ const ShopPage: React.FC = () => {
               onSearch={(v) => { setPage(1); setKw(v); }}
             />
           </div>
-          <Text type="secondary">共 {total} 件在售商品</Text>
+          <Text type="secondary">
+            共 {total} 件在售商品 · 平台按成交价抽取佣金 {commission}%（卖家实得 {(100 - commission)}%）
+          </Text>
           <Segmented
             className="cate-filter"
             options={CATE_OPTIONS}
@@ -240,20 +325,42 @@ const ShopPage: React.FC = () => {
               <div className="shop-detail-cover"><img src={detail.cover} alt={detail.title} /></div>
             ) : null}
             <Flex gap={10} wrap align="center">
-              <Tag>{CATE_NAME[detail.cate] || detail.cate}</Tag>
+              <Tag>{cateNameFrom(cfg, detail.cate)}</Tag>
               <Tag color={detail.delivery === 'digital' ? 'cyan' : 'orange'}>
                 {detail.delivery === 'digital' ? '数字交付' : '实体交付'}
+              </Tag>
+              <Tag color={Number(detail.can_buy) === 0 ? 'red' : 'green'}>
+                保证金{Number(detail.can_buy) === 0 ? '未缴' : '已缴'}
               </Tag>
               {detail.delivery_note ? <Text type="secondary">{detail.delivery_note}</Text> : null}
             </Flex>
             <div className="shop-detail-price">¥{(Number(detail.price) || 0).toFixed(2)}</div>
+            <Alert
+              type="info"
+              showIcon
+              message={`平台佣金 ${Number(detail.commission_rate ?? commission)}%，卖家实得 ¥${(Number(detail.price) * (1 - Number(detail.commission_rate ?? commission) / 100)).toFixed(2)}`}
+            />
+            {Number(detail.can_buy) === 0 ? (
+              <Alert
+                type="warning"
+                showIcon
+                message="该店铺保证金未缴足"
+                description={`已缴 ¥${(Number(detail.deposit_paid) || 0).toFixed(2)} / 应缴 ¥${(Number(detail.deposit_need) || 0).toFixed(2)}。商品可以正常浏览，但暂时不能购买。`}
+              />
+            ) : null}
             {detail.description ? <Alert type="info" showIcon message={detail.description} /> : null}
             {detail.content ? (
               <div className="detail-content md-content">
                 <MdView id="shop-goods-preview" modelValue={detail.content} />
               </div>
             ) : null}
-            <Button type="primary" size="large" block onClick={openBuy}>立即购买</Button>
+            <Space wrap>
+              <Button type="primary" size="large" disabled={Number(detail.can_buy) === 0} onClick={openBuy}>
+                {Number(detail.can_buy) === 0 ? '暂不可购买' : '立即购买'}
+              </Button>
+              <Button loading={favLoading} onClick={onFav}>{faved ? '★ 已收藏' : '☆ 收藏'}</Button>
+              <Button onClick={() => setReportOpen(true)}>举报</Button>
+            </Space>
             <Text type="secondary">
               购买将实时从账号余额扣费；数字交付自动发货，实体交付由卖家填写快递单号。
             </Text>
@@ -263,6 +370,26 @@ const ShopPage: React.FC = () => {
           </Flex>
         )}
       </Drawer>
+
+      <Modal
+        title={detail ? `举报「${detail.title}」` : '举报商品'}
+        open={reportOpen}
+        onCancel={() => { setReportOpen(false); setReportContent(''); }}
+        onOk={onReport}
+        okText="提交举报"
+        cancelText="取消"
+        confirmLoading={reporting}
+        destroyOnClose
+      >
+        <Input.TextArea
+          rows={4}
+          value={reportContent}
+          onChange={(e) => setReportContent(e.target.value)}
+          placeholder="请描述该商品的违规情况（如：虚假描述、侵权、违禁品等）"
+          maxLength={500}
+          showCount
+        />
+      </Modal>
 
       <Modal
         title="确认购买"
@@ -281,6 +408,10 @@ const ShopPage: React.FC = () => {
           <div>
             <Text type="secondary">应付：</Text>
             <Text strong className="shop-goods-price">¥{(Number(detail?.price) || 0).toFixed(2)}</Text>
+          </div>
+          <div>
+            <Text type="secondary">平台佣金：</Text>
+            <Text>{Number(detail?.commission_rate ?? commission)}%（卖家实得 ¥{(Number(detail?.price) * (1 - Number(detail?.commission_rate ?? commission) / 100)).toFixed(2)}）</Text>
           </div>
           {detail?.delivery === 'physical' ? (
             <div>

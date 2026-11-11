@@ -48,10 +48,11 @@ export default function FavoritesPage() {
       case 'tool': return it.tid ? `/tools/${it.tid}` : '#';
       case 'dan': return it.url ? `/dan/${it.url}` : '#';
       case 'feed': return it.url ? `/abstract?link=${encodeURIComponent(it.url)}` : '#';
+      case 'shop': return it.tid ? `/shop?goods=${it.tid}` : '#';
       default: return '#';
     }
   };
-  const labelOf = (m: string) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', feed: '动态' }[m] || '内容');
+  const labelOf = (m: string) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', feed: '动态', shop: '商品' }[m] || '内容');
   const nameOf = (it: FavoriteItem) => it.name || (it.m === 'website' && it.url ? it.url : '') || it.url || `#${it.tid}`;
   const displayUrl = (it: FavoriteItem) => {
     if (it.m === 'website' && it.url) return it.url.replace(/^https?:\/\//i, '').replace(/\/.*$/, '');
@@ -59,6 +60,7 @@ export default function FavoritesPage() {
     if (it.m === 'feed' && it.url) return it.url;
     if (it.m === 'article' && it.tid) return `/article/detail/${it.tid}`;
     if (it.m === 'tool' && it.tid) return `/tools/${it.tid}`;
+    if (it.m === 'shop' && it.tid) return `/shop?goods=${it.tid}`;
     return '';
   };
 

@@ -2801,8 +2801,7 @@ body {
 }
 /* 搜索框复用全站 SearchBox（site-search / large / 蓝色搜索按钮），这里只做居中收窄容器 */
 .shop-search-wrap { width: 100%; max-width: 640px; }
-.shop-filter-card,
-.shop-page .shop-empty { max-width: 960px; margin-left: auto; margin-right: auto; }
+/* 集市页与全站同宽：外层 MainLayout 已经有 container，页面内不再限宽 960px */
 .shop-filter-card .ant-segmented { flex-wrap: wrap; justify-content: center; }
 .shop-empty .ant-card-body { padding: var(--space-8) var(--space-4); }
 .shop-loading { display: flex; justify-content: center; padding: var(--space-8) 0; }

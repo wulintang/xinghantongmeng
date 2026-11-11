@@ -5,7 +5,7 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, CATE_NAME, CATE_WHITELIST, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
+import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, cateOptionsFrom, cateNameFrom, CATE_WHITELIST, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
 import { uploadFile } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { useMember } from '@/context/MemberContext';
@@ -189,15 +189,16 @@ const ShopManagePage: React.FC = () => {
     allow_cate: CATE_WHITELIST,
   };
 
-  const cateOptions = (cfgSafe.allow_cate || CATE_WHITELIST).map((c) => ({ value: c, label: CATE_NAME[c] || c }));
+  const cateOptions = cateOptionsFrom(cfg).map((c) => ({ value: c.key, label: c.name }));
   const depositNeed = Number(cfgSafe.deposit_amount) || 0;
   const depositPaid = shop ? Number(shop.deposit_paid) || 0 : 0;
   const depositEnough = depositPaid >= depositNeed;
+  const commission = Number(cfgSafe.commission_rate) || 0;
   const goodsMap = new Map(goods.map((g) => [g.id, g]));
 
   const goodsColumns = [
     { title: '商品', dataIndex: 'title', key: 'title', render: (t: string) => <Text strong>{t}</Text> },
-    { title: '类目', dataIndex: 'cate', key: 'cate', render: (c: string) => <Tag>{CATE_NAME[c] || c}</Tag> },
+    { title: '类目', dataIndex: 'cate', key: 'cate', render: (c: string) => <Tag>{cateNameFrom(cfg, c)}</Tag> },
     {
       title: '交付',
       dataIndex: 'delivery',
@@ -217,6 +218,16 @@ const ShopManagePage: React.FC = () => {
           </Space>
         );
       },
+    },
+    {
+      title: '保证金 / 整改',
+      key: 'deposit',
+      render: (_: any, r: GoodsItem) => (
+        <Space direction="vertical" size={2}>
+          <Tag color={depositEnough ? 'green' : 'red'}>{depositEnough ? '保证金已缴' : '保证金未缴'}</Tag>
+          {r.admin_remark ? <Text type="danger" style={{ fontSize: 'var(--fs-xs)' }}>整改要求：{r.admin_remark}</Text> : null}
+        </Space>
+      ),
     },
     {
       title: '操作',
@@ -294,8 +305,8 @@ const ShopManagePage: React.FC = () => {
           </div>
           <div className="shop-hero-desc">
             {shop
-              ? `店铺编号 #${shop.id} · ${depositEnough ? '保证金已缴足' : `需缴保证金 ¥${depositNeed.toFixed(2)}（上架商品时缴纳即可）`}`
-              : '填写店铺名称与经营类目即可创建店铺；创建店铺与缴纳保证金互不冲突，保证金推迟到上架商品时再缴。'}
+              ? `店铺编号 #${shop.id} · 保证金${depositEnough ? '已缴' : '未缴'}（已缴 ¥${depositPaid.toFixed(2)} / 应缴 ¥${depositNeed.toFixed(2)}）· 平台佣金 ${commission}%`
+              : '填写店铺名称与经营类目即可创建店铺；保证金未缴时商品仍可展示，但不能被购买。'}
           </div>
         </div>
         <Space wrap>
@@ -317,8 +328,12 @@ const ShopManagePage: React.FC = () => {
           <div className="shop-stat-value">{orders.length}</div>
         </div>
         <div className="shop-stat">
-          <div className="shop-stat-label">已缴保证金</div>
+          <div className="shop-stat-label">保证金{depositEnough ? '已缴' : '未缴'}</div>
           <div className="shop-stat-value">¥{depositPaid.toFixed(2)}</div>
+        </div>
+        <div className="shop-stat">
+          <div className="shop-stat-label">平台佣金</div>
+          <div className="shop-stat-value">{commission}%</div>
         </div>
       </div>
 
@@ -343,12 +358,21 @@ const ShopManagePage: React.FC = () => {
                 {shop && shop.audit_status === 2 ? (
                   <Paragraph style={{ color: 'var(--capsule-danger)' }}>驳回原因：{shop.audit_reject || '（未填写）'}</Paragraph>
                 ) : null}
+                {shop && shop.admin_remark ? (
+                  <Alert
+                    type="error"
+                    showIcon
+                    className="shop-step-hint"
+                    message="平台整改要求（关店理由）"
+                    description={`${shop.admin_remark}；修改店铺信息并保存后会自动重新提交审核。`}
+                  />
+                ) : null}
                 <Alert
                   type="info"
                   showIcon
                   className="shop-step-hint"
-                  message="开店分两步：先创建店铺，上架商品时再缴保证金"
-                  description={`平台统一保证金 ¥${depositNeed.toFixed(2)}，当前已缴 ¥${depositPaid.toFixed(2)}；${depositEnough ? '已缴足。' : '未缴足，上架商品时会提示「需缴保证金」，缴足后商品才会在用户集市对外展示。'}`}
+                  message={`保证金${depositEnough ? '已缴' : '未缴'} · 平台佣金 ${commission}%`}
+                  description={`平台统一保证金 ¥${depositNeed.toFixed(2)}，当前已缴 ¥${depositPaid.toFixed(2)}；${depositEnough ? '已缴足，商品可正常购买。' : '未缴足：商品仍会在用户集市展示，但买家无法购买，缴足后自动恢复。'} 每笔成交平台抽取 ${commission}%，卖家实得 ${100 - commission}%。`}
                 />
 
                 <Form
@@ -392,8 +416,8 @@ const ShopManagePage: React.FC = () => {
                     type="warning"
                     showIcon
                     className="shop-step-hint"
-                    message={`需缴保证金 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
-                    description="可以先编辑并提交商品；缴足保证金后商品才会在用户集市对外展示。"
+                    message={`保证金未缴：需缴 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
+                    description="商品可以照常提交并在用户集市展示，但买家暂时无法购买；缴足保证金后自动恢复。平台按每笔成交抽取佣金。"
                     action={shop ? (
                       <Button size="small" type="primary" loading={paying} onClick={onPayDeposit}>去缴纳</Button>
                     ) : undefined}

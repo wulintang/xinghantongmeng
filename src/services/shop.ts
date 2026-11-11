@@ -6,8 +6,26 @@ import type { ApiResp } from '@/services/userCenter';
 const SHOP = '/index.php/shop/index';
 const SHOP_ADMIN = '/index.php/shop/admin';
 
-export type ShopCate = 'domain' | 'brand' | 'soft' | 'copyright' | 'code';
+export type ShopCate = string;
 export type DeliveryType = 'digital' | 'physical';
+
+/** 后台「经营类目」里自建的一条类目 */
+export interface ShopCateOption {
+  key: string;
+  name: string;
+}
+
+/** 从后台配置生成类目下拉项；后台没配好时回退到内置兜底 */
+export function cateOptionsFrom(cfg: ShopConfig | null | undefined): ShopCateOption[] {
+  if (cfg?.cate_list?.length) return cfg.cate_list;
+  return CATE_WHITELIST.map((k) => ({ key: k, name: CATE_NAME[k] || k }));
+}
+
+/** 类目标识转名称（以后台配置为准） */
+export function cateNameFrom(cfg: ShopConfig | null | undefined, key: string): string {
+  const hit = cfg?.cate_list?.find((c) => c.key === key);
+  return hit?.name || CATE_NAME[key] || key;
+}
 
 /** 店铺 */
 export interface ShopItem {
@@ -20,7 +38,11 @@ export interface ShopItem {
   status: number; // 0 待审 / 1 营业中 / 2 暂停
   audit_status: number; // 0 待审 / 1 通过 / 2 驳回
   audit_reject: string;
+  /** 平台整改要求（关店理由，店主修改后重新审核） */
+  admin_remark?: string;
   deposit_paid: number;
+  deposit_need?: number;
+  can_buy?: number;
   created_at: number;
 }
 
@@ -42,6 +64,14 @@ export interface GoodsItem {
   status: number; // 0 待审 / 1 在售 / 2 下架
   audit_status: number; // 0 待审 / 1 通过 / 2 驳回
   audit_reject: string;
+  /** 平台整改要求（下架理由，店主修改后重新审核） */
+  admin_remark?: string;
+  /** 店铺保证金状态：can_buy=0 时商品可展示但不可购买 */
+  deposit_need?: number;
+  deposit_paid?: number;
+  can_buy?: number;
+  commission_rate?: number;
+  shop_name?: string;
   created_at: number;
 }
 
@@ -90,21 +120,30 @@ export interface MallGoodsItem {
   price: number;
   delivery: DeliveryType;
   created_at: number;
+  /** 店铺保证金：未缴足时仍展示，但禁用购买 */
+  deposit_need?: number;
+  deposit_paid?: number;
+  can_buy?: number;
 }
 
 /** 全局配置（后台插件管理设置） */
 export interface ShopConfig {
-  enabled: number;
+  enabled?: number;
   commission_rate: number;
   deposit_amount: number;
   shop_audit: number;
   goods_audit: number;
   allow_cate: ShopCate[];
+  /** 后台自建经营类目（前端筛选与说明里的分类均由它生成） */
+  cate_list?: ShopCateOption[];
+  /** 集市页说明文字，%cates% 已由后端替换为后台类目名称 */
+  mall_notice?: string;
   /** 后端版本指纹（自检用，确认服务器跑的是最新 app/shop） */
   build?: string;
   uid_table?: string;
   /** 店铺 logo 列是否就绪（后端覆盖后自动补列） */
   logo_ready?: boolean;
+  remark_ready?: boolean;
 }
 
 export const CATE_NAME: Record<string, string> = {
@@ -182,7 +221,13 @@ export function getMallList(params: { cate?: string; kw?: string; page?: number;
   if (params.kw) q.append('kw', params.kw);
   q.append('page', String(params.page || 1));
   q.append('limit', String(params.limit || 12));
-  return request<ApiResp<{ list: MallGoodsItem[]; total: number; page: number; limit: number }>>(
+  return request<ApiResp<{
+    list: MallGoodsItem[];
+    total: number;
+    page: number;
+    limit: number;
+    config?: Pick<ShopConfig, 'commission_rate' | 'deposit_amount' | 'cate_list' | 'mall_notice'>;
+  }>>(
     `${SHOP}/mallList.html?${q.toString()}`
   );
 }

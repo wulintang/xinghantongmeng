@@ -12,7 +12,7 @@ import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   saveGoods, getMyGoodsDetail, getMyShop, getShopConfig, payDeposit,
-  CATE_NAME, CATE_WHITELIST, type GoodsItem,
+  cateOptionsFrom, type GoodsItem, type ShopConfig,
 } from '@/services/shop';
 
 const { Text } = Typography;
@@ -59,11 +59,20 @@ const ShopGoodsEditPage: React.FC = () => {
   const [depositNeed, setDepositNeed] = useState(0);
   const [depositPaid, setDepositPaid] = useState(0);
   const [payingDeposit, setPayingDeposit] = useState(false);
+  const [cfg, setCfg] = useState<ShopConfig | null>(null);
+  const [adminRemark, setAdminRemark] = useState('');
   const needDeposit = depositNeed > 0 && depositPaid < depositNeed;
+  const cateOptions = cateOptionsFrom(cfg).map((c) => ({ value: c.key, label: c.name }));
+  const commission = Number(cfg?.commission_rate ?? 0) || 0;
 
   const refreshDeposit = () => {
     getShopConfig()
-      .then((r: any) => { if (r.code === 1 && r.data) setDepositNeed(Number(r.data.deposit_amount) || 0); })
+      .then((r: any) => {
+        if (r.code === 1 && r.data) {
+          setCfg(r.data);
+          setDepositNeed(Number(r.data.deposit_amount) || 0);
+        }
+      })
       .catch(() => {});
     getMyShop()
       .then((r: any) => { if (r.code === 1 && r.data) setDepositPaid(Number(r.data.deposit_paid) || 0); })
@@ -71,6 +80,12 @@ const ShopGoodsEditPage: React.FC = () => {
   };
 
   useEffect(() => { refreshDeposit(); }, []);
+
+  // 后台类目可增删改：默认类目失效时自动落到后台配置的第一个类目
+  useEffect(() => {
+    if (!cfg?.cate_list?.length) return;
+    setCate((prev) => (cfg.cate_list!.some((c) => c.key === prev) ? prev : cfg.cate_list![0].key));
+  }, [cfg]);
 
   const onPayDeposit = () => {
     setPayingDeposit(true);
@@ -106,6 +121,7 @@ const ShopGoodsEditPage: React.FC = () => {
             setCover(g.cover || '');
             setDelivery(g.delivery);
             setDeliveryNote(g.delivery_note || '');
+            setAdminRemark(g.admin_remark || '');
           } else {
             message.error(r.msg || '商品不存在');
           }
@@ -262,16 +278,26 @@ const ShopGoodsEditPage: React.FC = () => {
         <Alert
           type="info"
           showIcon
-          message="复用专栏编辑器：标题 / 类目 / 关键词 / 摘要 / 正文 / AI 写文章；下方为商品交易字段。"
+          message={`复用专栏编辑器：标题 / 类目 / 关键词 / 摘要 / 正文 / AI 写文章；下方为商品交易字段。平台按成交价抽取佣金 ${commission}%，卖家实得 ${100 - commission}%。`}
         />
+
+        {adminRemark ? (
+          <Alert
+            type="error"
+            showIcon
+            className="shop-step-hint"
+            message="平台整改要求（下架理由）"
+            description={`${adminRemark}；修改商品信息并保存后会自动重新提交审核。`}
+          />
+        ) : null}
 
         {needDeposit ? (
           <Alert
             type="warning"
             showIcon
             className="shop-step-hint"
-            message={`需缴保证金 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
-            description="上架商品前请缴足开店保证金，缴足后商品才会在用户集市对外展示。创建店铺与缴纳保证金互不冲突，现在仍可继续编辑并提交商品。"
+            message={`保证金未缴：需缴 ¥${depositNeed.toFixed(2)}（已缴 ¥${depositPaid.toFixed(2)}）`}
+            description="商品仍可提交并在用户集市展示，但买家暂时无法购买；缴足保证金后自动恢复。现在仍可继续编辑并提交商品。"
             action={
               <Button size="small" type="primary" loading={payingDeposit} onClick={onPayDeposit}>
                 去缴纳
@@ -291,7 +317,7 @@ const ShopGoodsEditPage: React.FC = () => {
               value={cate}
               onChange={(v) => setCate(v)}
               style={{ width: '100%' }}
-              options={CATE_WHITELIST.map((c) => ({ value: c, label: CATE_NAME[c] }))}
+              options={cateOptions}
             />
           </Flex>
         </Flex>

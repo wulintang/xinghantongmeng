@@ -1,4 +1,4 @@
-import { request } from '@/utils/request';
+import { request, apiBase } from '@/utils/request';
 import { getToken } from '@/utils/auth';
 
 // 用户专栏插件 column 后端接口（app/column/controller/Api.php），路径带 /index.php/
@@ -232,43 +232,83 @@ export function aiSummary(data: { title: string; content: string }) {
 }
 
 /**
- * AI 生成文章（流式，先扣后台 AI 文章生成费）。通过 fetch 读取 SSE 流，
- * 每收到一段增量文本调用 onChunk。后端格式：data: {"code":1,"data":{"content":"..."}} 与 data: [DONE]
+ * AI 生成文章（流式，先扣后台 AI 文章生成费）。
+ *
+ * 之前空白的根因：这里裸用相对路径 `/index.php/column/api/aiGenerate.html`，
+ * 在前端域上被 SPA fallback 当成页面返回 200 text/html，一个 SSE 帧都没有，
+ * 却无条件弹「AI 文章已生成」。现在统一走 apiBase() 拼后端域，并且：
+ *   - 非 SSE 响应（登录失效 / 余额不足 / 参数错误等 JSON）直接抛业务错误；
+ *   - SSE 里的 code!=1 错误事件抛错；
+ *   - 一个字都没生成时抛错，不再假成功。
  */
 export async function aiGenerate(params: {
   key: string;
   prompt: string;
   onChunk: (s: string) => void;
 }): Promise<void> {
-  const res = await fetch(`${COL}/aiGenerate.html`, {
+  const res = await fetch(`${apiBase()}${COL}/aiGenerate.html`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ key: params.key, prompt: params.prompt }).toString(),
   });
-  if (!res.ok || !res.body) throw new Error(`AI 生成请求失败（HTTP ${res.status}）`);
+  const contentType = (res.headers.get('content-type') || '').toLowerCase();
+  // 后端在开启 SSE 之前会返回 {code:0,msg}（未登录 / 余额不足 / 未配置等）
+  if (!res.ok || contentType.indexOf('text/event-stream') === -1) {
+    const text = await res.text();
+    let msg = '';
+    try {
+      const j = JSON.parse(text);
+      msg = j?.msg || '';
+    } catch {
+      /* 非 JSON（如 SPA index.html）不展示原文 */
+    }
+    throw new Error(msg || `AI 生成请求失败（HTTP ${res.status}）`);
+  }
+  if (!res.body) throw new Error('AI 生成请求失败：响应没有数据流');
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buf = '';
+  let gotContent = false;
+  let streamError = '';
+  const handleLine = (line: string) => {
+    const s = line.trim();
+    if (!s.startsWith('data:')) return;
+    const json = s.slice(5).trim();
+    if (!json || json === '[DONE]') return;
+    let obj: any;
+    try {
+      obj = JSON.parse(json);
+    } catch {
+      return; // 忽略注释 / 心跳等非 JSON 行
+    }
+    if (obj.code !== 1) {
+      streamError = obj.msg || 'AI 生成失败';
+      return;
+    }
+    const content = obj.data?.content;
+    if (typeof content === 'string' && content) {
+      gotContent = true;
+      params.onChunk(content);
+    }
+  };
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     buf += decoder.decode(value, { stream: true });
-    const parts = buf.split('\n\n');
-    buf = parts.pop() || '';
-    for (const p of parts) {
-      const line = p.trim();
-      if (!line.startsWith('data:')) continue;
-      const json = line.slice(5).trim();
-      if (json === '[DONE]') continue;
-      try {
-        const obj = JSON.parse(json);
-        if (obj.code === 1 && obj.data?.content) params.onChunk(obj.data.content);
-      } catch {
-        /* 忽略非 JSON 行 */
-      }
+    // 按行解析（而非按空行分帧），兼容 SSE 帧被拆到多个 chunk 的情况
+    let idx: number;
+    while ((idx = buf.indexOf('\n')) !== -1) {
+      const line = buf.slice(0, idx);
+      buf = buf.slice(idx + 1);
+      handleLine(line);
     }
+    if (streamError) throw new Error(streamError);
   }
+  buf += decoder.decode();
+  if (buf.trim()) handleLine(buf);
+  if (streamError) throw new Error(streamError);
+  if (!gotContent) throw new Error('AI 未生成任何内容，请检查后台 AI 配置或稍后重试');
 }
 
 /** 我的余额（用于自定义 URL 付费前校验；复用 userCenter 的余额接口占位） */

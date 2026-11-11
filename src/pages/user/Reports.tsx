@@ -12,7 +12,7 @@ import { getToken } from '@/utils/auth';
 
 const { Title, Text } = Typography;
 
-const typeName = (m: any) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', ziti: '字库' }[m] || '内容');
+const typeName = (m: any) => ({ website: '站点', article: '文章', tool: '工具', dan: '单页', ziti: '字库', shop: '商品' }[m] || '内容');
 const statusOf = (v: any) => {
     const n = Number(v);
     if (n === 1) return { color: 'green', text: '已处理' };

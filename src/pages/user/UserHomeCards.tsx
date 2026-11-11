@@ -5,7 +5,7 @@ import { Avatar, Button, Card, Col, Empty, Flex, Modal, Row, Select, Spin, Tabs,
 import { getMemberHome, getMemberSites, getSkillsByUser, type MemberHomeInfo, type MemberSiteItem } from '@/services/userCenter';
 import { getColumns, columnLink, type ColumnItem } from '@/services/column';
 import { getUserRender, type MyRender } from '@/services/userBg';
-import { getShopInfo, getGoodsList, getAddresses, buyGoods, genOrderSn, CATE_NAME, type GoodsItem } from '@/services/shop';
+import { getShopInfo, getShopConfig, getGoodsList, getAddresses, buyGoods, genOrderSn, cateOptionsFrom, cateNameFrom, type GoodsItem, type ShopConfig } from '@/services/shop';
 import { buildCardBodyStyle, buildCardBackgroundValue, fgClassName } from '@/utils/userBgStyle';
 import { domainOf, assetUrl } from '@/utils/route';
 
@@ -102,18 +102,10 @@ function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] })
   );
 }
 
-const SHOP_CATES = [
-  { key: 'all', label: '全部' },
-  { key: 'domain', label: CATE_NAME.domain },
-  { key: 'brand', label: CATE_NAME.brand },
-  { key: 'soft', label: CATE_NAME.soft },
-  { key: 'copyright', label: CATE_NAME.copyright },
-  { key: 'code', label: CATE_NAME.code },
-];
-
 function UserShopTab({ uid }: { uid: string }) {
   const [shop, setShop] = useState<any | null>(null);
   const [goods, setGoods] = useState<GoodsItem[]>([]);
+  const [cfg, setCfg] = useState<ShopConfig | null>(null);
   const [cate, setCate] = useState('all');
   const [loading, setLoading] = useState(true);
   const [buyTarget, setBuyTarget] = useState<GoodsItem | null>(null);
@@ -128,6 +120,9 @@ function UserShopTab({ uid }: { uid: string }) {
     }
     let alive = true;
     setLoading(true);
+    getShopConfig()
+      .then((r: any) => { if (alive && r.code === 1 && r.data) setCfg(r.data); })
+      .catch(() => {});
     getShopInfo(uid)
       .then((r: any) => {
         if (!alive) return;
@@ -151,6 +146,10 @@ function UserShopTab({ uid }: { uid: string }) {
   }, [uid]);
 
   const openBuy = (g: GoodsItem) => {
+    if (Number(g.can_buy) === 0) {
+      message.warning('该店铺保证金未缴足，商品暂不可购买');
+      return;
+    }
     setBuyTarget(g);
     if (g.delivery === 'physical') {
       getAddresses()
@@ -193,6 +192,12 @@ function UserShopTab({ uid }: { uid: string }) {
   if (loading) return <Spin />;
   if (!shop) return <Empty description="该会员暂未开店或店铺审核中" />;
 
+  const shopCates = [
+    { key: 'all', label: '全部' },
+    ...cateOptionsFrom(cfg).map((c) => ({ key: c.key, label: c.name })),
+  ];
+  const commission = Number(cfg?.commission_rate ?? 0) || 0;
+  const depositOk = Number(shop.can_buy) !== 0;
   const shown = cate === 'all' ? goods : goods.filter((g) => g.cate === cate);
 
   return (
@@ -204,14 +209,20 @@ function UserShopTab({ uid }: { uid: string }) {
         <Flex vertical gap={2}>
           <Flex align="center" gap={8}>
             <Text strong style={{ fontSize: 'var(--fs-lg)' }}>{shop.shop_name}</Text>
-            {shop.status === 1 ? <Tag color="green">营业中</Tag> : <Tag color="orange">审核中</Tag>}
+            {shop.status === 1
+              ? <Tag color="green">营业中</Tag>
+              : <Tag color="orange">{Number(shop.audit_status) === 1 ? '待营业' : '审核中'}</Tag>}
+            <Tag color={depositOk ? 'green' : 'red'}>保证金{depositOk ? '已缴' : '未缴'}</Tag>
           </Flex>
           {shop.intro ? <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>{shop.intro}</Text> : null}
+          <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+            平台佣金 {commission}%，卖家实得 {100 - commission}%；{depositOk ? '商品可正常购买' : '保证金未缴足，商品可浏览但暂不可购买'}
+          </Text>
         </Flex>
       </Flex>
 
       <Tabs
-        items={SHOP_CATES.map((c) => ({
+        items={shopCates.map((c) => ({
           key: c.key,
           label: c.label,
         }))}
@@ -236,12 +247,17 @@ function UserShopTab({ uid }: { uid: string }) {
                     </Tag>
                   </Flex>
                   <Flex gap={6} wrap>
-                    <Tag>{CATE_NAME[g.cate]}</Tag>
+                    <Tag>{cateNameFrom(cfg, g.cate)}</Tag>
+                    <Tag color={Number(g.can_buy) === 0 ? 'red' : 'green'}>
+                      {Number(g.can_buy) === 0 ? '保证金未缴' : '保证金已缴'}
+                    </Tag>
                     {g.delivery_note ? <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>{g.delivery_note}</Text> : null}
                   </Flex>
                   <Flex align="center" justify="space-between">
                     <Text style={{ color: 'var(--capsule-danger)', fontWeight: 600 }}>¥{Number(g.price).toFixed(2)}</Text>
-                    <Button type="primary" size="small" onClick={() => openBuy(g)}>购买</Button>
+                    <Button type="primary" size="small" disabled={Number(g.can_buy) === 0} onClick={() => openBuy(g)}>
+                      {Number(g.can_buy) === 0 ? '暂不可购买' : '购买'}
+                    </Button>
                   </Flex>
                 </Flex>
               </Card>
@@ -271,6 +287,10 @@ function UserShopTab({ uid }: { uid: string }) {
               <Tag color={buyTarget.delivery === 'digital' ? 'cyan' : 'orange'}>
                 {buyTarget.delivery === 'digital' ? '数字交付（自动发货）' : '实体交付（需物流）'}
               </Tag>
+            </Flex>
+            <Flex justify="space-between">
+              <Text type="secondary">平台佣金</Text>
+              <Text>{commission}%（卖家实得 ¥{(Number(buyTarget.price) * (1 - commission / 100)).toFixed(2)}）</Text>
             </Flex>
             {buyTarget.delivery === 'physical' ? (
               <div>

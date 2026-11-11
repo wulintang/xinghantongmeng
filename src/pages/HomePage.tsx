@@ -11,7 +11,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getColumns, columnLink } from '@/services/column';
 import { getPosts } from '@/services/postService';
-import { getMallList, CATE_NAME, type MallGoodsItem } from '@/services/shop';
+import { getMallList, cateOptionsFrom, type MallGoodsItem, type ShopConfig } from '@/services/shop';
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
 
@@ -28,10 +28,12 @@ const HomePage: React.FC = () => {
     const [articles, setArticles] = useState<ArticleItem[]>([]);
     const [posts, setPosts] = useState<PostData[]>([]);
     const [mallGoods, setMallGoods] = useState<MallGoodsItem[]>([]);
+    const [mallCfg, setMallCfg] = useState<ShopConfig | null>(null);
     const [siteIdByDomain, setSiteIdByDomain] = useState<Map<string, number>>(new Map());
     const [columnMap, setColumnMap] = useState<Map<number, { id: number; name: string; description: string | null; author: string; custom_url?: string | null; url_status?: number }>>(new Map());
 
     usePageMeta({});
+    const cateName = (key: string) => cateOptionsFrom(mallCfg).find((c) => c.key === key)?.name || key;
 
     useEffect(() => {
         Promise.all([
@@ -56,7 +58,10 @@ const HomePage: React.FC = () => {
                     cols.data.forEach((c) => m.set(c.id, { id: c.id, name: c.name, description: c.description, author: c.author, custom_url: c.custom_url, url_status: c.url_status }));
                     setColumnMap(m);
                 }
-                if (mall && mall.code === 1 && mall.data?.list) setMallGoods(mall.data.list.slice(0, 4));
+                if (mall && mall.code === 1 && mall.data?.list) {
+                    setMallGoods(mall.data.list.slice(0, 4));
+                    if (mall.data.config) setMallCfg(mall.data.config as ShopConfig);
+                }
             })
             .catch(() => {})
             .finally(() => setLoading(false));
@@ -278,7 +283,7 @@ const HomePage: React.FC = () => {
                                         g.cover ? (
                                             <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
                                         ) : (
-                                            <div className="shop-goods-ico">{CATE_NAME[g.cate]?.[0] || '商'}</div>
+                                            <div className="shop-goods-ico">{cateName(g.cate)?.[0] || '商'}</div>
                                         )
                                     }
                                 >
@@ -294,7 +299,7 @@ const HomePage: React.FC = () => {
                                             </Tag>
                                         </Flex>
                                         <Text type="secondary" className="shop-goods-meta">
-                                            {g.shop_name || '店铺'} · {CATE_NAME[g.cate] || g.cate}
+                                            {g.shop_name || '店铺'} · {cateName(g.cate)}
                                         </Text>
                                     </Flex>
                                 </Card>

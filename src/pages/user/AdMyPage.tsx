@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Spin, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Typography } from 'antd'
+import { Button, Card, Skeleton, Tag, Tabs, Popconfirm, message, Modal, Form, Input, Typography } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { useNavigate } from 'react-router-dom';
 import { getToken } from '@/utils/auth';
@@ -238,7 +238,7 @@ export default function AdMyPage(): React.JSX.Element {
     },
   ];
 
-  if (loading) return <Spin className="page-spin" />;
+  if (loading) return <Skeleton active paragraph={{ rows: 10 }} style={{ padding: 'var(--space-6)' }} />;
 
   return (
     <Card className="user-center-card">

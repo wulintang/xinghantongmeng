@@ -6,7 +6,7 @@ import {
   Input,
   Modal,
   Select,
-  Spin,
+  Skeleton,
   Typography,
   message,
 } from 'antd';
@@ -258,9 +258,9 @@ const ArticleEditPage: React.FC = () => {
   if (loading) {
     return (
       <div className="article-edit-fullscreen">
-        <Flex justify="center" style={{ padding: 'var(--space-10)' }}>
-          <Spin />
-        </Flex>
+        <div style={{ padding: 'var(--space-10)' }}>
+          <Skeleton active paragraph={{ rows: 8 }} />
+        </div>
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Spin, Typography, message } from 'antd';
+import { Card, Skeleton, Typography, message } from 'antd';
 import { getPrices, type AdPayPosition, type AdPayGridConfig } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { PageHeader } from '@components/common';
@@ -27,7 +27,14 @@ export default function AdPricesPage(): React.JSX.Element {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
+  if (loading) {
+    return (
+      <div className="ad-prices-page">
+        <PageHeader title="广告价格单" description="查看各广告位与格子广告的刊例价格。" />
+        <Card><Skeleton active paragraph={{ rows: 8 }} /></Card>
+      </div>
+    );
+  }
 
   const posColumns = [
     { title: '广告位', dataIndex: 'name' },

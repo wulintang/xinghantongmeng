@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>懋和道人标题十三</title>
+    <style>
+        *, html, body {
+    box-sizing: border-box;
+}
+
+body {
+    height: calc(100vh + 70px);
+    background: linear-gradient(#003154, #64A9EA) no-repeat;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+
+.st0 {
+    fill: #E7F4FA;
+}
+
+#ground {
+    fill: #E7F4FA;
+}
+
+
+#shadow, #mouth {
+    fill: #B9C3C6;
+}
+
+#arm-r {
+    fill: none;
+    stroke: #202123;
+    stroke-width: 3;
+    stroke-miterlimit: 10;
+}
+
+#head, #body {
+    fill: #E7F4FA;
+}
+
+#eyes {
+    fill: #202123;
+}
+
+#nose {
+    fill: #E7B75C;
+}
+
+#arm-l {
+    fill: none;
+    stroke: #202123;
+    stroke-width: 4;
+    stroke-miterlimit: 10;
+}
+
+#buttons {
+    fill: #808080;
+}
+
+.background {
+    height:calc(100vh + 70px);
+    position: relative;
+}
+
+svg.background__ground {
+    position: absolute;
+    bottom: 0;
+}
+@media screen and (min-width: 1400px) {
+    svg.background__ground {
+        bottom: -5em;
+    }
+}
+
+#snowman {
+    width: 18em;
+    position: absolute;
+    bottom: 0;
+    margin: 1em;
+}
+@media screen and (min-width: 720px) {
+    #snowman {
+        bottom: 3em;
+        left: 2em;
+    }
+}
+@media screen and (min-width: 900px) {
+    #snowman {
+        bottom: 5em;
+        left: 3em;
+    }
+}
+@media screen and (min-width: 1100px) {
+    #snowman {
+        bottom: 8em;
+        left: 5em;
+    }
+}
+
+g.background__snowman {
+    -webkit-animation: rock 6s ease-in-out 2s infinite;
+    animation: rock 6s ease-in-out 2s infinite;
+    transform-origin: 50% 100%;
+}
+
+.container--snowflakes {
+    max-width: 1200px;
+    margin: 3em auto 1em auto;
+}
+
+#snowflakes-1 {
+    opacity: 0;
+    -webkit-animation: snowfall 2.2s ease-out 1s infinite;
+    animation: snowfall 2.2s ease-out 1s infinite;
+}
+
+#snowflakes-2 {
+    opacity: 0;
+    -webkit-animation: snowfall 2.5s ease-out 0.7s infinite;
+    animation: snowfall 2.5s ease-out 0.7s infinite;
+}
+
+#snowflakes-3 {
+    opacity: 0;
+    -webkit-animation: snowfall 3s ease-out 1.2s infinite;
+    animation: snowfall 3s ease-out 1.2s infinite;
+}
+
+#snowflakes-4 {
+    opacity: 0;
+    -webkit-animation: snowfall 2.8s ease-out 0.8s infinite;
+    animation: snowfall 2.8s ease-out 0.8s infinite;
+}
+
+@-webkit-keyframes snowfall {
+    0% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-2em, 10em);
+    }
+}
+
+@keyframes snowfall {
+    0% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-2em, 10em);
+    }
+}
+@-webkit-keyframes rock {
+    0% {
+        transform: rotate(0);
+    }
+    60% {
+        transform: rotate(-2deg);
+    }
+    80% {
+        transform: rotate(1deg);
+    }
+    100% {
+        transform: rotate(0);
+    }
+}
+@keyframes rock {
+    0% {
+        transform: rotate(0);
+    }
+    60% {
+        transform: rotate(-2deg);
+    }
+    80% {
+        transform: rotate(1deg);
+    }
+    100% {
+        transform: rotate(0);
+    }
+} 
+    </style>
+</head>
+<body>
+
+<div class="background">
+    <!--ground-->
+    <svg class="background__ground" xmlns="http://www.w3.org/2000/svg"
+         version="1.1" id="Layer_2" x="0" y="0" viewBox="0 0 1314 227.7" xml:space="preserve">
+        <g id="ground">
+            <path class="st0" d="M0 21.6c141-41.8 293.2-11.1 441.1-5.1 107.2 4.4 214.4-4.5 321.6-9.3C814.4 4.8 866.3 3.4 918 8c46.2 4.1 92 13.1 138.3 13.2 86.5 0.1 175.7-30.4 257.7-2.5v209H0V21.6z"/></g>
+
+  </svg>
+    <!--snowman-->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="snowman" x="0" y="0"
+         viewBox="0 -20 300 250" xml:space="preserve" enable-background="new 0 0 178 219.4">
+    <ellipse id="shadow" transform="matrix(0.9976 -6.986409e-02 6.986409e-02 0.9976 -14.0967 6.4916)"
+             class="st0" cx="85.8" cy="204.8" rx="68.9" ry="13.8"/>
+  <g class="background__snowman">
+
+    <g id="arm-r">
+      <polyline class="st1" points="130 91.5 155.5 66.5 173.1 63.5 176.5 52.4 "/>
+      <line class="st1" x1="155" y1="67" x2="155" y2="52"/>
+      <line class="st1" x1="165.4" y1="64.8" x2="176.5" y2="77"/>
+    </g>
+    <ellipse id="body" transform="matrix(0.9955 -9.424890e-02 9.424890e-02 0.9955 -12.4309 9.7989)" class="st2" cx="97.5" cy="136.5" rx="65" ry="71.5"/>
+    <circle id="head" class="st2" cx="86.5" cy="41" r="41"/>
+    <g id="eyes">
+      <ellipse transform="matrix(0.9437 -0.3309 0.3309 0.9437 -8.0174 28.9066)" class="st3" cx="80.9" cy="38" rx="4.9" ry="6.5"/>
+      <ellipse transform="matrix(0.9437 -0.3309 0.3309 0.9437 -4.1167 39.8191)" class="st3" cx="114.9" cy="32" rx="4.9" ry="6.5"/>
+    </g>
+    <ellipse id="nose" transform="matrix(0.9598 -0.2807 0.2807 0.9598 -8.8038 31.2377)" class="st4" cx="104.7" cy="46.4" rx="7.1" ry="5.4"/>
+    <ellipse id="mouth" class="st5" cx="101.1" cy="63.8" rx="3.6" ry="3.2"/>
+    <g id="arm-l">
+      <polyline class="st6" points="61 103.5 22 85.5 16.5 65.1 7.5 60.5 "/>
+      <line class="st6" x1="19.7" y1="76.8" x2="0.5" y2="82"/>
+      <line class="st6" x1="32.1" y1="90.2" x2="19.7" y2="96"/>
+    </g>
+    <g id="buttons">
+      <ellipse transform="matrix(0.9821 0.1884 -0.1884 0.9821 20.1032 -18.9613)" class="st7" cx="109.8" cy="96.2" rx="5.1" ry="4.8"/>
+      <ellipse transform="matrix(0.9378 -0.3472 0.3472 0.9378 -34.9546 47.3867)" class="st7" cx="114.8" cy="121.2" rx="5.1" ry="4.8"/>
+    </g>
+  </g>
+  </svg>
+    <!--snowflakes-->
+    <div class="container--snowflakes">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="snowflakes" x="0" y="0" viewBox="0 0 1243 500" xml:space="preserve" enable-background="new 0 0 1243 258">
+
+  <g id="snowflakes-1">
+    <circle class="st0" cx="592" cy="48" r="7"/>
+    <circle class="st0" cx="833" cy="148" r="7"/>
+    <circle class="st0" cx="371" cy="105" r="7"/>
+    <circle class="st0" cx="115" cy="28" r="7"/>
+    <circle class="st0" cx="1106" cy="208" r="7"/>
+    <circle class="st0" cx="1032" cy="35" r="7"/>
+  </g>
+  <g id="snowflakes-2">
+    <circle class="st0" cx="566" cy="162" r="7"/>
+    <circle class="st0" cx="764" cy="21" r="7"/>
+    <circle class="st0" cx="958" cy="184" r="7"/>
+    <circle class="st0" cx="411" cy="201" r="7"/>
+    <circle class="st0" cx="297" cy="7" r="7"/>
+    <circle class="st0" cx="136" cy="141" r="7"/>
+  </g>
+  <g id="snowflakes-3">
+    <circle class="st0" cx="726.5" cy="225.5" r="4.5"/>
+    <circle class="st0" cx="688.5" cy="123.5" r="4.5"/>
+    <circle class="st0" cx="252.5" cy="168.5" r="4.5"/>
+    <circle class="st0" cx="480.5" cy="83.5" r="4.5"/>
+    <circle class="st0" cx="1180.5" cy="83.5" r="4.5"/>
+    <circle class="st0" cx="907.5" cy="40.5" r="4.5"/>
+    <circle class="st0" cx="1025.5" cy="253.5" r="4.5"/>
+  </g>
+  <g id="snowflakes-4">
+    <circle class="st0" cx="4.5" cy="214.5" r="4.5"/>
+    <circle class="st0" cx="52.5" cy="87.5" r="4.5"/>
+    <circle class="st0" cx="256.5" cy="78.5" r="4.5"/>
+    <circle class="st0" cx="598.5" cy="237.5" r="4.5"/>
+    <circle class="st0" cx="1021.5" cy="123.5" r="4.5"/>
+    <circle class="st0" cx="1238.5" cy="176.5" r="4.5"/>
+  </g>
+</svg>
+    </div>
+
+</div>
+
+
+</body>
+</html>

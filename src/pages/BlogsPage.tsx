@@ -227,7 +227,7 @@ const BlogsPage: React.FC = () => {
 
             <AdSlotSkeleton slot="list_blog_top" />
 
-            <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/feed" />
+            <SearchBox placeholder="搜索文章标题、摘要、站点" gotoPage="/search" />
 
             <Flex justify="space-between" align="center" wrap gap={12}>
                 <Text type="secondary">共 {list.length} 篇</Text>

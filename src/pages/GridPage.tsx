@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Alert, Button, Form, Input, InputNumber, Modal, Spin, Typography, message } from 'antd';
+import { Alert, Button, Form, Input, InputNumber, Modal, Typography, message } from 'antd';
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { PageHeader } from '@components/common';
+import { GridSkeleton } from '@components/common/skeleton';
 import GridCanvas from '@components/common/GridCanvas';
 import AdImgUpload from '@/components/common/AdImgUpload';
 
@@ -77,7 +78,7 @@ export default function GridPage(): React.JSX.Element {
       .finally(() => setSubmitting(false));
   };
 
-  if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
+  if (loading) return <GridSkeleton />;
 
   return (
     <div className="grid-page">

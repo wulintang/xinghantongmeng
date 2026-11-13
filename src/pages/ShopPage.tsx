@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Avatar, Button, Card, Col, Empty, Flex, Pagination, Row, Segmented, Spin, Tag, Typography,
+  Alert, Avatar, Button, Card, Col, Empty, Flex, Pagination, Row, Tag, Typography,
 } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import PageHeader from '@components/common/PageHeader';
 import SearchBox from '@components/common/SearchBox';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getShopConfig, getMallList, cateOptionsFrom, cateNameFrom, type MallGoodsItem, type ShopConfig } from '@/services/shop';
+import { ShopSkeleton } from '@components/common/skeleton';
 
 const { Text, Paragraph } = Typography;
 
@@ -17,6 +18,8 @@ const PAGE_SIZE = 12;
 const ShopPage: React.FC = () => {
   usePageMeta({ title: '用户集市' });
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const shopUid = searchParams.get('uid') || '';
 
   const [cfg, setCfg] = useState<ShopConfig | null>(null);
   const [cate, setCate] = useState<string>('all');
@@ -45,7 +48,7 @@ const ShopPage: React.FC = () => {
     let alive = true;
     setLoading(true);
     setFailed(false);
-    getMallList({ cate, kw, page, limit: PAGE_SIZE })
+    getMallList({ cate, kw, page, limit: PAGE_SIZE, uid: shopUid || undefined })
       .then((r: any) => {
         if (!alive) return;
         if (r.code === 1 && r.data) {
@@ -63,7 +66,7 @@ const ShopPage: React.FC = () => {
     return () => {
       alive = false;
     };
-  }, [cate, kw, page]);
+  }, [cate, kw, page, shopUid]);
 
   const renderCard = (g: MallGoodsItem) => (
     <Card
@@ -110,10 +113,14 @@ const ShopPage: React.FC = () => {
   return (
     <div className="shop-page">
       <PageHeader
-        title="用户集市"
-        description={cfg?.mall_notice || '域名、商标、软著、作品著作权与源码等虚拟资产交易，使用账号余额结算，平台统一担保与审核。'}
+        title={shopUid ? '店铺商品' : '用户集市'}
+        description={shopUid
+          ? '正在浏览该店铺的在售商品，使用账号余额结算，平台统一担保与审核。'
+          : (cfg?.mall_notice || '域名、商标、软著、作品著作权与源码等虚拟资产交易，使用账号余额结算，平台统一担保与审核。')}
         crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
-        extra={<Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
+        extra={shopUid
+          ? <Button onClick={() => navigate('/shop')}>返回全部集市</Button>
+          : <Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
       />
 
       <Card className="shop-filter-card">
@@ -125,12 +132,18 @@ const ShopPage: React.FC = () => {
             />
           </div>
           <Text type="secondary">共 {total} 件在售商品</Text>
-          <Segmented
-            className="cate-filter"
-            options={CATE_OPTIONS}
-            value={cate}
-            onChange={(v) => { setPage(1); setCate(String(v)); }}
-          />
+          <Flex wrap gap={8} className="cate-filter-wrap">
+            {CATE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`cate-chip${cate === opt.value ? ' cate-chip--active' : ''}`}
+                onClick={() => { setPage(1); setCate(String(opt.value)); }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </Flex>
         </Flex>
       </Card>
 
@@ -142,7 +155,7 @@ const ShopPage: React.FC = () => {
           description="请确认后端已部署最新版 app/shop 插件（含 mallList 公开接口）。"
         />
       ) : loading ? (
-        <div className="shop-loading"><Spin size="large" /></div>
+        <ShopSkeleton />
       ) : list.length === 0 ? (
         <Card className="shop-empty"><Empty description="暂无在售商品" /></Card>
       ) : (

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>懋和道人标题三十二</title>
+<style>
+html,
+body {
+  margin: 0;
+  background: #000;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body:before,
+body:after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  -webkit-transform-origin: 0 0;
+          transform-origin: 0 0;
+  mix-blend-mode: hard-light;
+  background: linear-gradient(45deg, #e10000, #40ab00);
+}
+
+</style>
+</head>
+
+<body>
+<canvas id="mitosys" width="1269" height="916"></canvas> 
+<script>
+/*--------------------
+Settings
+--------------------*/
+let canvas = document.getElementById('mitosys'),
+ctx = canvas.getContext('2d'),
+winW = canvas.width = window.innerWidth,
+winH = canvas.height = window.innerHeight,
+ticker = 0,
+Balls = [],
+maxBalls = 10,
+easing = 1 / 10;
+
+
+/*--------------------
+                 Balls
+                 --------------------*/
+class Ball {
+  constructor(options) {
+
+    Object.assign(this, options);
+
+    this.r = 100 + Math.random() * 100;
+    this.pos = {
+      x: Math.random() * winW,
+      y: Math.random() * winH };
+
+    this.direction = {
+      x: -1 + Math.random() * 2,
+      y: -1 + Math.random() * 2 };
+
+    this.activePos = {
+      x: this.pos.x,
+      y: this.pos.y };
+
+  }
+
+  draw() {
+    this.color = gradientBg(this.activePos.x, this.activePos.y, this.r);
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.activePos.x, this.activePos.y, this.r, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  update() {
+    let dx = mouse.x - this.activePos.x,
+    dy = mouse.y - this.activePos.y;
+
+    this.activePos.x += this.direction.x;
+    this.activePos.y += this.direction.y;
+
+    if (this.activePos.x < 0 || this.activePos.x > winW) {
+      this.direction.x *= -1;
+    }
+    if (this.activePos.y < 0 || this.activePos.y > winH) {
+      this.direction.y *= -1;
+    }
+  }}
+
+
+
+/*--------------------
+     Gradient BG
+     --------------------*/
+const gradientBg = (x, y, r) => {
+  bg = ctx.createRadialGradient(x - r / 3, y - r / 7, 0, x, y, r);
+  bg.addColorStop(0, '#fff');
+  bg.addColorStop(.95, '#000');
+  return bg;
+};
+
+
+/*--------------------
+   Distance
+   --------------------*/
+const dist = (p1, p2) => {
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+
+/*--------------------
+   Get Mouse
+   --------------------*/
+let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, dir: '' };
+const getMouse = e => {
+  mouse = {
+    x: e.clientX || e.pageX || e.touches[0].pageX || 0,
+    y: e.clientY || e.pageX || e.touches[0].pageY || 0,
+    dir: getMouse.x > e.clientX ? 'left' : 'right' };
+
+};
+['mousemove', 'touchstart', 'touchmove'].forEach(e => {
+  window.addEventListener(e, getMouse);
+});
+
+
+/*--------------------
+    Init
+    --------------------*/
+const init = () => {
+  console.clear();
+  winW = canvas.width = window.innerWidth;
+  winH = canvas.height = window.innerHeight;
+  ctx.globalCompositeOperation = "lighten";
+
+  Balls = [];
+  for (let i = 0; i < maxBalls; i++) {
+    Balls.push(new Ball());
+  }
+};
+init();
+
+
+/*--------------------
+        Animate
+        --------------------*/
+const animate = () => {
+  ticker += .1;
+  ctx.clearRect(0, 0, winW, winH);
+  window.requestAnimationFrame(animate);
+  Balls.forEach(ball => {
+    ball.update();
+    ball.draw();
+  });
+};
+animate();
+
+
+/*--------------------
+           Resize
+           --------------------*/
+window.addEventListener('resize', () => {
+  init();
+});    
+</script>
+</body>
+</html>

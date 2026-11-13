@@ -14,3 +14,6 @@ export { default as MessagesSkeleton } from './MessagesSkeleton';
 export { default as ReportsSkeleton } from './ReportsSkeleton';
 export { default as FavoritesSkeleton } from './FavoritesSkeleton';
 export { default as AbstractSkeleton } from './AbstractSkeleton';
+export { default as ShopSkeleton } from './ShopSkeleton';
+export { default as ShopGoodsDetailSkeleton } from './ShopGoodsDetailSkeleton';
+export { default as GridSkeleton } from './GridSkeleton';

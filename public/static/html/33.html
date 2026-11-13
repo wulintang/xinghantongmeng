@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">    
+<title>懋和道人标题三十三</title>
+<script type="text/javascript">
+"use strict";
+
+/* no street : they run everywhere
+*/
+window.addEventListener("load",function() {
+
+  let canv, ctx;
+  let sqSide;
+  let nbx, nby; // nb of squares horiz. / vert.
+  let terrain;  // bi-dimensionnal array for car paths
+
+  let cars;
+  let blocked, veryVeryBlocked; // thresholds for blocking detection
+
+  let carsMaxLength;    // maximum length for cars
+  let nbCars;           // number of cars
+  let initTime;
+  let msByStep;        // interval between 2 moves
+
+/********************************************************
+parameters - play with them
+********************************************************/
+
+  const bgColor = '#004'; // background color
+
+  nbCars = 20;     // number of cars
+
+/* an 'element' is a little square - a car id made of a few elements */
+  carsMaxLength = 15 ; // cars max length (in elements, not pixels)
+  nbx = 50;            // width (in elements)
+  msByStep = 100;      // ms between 2 moves
+
+  blocked = 2 * carsMaxLength;        // threshold for blocking detection
+  veryVeryBlocked = 3 * carsMaxLength;  // threshold for blocking detection
+
+//********************************************************
+
+// shortcuts for Math
+  const mrandom = Math.random;
+  const mfloor = Math.floor;
+  const mceil = Math.ceil;
+  const mround = Math.round;
+  const mabs = Math.abs;
+  const mmin = Math.min;
+  const mmax = Math.max;
+
+  const mPI = Math.PI;
+  const mPIS2 = Math.PI / 2;
+  const m2PI = Math.PI * 2;
+  const msin = Math.sin;
+  const mcos = Math.cos;
+  const matan2 = Math.atan2;
+
+  const mhypot = Math.hypot;
+  const msqrt = Math.sqrt;
+
+//------------------------------------------------------------------------
+// classe Car
+
+function Car(index) {
+
+/*
+  color
+  points = [[x,y],[x,y]..]
+  dir      0 1 2 3 = up right down left
+  index    identifier
+  ntci     nb of turns without moving
+  nbSteps    nb of steps to go ahead in a direction
+
+*/
+  let kx, ky, lum;
+
+//  lum = (index == 0) ? 70 : 30;
+  lum = 60;
+  this.color = `hsl(${alea(360)}, 100%, ${lum}%)`;
+
+  this.size = intAlea(2, carsMaxLength + 1); // length in elements
+  this.points = [];               // to store "pieces" of a car
+  this.dir = intAlea (4); // 0 1 2 3 = up right down left
+  this.index = index; // identifier for car
+  this.ntci = 0; // nb of turns without moving
+
+  do {
+    kx = intAlea(nbx); // choose a free cell
+    ky = intAlea(nby);
+  } while (terrain[ky][kx] != -1);
+
+  terrain[ky][kx] = index;
+  for (let kp = 0; kp < this.size; ++kp) {
+    this.points[kp]=[kx, ky];
+  } // for kp
+
+  this.initNbSteps();
+
+} // function Car
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Car.prototype.initNbSteps = function () {
+/* the direction beeing given by this.dir, computes the number of steps the car
+will go ahead. Normally, some random position between present position and the
+edge of the terrain in the given direction */
+
+  let e1, e2;
+  let [x, y] = this.points[0];
+
+  switch (this.dir) {
+    case 0 : e1 = 0; e2 = y; break;
+    case 1 : e1 = x + 1; e2 = nbx; break;
+    case 2 : e1 = y + 1; e2 = nby; break;
+    case 3 : e1 = 0; e2 = x; break;
+  }
+  if (e2 <= e1) (++e2);
+  this.nbSteps = intAlea(e2 - e1);
+
+} // Car.prototype.initNbSteps
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Car.prototype.move = function () {
+
+/* moves the car, if possible straightforward for nbSteps, avoiding collisions and
+using unblocking strategies */
+
+  let x, y, kfront;
+
+  this.ntci++;            // count blockigg time a priori
+
+  if (this.ntci > 2000) { // things are going very wrong
+    console.dir (this);
+    throw("blocked ! ");
+  }
+
+/* is it time to change of direction ? */
+
+  if (this.nbSteps < 0) {
+    this.turn();
+    return;
+  }
+/* try to go ahead */
+  [x, y] = this.futurePosition(this.dir);
+  if (Car.ifOutOfTerrain(x, y)) {
+    this.turn();
+    return;
+  } // if hit edge
+
+  kfront = terrain[y][x];
+  if (kfront == -1) { // free place, we can go
+    this.moveOneStep();
+    return;
+  }
+// detect if front shock
+  if ( cars[kfront].points[0][0] == x &&
+       cars[kfront].points[0][1] == y &&
+       cars[kfront].dir == (this.dir + 2) % 4) {
+    this.doUTurn();
+    return;
+  } // if front shock
+
+
+  if (this.ntci > blocked) { // if waiting for too long
+    this.turn();             // try to turn
+    if (this.ntci > veryVeryBlocked) { // if waiting for really too long
+      this.doUTurn(); // try U turn
+    }
+    return;
+  }
+
+
+} // Car.prototype.move
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Car.ifOutOfTerrain = function(x, y) {
+/* tests if a cell is outside the terrain */
+
+  return (x < 0 || x >= nbx || y < 0 || y >= nby);
+
+} // Car.ifOutOfTerrain
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Car.prototype.futurePosition = function(dir) {
+/* evaluates futer place if we go towards the 'dir' direction */
+  let x,y;
+  x = this.points[0][0] + [0, 1, 0, -1][dir];
+  y = this.points[0][1] + [-1, 0, 1, 0][dir];
+  return [x, y];
+} // Car.prototype.futurePosition
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Car.prototype.turn = function () {
+/* change l'orientation de 90 degr茅s
+*/
+
+  let x, y;
+
+  this.dir = (this.dir + 1 + 2 * intAlea(2)) % 4;   // + ou - 1 randomly
+  this.initNbSteps(); // nb of steps
+  [x, y] = this.futurePosition (this.dir);
+  if (Car.ifOutOfTerrain(x, y) || terrain[y][x] != -1) {
+    this.dir = (this.dir + 2) % 4; // try the other side
+    this.initNbSteps(); // nb de pas
+    [x, y] = this.futurePosition (this.dir);
+    if (Car.ifOutOfTerrain(x, y) || terrain[y][x] != -1) {
+      return; // still blocked鈥�
+    } // if blocked
+  } // if cannot on one side
+  this.moveOneStep(); // Now we can go
+
+} // Car.prototype.turn
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Car.prototype.doUTurn = function () {
+
+/* reverts head and tail and moves one step */
+
+  let x, y, xpre, ypre;
+
+  let k1 = 0;                       // the first
+  let k2 = this.points.length - 1;  // the last
+
+/* the present head becomes tail : redraw it as a simple element */
+  [x, y] = this.points[0];
+  drawElement(x, y, this.color);
+
+  for ( ; k1 < k2; ++k1, --k2) {    // revert elements of car
+    [this.points[k1], this.points[k2]] = [this.points[k2], this.points[k1]];
+  }
+// evaluate new direction from first new two elements
+  [x, y] = this.points[0];
+  [xpre, ypre] = this.points[1];
+
+  if (y < ypre) this.dir = 0; // up
+  else if (x > xpre) this.dir = 1; // right
+  else if (y > ypre) this.dir = 2; // down
+  else if (x < xpre) this.dir = 3; // left
+  else this.dir = intAlea(4);      // was not moving : take random direction
+
+  /* erase new head to redraw it as a head */
+  drawElement(x, y); // without color -> erase
+  drawElement(x, y, this.color, this.dir); // draw as a head
+
+  this.initNbSteps();
+  [x, y] = this.futurePosition(this.dir);
+  if (Car.ifOutOfTerrain(x, y) || terrain[y][x] != -1) return; // can't move
+  this.moveOneStep();
+
+} // Car.prototype.doUTurn
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Car.prototype.moveOneStep = function () {
+/* all checks done, really can move */
+
+  let [x, y] = this.points[0]; // will no longer be head : redraw
+  drawElement(x, y, this.color);
+
+  [x, y] = this.futurePosition(this.dir);
+
+  this.points.unshift ([x, y]); // add new point at head
+  terrain[y][x] = this.index;
+  drawElement(x, y, this.color, this.dir); // new head
+
+  [x,y] = this.points.pop(); // withdraws last point
+  let beflast = this.points[this.points.length - 1];
+  if (x != beflast[0] || y != beflast[1]) { // because at the beginning, several points at the same place
+    terrain[y][x] = -1;
+    drawElement(x, y); // without color - erase
+  }
+  this.ntci = 0; // reset count of no-move
+  this.nbSteps--; // countdown number of steps
+
+} // Car.prototype.moveOneStep
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Car.prototype.draw = function () {
+/* dessine une voiture compl猫te */
+
+  this.points.forEach ((morceau, index) => {
+    if (index == 0)
+      drawElement (morceau[0], morceau[1], this.color, this.dir);
+    else
+      drawElement (morceau[0], morceau[1], this.color);
+  }); // this.points.forEach
+} // Car.prototype.draw
+
+// fin classe Car
+
+//------------------------------------------------------------------------
+
+
+function drawElement (x, y, color, orient) {
+
+/* draws an element of a car
+  erases it if no color
+  draws a head if an orientation is given
+*/
+
+  if (color) ctx.fillStyle = color;
+  else  ctx.fillStyle = bgColor;
+  if (typeof orient == 'undefined') {
+    ctx.fillRect(sqSide * x, sqSide * y, sqSide, sqSide);
+  } else {
+    ctx.beginPath();
+    switch (orient) {
+      case 0 : ctx.moveTo (sqSide * x, sqSide * (y + 2/3));
+               ctx.arc(sqSide * (x + 0.5), sqSide * (y + 2/3), sqSide / 2, mPI, 0);
+               ctx.lineTo (sqSide * (x + 1), sqSide * (y + 1));
+               ctx.lineTo (sqSide * x, sqSide * (y + 1));
+               ctx.fill();
+               break;
+      case 1 : ctx.moveTo (sqSide * (x + 1/3), sqSide * y);
+               ctx.arc(sqSide * (x + 1/3), sqSide * (y + 0.5), sqSide / 2, 3 * mPIS2, mPIS2);
+               ctx.lineTo (sqSide * x, sqSide * (y + 1));
+               ctx.lineTo (sqSide * x, sqSide * y);
+               ctx.fill();
+               break;
+      case 2 : ctx.moveTo (sqSide * (x + 1), sqSide * (y + 1/3));
+               ctx.arc(sqSide * (x + 0.5), sqSide * (y + 1/3), sqSide / 2, 0, mPI);
+               ctx.lineTo (sqSide * x, sqSide * y);
+               ctx.lineTo (sqSide * (x + 1), sqSide * y);
+               ctx.fill();
+               break;
+      case 3 : ctx.moveTo (sqSide * (x + 2/3), sqSide * (y + 1));
+               ctx.arc(sqSide * (x + 2/3), sqSide * (y + 0.5), sqSide / 2, mPIS2, 3 * mPIS2);
+               ctx.lineTo (sqSide * (x + 1), sqSide * y);
+               ctx.lineTo (sqSide * (x + 1), sqSide * (y + 1));
+               ctx.fill();
+               break;
+    } //
+  } // if given orientation
+} // draw
+//------------------------------------------------------------------------
+
+function dimension(detNby) {
+
+// reccomputes sqSide after window dimensions after a resize event
+// if detNby == false, uses nbx and nby to compute sqSide
+// if detNby !== false, uses nbx to compute sqSide and sqSide to compute nby
+
+  let maxx = window.innerWidth - 8; // for az margin of 4
+  let maxy = window.innerHeight - 8;
+
+  sqSide = mfloor(maxx / nbx);
+  if (sqSide < 1) sqSide = 1;
+
+  if (detNby) { // restart
+    nby = mfloor (maxy / sqSide); // as many 'nby' as can fit
+  } else { // simple resize
+    if (nby * sqSide > maxy) {  // try not to overflow in the y direction
+      sqSide = mfloor(maxy / nby);
+      if (sqSide < 1) sqSide = 1;
+    }
+  }
+  maxx = sqSide * nbx;
+  maxy = sqSide * nby;
+
+  canv.style.left = (window.innerWidth - maxx) / 2 + 'px';
+  canv.style.top = (window.innerHeight - maxy) / 2 + 'px';
+
+  canv.width = maxx;
+  canv.height = maxy;
+
+} // dimension
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function restart() {
+
+  dimension(true); // dimension and re-compute nby
+
+// create empty grid
+  terrain = [];
+  for (let ky = 0; ky < nby; ++ky) {
+    terrain[ky] = [];
+    for (let kx = 0; kx < nbx; ++kx) {
+      terrain[ky][kx] = -1; // empty cell
+    } // for kx
+  } // for ky
+
+
+// put cars
+  cars = [];
+  for (let k = 0; k < nbCars; ++k) cars[k]= new Car(k);
+
+  drawCars();
+  initTime = window.performance.now();
+
+} // restart
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  function alea (min, max) {
+    if (typeof max == 'undefined') return min * mrandom();
+    return min + (max - min) * mrandom();
+  }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  function intAlea (min, max) {
+/* returns random integer in range min . .max - 1
+if no max is given, range 0 .. min - 1 */
+
+    if (typeof max == 'undefined') {
+      max = min; min = 0;
+    }
+    return mfloor(min + (max - min) * mrandom());
+  }
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function drawCars () {
+  cars.forEach( voiture => voiture.draw());
+} // drawCars
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function clickCanvas() {
+  restart();
+} // clickCanvas
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function animate(tStamp) {
+
+  let time = window.performance.now();
+  if (time > initTime) {
+    cars.forEach(voiture => voiture.move());
+    initTime += msByStep;
+  }
+  if (time - initTime > 500) { // if we are very late
+    /* to slow of display update suspended, don't try to respect real time */
+    initTime = time;
+  }
+  window.requestAnimationFrame(animate);
+} // animate
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+// beginning of
+
+  {
+    document.body.style.backgroundColor = bgColor;
+    canv= document.createElement('canvas');
+    canv.style.position="absolute";
+    canv.addEventListener('click',clickCanvas);
+    document.body.appendChild(canv);
+    ctx=canv.getContext('2d');
+
+  } 
+
+  restart();
+     
+  window.addEventListener('resize',function() {
+    dimension(false);
+    drawCars();
+  });
+
+  window.requestAnimationFrame(animate);
+
+}); // window load listener
+</script>
+</head>
+ 
+<body style="background-color: rgb(0, 0, 68);">
+<canvas width="1250" height="575"></canvas>
+</body>
+</html>

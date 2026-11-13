@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>懋和道人标题八</title>
+  <style>
+    body {
+  background: radial-gradient(ellipse at bottom, #381a2d 0%, #0b0b0d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  transform: rotateX(-70deg) rotateY(1deg);
+}
+
+.outter:nth-child(1) {
+  transform: rotate(24.8deg) translate3d(130px, 0, 0);
+  animation-delay: 0.3s;
+}
+.outter:nth-child(1):after {
+  animation-delay: 0.93s;
+}
+
+.outter:nth-child(2) {
+  transform: rotate(49.6deg) translate3d(130px, 0, 0);
+  animation-delay: 0.6s;
+}
+.outter:nth-child(2):after {
+  animation-delay: 1.23s;
+}
+
+.outter:nth-child(3) {
+  transform: rotate(74.4deg) translate3d(130px, 0, 0);
+  animation-delay: 0.9s;
+}
+.outter:nth-child(3):after {
+  animation-delay: 1.53s;
+}
+
+.outter:nth-child(4) {
+  transform: rotate(99.2deg) translate3d(130px, 0, 0);
+  animation-delay: 1.2s;
+}
+.outter:nth-child(4):after {
+  animation-delay: 1.83s;
+}
+
+.outter:nth-child(5) {
+  transform: rotate(124deg) translate3d(130px, 0, 0);
+  animation-delay: 1.5s;
+}
+.outter:nth-child(5):after {
+  animation-delay: 2.13s;
+}
+
+.outter:nth-child(6) {
+  transform: rotate(148.8deg) translate3d(130px, 0, 0);
+  animation-delay: 1.8s;
+}
+.outter:nth-child(6):after {
+  animation-delay: 2.43s;
+}
+
+.outter:nth-child(7) {
+  transform: rotate(173.6deg) translate3d(130px, 0, 0);
+  animation-delay: 2.1s;
+}
+.outter:nth-child(7):after {
+  animation-delay: 2.73s;
+}
+
+.outter:nth-child(8) {
+  transform: rotate(198.4deg) translate3d(130px, 0, 0);
+  animation-delay: 2.4s;
+}
+.outter:nth-child(8):after {
+  animation-delay: 3.03s;
+}
+
+.outter:nth-child(9) {
+  transform: rotate(223.2deg) translate3d(130px, 0, 0);
+  animation-delay: 2.7s;
+}
+.outter:nth-child(9):after {
+  animation-delay: 3.33s;
+}
+
+.outter:nth-child(10) {
+  transform: rotate(248deg) translate3d(130px, 0, 0);
+  animation-delay: 3s;
+}
+.outter:nth-child(10):after {
+  animation-delay: 3.63s;
+}
+
+.outter:nth-child(11) {
+  transform: rotate(272.8deg) translate3d(130px, 0, 0);
+  animation-delay: 3.3s;
+}
+.outter:nth-child(11):after {
+  animation-delay: 3.93s;
+}
+
+.outter:nth-child(12) {
+  transform: rotate(297.6deg) translate3d(130px, 0, 0);
+  animation-delay: 3.6s;
+}
+.outter:nth-child(12):after {
+  animation-delay: 4.23s;
+}
+
+.outter:nth-child(13) {
+  transform: rotate(322.4deg) translate3d(130px, 0, 0);
+  animation-delay: 3.9s;
+}
+.outter:nth-child(13):after {
+  animation-delay: 4.53s;
+}
+
+.outter:nth-child(14) {
+  transform: rotate(347.2deg) translate3d(130px, 0, 0);
+  animation-delay: 4.2s;
+}
+.outter:nth-child(14):after {
+  animation-delay: 4.83s;
+}
+
+.outter:nth-child(15) {
+  transform: rotate(372deg) translate3d(130px, 0, 0);
+  animation-delay: 4.5s;
+}
+.outter:nth-child(15):after {
+  animation-delay: 5.13s;
+}
+
+.outter {
+  display: block;
+  position: absolute;
+  transform-style: preserve-3d;
+  margin-top: -430px;
+  opacity: 0;
+}
+.outter:after {
+  content: " ";
+  width: 30px;
+  height: 30px;
+  opacity: 0;
+  top: -17px;
+  left: -15px;
+  border: 1px solid rgba(250, 250, 250, 0.5);
+  border-radius: 50%;
+  position: absolute;
+  transition-duration: 100ms;
+  animation: pulse 4.4s forwards infinite;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(0.5, 0.5);
+    opacity: 1;
+  }
+  15% {
+    transform: scale(3, 3);
+    opacity: 0;
+  }
+}
+.outter .inner {
+  display: block;
+  box-shadow: 0px 0px 14px white;
+  transform-style: preserve-3d;
+  height: 4px;
+  width: 4px;
+  background: #fff;
+  border-radius: 100%;
+}
+
+.anim {
+  animation: rain 4.4s linear forwards infinite;
+}
+
+@keyframes rain {
+  0% {
+    opacity: 0;
+    margin-top: -430px;
+  }
+  15% {
+    opacity: 1;
+    margin-top: 0px;
+  }
+  20% {
+    opacity: 0.8;
+    margin-top: 0px;
+  }
+  25% {
+    opacity: 0;
+    margin-top: 0px;
+  }
+}
+.outter2:nth-child(15) {
+  transform: rotate(372deg) translate3d(130px, 0, 0);
+  animation-delay: 4.5s;
+}
+.outter2:nth-child(15):after2 {
+  animation-delay: 5.13s;
+}
+
+.outter2:nth-child(16) {
+  transform: rotate(396.8deg) translate3d(130px, 0, 0);
+  animation-delay: 4.8s;
+}
+.outter2:nth-child(16):after2 {
+  animation-delay: 5.43s;
+}
+
+.outter2:nth-child(17) {
+  transform: rotate(421.6deg) translate3d(130px, 0, 0);
+  animation-delay: 5.1s;
+}
+.outter2:nth-child(17):after2 {
+  animation-delay: 5.73s;
+}
+
+.outter2:nth-child(18) {
+  transform: rotate(446.4deg) translate3d(130px, 0, 0);
+  animation-delay: 5.4s;
+}
+.outter2:nth-child(18):after2 {
+  animation-delay: 6.03s;
+}
+
+.outter2:nth-child(19) {
+  transform: rotate(471.2deg) translate3d(130px, 0, 0);
+  animation-delay: 5.7s;
+}
+.outter2:nth-child(19):after2 {
+  animation-delay: 6.33s;
+}
+
+.outter2:nth-child(20) {
+  transform: rotate(496deg) translate3d(130px, 0, 0);
+  animation-delay: 6s;
+}
+.outter2:nth-child(20):after2 {
+  animation-delay: 6.63s;
+}
+
+.outter2:nth-child(21) {
+  transform: rotate(520.8deg) translate3d(130px, 0, 0);
+  animation-delay: 6.3s;
+}
+.outter2:nth-child(21):after2 {
+  animation-delay: 6.93s;
+}
+
+.outter2:nth-child(22) {
+  transform: rotate(545.6deg) translate3d(130px, 0, 0);
+  animation-delay: 6.6s;
+}
+.outter2:nth-child(22):after2 {
+  animation-delay: 7.23s;
+}
+
+.outter2:nth-child(23) {
+  transform: rotate(570.4deg) translate3d(130px, 0, 0);
+  animation-delay: 6.9s;
+}
+.outter2:nth-child(23):after2 {
+  animation-delay: 7.53s;
+}
+
+.outter2:nth-child(24) {
+  transform: rotate(595.2deg) translate3d(130px, 0, 0);
+  animation-delay: 7.2s;
+}
+.outter2:nth-child(24):after2 {
+  animation-delay: 7.83s;
+}
+
+.outter2:nth-child(25) {
+  transform: rotate(620deg) translate3d(130px, 0, 0);
+  animation-delay: 7.5s;
+}
+.outter2:nth-child(25):after2 {
+  animation-delay: 8.13s;
+}
+
+.outter2:nth-child(26) {
+  transform: rotate(644.8deg) translate3d(130px, 0, 0);
+  animation-delay: 7.8s;
+}
+.outter2:nth-child(26):after2 {
+  animation-delay: 8.43s;
+}
+
+.outter2:nth-child(27) {
+  transform: rotate(669.6deg) translate3d(130px, 0, 0);
+  animation-delay: 8.1s;
+}
+.outter2:nth-child(27):after2 {
+  animation-delay: 8.73s;
+}
+
+.outter2:nth-child(28) {
+  transform: rotate(694.4deg) translate3d(130px, 0, 0);
+  animation-delay: 8.4s;
+}
+.outter2:nth-child(28):after2 {
+  animation-delay: 9.03s;
+}
+
+.outter2:nth-child(29) {
+  transform: rotate(719.2deg) translate3d(130px, 0, 0);
+  animation-delay: 8.7s;
+}
+.outter2:nth-child(29):after2 {
+  animation-delay: 9.33s;
+}
+
+.outter2:nth-child(30) {
+  transform: rotate(744deg) translate3d(130px, 0, 0);
+  animation-delay: 9s;
+}
+.outter2:nth-child(30):after2 {
+  animation-delay: 9.63s;
+}
+
+.outter2:nth-child(31) {
+  transform: rotate(768.8deg) translate3d(130px, 0, 0);
+  animation-delay: 9.3s;
+}
+.outter2:nth-child(31):after2 {
+  animation-delay: 9.93s;
+}
+
+.outter2:nth-child(32) {
+  transform: rotate(793.6deg) translate3d(130px, 0, 0);
+  animation-delay: 9.6s;
+}
+.outter2:nth-child(32):after2 {
+  animation-delay: 10.23s;
+}
+
+.container2 {
+  transform: rotateX(-70deg) rotateY(1deg);
+}
+
+.outter2:nth-child(1) {
+  transform: rotate(24.8deg) translate3d(130px, 0, 0);
+  animation-delay: 0.3s;
+}
+
+.outter2:nth-child(2) {
+  transform: rotate(49.6deg) translate3d(130px, 0, 0);
+  animation-delay: 0.6s;
+}
+
+.outter2:nth-child(3) {
+  transform: rotate(74.4deg) translate3d(130px, 0, 0);
+  animation-delay: 0.9s;
+}
+
+.outter2:nth-child(4) {
+  transform: rotate(99.2deg) translate3d(130px, 0, 0);
+  animation-delay: 1.2s;
+}
+
+.outter2:nth-child(5) {
+  transform: rotate(124deg) translate3d(130px, 0, 0);
+  animation-delay: 1.5s;
+}
+
+.outter2:nth-child(6) {
+  transform: rotate(148.8deg) translate3d(130px, 0, 0);
+  animation-delay: 1.8s;
+}
+
+.outter2:nth-child(7) {
+  transform: rotate(173.6deg) translate3d(130px, 0, 0);
+  animation-delay: 2.1s;
+}
+
+.outter2:nth-child(8) {
+  transform: rotate(198.4deg) translate3d(130px, 0, 0);
+  animation-delay: 2.4s;
+}
+
+.outter2:nth-child(9) {
+  transform: rotate(223.2deg) translate3d(130px, 0, 0);
+  animation-delay: 2.7s;
+}
+
+.outter2:nth-child(10) {
+  transform: rotate(248deg) translate3d(130px, 0, 0);
+  animation-delay: 3s;
+}
+
+.outter2:nth-child(11) {
+  transform: rotate(272.8deg) translate3d(130px, 0, 0);
+  animation-delay: 3.3s;
+}
+
+.outter2:nth-child(12) {
+  transform: rotate(297.6deg) translate3d(130px, 0, 0);
+  animation-delay: 3.6s;
+}
+
+.outter2:nth-child(13) {
+  transform: rotate(322.4deg) translate3d(130px, 0, 0);
+  animation-delay: 3.9s;
+}
+
+.outter2:nth-child(14) {
+  transform: rotate(347.2deg) translate3d(130px, 0, 0);
+  animation-delay: 4.2s;
+}
+
+.outter2:nth-child(15) {
+  transform: rotate(372deg) translate3d(130px, 0, 0);
+  animation-delay: 4.5s;
+}
+
+.outter2 {
+  display: block;
+  position: absolute;
+  transform-style: preserve-3d;
+  margin-top: 430px;
+  opacity: 0;
+}
+.outter2 .inner2 {
+  display: block;
+  box-shadow: 0px 0px 14px white;
+  transform-style: preserve-3d;
+  height: 4px;
+  width: 4px;
+  background: #fff;
+  border-radius: 100%;
+}
+
+.anim2 {
+  animation: reflection 4.4s linear forwards infinite;
+}
+
+@keyframes reflection {
+  0% {
+    opacity: 0;
+    margin-top: 430px;
+  }
+  15% {
+    opacity: 0.6;
+    margin-top: 0px;
+  }
+  20% {
+    opacity: 0.2;
+    margin-top: 0px;
+  }
+  25% {
+    opacity: 0;
+    margin-top: 0px;
+  }
+}
+  </style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!-- #CodePenChallenge: Reflections -->
+<div class="container">
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+  <div class="outter anim">
+    <div class="inner"></div>
+  </div>
+</div>
+<div class="container2">
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+  <div class="outter2 anim2">
+    <div class="inner2"></div>
+  </div>
+</div>
+<!-- partial -->
+  
+</body>
+</html>

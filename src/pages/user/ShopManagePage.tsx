@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Empty, Form, Input, Modal, Select, Space, Spin, Table, Tabs, Tag, Typography, Upload, message,
+  Alert, Button, Card, Empty, Form, Input, Modal, Select, Skeleton, Space, Spin, Table, Tabs, Tag, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -177,7 +177,7 @@ const ShopManagePage: React.FC = () => {
       .finally(() => setShipping(false));
   };
 
-  if (loading) return <Card className="user-center-card"><Spin /></Card>;
+  if (loading) return <Card className="user-center-card"><Skeleton active paragraph={{ rows: 8 }} /></Card>;
 
   // 配置接口异常时按站点默认值渲染，不再误报「插件未开启 / 未就绪」
   const cfgSafe: ShopConfig = cfg || {

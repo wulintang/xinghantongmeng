@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Col, Flex, List, Row, Space, Tag, Typography } from 'antd'
+import { Alert, Avatar, Button, Card, Col, Flex, List, Row, Tag, Typography } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { SearchBox, AdSlotSkeleton } from '@components/common';
+import { PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -76,18 +76,12 @@ const HomePage: React.FC = () => {
 
     return (
         <Flex vertical gap={28}>
-            <div className="home-hero">
-                <Title level={2} className="home-hero-title">
-                    {heroTitle}
-                </Title>
-                <Paragraph type="secondary" className="home-hero-desc">
-                    {heroDesc}
-                </Paragraph>
+            <PageHeader title={heroTitle} description={heroDesc}>
                 <div className="home-hero-search">
-                    <SearchBox placeholder="搜索收录的站点" gotoPage="/websites" />
+                    <SearchBox placeholder="搜索全站站点、文章、技能、集市" gotoPage="/search" />
                 </div>
                 {cates.length > 0 ? (
-                    <Space size={[8, 8]} wrap className="home-hero-cates">
+                    <div className="home-hero-cates">
                         <Text type="secondary">网址分类：</Text>
                         {cates.map((c) => (
                             <AppTooltip title={c.name}>
@@ -96,9 +90,9 @@ const HomePage: React.FC = () => {
                                 </Link>
                             </AppTooltip>
                         ))}
-                    </Space>
+                    </div>
                 ) : null}
-            </div>
+            </PageHeader>
 
             <AdSlotSkeleton slot="home_top" />
 

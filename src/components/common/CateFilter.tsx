@@ -1,17 +1,19 @@
 import React from 'react';
-import { Segmented } from 'antd';
+import { Flex } from 'antd';
 
 import type { CateItem } from '@/services/userCenter';
 
 interface CateFilterProps {
     cates: CateItem[];
-    /** 当前选中的分类 id（字符串），空串表示全部 */
     value: string;
     onChange: (value: string) => void;
     allLabel?: string;
 }
 
-/** 分类筛选（数据来自后端 my_website_cate / my_article_cate / app_toolbox_cate） */
+/**
+ * 分类筛选：可换行胶囊（替代会横向滚动的 Segmented）。
+ * 移动端自然折行，不再出现横向滚动条；样式 token 化，随深浅模式翻色（见 .cate-chip）。
+ */
 export default function CateFilter({
     cates,
     value,
@@ -20,17 +22,23 @@ export default function CateFilter({
 }: CateFilterProps): React.JSX.Element | null {
     if (!cates || cates.length === 0) return null;
 
-    const options = [
+    const items = [
         { label: allLabel, value: '' },
         ...cates.map((c) => ({ label: c.name, value: String(c.id) })),
     ];
 
     return (
-        <Segmented
-            className="cate-filter"
-            options={options}
-            value={value}
-            onChange={(v) => onChange(String(v))}
-        />
+        <Flex wrap gap={8} className="cate-filter-wrap">
+            {items.map((it) => (
+                <button
+                    key={it.value}
+                    type="button"
+                    className={`cate-chip${value === it.value ? ' cate-chip--active' : ''}`}
+                    onClick={() => onChange(it.value)}
+                >
+                    {it.label}
+                </button>
+            ))}
+        </Flex>
     );
 }

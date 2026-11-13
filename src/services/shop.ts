@@ -215,10 +215,11 @@ export function getShopConfig() {
 }
 
 /** 公开：独立集市 / 首页积分区块的全站在售商品（分页 + 类目 + 关键词） */
-export function getMallList(params: { cate?: string; kw?: string; page?: number; limit?: number } = {}) {
+export function getMallList(params: { cate?: string; kw?: string; page?: number; limit?: number; uid?: number | string } = {}) {
   const q = new URLSearchParams();
   if (params.cate && params.cate !== 'all') q.append('cate', params.cate);
   if (params.kw) q.append('kw', params.kw);
+  if (params.uid) q.append('uid', String(params.uid));
   q.append('page', String(params.page || 1));
   q.append('limit', String(params.limit || 12));
   return request<ApiResp<{

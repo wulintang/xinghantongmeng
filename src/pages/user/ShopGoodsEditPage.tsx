@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert, Button, Card, Flex, Input, Modal, Select, Spin, Typography, Upload, message,
+  Alert, Button, Card, Flex, Input, Modal, Select, Skeleton, Typography, Upload, message,
 } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MdEditor } from 'md-editor-rt';
@@ -278,7 +278,7 @@ const ShopGoodsEditPage: React.FC = () => {
   if (loading) {
     return (
       <div className="article-edit-fullscreen">
-        <Flex justify="center" style={{ padding: 'var(--space-10)' }}><Spin /></Flex>
+        <Skeleton active paragraph={{ rows: 8 }} style={{ padding: 'var(--space-10)' }} />
       </div>
     );
   }

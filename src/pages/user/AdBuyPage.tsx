@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Alert, Button, Card, Form, Input, Select, Spin, Typography, message } from 'antd';
+import { Alert, Button, Card, Form, Input, Select, Skeleton, Typography, message } from 'antd';
 import { getToken } from '@/utils/auth';
 import { getPosition, applyAd, AD_PLANS, planPrice, type AdPayPosition } from '@/services/adpay';
 import AdImgUpload from '@/components/common/AdImgUpload';
@@ -59,7 +59,7 @@ export default function AdBuyPage(): React.JSX.Element {
   if (!slot) {
     return <Alert type="error" message="缺少广告位参数（slot）" />;
   }
-  if (loading) return <Spin style={{ display: 'block', margin: '40px auto' }} />;
+  if (loading) return <Skeleton active paragraph={{ rows: 8 }} style={{ padding: '40px 0' }} />;
   if (!pos) {
     return <Alert type="warning" message="该广告位不存在或未开放申请" />;
   }

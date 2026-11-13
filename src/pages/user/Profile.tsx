@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, message, Radio, Spin, List, Modal, Space } from 'antd';
+import { Form, Input, Button, Card, Typography, message, Radio, Skeleton, List, Modal, Space } from 'antd';
 import { updateUserProfile, userLogout, sendCode, bindPhone, changeMail, changePassword } from '@/services/userCenter';
 import { getToken, clearToken } from '@/utils/auth';
 import { useMember } from '@/context/MemberContext';
@@ -188,7 +188,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="center-pad-60">
-        <Spin />
+        <Skeleton active paragraph={{ rows: 8 }} />
       </div>
     );
   }

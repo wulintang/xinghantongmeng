@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Flex, Input, Modal, Select, Spin, Tag, Typography, message,
+  Alert, Avatar, Button, Card, Flex, Input, Modal, Select, Tag, Typography, message,
 } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -10,10 +10,11 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { getToken } from '@/utils/auth';
 import { toggleFavorite, readFaved, submitReport } from '@/services/userCenter';
 import {
-  getGoodsDetail, getAddresses, buyGoods, genOrderSn,
-  cateNameFrom, type GoodsItem, type AddressItem,
+  getGoodsDetail, getShopInfo, getAddresses, buyGoods, genOrderSn,
+  cateNameFrom, type GoodsItem, type AddressItem, type ShopItem,
 } from '@/services/shop';
 import type { ShopConfig } from '@/services/shop';
+import { ShopGoodsDetailSkeleton } from '@components/common/skeleton';
 
 const { Text, Title } = Typography;
 
@@ -26,6 +27,7 @@ const ShopGoodsDetailPage: React.FC = () => {
 
   const [cfg, setCfg] = useState<ShopConfig | null>(null);
   const [detail, setDetail] = useState<GoodsItem | null>(null);
+  const [shop, setShop] = useState<ShopItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [faved, setFaved] = useState(false);
@@ -44,8 +46,14 @@ const ShopGoodsDetailPage: React.FC = () => {
     setLoading(true);
     getGoodsDetail(id)
       .then((r: any) => {
-        if (r.code === 1 && r.data) setDetail(r.data);
-        else message.warning(r.msg || '商品不存在或已下架');
+        if (r.code === 1 && r.data) {
+          setDetail(r.data);
+          if (r.data.uid) {
+            getShopInfo(r.data.uid)
+              .then((sr: any) => { if (sr.code === 1 && sr.data) setShop(sr.data); })
+              .catch(() => {});
+          }
+        } else message.warning(r.msg || '商品不存在或已下架');
       })
       .catch(() => message.warning('商品详情加载失败'))
       .finally(() => setLoading(false));
@@ -150,11 +158,7 @@ const ShopGoodsDetailPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="shop-detail-page">
-        <div className="shop-loading"><Spin size="large" /></div>
-      </div>
-    );
+    return <ShopGoodsDetailSkeleton />;
   }
   if (!detail) {
     return (
@@ -219,6 +223,35 @@ const ShopGoodsDetailPage: React.FC = () => {
           </div>
         ) : null}
       </Card>
+
+      {shop ? (
+        <Card className="shop-detail-shop" style={{ marginTop: 'var(--space-4)' }}>
+          <Flex gap={16} align="center" wrap>
+            <Avatar
+              size={56}
+              shape="square"
+              src={shop.logo || undefined}
+              style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
+            >
+              {(shop.shop_name || '店').slice(0, 1)}
+            </Avatar>
+            <Flex vertical gap={4} style={{ flex: 1, minWidth: 200 }}>
+              <Flex align="center" gap={8} wrap>
+                <Text strong style={{ fontSize: 'var(--fs-lg)' }}>{shop.shop_name || '店铺'}</Text>
+                <Tag color={Number(shop.status) === 1 ? 'green' : 'default'}>
+                  {Number(shop.status) === 1 ? '营业中' : '未营业'}
+                </Tag>
+              </Flex>
+              <Text type="secondary" ellipsis={{ rows: 2 }}>
+                {shop.intro || '该店铺暂未填写简介'}
+              </Text>
+            </Flex>
+            <Button type="primary" ghost onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
+              进入店铺
+            </Button>
+          </Flex>
+        </Card>
+      ) : null}
 
       <Modal
         title={detail ? `举报「${detail.title}」` : '举报商品'}

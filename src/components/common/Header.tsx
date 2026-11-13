@@ -42,7 +42,8 @@ export default function Header(): React.JSX.Element {
     const navigate = useNavigate();
     const location = useLocation();
     const screens = Grid.useBreakpoint();
-    const isMobile = !screens.md;
+    // 中端宽度（768–1000px）横向导航 + 登录注册按钮放不下会被裁切，故把抽屉(汉堡)触发点提高到 lg(992px)
+    const isMobile = !screens.lg;
     const { site, topLinks } = useSite();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [token, setToken] = useState<string>(() => getToken());

@@ -426,7 +426,7 @@ const ShopManagePage: React.FC = () => {
                 <div style={{ marginBottom: 'var(--space-3)' }}>
                   <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/shop/goods-edit')}>新增商品</Button>
                 </div>
-                <Table rowKey="id" size="small" dataSource={goods} columns={goodsColumns} pagination={false}
+                <Table rowKey="id" size="small" dataSource={goods} columns={goodsColumns} pagination={false} scroll={{ x: 'max-content' }}
                   locale={{ emptyText: <Empty description="还没有商品" /> }} />
               </div>
             ),
@@ -435,7 +435,7 @@ const ShopManagePage: React.FC = () => {
             key: 'ship',
             label: '订单发货',
             children: (
-              <Table rowKey="id" size="small" dataSource={orders} columns={orderColumns} pagination={false}
+              <Table rowKey="id" size="small" dataSource={orders} columns={orderColumns} pagination={false} scroll={{ x: 'max-content' }}
                 locale={{ emptyText: <Empty description="暂无订单" /> }} />
             ),
           },
@@ -443,7 +443,7 @@ const ShopManagePage: React.FC = () => {
             key: 'addr',
             label: '收货地址',
             children: (
-              <Table rowKey="id" size="small" dataSource={orders} columns={addressColumns} pagination={false}
+              <Table rowKey="id" size="small" dataSource={orders} columns={addressColumns} pagination={false} scroll={{ x: 'max-content' }}
                 locale={{ emptyText: <Empty description="暂无实体交付订单" /> }} />
             ),
           },

@@ -104,6 +104,7 @@ export default function CheckinPage() {
         className="hidden-mobile"
         size="small"
         pagination={false}
+        scroll={{ x: 'max-content' }}
         rowKey="id"
         dataSource={list}
         columns={[
@@ -155,6 +156,7 @@ export default function CheckinPage() {
         className="hidden-mobile"
         size="small"
         pagination={false}
+        scroll={{ x: 'max-content' }}
         rowKey="uid"
         loading={rankLoading}
         dataSource={rankList}

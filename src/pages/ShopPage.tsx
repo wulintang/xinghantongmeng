@@ -112,7 +112,7 @@ const ShopPage: React.FC = () => {
       <PageHeader
         title="用户集市"
         description={cfg?.mall_notice || '域名、商标、软著、作品著作权与源码等虚拟资产交易，使用账号余额结算，平台统一担保与审核。'}
-        crumbs={[{ label: '首页', to: '/' }]}
+        crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
         extra={<Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
       />
 
@@ -149,7 +149,7 @@ const ShopPage: React.FC = () => {
         <>
           <Row gutter={[16, 16]} align="stretch">
             {list.map((g) => (
-              <Col key={g.id} xs={24} sm={12} md={8} lg={6}>{renderCard(g)}</Col>
+              <Col key={g.id} xs={12} sm={12} md={8} lg={6}>{renderCard(g)}</Col>
             ))}
           </Row>
           <Flex justify="center" className="shop-pager">

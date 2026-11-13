@@ -137,7 +137,7 @@ const ColumnArticleDetailPage: React.FC = () => {
   if (loading) {
     return (
       <Flex vertical gap={20}>
-        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
+        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
         <Card loading />
       </Flex>
     );
@@ -145,7 +145,7 @@ const ColumnArticleDetailPage: React.FC = () => {
   if (error || !item) {
     return (
       <Flex vertical gap={16}>
-        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
+        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
         <Alert type="warning" showIcon message={error || '文章不存在'} />
         <div>
           <Button onClick={() => navigate('/article')}>返回专栏</Button>
@@ -160,7 +160,7 @@ const ColumnArticleDetailPage: React.FC = () => {
         title={item.title}
         crumbs={[
           { label: '首页', to: '/' },
-          { label: '专栏', to: '/article' },
+          { label: '用户专栏', to: '/article' },
           { label: item.title },
         ]}
         extra={

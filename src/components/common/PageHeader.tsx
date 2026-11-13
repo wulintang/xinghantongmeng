@@ -1,7 +1,5 @@
 import React from 'react';
-import { Breadcrumb, Flex, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';
-import { Link } from 'react-router-dom';
+import { Flex, Typography } from 'antd'
 
 const { Title, Paragraph } = Typography;
 
@@ -17,17 +15,10 @@ interface PageHeaderProps {
     extra?: React.ReactNode;
 }
 
-/** 统一页面头部：面包屑 + 标题 + 描述 + 右侧操作区 */
+/** 统一页面头部：标题 + 描述 + 右侧操作区（面包屑已全站移除，不再渲染） */
 export default function PageHeader({ title, description, crumbs, extra }: PageHeaderProps): React.JSX.Element {
     return (
         <Flex vertical gap={12} className="page-header">
-            {crumbs && crumbs.length > 0 ? (
-                <Breadcrumb
-                    items={crumbs.map((c) => ({
-                        title: c.to ? <AppTooltip title={c.label}><Link to={c.to}>{c.label}</Link></AppTooltip> : c.label,
-                    }))}
-                />
-            ) : null}
             <Flex justify="space-between" align="center" gap={16} wrap>
                 <Flex vertical gap={4} className="page-header-main">
                     <Title level={3} className="page-title">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Flex, Modal, Spin, Tag, Typography, message,
+  Alert, Button, Card, Flex, Input, Modal, Select, Spin, Tag, Typography, message,
 } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -172,7 +172,7 @@ const ShopGoodsDetailPage: React.FC = () => {
         extra={<Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
       />
       <Card className="shop-detail-card">
-        <Flex gap={24} wrap>
+        <Flex gap={24} wrap className="shop-detail-flex">
           {detail.cover ? (
             <div className="shop-detail-cover"><img src={detail.cover} alt={detail.title} /></div>
           ) : (

@@ -29,8 +29,8 @@ const ColumnsPage: React.FC = () => {
   const [articlesMap, setArticlesMap] = useState<Record<number, ColumnArticleItem[]>>({});
 
   usePageMeta({
-    title: '专栏',
-    keywords: '专栏, 用户专栏, 作者专栏',
+    title: '用户专栏',
+    keywords: '用户专栏, 作者专栏, 专栏矩阵',
     description: '兴汉联盟用户与官方创建的专栏矩阵。',
   });
 
@@ -91,15 +91,15 @@ const ColumnsPage: React.FC = () => {
   return (
     <Flex vertical gap={20}>
       <PageHeader
-        title="专栏"
+        title="用户专栏"
         description="作者与官方创建的专栏矩阵"
-        crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }]}
+        crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }]}
       />
 
       {loading ? (
         <Row gutter={[16, 16]} align="stretch">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Col key={i} xs={24} sm={12} md={8}>
+            <Col key={i} xs={12} sm={12} md={8}>
               <Card loading />
             </Col>
           ))}
@@ -111,7 +111,7 @@ const ColumnsPage: React.FC = () => {
           {list.map((c) => {
             const arts = articlesMap[c.id] || [];
             return (
-              <Col key={c.id} xs={24} sm={12} md={8}>
+              <Col key={c.id} xs={12} sm={12} md={8}>
                 <Card
                   hoverable
                   className="column-card"

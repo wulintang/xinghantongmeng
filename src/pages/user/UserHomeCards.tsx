@@ -37,7 +37,7 @@ function UserSitesTab({ loading, sites }: { loading: boolean; sites: MemberSiteI
   return (
     <Row gutter={[16, 16]}>
       {sites.map((s) => (
-        <Col key={s.id} xs={24} sm={12} md={8}>
+        <Col key={s.id} xs={12} sm={12} md={8}>
           <Link to={`/${domainOf(s)}`} className="member-site-card">
             <Avatar shape="square" size={48} src={s.ico || s.pic || undefined}>
               {(s.title || s.www || '?').slice(0, 1)}
@@ -62,7 +62,7 @@ function UserColumnsTab({ loading, columns }: { loading: boolean; columns: Colum
   return (
     <Row gutter={[16, 16]}>
       {columns.map((c) => (
-        <Col key={c.id} xs={24} sm={12} md={8}>
+        <Col key={c.id} xs={12} sm={12} md={8}>
           <Link to={columnLink(c)} className="member-column-card">
             <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
               {(c.name || '?').slice(0, 1)}
@@ -84,7 +84,7 @@ function UserSkillsTab({ loading, skills }: { loading: boolean; skills: any[] })
   return (
     <Row gutter={[16, 16]}>
       {skills.map((s) => (
-        <Col key={s.id} xs={24} sm={12} md={8}>
+        <Col key={s.id} xs={12} sm={12} md={8}>
           <Link to={s.toolbox_id ? `/tools/${s.toolbox_id}` : '/tools'} className="member-site-card">
             <Avatar shape="square" size={48} src={s.pic || undefined}>
               {(s.title || '?').slice(0, 1)}
@@ -237,7 +237,7 @@ function UserShopTab({ uid }: { uid: string }) {
       ) : (
         <Row gutter={[16, 16]}>
           {shown.map((g) => (
-            <Col key={g.id} xs={24} sm={12} md={8}>
+            <Col key={g.id} xs={12} sm={12} md={8}>
               <Card size="small" style={{ height: '100%' }}>
                 <Flex vertical gap={6}>
                   <Flex align="center" justify="space-between" gap={8}>
@@ -366,7 +366,7 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
           defaultActiveKey={new URLSearchParams(window.location.search).get('tab') === 'shop' ? 'shop' : 'sites'}
           items={[
             { key: 'sites', label: '站点', children: <UserSitesTab loading={!!loading.sites} sites={sites} /> },
-            { key: 'columns', label: '专栏', children: <UserColumnsTab loading={!!loading.columns} columns={columns} /> },
+            { key: 'columns', label: '用户专栏', children: <UserColumnsTab loading={!!loading.columns} columns={columns} /> },
             { key: 'skills', label: '技能', children: <UserSkillsTab loading={!!loading.skills} skills={skills} /> },
             { key: 'shop', label: '集市', children: <UserShopTab uid={info?.id ? String(info.id) : ''} /> },
           ]}

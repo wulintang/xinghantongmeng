@@ -111,7 +111,7 @@ const ColumnDetailPage: React.FC = () => {
   if (loading) {
     return (
       <Flex vertical gap={20}>
-        <PageHeader title="专栏详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
+        <PageHeader title="专栏详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
         <Card loading />
       </Flex>
     );
@@ -120,7 +120,7 @@ const ColumnDetailPage: React.FC = () => {
   if (error || !column) {
     return (
       <Flex vertical gap={16}>
-        <PageHeader title="专栏详情" crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: '详情' }]} />
+        <PageHeader title="专栏详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
         <Alert type="warning" showIcon message={error || '专栏不存在'} />
         <div>
           <Link to="/article">返回专栏列表</Link>
@@ -133,7 +133,7 @@ const ColumnDetailPage: React.FC = () => {
     <Flex vertical gap={20}>
       <PageHeader
         title={column.name}
-        crumbs={[{ label: '首页', to: '/' }, { label: '专栏', to: '/article' }, { label: column.name }]}
+        crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: column.name }]}
       />
 
       <AdSlotSkeleton slot="detail_column_top" />

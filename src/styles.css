@@ -1010,6 +1010,13 @@ body {
 
 .page-header-main {
   min-width: 0;
+  flex: 1;
+  align-items: center;
+  text-align: center;
+}
+.page-title,
+.page-desc {
+  text-align: center;
 }
 
 .page-title {
@@ -2677,6 +2684,13 @@ body {
   min-height: 0;
   height: 100%;
 }
+/* 编辑页的 MdEditor 被 .rx-md-view 包裹，必须给包裹层加高度模型，否则编辑器塌成一条 */
+.article-edit-editor .rx-md-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 /* ===== 技能统一聊天框：全站唯一一套，所有技能共用，深浅只翻站点变量 ===== */
 .skill-chat {
@@ -2909,3 +2923,66 @@ body {
   border-radius: var(--container-radius);
 }
 .shop-goods-list .ant-table-thead > tr > th { background: var(--c-bg-soft); }
+
+/* ============================================================
+   响应式基线（全站统一收敛：头部 / 容器 gutter / 标题 / 详情图 / 移动端间距）
+   —— 避免各页面各自为战导致错位、不和谐
+   ============================================================ */
+img { max-width: 100%; }
+
+/* 中端（768–991px）：Header 断点已抬到 lg，这里仅收紧头部间距，杜绝溢出裁切 */
+@media (max-width: 991px) {
+  .site-header-inner { gap: var(--space-3); }
+  .site-logo-text { font-size: var(--fs-md); }
+}
+
+/* 移动端（≤768px）：统一收窄容器 gutter 与区块间距，标题降级，详情图全宽 */
+@media (max-width: 768px) {
+  :root { --page-gap: 16px; }
+  .container { padding: 0 var(--space-3); }
+  .site-content { padding: var(--space-4) 0; }
+  .page-header { gap: var(--space-3); }
+  .page-title { font-size: var(--fs-xl); }
+  .page-desc { font-size: var(--fs-sm); }
+  .shop-detail-page { padding: var(--space-3); }
+  .shop-detail-page .shop-detail-cover { width: 100%; }
+  .detail-shot-side { width: 100%; max-width: 100%; }
+  .article-edit-top { gap: var(--space-2); }
+  .shop-hero { padding: var(--space-4); gap: var(--space-4); }
+}
+
+/* 小屏（≤480px）：进一步收窄容器，收缩头部按钮，避免 logo + 登录/注册被挤爆 */
+@media (max-width: 480px) {
+  .container { padding: 0 10px; }
+  .page-title { font-size: var(--fs-lg); }
+  .site-header-inner { gap: var(--space-2); }
+  .site-user .ant-btn { padding-inline: 10px; }
+}
+
+/* 详情双栏（网址 / 商品）：平板与手机下改为竖向堆叠，杜绝「预览图比文字宽」的不和谐 */
+@media (max-width: 768px) {
+  .website-detail-head { flex-direction: column !important; align-items: stretch !important; }
+  .website-detail-head .detail-shot-side { width: 100% !important; max-width: 100% !important; }
+  .shop-detail-flex { gap: var(--space-4) !important; }
+  .shop-detail-page .shop-detail-cover { margin: 0 auto; }
+}
+
+/* 任意 antd 表格在手机端可横向滚动兜底（CardTable 已内置 scroll，这里覆盖其余裸 Table） */
+@media (max-width: 768px) {
+  .ant-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* 平板（≤991px）：容器与内容内边距收窄，栅格更紧凑 */
+@media (max-width: 991px) {
+  .container { padding: 0 var(--space-4); }
+  .site-content { padding: var(--space-5) 0; }
+}
+
+/* 移动端：表单控件与操作区更紧凑，避免按钮被挤换行 */
+@media (max-width: 768px) {
+  .page-header .ant-flex { flex-wrap: wrap; }
+  .shop-filter-card .ant-form-item { margin-bottom: var(--space-3); }
+  .skill-chat-input { flex-direction: column; align-items: stretch; }
+  .skill-chat-input > button { width: 100%; }
+}
+

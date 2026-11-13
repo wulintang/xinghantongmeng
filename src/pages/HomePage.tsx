@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
                 ) : (
                     <Row gutter={[16, 16]}>
                         {sites.map((w) => (
-                            <Col key={w.id} xs={24} sm={12} md={8} lg={6}>
+                            <Col key={w.id} xs={12} sm={12} md={8} lg={6}>
                                 <Card className="site-card" size="small">
                                     <Flex vertical gap={10}>
                                         <Flex align="center" gap={10}>
@@ -274,7 +274,7 @@ const HomePage: React.FC = () => {
                 ) : (
                     <Row gutter={[16, 16]}>
                         {mallGoods.map((g) => (
-                            <Col key={g.id} xs={24} sm={12} md={8} lg={6}>
+                            <Col key={g.id} xs={12} sm={12} md={8} lg={6}>
                                 <Card
                                     hoverable
                                     className="shop-goods-card"

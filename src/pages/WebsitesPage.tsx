@@ -115,7 +115,7 @@ const WebsitesPage: React.FC = () => {
                     <Row gutter={[16, 16]} align="stretch">
                         {list.map((w, i) => (
                             <React.Fragment key={w.id}>
-                                <Col xs={24} sm={12} md={8}>
+                                <Col xs={12} sm={12} md={8}>
                                 <Card className="site-card">
                                     <Flex vertical gap={12}>
                                         <Flex align="center" gap={12}>

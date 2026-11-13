@@ -336,12 +336,12 @@ const SubmitSkillPage: React.FC = () => {
                 </Space>
               </Form.Item>
               <Form.Item label="使用一次金额（元）" required>
-                <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
+                <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: '100%', maxWidth: 200 }} addonAfter="元/次" />
                 <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
               </Form.Item>
 
               <Form.Item label="导出一次金额（元）">
-                <InputNumber min={0} precision={2} step={0.01} value={exportRmb} onChange={(v) => setExportRmb(typeof v === 'number' ? v : 0)} style={{ width: 200 }} addonAfter="元/次" />
+                <InputNumber min={0} precision={2} step={0.01} value={exportRmb} onChange={(v) => setExportRmb(typeof v === 'number' ? v : 0)} style={{ width: '100%', maxWidth: 200 }} addonAfter="元/次" />
                 <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次导出该技能 SKILL.md 按此金额从余额扣费。开启「允许导出」后此价格对外可见。</div>
               </Form.Item>
 

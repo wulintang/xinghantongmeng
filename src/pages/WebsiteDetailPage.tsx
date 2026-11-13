@@ -225,7 +225,7 @@ const WebsiteDetailPage: React.FC = () => {
             <AdSlotSkeleton slot="detail_website_top" />
 
             <Card>
-                <Flex gap={20} align="flex-start" wrap>
+                <Flex gap={20} align="flex-start" wrap className="website-detail-head">
                     <Avatar shape="square" size={72} src={item.ico || item.pic || undefined}>
                         {(item.title || item.name || '?').slice(0, 1)}
                     </Avatar>
@@ -337,7 +337,7 @@ const WebsiteDetailPage: React.FC = () => {
                 <Card title="相关站点">
                     <Row gutter={[16, 16]}>
                         {related.map((r) => (
-                            <Col key={r.id} xs={24} sm={12} md={8}>
+                            <Col key={r.id} xs={12} sm={12} md={8}>
                                 <AppTooltip title={r.name || r.title}>
                                     <Link to={`/${domainOf(r)}`} className="related-site-card">
                                     <Avatar

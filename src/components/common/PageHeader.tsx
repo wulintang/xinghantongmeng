@@ -82,7 +82,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, ext
                     ) : null}
                     {children ? <div className="page-hero-children">{children}</div> : null}
                 </div>
-                <div className="page-hero-line" />
             </section>
             {extra ? (
                 <div className="page-hero-actions">

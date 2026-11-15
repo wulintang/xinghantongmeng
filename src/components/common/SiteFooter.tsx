@@ -118,8 +118,8 @@ export default function SiteFooter(): React.JSX.Element {
         <footer className="site-footer">
             <div className="container">
                 <Row gutter={[16, 16]}>
-                    <Col xs={24} md={10}>
-                        <Flex vertical gap={12}>
+                    <Col xs={24} md={8}>
+                        <Flex vertical gap={12} align="flex-start">
                             <Flex align="center" gap={10}>
                                 {site?.logo ? (
                                     <img src={site.logo} alt={site.title || ''} className="site-footer-logo" />
@@ -133,16 +133,14 @@ export default function SiteFooter(): React.JSX.Element {
                         </Flex>
                     </Col>
 
-                    <Col xs={12} sm={12} md={7}>
+                    <Col xs={12} sm={12} md={8}>
                         <LinkColumn title="站内导航" items={siteNav} />
                     </Col>
 
-                    <Col xs={12} sm={12} md={7}>
+                    <Col xs={12} sm={12} md={8}>
                         <LinkColumn title="友情链接" items={friendPreview} emptyText="暂无友情链接" />
                     </Col>
                 </Row>
-
-                <Divider className="site-footer-divider" />
 
                 <Flex className="site-footer-bottom" justify="space-between" align="center" gap={12} wrap>
                     <Text type="secondary">

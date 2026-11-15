@@ -73,15 +73,8 @@ export default function UpdatePage(): React.JSX.Element {
         <div className="update-page">
             <PageHeader
                 title="更新日志"
-                description="兴汉联盟历次迭代记录，按日期与改动类型分组展示。"
+                description={`当前版本：兴汉联盟 ${latestSha ? latestSha : ''} · 共 ${total} 次迭代，按日期与类型分组展示。`}
             />
-
-            <p className="update-subtitle">
-                当前版本：兴汉联盟{' '}
-                {latestSha ? <span className="update-version">{latestSha}</span> : null}
-                <br />
-                共 {total} 次迭代，按日期与类型分组展示。
-            </p>
 
             {loading ? (
                 <div className="update-state">加载中…</div>

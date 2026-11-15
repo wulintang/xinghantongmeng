@@ -23,6 +23,13 @@ interface PageHeaderProps {
 }
 
 const BG_COUNT = 39;
+/** 主推背景：39.html 命中权重 80%（永久生效）；其余 1~38 平分剩余 20% */
+const FEATURED_BG = 39;
+const FEATURED_WEIGHT = 0.8;
+function pickBgNum(): number {
+    if (Math.random() < FEATURED_WEIGHT) return FEATURED_BG;
+    return Math.floor(Math.random() * (BG_COUNT - 1)) + 1; // 1~38，排除 39
+}
 
 /**
  * 静态资源基准：背景动画 html 由「后端」(api.hao.dao.js.cn) 的 public/static/html 提供，
@@ -42,7 +49,7 @@ const STATIC_BASE: string =
  * - 操作胶囊（extra）移出 hero，落到 hero 下方的统一操作条。
  */
 const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, extra, children }) => {
-    const bgNum = useMemo(() => Math.floor(Math.random() * BG_COUNT) + 1, []);
+    const bgNum = useMemo(pickBgNum, []);
     const bgSrc = `${STATIC_BASE}/public/static/html/${bgNum}.html`;
     // 延后赋值 src，避免首屏与关键 JS 分片争抢连接（与「首屏卡死」解耦，纯防御性优化）
     const [src, setSrc] = useState('');
@@ -62,6 +69,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, ext
                         className="page-hero-bg"
                         src={src}
                         title="random-background"
+                        scrolling="no"
                         onError={() => setFailed(true)}
                     />
                 ) : null}

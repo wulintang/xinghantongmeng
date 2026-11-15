@@ -226,7 +226,7 @@ export default function LinksPage() {
 
     if (!isLogin) {
         return (
-            <div className="container site-content links-page">
+            <div className="links-page">
             {friendCard}
             {descCard}
             {applyNotice}
@@ -242,7 +242,7 @@ export default function LinksPage() {
     }
 
     return (
-        <div className="container site-content links-page">
+        <div className="links-page">
             {friendCard}
             {descCard}
             {applyNotice}

@@ -158,6 +158,7 @@ const ColumnArticleDetailPage: React.FC = () => {
     <Flex vertical gap={20}>
       <PageHeader
         title={item.title}
+        description={item.description}
         crumbs={[
           { label: '首页', to: '/' },
           { label: '用户专栏', to: '/article' },
@@ -197,9 +198,6 @@ const ColumnArticleDetailPage: React.FC = () => {
       </Space>
 
       <Card>
-        {item.description ? (
-          <Alert type="info" showIcon message={item.description} className="article-lead" />
-        ) : null}
         {item.content ? (
           <div className="detail-content md-content">
             <MdView id="column-article-preview" modelValue={item.content} />

@@ -95,19 +95,9 @@
   --c-canvas-line: rgba(0, 0, 0, 0.25);
 }
 
-/* ============================================================
-   全站间距「唯一值」强制（死命令）：
-   antd 的 Flex / Space 组件把 gap 写成内联样式（8/6/12/16/24...），
-   普通 CSS 无法覆盖内联，故用 !important 统一压到唯一令牌 --space
-   （桌面 16px / 移动端媒体查询翻成 --space-sm 12px）。
-   配合上方所有 --space-N 别名，全站 margin/padding/gap 收敛为同一个值。
-   ============================================================ */
-.ant-flex,
-.ant-space {
-  gap: var(--space) !important;
-  row-gap: var(--space) !important;
-  column-gap: var(--space) !important;
-}
+/* 已删除全局 gap !important 强制：它把区块「内部子级」间距也强行压成 16px，
+   撑大了网址导航 / 广场卡片的紫色空白区。区块外部间距已由 .site-content 统一控制，
+   区块内部间距交回各组件自身声明（gap={2}/{4}/{8} 等紧凑值）。 */
 
 body {
   margin: 0;
@@ -339,7 +329,6 @@ body {
 .ant-radio-group,
 .ant-tabs-nav {
   background: transparent !important;
-  gap: var(--space) !important;
 }
 
 /* 去掉 Tabs 底部横线 */
@@ -513,6 +502,8 @@ body {
 
 .site-content {
   min-height: calc(100vh - 260px);
+  /* 全站唯一一处：hero 与内容区之间的统一间距（所有页面一致，不再逐页打补丁） */
+  padding-top: var(--space);
 }
 
 .ad-slot-skeleton {
@@ -559,20 +550,6 @@ body {
 /* ============================================================
    更新日志页 /update
    ============================================================ */
-.update-subtitle {
-  text-align: center;
-  color: var(--c-text-2);
-  font-size: var(--fs-base);
-  line-height: var(--lh-relaxed);
-  margin: 0 0 var(--page-gap);
-}
-.update-subtitle a {
-  color: var(--c-link);
-}
-.update-version {
-  font-family: 'SFMono-Regular', Consolas, monospace;
-  color: var(--c-text-3);
-}
 .update-state {
   text-align: center;
   color: var(--c-text-3);
@@ -977,12 +954,15 @@ body {
 }
 
 /* ============================================================
-   页脚
+   页脚（结构重排：三栏均分 + 版权行分隔，非补丁）
+   - 顶部不再用 margin-top 叠加外边距，统一由内边距控制
+   - 三栏 md=8/8/8 等宽对齐，消除原 10/7/7 造成的左空右挤
+   - 版权行用 border-top 分隔，替代多余的 Divider
    ============================================================ */
 .site-footer {
-  margin-top: var(--page-gap);
   background: var(--c-bg-soft);
   border-top: 1px solid var(--c-border);
+  padding: var(--space) 0;
 }
 
 .site-footer-logo {
@@ -990,14 +970,8 @@ body {
   display: block;
 }
 
-.site-footer-brand {
-  margin: 0;
-}
-
-.site-footer-desc {
-  margin: 0;
-}
-
+.site-footer-brand,
+.site-footer-desc,
 .site-footer-col-title {
   margin: 0;
 }
@@ -1012,21 +986,20 @@ body {
 }
 }
 
-
 .site-footer-bottom {
   font-size: var(--fs-xs);
+  border-top: 1px solid var(--c-divider);
+  padding-top: var(--space);
+  margin-top: var(--space);
+  width: 100%;
 }
 
 @media (max-width: 768px) {
-  .site-footer {
-    padding: var(--space-4) 0;
-  }
-
   .site-footer-bottom {
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    gap: var(--space-2);
+    gap: var(--space);
   }
 }
 
@@ -1224,14 +1197,6 @@ body {
     width: 100%;
     max-width: 100%;
   }
-}
-
-.article-lead {
-  margin-bottom: var(--space);
-}
-
-.post-summary {
-  margin: 0;
 }
 
 /* ============================================================
@@ -2943,8 +2908,7 @@ body {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
 }
-/* 商品内页顶部留白：hero 平级后由 site-content 统一提供，这里再保证卡片不与 hero 贴边 */
-.shop-detail-page { padding-top: var(--space); }
+/* 商品内页顶部留白已由 .site-content 统一提供，不再单独打补丁 */
 /* 封面：有界 1:1 方图（桌面 320px、移动铺满），不随上传原图尺寸大小不一 */
 .shop-detail-page .shop-detail-cover {
   width: 320px;
@@ -3062,7 +3026,7 @@ img { max-width: 100%; }
 .page-hero {
   position: relative;
   width: 100%;
-  min-height: 240px;
+  min-height: 380px; /* 恢复老站点 hero 高度，上下更松 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3167,7 +3131,7 @@ img { max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .page-hero { min-height: 176px; }
+  .page-hero { min-height: 260px; }
   .page-hero-content { padding: var(--space-5) var(--page-gutter); }
   .page-hero-title.ant-typography { font-size: 22px !important; -webkit-text-stroke-width: 1.5px; }
   .page-hero-actions-inner { padding: var(--space-2) var(--page-gutter); }

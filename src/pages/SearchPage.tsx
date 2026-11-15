@@ -5,7 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { PageHeader, SearchBox } from '@components/common';
 import { getWebsites, getArticles, getTools } from '@/services/userCenter';
 import { getMallList } from '@/services/shop';
-import { domainOf } from '@/utils/route';
+import { assetUrl, domainOf } from '@/utils/route';
 
 const { Text } = Typography;
 
@@ -29,7 +29,11 @@ const TAB_ORDER: SearchType[] = ['site', 'article', 'tool', 'mall'];
 
 function ResultCard({ type, item }: { type: SearchType; item: any }): React.ReactNode {
     const title = item?.title || item?.name || '未命名';
-    const pic = item?.pic || item?.ico || item?.cover || item?.image || undefined;
+    // 网址结果：ico 才是站点 favicon，pic 是网站整页截图；必须 ico 优先，否则截图被当 logo（与全站一致）
+    const rawPic = type === 'site'
+        ? (item?.ico || item?.pic)
+        : (item?.pic || item?.ico || item?.cover || item?.image);
+    const pic = assetUrl(rawPic) || undefined;
     const desc =
         item?.summary ||
         item?.description ||

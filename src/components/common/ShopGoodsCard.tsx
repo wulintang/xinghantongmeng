@@ -32,7 +32,7 @@ const ShopGoodsCard: React.FC<ShopGoodsCardProps> = ({ item, cfg, onOpen }) => {
         )
       }
     >
-      <Flex vertical style={{ flex: 1 }}>
+      <Flex vertical className="u-flex-1">
         <AppTooltip title={item.title}>
           <Text strong className="shop-goods-title">{item.title}</Text>
         </AppTooltip>

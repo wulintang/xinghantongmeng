@@ -116,7 +116,7 @@ const ToolsPage: React.FC = () => {
                                         >
                                             {plainText(t.content) || '暂无说明'}
                                         </Paragraph>
-                                        <Space size={[4, 4]} wrap style={{ justifyContent: 'center' }}>
+                                        <Space size={[4, 4]} wrap className="u-justify-center">
                                             <Tag color={Number(t.ai) === 1 ? 'purple' : 'blue'}>
                                                 {Number(t.ai) === 1 ? 'AI 技能' : '在线工具'}
                                             </Tag>

@@ -5,8 +5,8 @@ import { Skeleton } from 'antd';
 export default function GridSkeleton(): React.JSX.Element {
     return (
         <div className="sk-page grid-page">
-            <Skeleton.Image active style={{ width: '100%', height: 360, borderRadius: 12 }} />
-            <Skeleton active title={false} paragraph={{ rows: 2, width: ['60%', '40%'] }} style={{ marginTop: 16 }} />
+            <Skeleton.Image active className="u-w-100 u-h-360px u-radius-12px" />
+            <Skeleton active title={false} paragraph={{ rows: 2, width: ['60%', '40%'] }} className="u-mt-16px" />
         </div>
     );
 }

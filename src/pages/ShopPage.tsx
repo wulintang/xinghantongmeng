@@ -79,7 +79,7 @@ const ShopPage: React.FC = () => {
         crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
         extra={shopUid
           ? <Button onClick={() => navigate('/shop')}>返回全部集市</Button>
-          : <Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
+          : undefined}
       />
 
       <Card className="shop-filter-card">

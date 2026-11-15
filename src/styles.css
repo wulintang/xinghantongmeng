@@ -29,6 +29,8 @@
   --space-sm: 12px;         /* 移动端唯一间距值 */
   --content-max: 1200px;    /* 内容最大宽度（头部/内容/页脚/hero 内/操作条内统一） */
   --capsule-h: 32px;        /* 全站胶囊（操作按钮）统一高度 */
+  --capsule-option-pad-x: 12px; /* 选项式胶囊单项左右内边距（Tab/Segmented/cate-chip 全站统一） */
+  --capsule-option-pad-y: 4px;  /* 选项式胶囊单项上下内边距（以「已签到」small 按钮为基准） */
 
   /* 边距 / 区块间距 / 间距 scale 全部别名到 --space，确保全站唯一值（移动端媒体查询里 --space 翻成 --space-sm） */
   --page-gap: var(--space);
@@ -336,8 +338,6 @@ body {
 .ant-segmented,
 .ant-radio-group,
 .ant-tabs-nav {
-  --capsule-option-pad-x: 16px;
-  --capsule-option-pad-y: 5px;
   background: transparent !important;
   gap: var(--space) !important;
 }
@@ -347,12 +347,12 @@ body {
   display: none !important;
 }
 
-/* Segmented */
+/* Segmented：胶囊尺寸以 Header「已签到」small 按钮为基准，不再用 --space（16px）撑大 */
 .ant-segmented-item {
   border-radius: var(--capsule-radius) !important;
   color: var(--capsule-brand) !important;
-  padding: var(--space) !important;
-  margin: 0 var(--space) !important;
+  padding: var(--capsule-option-pad-y) var(--capsule-option-pad-x) !important;
+  margin: 0 !important;
 }
 .ant-segmented-item-selected {
   background: var(--capsule-brand) !important;
@@ -388,12 +388,12 @@ body {
   display: none;
 }
 
-/* Tabs */
+/* Tabs：胶囊尺寸以 Header「已签到」small 按钮为基准 */
 .ant-tabs-nav .ant-tabs-tab {
   border-radius: var(--capsule-radius) !important;
   color: var(--capsule-brand) !important;
-  padding: var(--space) !important;
-  margin: 0 var(--space) !important;
+  padding: var(--capsule-option-pad-y) var(--capsule-option-pad-x) !important;
+  margin: 0 !important;
   border: none !important;
 }
 .ant-tabs-nav .ant-tabs-tab-active {
@@ -512,7 +512,6 @@ body {
 }
 
 .site-content {
-  padding: var(--page-gap) 0;
   min-height: calc(100vh - 260px);
 }
 
@@ -521,7 +520,6 @@ body {
   align-items: center;
   justify-content: center;
   aspect-ratio: 1200 / 120;
-  margin: var(--page-gap) 0;
   border: 1px dashed var(--c-border);
   border-radius: 8px;
   background: var(--c-bg-soft);
@@ -549,7 +547,6 @@ body {
   aspect-ratio: 1200 / 120;
   overflow: hidden;
   border-radius: 8px;
-  margin: var(--page-gap) 0;
 }
 .ad-slot-filled .ad-banner,
 .ad-slot-filled img {
@@ -562,9 +559,6 @@ body {
 /* ============================================================
    更新日志页 /update
    ============================================================ */
-.update-page {
-  padding: var(--page-gap) 0 calc(var(--page-gap) * 2);
-}
 .update-subtitle {
   text-align: center;
   color: var(--c-text-2);
@@ -850,14 +844,10 @@ body {
 .grid-canvas-empty {
   color: var(--c-text-3);
   font-size: var(--fs-sm);
-  padding: var(--page-gap) 0;
   text-align: center;
 }
 
 /* 首页底部格子区域（标题/查看更多放在 AdSlotSkeleton 外部，避免改变 1200×120 尺寸） */
-.home-grid-section {
-  margin: var(--page-gap) 0;
-}
 .home-grid-header {
   display: flex;
   align-items: center;
@@ -991,7 +981,6 @@ body {
    ============================================================ */
 .site-footer {
   margin-top: var(--page-gap);
-  padding: var(--page-gap) 0;
   background: var(--c-bg-soft);
   border-top: 1px solid var(--c-border);
 }
@@ -1023,10 +1012,6 @@ body {
 }
 }
 
-
-.site-footer-divider {
-  margin: var(--page-gap) 0;
-}
 
 .site-footer-bottom {
   font-size: var(--fs-xs);
@@ -1060,7 +1045,7 @@ body {
   border: 1px solid var(--c-border);
   background: var(--c-surface);
   color: var(--c-text-2);
-  padding: var(--space-1-5) var(--space-4);
+  padding: var(--capsule-option-pad-y) var(--capsule-option-pad-x);
   border-radius: 999px;
   font-size: var(--fs-sm);
   line-height: 1.4;
@@ -1068,11 +1053,14 @@ body {
   transition: color 0.15s, border-color 0.15s, background 0.15s;
   white-space: nowrap;
 }
-.cate-chip:hover {
-  color: var(--c-text);
-  border-color: var(--c-text-3);
+@media (hover: hover) and (pointer: fine) {
+  .cate-chip:hover:not(.cate-chip--active) {
+    color: var(--c-text);
+    border-color: var(--c-text-3);
+  }
 }
-.cate-chip--active {
+.cate-chip--active,
+.cate-chip--active:hover {
   background: var(--c-link);
   border-color: var(--c-link);
   color: #fff;
@@ -1091,7 +1079,6 @@ body {
    ============================================================ */
 .home-hero {
   text-align: center;
-  padding: var(--page-gap) 0;
 }
 
 .home-hero-title {
@@ -1702,6 +1689,16 @@ body {
 .user-center-table .ant-table .ant-table-cell {
   word-break: break-word !important;
   overflow-wrap: anywhere !important;
+}
+
+/* 用户中心商品名：单行省略（配合 AppTooltip 悬浮显示全称），避免长标题横滚 */
+.uc-ellipsis.ant-typography {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 
 .cardtable-list-item {
@@ -2946,6 +2943,8 @@ body {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
 }
+/* 商品内页顶部留白：hero 平级后由 site-content 统一提供，这里再保证卡片不与 hero 贴边 */
+.shop-detail-page { padding-top: var(--space); }
 /* 封面：有界 1:1 方图（桌面 320px、移动铺满），不随上传原图尺寸大小不一 */
 .shop-detail-page .shop-detail-cover {
   width: 320px;
@@ -3058,11 +3057,11 @@ img { max-width: 100%; }
    - 标题 + 描述垂直居中，外套明显半透明区块（深浅背景均可辨）
    - 底部统一样式横线，颜色跟随深浅模式（var(--c-border)）
    ============================================================ */
+/* hero 插槽：DOM 上与 head、container 平级，用 display:contents 不额外产生盒模型 */
+.page-hero-slot { display: contents; }
 .page-hero {
   position: relative;
-  width: 100vw;
-  left: 50%;
-  margin-left: -50vw;
+  width: 100%;
   min-height: 240px;
   display: flex;
   align-items: center;
@@ -3147,9 +3146,7 @@ img { max-width: 100%; }
 /* 操作胶囊移出 hero，落到下方统一操作条 */
 .page-hero-actions {
   position: relative;
-  width: 100vw;
-  left: 50%;
-  margin-left: -50vw;
+  width: 100%;
   background: var(--c-bg);
   border-bottom: 1px solid var(--c-border);
 }
@@ -3199,3 +3196,133 @@ img { max-width: 100%; }
 .search-result-title { display: block; }
 .search-result-desc { display: block; }
 
+
+/* ===== 全站内联样式收敛工具类（由 convert_inline.py 生成） ===== */
+.u-ar-1-1 { aspect-ratio: 1 / 1; }
+.u-bg-c-bg-2 { background: var(--c-bg-2); }
+.u-bg-c-bg-soft { background: var(--c-bg-soft); }
+.u-bg-c-link { background: var(--c-link); }
+.u-bg-transparent { background: transparent; }
+.u-border-1px-solid-c-border { border: 1px solid var(--c-border); }
+.u-border-none { border: none; }
+.u-bt-1px-solid-c-border { border-top: 1px solid var(--c-border); }
+.u-color-c-link { color: var(--c-link); }
+.u-color-c-text { color: var(--c-text); }
+.u-color-c-text-2 { color: var(--c-text-2); }
+.u-color-c-text-3 { color: var(--c-text-3); }
+.u-color-capsule-danger { color: var(--capsule-danger); }
+.u-color-fff { color: #fff; }
+.u-color-inherit { color: inherit; }
+.u-cursor-pointer { cursor: pointer; }
+.u-d-block { display: block; }
+.u-d-flex { display: flex; }
+.u-d-inline-flex { display: inline-flex; }
+.u-flex-0-0-auto { flex: 0 0 auto; }
+.u-flex-1 { flex: 1; }
+.u-flex-1-1-200px { flex: 1 1 200px; }
+.u-flex-1-1-480px { flex: 1 1 480px; }
+.u-flex-2-1-280px { flex: 2 1 280px; }
+.u-flex-none { flex: none; }
+.u-flexwrap-wrap { flex-wrap: wrap; }
+.u-fs-13px { font-size: 13px; }
+.u-fs-fs-base { font-size: var(--fs-base); }
+.u-fs-fs-lg { font-size: var(--fs-lg); }
+.u-fs-fs-sm { font-size: var(--fs-sm); }
+.u-fs-fs-xl { font-size: var(--fs-xl); }
+.u-fs-fs-xs { font-size: var(--fs-xs); }
+.u-fw-600 { font-weight: 600; }
+.u-gap-8px { gap: 8px; }
+.u-gap-space-2 { gap: var(--space-2); }
+.u-gap-space-4 { gap: var(--space-4); }
+.u-gap-space-6 { gap: var(--space-6); }
+.u-h-100 { height: 100%; }
+.u-h-120px { height: 120px; }
+.u-h-150px { height: 150px; }
+.u-h-30px { height: 30px; }
+.u-h-32px { height: 32px; }
+.u-h-34px { height: 34px; }
+.u-h-360px { height: 360px; }
+.u-h-48px { height: 48px; }
+.u-items-center { align-items: center; }
+.u-items-flex-start { align-items: flex-start; }
+.u-justify-center { justify-content: center; }
+.u-justify-space-between { justify-content: space-between; }
+.u-lh-1-7 { line-height: 1.7; }
+.u-lh-lh-base { line-height: var(--lh-base); }
+.u-m-0-0-10px { margin: 0 0 10px; }
+.u-m-0px { margin: 0px; }
+.u-m-4px-0-0 { margin: 4px 0 0; }
+.u-m-80px-auto { margin: 80px auto; }
+.u-maxh-160px { max-height: 160px; }
+.u-maxw-200px { max-width: 200px; }
+.u-maxw-240px { max-width: 240px; }
+.u-maxw-560px { max-width: 560px; }
+.u-mb-12px { margin-bottom: 12px; }
+.u-mb-4px { margin-bottom: 4px; }
+.u-mb-page-gap { margin-bottom: var(--page-gap); }
+.u-mb-space-1 { margin-bottom: var(--space-1); }
+.u-mb-space-2 { margin-bottom: var(--space-2); }
+.u-mb-space-3 { margin-bottom: var(--space-3); }
+.u-mb-space-4 { margin-bottom: var(--space-4); }
+.u-mb-space-5 { margin-bottom: var(--space-5); }
+.u-me-0px { margin-inline-end: 0px; }
+.u-minw-0px { min-width: 0px; }
+.u-minw-180px { min-width: 180px; }
+.u-minw-220px { min-width: 220px; }
+.u-minw-240px { min-width: 240px; }
+.u-minw-260px { min-width: 260px; }
+.u-minw-320px { min-width: 320px; }
+.u-ml-8px { margin-left: 8px; }
+.u-ml-space-3 { margin-left: var(--space-3); }
+.u-mr-10px { margin-right: 10px; }
+.u-mr-8px { margin-right: 8px; }
+.u-mt-0px { margin-top: 0px; }
+.u-mt-12px { margin-top: 12px; }
+.u-mt-16px { margin-top: 16px; }
+.u-mt-24px { margin-top: 24px; }
+.u-mt-2px { margin-top: 2px; }
+.u-mt-4px { margin-top: 4px; }
+.u-mt-6px { margin-top: 6px; }
+.u-mt-page-gap { margin-top: var(--page-gap); }
+.u-mt-space-2 { margin-top: var(--space-2); }
+.u-mt-space-3 { margin-top: var(--space-3); }
+.u-mt-space-4 { margin-top: var(--space-4); }
+.u-mt-space-5 { margin-top: var(--space-5); }
+.u-mt-space-8 { margin-top: var(--space-8); }
+.u-of-cover { object-fit: cover; }
+.u-ov-auto { overflow: auto; }
+.u-ov-hidden { overflow: hidden; }
+.u-p-0-4px { padding: 0 4px; }
+.u-p-0px { padding: 0px; }
+.u-p-12px-14px { padding: 12px 14px; }
+.u-p-40px-0 { padding: 40px 0; }
+.u-p-6px-18px { padding: 6px 18px; }
+.u-p-7px-12px { padding: 7px 12px; }
+.u-p-space-10 { padding: var(--space-10); }
+.u-p-space-6 { padding: var(--space-6); }
+.u-pos-absolute { position: absolute; }
+.u-pos-relative { position: relative; }
+.u-pt-10px { padding-top: 10px; }
+.u-px-0px { padding-inline: 0px; }
+.u-radius-12px { border-radius: 12px; }
+.u-radius-14px { border-radius: 14px; }
+.u-radius-4px { border-radius: 4px; }
+.u-radius-50 { border-radius: 50%; }
+.u-radius-8px { border-radius: 8px; }
+.u-right-24px { right: 24px; }
+.u-right-8px { right: 8px; }
+.u-ta-center { text-align: center; }
+.u-to-ellipsis { text-overflow: ellipsis; }
+.u-top-16px { top: 16px; }
+.u-top-8px { top: 8px; }
+.u-va-middle { vertical-align: middle; }
+.u-w-100 { width: 100%; }
+.u-w-100px { width: 100px; }
+.u-w-120px { width: 120px; }
+.u-w-30px { width: 30px; }
+.u-w-34px { width: 34px; }
+.u-w-48px { width: 48px; }
+.u-wb-break-all { word-break: break-all; }
+.u-ws-nowrap { white-space: nowrap; }
+.u-ws-pre-wrap { white-space: pre-wrap; }
+.u-z-1 { z-index: 1; }

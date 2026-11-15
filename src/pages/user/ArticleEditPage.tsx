@@ -258,7 +258,7 @@ const ArticleEditPage: React.FC = () => {
   if (loading) {
     return (
       <div className="article-edit-fullscreen">
-        <div style={{ padding: 'var(--space-10)' }}>
+        <div className="u-p-space-10">
           <Skeleton active paragraph={{ rows: 8 }} />
         </div>
       </div>
@@ -274,7 +274,7 @@ const ArticleEditPage: React.FC = () => {
           message="你还没有已通过的专栏"
           description="请先在「我的专栏」中创建并通过审核一个专栏，才能投稿。"
         />
-        <div style={{ marginTop: 'var(--space-3)' }}>
+        <div className="u-mt-space-3">
           <Button type="link" onClick={() => navigate('/user/columns')}>
             去我的专栏
           </Button>
@@ -287,7 +287,7 @@ const ArticleEditPage: React.FC = () => {
     <div className="article-edit-fullscreen">
       <div className="article-edit-top">
         <Flex justify="space-between" align="center" wrap gap={8}>
-          <Title level={5} style={{ margin: 0 }}>
+          <Title level={5} className="u-m-0px">
             {isEdit ? '编辑文章' : '投稿文章'}
           </Title>
           <Flex gap={8} wrap>
@@ -307,7 +307,7 @@ const ArticleEditPage: React.FC = () => {
         ) : null}
 
         <Flex gap={16} wrap>
-          <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 240 }}>
+          <Flex vertical gap={6} className="u-flex-2-1-280px u-minw-240px">
             <Text strong>文章标题</Text>
             <Input
               value={title}
@@ -316,13 +316,13 @@ const ArticleEditPage: React.FC = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+          <Flex vertical gap={6} className="u-flex-1-1-200px u-minw-180px">
             <Text strong>所属专栏</Text>
             <Select
               value={tid || undefined}
               placeholder="所属专栏"
               onChange={(v) => setTid(v)}
-              style={{ width: '100%' }}
+              className="u-w-100"
               options={myColumns.map((c) => ({
                 value: c.article_cate_id || c.id,
                 label: c.name,
@@ -339,7 +339,7 @@ const ArticleEditPage: React.FC = () => {
               maxLength={100}
               placeholder="用空格或逗号分隔"
               onChange={(e) => setKeywords(e.target.value)}
-              style={{ flex: 1 }}
+              className="u-flex-1"
             />
             <Button size="small" loading={keywordsLoading} onClick={onAiKeywords}>
               AI 生成
@@ -356,7 +356,7 @@ const ArticleEditPage: React.FC = () => {
               value={description}
               placeholder="一句话摘要"
               onChange={(e) => setDescription(e.target.value)}
-              style={{ flex: 1 }}
+              className="u-flex-1"
             />
             <Button size="small" loading={summaryLoading} onClick={onAiSummary}>
               AI 生成
@@ -389,7 +389,7 @@ const ArticleEditPage: React.FC = () => {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: 'var(--space-3)' }}
+          className="u-mb-space-3"
           message="将按以下要求生成文章并扣取 AI 生成费，生成结果会追加到正文编辑器。"
         />
         <TextArea

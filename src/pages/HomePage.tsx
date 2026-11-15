@@ -175,15 +175,15 @@ const HomePage: React.FC = () => {
                                                       <AppTooltip
                                                           key="col"
                                                           title={
-                                                              <div style={{ maxWidth: 240 }}>
-                                                                  {col.description ? <div style={{ marginBottom: 'var(--space-1)' }}>{col.description}</div> : null}
+                                                              <div className="u-maxw-240px">
+                                                                  {col.description ? <div className="u-mb-space-1">{col.description}</div> : null}
                                                                   <div>作者：{col.author || '官方'}</div>
                                                               </div>
                                                           }
                                                       >
                                                           <Link
                                                               to={columnLink(col)}
-                                                              style={{ fontSize: 'var(--fs-xs)', color: 'var(--c-link)' }}
+                                                              className="u-fs-fs-xs u-color-c-link"
                                                           >
                                                               {col.name}
                                                           </Link>

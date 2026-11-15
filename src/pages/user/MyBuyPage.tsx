@@ -8,6 +8,7 @@ import {
   getGoodsDetail, orderStatusText, orderStatusColor, type ShopOrderItem, type AddressItem,
 } from '@/services/shop';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import AppTooltip from '@components/common/AppTooltip';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -127,26 +128,28 @@ const MyBuyPage: React.FC = () => {
   const isAddrTab = tab === 'addr';
 
   const renderOrder = (o: ShopOrderItem) => (
-    <Card key={o.id} size="small" style={{ marginBottom: 'var(--space-3)' }}>
+    <Card key={o.id} size="small" className="u-mb-space-3">
       <Flex vertical gap={6}>
         <Flex align="center" justify="space-between" wrap gap={8}>
-          <Text strong>{titleMap[o.goods_id] || `商品#${o.goods_id}`}</Text>
+          <AppTooltip title={titleMap[o.goods_id] || `商品#${o.goods_id}`}>
+            <Text strong className="uc-ellipsis">{titleMap[o.goods_id] || `商品#${o.goods_id}`}</Text>
+          </AppTooltip>
           <Tag color={orderStatusColor(o)}>{orderStatusText(o)}</Tag>
         </Flex>
         <Flex align="center" gap={12} wrap>
-          <Text style={{ color: 'var(--capsule-danger)', fontWeight: 600 }}>¥{Number(o.price).toFixed(2)}</Text>
+          <Text className="u-color-capsule-danger u-fw-600">¥{Number(o.price).toFixed(2)}</Text>
           <Tag color={o.delivery_type === 'digital' ? 'cyan' : 'orange'}>{o.delivery_type === 'digital' ? '数字交付' : '实体交付'}</Tag>
           <Text type="secondary">订单号 {o.order_sn}</Text>
         </Flex>
         {/* 数字交付内容 */}
         {o.delivery_type === 'digital' && o.status === 2 && o.deliver_content ? (
-          <Paragraph style={{ margin: 0, color: 'var(--c-text-2)' }}>
+          <Paragraph className="u-m-0px u-color-c-text-2">
             交付内容：{o.deliver_content}
           </Paragraph>
         ) : null}
         {/* 实体物流 */}
         {o.delivery_type === 'physical' && (o.status === 2) && (o.express_company || o.express_no) ? (
-          <Paragraph style={{ margin: 0, color: 'var(--c-text-2)' }}>
+          <Paragraph className="u-m-0px u-color-c-text-2">
             物流：{o.express_company} {o.express_no}
           </Paragraph>
         ) : null}
@@ -163,7 +166,7 @@ const MyBuyPage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <Title level={4} style={{ margin: 0, marginBottom: 'var(--space-4)' }}>我的购买</Title>
+      <Title level={4} className="u-m-0px u-mb-space-4">我的购买</Title>
       <div className="shop-stats">
         <div className="shop-stat">
           <div className="shop-stat-label">全部订单</div>
@@ -185,21 +188,21 @@ const MyBuyPage: React.FC = () => {
           ...STATUS_TABS.map((t) => ({ key: t.key, label: t.label })),
           { key: 'addr', label: '收货地址' },
         ]}
-        style={{ marginTop: 'var(--space-3)' }}
+        className="u-mt-space-3"
       />
 
       {isAddrTab ? (
         <Spin spinning={false}>
-          <div style={{ marginBottom: 'var(--space-3)' }}>
+          <div className="u-mb-space-3">
             <Button type="primary" onClick={() => { setAddrForm({}); setAddrEditing(null); }}>新增收货地址</Button>
           </div>
           {addresses.length === 0 ? <Empty description="还没有收货地址" /> : (
             addresses.map((a) => (
-              <Card key={a.id} size="small" style={{ marginBottom: 'var(--space-3)' }}>
+              <Card key={a.id} size="small" className="u-mb-space-3">
                 <Flex justify="space-between" align="center" wrap gap={8}>
                   <div>
                     <Text strong>{a.name} {a.phone}</Text>
-                    <div style={{ color: 'var(--c-text-3)' }}>{a.province || ''}{a.city || ''}{a.district || ''}{a.detail}</div>
+                    <div className="u-color-c-text-3">{a.province || ''}{a.city || ''}{a.district || ''}{a.detail}</div>
                     {a.is_default === 1 ? <Tag color="green">默认</Tag> : null}
                   </div>
                   <Button size="small" onClick={() => { setAddrForm(a); setAddrEditing(a.id); }}>编辑</Button>
@@ -207,8 +210,8 @@ const MyBuyPage: React.FC = () => {
               </Card>
             ))
           )}
-          <Card size="small" title={addrEditing ? '编辑地址' : '新增地址'} style={{ marginTop: 'var(--space-3)' }}>
-            <Space direction="vertical" style={{ width: '100%' }}>
+          <Card size="small" title={addrEditing ? '编辑地址' : '新增地址'} className="u-mt-space-3">
+            <Space direction="vertical" className="u-w-100">
               <Input placeholder="收货人" value={addrForm.name || ''} onChange={(e) => setAddrForm((f) => ({ ...f, name: e.target.value }))} />
               <Input placeholder="手机号" value={addrForm.phone || ''} onChange={(e) => setAddrForm((f) => ({ ...f, phone: e.target.value }))} />
               <Input placeholder="省" value={addrForm.province || ''} onChange={(e) => setAddrForm((f) => ({ ...f, province: e.target.value }))} />

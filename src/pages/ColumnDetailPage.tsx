@@ -144,23 +144,23 @@ const ColumnDetailPage: React.FC = () => {
             {(column.name || '?').slice(0, 1)}
           </Avatar>
           <Flex vertical gap={6}>
-            <Text strong style={{ fontSize: 'var(--fs-xl)' }}>
+            <Text strong className="u-fs-fs-xl">
               {column.name}
             </Text>
-            <Text type="secondary" style={{ fontSize: 'var(--fs-base)' }}>
+            <Text type="secondary" className="u-fs-fs-base">
               {column.description || '该专栏暂无简介'}
             </Text>
             <Space size={[8, 8]} wrap align="center">
               {column.uid === 0 ? (
                 <Tag color="blue">
-                  <Link to="/dan/about" style={{ color: 'inherit' }}>
+                  <Link to="/dan/about" className="u-color-inherit">
                     作者：{site?.title || '官方'}
                   </Link>
                 </Tag>
               ) : (
                 <>
                   <Tag color="blue">
-                    <Link to={`/user/${column.uid}`} style={{ color: 'inherit' }}>
+                    <Link to={`/user/${column.uid}`} className="u-color-inherit">
                       作者：{column.author || '匿名'}
                     </Link>
                   </Tag>
@@ -261,7 +261,7 @@ const ColumnDetailPage: React.FC = () => {
       )}
 
       {articles.length > LATEST_LIMIT ? (
-        <div style={{ textAlign: 'center' }}>
+        <div className="u-ta-center">
           <Button onClick={() => setShowAll((v) => !v)}>
             {showAll ? `收起（仅看最新 ${LATEST_LIMIT} 篇）` : `展开全部 ${articles.length} 篇`}
           </Button>

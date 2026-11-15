@@ -59,7 +59,7 @@ export default function AdPricesPage(): React.JSX.Element {
         crumbs={[{ label: '首页', to: '/' }, { label: '广告价格单', to: '/dan/ad' }]}
       />
 
-      <Card title="系统广告位" style={{ marginBottom: 'var(--page-gap)' }}>
+      <Card title="系统广告位" className="u-mb-page-gap">
         <CardTable<AdPayPosition>
           rowKey="pkey"
           dataSource={positions}

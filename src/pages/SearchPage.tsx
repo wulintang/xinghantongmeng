@@ -138,7 +138,7 @@ const SearchPage: React.FC = () => {
     return (
         <Flex vertical gap={20}>
             <PageHeader title="全站搜索" description="一次检索：网址、文章、技能与集市商品">
-                <div className="home-hero-search" style={{ width: '100%', maxWidth: 560 }}>
+                <div className="home-hero-search u-w-100 u-maxw-560px" >
                     <SearchBox placeholder="搜索站点、文章、技能、集市商品" gotoPage="/search" />
                 </div>
             </PageHeader>

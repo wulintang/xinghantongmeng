@@ -207,8 +207,8 @@ export default function UserBgSettingsPage(): React.JSX.Element {
 
     return (
         <Card className="user-center-card" loading={loading}>
-            <Title level={5} style={{ marginBottom: 'var(--space-4)' }}>主页背景</Title>
-            <Text type="secondary" style={{ fontSize: 'var(--fs-sm)', display: 'block', marginBottom: 'var(--space-4)' }}>
+            <Title level={5} className="u-mb-space-4">主页背景</Title>
+            <Text type="secondary" className="u-fs-fs-sm u-d-block u-mb-space-4">
                 仅用于你的公开主页（/user/{uid || '你的ID'}）。背景只作装饰，不会改变卡片高度；图片必须上传，不支持填写网络地址。
             </Text>
 
@@ -218,7 +218,7 @@ export default function UserBgSettingsPage(): React.JSX.Element {
                     showIcon
                     message="图片背景待审核"
                     description="你上传的图片已提交，下方可以正常预览；管理员审核通过后，访客访问你的公开主页才会看到。纯色与渐变无需审核。"
-                    style={{ marginBottom: 'var(--space-4)' }}
+                    className="u-mb-space-4"
                 />
             ) : null}
             {audit.status === 2 ? (
@@ -227,7 +227,7 @@ export default function UserBgSettingsPage(): React.JSX.Element {
                     showIcon
                     message="图片背景未通过审核"
                     description={audit.reason || '请更换图片后重新提交。'}
-                    style={{ marginBottom: 'var(--space-4)' }}
+                    className="u-mb-space-4"
                 />
             ) : null}
 
@@ -261,7 +261,7 @@ export default function UserBgSettingsPage(): React.JSX.Element {
                             {uploadList.length >= 1 ? null : (
                                 <div>
                                     {uploading ? <UploadOutlined /> : <PlusOutlined />}
-                                    <div style={{ marginTop: 6 }}>{uploading ? '上传中' : '上传'}</div>
+                                    <div className="u-mt-6px">{uploading ? '上传中' : '上传'}</div>
                                 </div>
                             )}
                         </Upload>
@@ -279,9 +279,9 @@ export default function UserBgSettingsPage(): React.JSX.Element {
                 </Form.Item>
             </Form>
 
-            <div style={{ marginTop: 'var(--space-4)' }}>
+            <div className="u-mt-space-4">
                 <Title level={5}>预览</Title>
-                <Text type="secondary" style={{ fontSize: 'var(--fs-sm)', display: 'block', marginBottom: 12 }}>
+                <Text type="secondary" className="u-fs-fs-sm u-d-block u-mb-12px">
                     与 /user/{uid || '你的ID'} 完全一致的真实主页，使用你真实的账户信息；修改上方选项即时生效。
                 </Text>
                 {uid ? (

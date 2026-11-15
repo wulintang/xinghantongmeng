@@ -238,7 +238,7 @@ export default function AdMyPage(): React.JSX.Element {
     },
   ];
 
-  if (loading) return <Skeleton active paragraph={{ rows: 10 }} style={{ padding: 'var(--space-6)' }} />;
+  if (loading) return <Skeleton active paragraph={{ rows: 10 }} className="u-p-space-6" />;
 
   return (
     <Card className="user-center-card">

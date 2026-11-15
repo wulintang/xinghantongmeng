@@ -12,20 +12,7 @@ export default function ThemeToggle(): React.JSX.Element {
             onClick={toggle}
             aria-label={isDark ? '切换到浅色' : '切换到深色'}
             title={isDark ? '浅色' : '深色'}
-            style={{
-                width: 34,
-                height: 34,
-                borderRadius: '50%',
-                border: '1px solid var(--c-border)',
-                background: 'transparent',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--c-text)',
-                padding: 0,
-                flex: '0 0 auto',
-            }}
+            className="u-w-34px u-h-34px u-radius-50 u-border-1px-solid-c-border u-bg-transparent u-cursor-pointer u-d-inline-flex u-items-center u-justify-center u-color-c-text u-p-0px u-flex-0-0-auto"
         >
             {isDark ? (
                 // 太阳

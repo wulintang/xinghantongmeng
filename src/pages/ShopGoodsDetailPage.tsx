@@ -16,7 +16,7 @@ import {
 import type { ShopConfig } from '@/services/shop';
 import { ShopGoodsDetailSkeleton } from '@components/common/skeleton';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 /** 商品独立详情单页（替代原抽屉弹窗）：复用统一表面令牌 + MdView 渲染正文 */
 const ShopGoodsDetailPage: React.FC = () => {
@@ -181,8 +181,7 @@ const ShopGoodsDetailPage: React.FC = () => {
           ) : (
             <div className="shop-goods-ico shop-detail-cover-ico">{cateNameFrom(cfg, detail.cate)?.[0] || '商'}</div>
           )}
-          <Flex vertical style={{ flex: 1, minWidth: 240 }}>
-            <Title level={3} style={{ margin: 0 }}>{detail.title}</Title>
+          <Flex vertical className="u-flex-1 u-minw-240px">
             {/* 店铺信息 + 类目/交付/保证金：全部同一行一致渲染（头像 + 店名 + 营业状态 + 进入店铺 + 各标签） */}
             <Flex gap={10} wrap align="center">
               {shop ? (
@@ -191,15 +190,15 @@ const ShopGoodsDetailPage: React.FC = () => {
                     size={22}
                     shape="square"
                     src={shop.logo || undefined}
-                    style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
+                    className="u-flex-0-0-auto u-bg-c-bg-2"
                   >
                     {(shop.shop_name || '店').slice(0, 1)}
                   </Avatar>
                   <Text strong>{shop.shop_name || '店铺'}</Text>
-                  <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} style={{ marginInlineEnd: 0 }}>
+                  <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} className="u-me-0px">
                     {Number(shop.status) === 1 ? '营业中' : '未营业'}
                   </Tag>
-                  <Button type="link" size="small" style={{ paddingInline: 0 }} onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
+                  <Button type="link" size="small" className="u-px-0px" onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
                     进入店铺
                   </Button>
                 </>
@@ -237,7 +236,7 @@ const ShopGoodsDetailPage: React.FC = () => {
           </Flex>
         </Flex>
         {detail.content ? (
-          <div className="detail-content md-content" style={{ marginTop: 'var(--space-5)' }}>
+          <div className="detail-content md-content u-mt-space-5" >
             <MdView id="shop-goods-detail-preview" modelValue={detail.content} />
           </div>
         ) : null}
@@ -280,7 +279,7 @@ const ShopGoodsDetailPage: React.FC = () => {
             <div>
               <Text type="secondary">收货地址：</Text>
               <Select
-                style={{ width: '100%', marginTop: 6 }}
+                className="u-w-100 u-mt-6px"
                 value={addressId || undefined}
                 placeholder={addresses.length ? '请选择收货地址' : '暂无收货地址，请先到「我的购买 → 收货地址」添加'}
                 onChange={(v) => setAddressId(v)}

@@ -150,7 +150,6 @@ export default function Header(): React.JSX.Element {
             { key: 'columns', label: '我的专栏' },
             { key: 'ad/my', label: '我的广告' },
             { key: 'skills', label: '我的技能' },
-            { key: 'shop', label: '我的集市' },
             { key: 'buy', label: '我的购买' },
             { key: 'favorites', label: '我的收藏' },
             { key: 'reports', label: '我的举报' },
@@ -168,7 +167,6 @@ export default function Header(): React.JSX.Element {
                 columns: '/user/columns',
                 'ad/my': '/user/ad/my',
                 skills: '/user/skills',
-                shop: '/user/shop',
                 buy: '/user/buy',
                 favorites: '/user/favorites',
                 reports: '/user/reports',
@@ -196,8 +194,8 @@ export default function Header(): React.JSX.Element {
             </Badge>
             <Dropdown menu={userMenu} trigger={['hover']} placement="bottomRight">
                 <div
-                    className="site-user-avatar-wrap"
-                    style={{ display: 'inline-flex', cursor: 'pointer' }}
+                    className="site-user-avatar-wrap u-d-inline-flex u-cursor-pointer"
+                    
                     onClick={(e) => {
                         e.stopPropagation();
                         navigate('/user');
@@ -245,7 +243,7 @@ export default function Header(): React.JSX.Element {
                     </div>
                 )}
 
-                <div className="site-theme-toggle" style={{ marginRight: 10, display: 'inline-flex', alignItems: 'center' }}>
+                <div className="site-theme-toggle u-mr-10px u-d-inline-flex u-items-center" >
                     <ThemeToggle />
                 </div>
                 <div className="site-user">{userArea}</div>

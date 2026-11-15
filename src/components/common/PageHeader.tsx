@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Typography } from 'antd';
+
+import { usePageHeroSlot } from '@/context/PageHeroContext';
 
 const { Title, Paragraph } = Typography;
 
@@ -17,8 +20,6 @@ interface PageHeaderProps {
     extra?: React.ReactNode;
     /** hero 内额外内容（如首页搜索框 / 分类标签），渲染在标题描述下方、文字区块内 */
     children?: React.ReactNode;
-    /** 随机背景高度（默认 240px） */
-    height?: number;
 }
 
 const BG_COUNT = 39;
@@ -33,26 +34,29 @@ const STATIC_BASE: string =
 
 /**
  * 全站统一页面头部（hero）：
- * - 每次挂载随机渲染 /public/static/html/N.html（N∈1~39）作为全屏背景，左右浏览器边距 0；
- * - 标题 + 描述垂直居中，文字用「白填充 + 深色描边 + 阴影」保证在任意深/浅背景上均可辨，无任何灰色笼罩/面板；
+ * - 各页照旧传动态 title/description，但 DOM 通过 portal 渲染到 layout 的 hero 插槽，
+ *   与 head、container 三者平级，紧贴导航下方，不再靠 100vw 负 margin 破出；
+ * - 每次挂载随机渲染 /public/static/html/N.html（N∈1~39）作为全屏背景，左右边距 0；
+ * - 标题 + 描述垂直居中，文字用「白填充 + 深色描边 + 阴影」保证在任意深/浅背景上均可辨；
  * - 底部一条统一样式横线，颜色跟随深浅模式（var(--c-border)）；
  * - 操作胶囊（extra）移出 hero，落到 hero 下方的统一操作条。
  */
-const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, extra, children, height = 240 }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, extra, children }) => {
     const bgNum = useMemo(() => Math.floor(Math.random() * BG_COUNT) + 1, []);
     const bgSrc = `${STATIC_BASE}/public/static/html/${bgNum}.html`;
     // 延后赋值 src，避免首屏与关键 JS 分片争抢连接（与「首屏卡死」解耦，纯防御性优化）
     const [src, setSrc] = useState('');
     const [failed, setFailed] = useState(false);
+    const slot = usePageHeroSlot();
 
     useEffect(() => {
         const t = window.setTimeout(() => setSrc(bgSrc), 0);
         return () => window.clearTimeout(t);
     }, [bgSrc]);
 
-    return (
+    const hero = (
         <>
-            <section className="page-hero" style={{ minHeight: height }}>
+            <section className="page-hero">
                 {!failed ? (
                     <iframe
                         className="page-hero-bg"
@@ -79,6 +83,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, ext
             ) : null}
         </>
     );
+
+    // portal 到 layout 的 hero 插槽，DOM 上与 head、container 平级；
+    // 插槽尚未挂载时（首帧）先不渲染，避免把 hero 留在 container 内。
+    return slot ? createPortal(hero, slot) : null;
 };
 
 export default PageHeader;

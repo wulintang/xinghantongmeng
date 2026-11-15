@@ -67,8 +67,8 @@ export default function CheckinPage() {
   const ruleRmb2 = data?.rule?.rmb2 ?? 0.5;
 
   const myRecord = (
-    <div className="checkin-head" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 'var(--space-6)' }}>
-      <div style={{ flex: 1, minWidth: 260 }}>
+    <div className="checkin-head u-d-flex u-flexwrap-wrap u-items-flex-start u-gap-space-6" >
+      <div className="u-flex-1 u-minw-260px">
         <Title level={5}>每日签到</Title>
         <Space size="large" className="mb-16">
           <Statistic title="连续签到(天)" value={data?.last_day ?? 0} />
@@ -86,9 +86,9 @@ export default function CheckinPage() {
           )}
         </div>
       </div>
-      <div style={{ flex: 1, minWidth: 260 }}>
+      <div className="u-flex-1 u-minw-260px">
         <Title level={5}>规则</Title>
-        <div style={{ marginBottom: 'var(--space-2)' }}>
+        <div className="u-mb-space-2">
           <Text>连续签到 &lt; {ruleDay} 天：¥{ruleRmb1}</Text>
         </div>
         <div>
@@ -131,11 +131,11 @@ export default function CheckinPage() {
         renderItem={(item: CheckinRecord) => (
           <List.Item>
             <Card size="small">
-              <div style={{ marginBottom: 'var(--space-2)' }}>
+              <div className="u-mb-space-2">
                 <Text type="secondary">签到日期</Text>
                 <div>{dayjs(item.time * 1000).format('YYYY-MM-DD HH:mm')}</div>
               </div>
-              <div style={{ marginBottom: 'var(--space-2)' }}>
+              <div className="u-mb-space-2">
                 <Text type="secondary">连续天数</Text>
                 <div>{item.day}</div>
               </div>
@@ -186,17 +186,17 @@ export default function CheckinPage() {
         renderItem={(item: CheckinRankItem) => (
           <List.Item>
             <Card size="small">
-              <div style={{ marginBottom: 'var(--space-2)' }}>
+              <div className="u-mb-space-2">
                 <Text type="secondary">排名</Text>
                 <div>{item.rank}</div>
               </div>
-              <div style={{ marginBottom: 'var(--space-2)' }}>
+              <div className="u-mb-space-2">
                 <Text type="secondary">用户</Text>
                 <div>
                   <Link to={`/user/${item.uid}`}>{item.name}</Link>
                 </div>
               </div>
-              <div style={{ marginBottom: 'var(--space-2)' }}>
+              <div className="u-mb-space-2">
                 <Text type="secondary">累计签到天数</Text>
                 <div>{item.days}</div>
               </div>

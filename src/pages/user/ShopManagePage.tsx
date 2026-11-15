@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Button, Card, Empty, Form, Input, Modal, Select, Skeleton, Space, Spin, Table, Tabs, Tag, Typography, Upload, message,
+  Alert, Button, Card, Empty, Form, Input, Modal, Select, Skeleton, Space, Spin, Tabs, Tag, Typography, Upload, message,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+
+import CardTable from '@components/common/CardTable';
+import AppTooltip from '@components/common/AppTooltip';
 
 import { getShopConfig, getMyShop, saveShop, getMyGoods, getShopOrders, shipOrder, payDeposit, cateOptionsFrom, cateNameFrom, CATE_WHITELIST, orderStatusText, orderStatusColor, type ShopConfig, type GoodsItem, type ShopOrderItem } from '@/services/shop';
 import { uploadFile } from '@/services/userCenter';
@@ -197,7 +200,16 @@ const ShopManagePage: React.FC = () => {
   const goodsMap = new Map(goods.map((g) => [g.id, g]));
 
   const goodsColumns = [
-    { title: '商品', dataIndex: 'title', key: 'title', render: (t: string) => <Text strong>{t}</Text> },
+    {
+      title: '商品',
+      dataIndex: 'title',
+      key: 'title',
+      render: (t: string) => (
+        <AppTooltip title={t}>
+          <Text strong className="uc-ellipsis">{t}</Text>
+        </AppTooltip>
+      ),
+    },
     { title: '类目', dataIndex: 'cate', key: 'cate', render: (c: string) => <Tag>{cateNameFrom(cfg, c)}</Tag> },
     {
       title: '交付',
@@ -225,7 +237,7 @@ const ShopManagePage: React.FC = () => {
       render: (_: any, r: GoodsItem) => (
         <Space direction="vertical" size={2}>
           <Tag color={depositEnough ? 'green' : 'red'}>{depositEnough ? '保证金已缴' : '保证金未缴'}</Tag>
-          {r.admin_remark ? <Text type="danger" style={{ fontSize: 'var(--fs-xs)' }}>整改要求：{r.admin_remark}</Text> : null}
+          {r.admin_remark ? <Text type="danger" className="u-fs-fs-xs">整改要求：{r.admin_remark}</Text> : null}
         </Space>
       ),
     },
@@ -243,7 +255,14 @@ const ShopManagePage: React.FC = () => {
     {
       title: '商品',
       key: 'goods',
-      render: (_: any, r: ShopOrderItem) => goodsMap.get(r.goods_id)?.title || `商品#${r.goods_id}`,
+      render: (_: any, r: ShopOrderItem) => {
+        const t = goodsMap.get(r.goods_id)?.title || `商品#${r.goods_id}`;
+        return (
+          <AppTooltip title={t}>
+            <Text className="uc-ellipsis">{t}</Text>
+          </AppTooltip>
+        );
+      },
     },
     { title: '金额', dataIndex: 'price', key: 'price', render: (p: number) => `¥${(Number(p) || 0).toFixed(2)}` },
     {
@@ -274,7 +293,14 @@ const ShopManagePage: React.FC = () => {
     {
       title: '商品',
       key: 'goods',
-      render: (_: any, r: ShopOrderItem) => goodsMap.get(r.goods_id)?.title || `商品#${r.goods_id}`,
+      render: (_: any, r: ShopOrderItem) => {
+        const t = goodsMap.get(r.goods_id)?.title || `商品#${r.goods_id}`;
+        return (
+          <AppTooltip title={t}>
+            <Text className="uc-ellipsis">{t}</Text>
+          </AppTooltip>
+        );
+      },
     },
     {
       title: '收货人',
@@ -290,15 +316,15 @@ const ShopManagePage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <Title level={4} style={{ margin: 0, marginBottom: 'var(--space-4)' }}>我的集市</Title>
+      <Title level={4} className="u-m-0px u-mb-space-4">我的集市</Title>
 
       <div className="shop-hero">
         <div className="shop-hero-main">
           <div className="shop-hero-name">
-            {shop && logo ? <img src={logo} alt="" style={{ width: 30, height: 30, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--c-border)', marginRight: 8, verticalAlign: 'middle' }} /> : null}
+            {shop && logo ? <img src={logo} alt="" className="u-w-30px u-h-30px u-of-cover u-radius-8px u-border-1px-solid-c-border u-mr-8px u-va-middle" /> : null}
             {shop ? shop.shop_name : '还没有店铺'}
             {shop ? (
-              <Tag color={shop.audit_status === 1 ? (shop.status === 1 ? 'green' : 'orange') : 'orange'} style={{ marginLeft: 8 }}>
+              <Tag color={shop.audit_status === 1 ? (shop.status === 1 ? 'green' : 'orange') : 'orange'} className="u-ml-8px">
                 {shop.audit_status === 1 ? (shop.status === 1 ? '营业中' : '待营业') : '店铺待审'}
               </Tag>
             ) : null}
@@ -356,7 +382,7 @@ const ShopManagePage: React.FC = () => {
             children: (
               <Spin spinning={loading}>
                 {shop && shop.audit_status === 2 ? (
-                  <Paragraph style={{ color: 'var(--capsule-danger)' }}>驳回原因：{shop.audit_reject || '（未填写）'}</Paragraph>
+                  <Paragraph className="u-color-capsule-danger">驳回原因：{shop.audit_reject || '（未填写）'}</Paragraph>
                 ) : null}
                 {shop && shop.admin_remark ? (
                   <Alert
@@ -398,7 +424,7 @@ const ShopManagePage: React.FC = () => {
                       <Upload accept="image/*" showUploadList={false} beforeUpload={onLogoUpload}>
                         <Button loading={logoUploading}>上传 Logo</Button>
                       </Upload>
-                      {logo ? <img src={logo} alt="店铺 Logo" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--c-border)' }} /> : null}
+                      {logo ? <img src={logo} alt="店铺 Logo" className="u-w-48px u-h-48px u-of-cover u-radius-8px u-border-1px-solid-c-border" /> : null}
                     </Space>
                   </Form.Item>
                   <Button type="primary" htmlType="submit" loading={saving}>保存店铺设置</Button>
@@ -423,10 +449,10 @@ const ShopManagePage: React.FC = () => {
                     ) : undefined}
                   />
                 ) : null}
-                <div style={{ marginBottom: 'var(--space-3)' }}>
+                <div className="u-mb-space-3">
                   <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/shop/goods-edit')}>新增商品</Button>
                 </div>
-                <Table rowKey="id" size="small" dataSource={goods} columns={goodsColumns} pagination={false} scroll={{ x: 'max-content' }}
+                <CardTable rowKey="id" dataSource={goods} columns={goodsColumns} pagination={false}
                   locale={{ emptyText: <Empty description="还没有商品" /> }} />
               </div>
             ),
@@ -435,7 +461,7 @@ const ShopManagePage: React.FC = () => {
             key: 'ship',
             label: '订单发货',
             children: (
-              <Table rowKey="id" size="small" dataSource={orders} columns={orderColumns} pagination={false} scroll={{ x: 'max-content' }}
+              <CardTable rowKey="id" dataSource={orders} columns={orderColumns} pagination={false}
                 locale={{ emptyText: <Empty description="暂无订单" /> }} />
             ),
           },
@@ -443,7 +469,7 @@ const ShopManagePage: React.FC = () => {
             key: 'addr',
             label: '收货地址',
             children: (
-              <Table rowKey="id" size="small" dataSource={orders} columns={addressColumns} pagination={false} scroll={{ x: 'max-content' }}
+              <CardTable rowKey="id" dataSource={orders} columns={addressColumns} pagination={false}
                 locale={{ emptyText: <Empty description="暂无实体交付订单" /> }} />
             ),
           },
@@ -460,10 +486,10 @@ const ShopManagePage: React.FC = () => {
         cancelText="取消"
         destroyOnClose
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" className="u-w-100">
           <div>
             <Text type="secondary">快递公司</Text>
-            <Select style={{ width: '100%', marginTop: 6 }} value={expressCompany} onChange={setExpressCompany}
+            <Select className="u-w-100 u-mt-6px" value={expressCompany} onChange={setExpressCompany}
               options={['顺丰速运', '圆通速递', '中通快递', '京东物流'].map((x) => ({ value: x, label: x }))} />
           </div>
           <Input placeholder="快递单号" value={expressNo} onChange={(e) => setExpressNo(e.target.value)} />

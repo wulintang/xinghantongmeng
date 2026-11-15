@@ -121,7 +121,7 @@ function UserLayoutInner() {
         <div className="user-sider-profile">
           <Upload accept="image/*" showUploadList={false} beforeUpload={onUploadAvatar}>
             <AppTooltip title="点击更换头像">
-              <Avatar src={info?.head} size={64} style={{ cursor: 'pointer' }}>
+              <Avatar src={info?.head} size={64} className="u-cursor-pointer">
                 {info?.name?.slice(0, 1)}
               </Avatar>
             </AppTooltip>

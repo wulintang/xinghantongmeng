@@ -59,7 +59,7 @@ export default function AdBuyPage(): React.JSX.Element {
   if (!slot) {
     return <Alert type="error" message="缺少广告位参数（slot）" />;
   }
-  if (loading) return <Skeleton active paragraph={{ rows: 8 }} style={{ padding: '40px 0' }} />;
+  if (loading) return <Skeleton active paragraph={{ rows: 8 }} className="u-p-40px-0" />;
   if (!pos) {
     return <Alert type="warning" message="该广告位不存在或未开放申请" />;
   }
@@ -72,10 +72,10 @@ export default function AdBuyPage(): React.JSX.Element {
   return (
     <div className="ad-buy-page">
       <Card>
-        <Title level={3} style={{ fontSize: 'var(--fs-xl)', marginTop: 0 }}>
+        <Title level={3} className="u-fs-fs-xl u-mt-0px">
           申请广告位：{pos.name}
         </Title>
-        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+        <Paragraph type="secondary" className="u-fs-fs-sm">
           提交即从余额扣费（¥{price || 0}）。审核不通过自动退款；未到期自主删除或到期自动删除概不退费。同一广告位允许多位用户投放，展示时登录用户优先看到自己的广告。
         </Paragraph>
         <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ plan: 'month' }}>
@@ -101,11 +101,11 @@ export default function AdBuyPage(): React.JSX.Element {
             <Button type="primary" htmlType="submit" loading={submitting}>
               提交申请并支付 ¥{price || 0}
             </Button>
-            <Button style={{ marginLeft: 'var(--space-3)' }} onClick={() => navigate(-1)}>
+            <Button className="u-ml-space-3" onClick={() => navigate(-1)}>
               返回
             </Button>
           </Form.Item>
-          <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+          <Text type="secondary" className="u-fs-fs-xs">
             最短 {pos.min_day} 天，最长 {pos.max_day} 天。
           </Text>
         </Form>

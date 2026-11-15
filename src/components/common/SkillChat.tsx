@@ -185,7 +185,7 @@ export default function SkillChat({ toolId, title }: SkillChatProps): React.JSX.
             </div>
 
             {costTip ? (
-                <div style={{ margin: '0 0 10px', padding: '7px 12px', borderRadius: 8, background: 'var(--c-bg-soft)', color: 'var(--c-text-2)', fontSize: 13 }}>
+                <div className="u-m-0-0-10px u-p-7px-12px u-radius-8px u-bg-c-bg-soft u-color-c-text-2 u-fs-13px">
                     {costTip}
                 </div>
             ) : null}

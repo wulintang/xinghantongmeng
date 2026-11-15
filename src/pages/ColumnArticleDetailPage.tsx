@@ -183,11 +183,11 @@ const ColumnArticleDetailPage: React.FC = () => {
 
       <Space split={<Divider type="vertical" />} wrap className="detail-meta">
         {item.uid === 0 ? (
-          <Link to="/dan/about" style={{ color: 'inherit' }}>
+          <Link to="/dan/about" className="u-color-inherit">
             <Text type="secondary">作者：{site?.title || '官方'}</Text>
           </Link>
         ) : (
-          <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+          <Link to={`/user/${item.uid}`} className="u-color-inherit">
             <Text type="secondary">作者：{item.author || '匿名'}</Text>
           </Link>
         )}

@@ -129,7 +129,7 @@ const MyColumnDetailPage: React.FC = () => {
       <Card className="user-center-card">
         <Flex vertical gap={16}>
           <Flex justify="space-between" align="center">
-            <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+            <Text strong className="u-fs-fs-lg">
               专栏文章管理
             </Text>
             <Button type="primary" disabled>
@@ -147,7 +147,7 @@ const MyColumnDetailPage: React.FC = () => {
       <Card className="user-center-card">
         <Flex vertical gap={16}>
           <Flex justify="space-between" align="center">
-            <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+            <Text strong className="u-fs-fs-lg">
               专栏文章管理
             </Text>
           </Flex>
@@ -170,12 +170,12 @@ const MyColumnDetailPage: React.FC = () => {
           </Avatar>
           <Flex vertical>
             <Flex align="center" gap={8}>
-              <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+              <Text strong className="u-fs-fs-lg">
                 {column.name}
               </Text>
               {columnStatusTag}
             </Flex>
-            <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+            <Text type="secondary" className="u-fs-fs-sm">
               {column.description || '暂无简介'} · 共 {articles.length} 篇文章
             </Text>
           </Flex>
@@ -204,7 +204,7 @@ const MyColumnDetailPage: React.FC = () => {
         articles.map((a) => (
           <Card key={a.id}>
             <Flex gap={12} align="center" wrap>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="u-flex-1 u-minw-0px">
                 <Flex align="center" gap={8} wrap>
                   <Text strong ellipsis>
                     <Link to={`/article/detail/${a.id}`} onClick={(e) => e.stopPropagation()}>
@@ -214,16 +214,16 @@ const MyColumnDetailPage: React.FC = () => {
                   {statusTag(a)}
                 </Flex>
                 {a.status === 2 && a.reason ? (
-                  <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
+                  <Text type="danger" className="u-fs-fs-sm">
                     拒绝原因：{a.reason}
                   </Text>
                 ) : null}
-                <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                <Text type="secondary" className="u-fs-fs-sm">
                   {a.description || '暂无摘要'} · {dayjs.unix(a.time).format('YYYY-MM-DD')}
                 </Text>
               </div>
             </Flex>
-            <Flex justify="flex-end" gap={8} style={{ marginTop: 'var(--space-3)' }} wrap>
+            <Flex justify="flex-end" gap={8} className="u-mt-space-3" wrap>
               <Button size="small" onClick={() => window.open(`/article/detail/${a.id}`, '_blank')}>
                 查看
               </Button>

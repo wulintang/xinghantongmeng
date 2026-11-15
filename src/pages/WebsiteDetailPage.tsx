@@ -234,7 +234,7 @@ const WebsiteDetailPage: React.FC = () => {
                             <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
                             {claimed && item.owner ? (
                                 <Tag color="blue">
-                                    <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+                                    <Link to={`/user/${item.uid}`} className="u-color-inherit">
                                         站长：{item.owner}
                                     </Link>
                                 </Tag>

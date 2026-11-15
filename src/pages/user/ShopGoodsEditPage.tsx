@@ -278,7 +278,7 @@ const ShopGoodsEditPage: React.FC = () => {
   if (loading) {
     return (
       <div className="article-edit-fullscreen">
-        <Skeleton active paragraph={{ rows: 8 }} style={{ padding: 'var(--space-10)' }} />
+        <Skeleton active paragraph={{ rows: 8 }} className="u-p-space-10" />
       </div>
     );
   }
@@ -287,7 +287,7 @@ const ShopGoodsEditPage: React.FC = () => {
     <div className="article-edit-fullscreen">
       <div className="article-edit-top">
         <Flex justify="space-between" align="center" wrap gap={8}>
-          <Text strong style={{ fontSize: 'var(--fs-lg)' }}>{isEdit ? '编辑商品' : '新增商品'}</Text>
+          <Text strong className="u-fs-fs-lg">{isEdit ? '编辑商品' : '新增商品'}</Text>
           <Flex gap={8} wrap>
             <Button type="primary" loading={saving} onClick={onSubmit}>{isEdit ? '提交修改' : '提交审核'}</Button>
             <Button onClick={() => navigate('/user/shop')}>取消</Button>
@@ -326,16 +326,16 @@ const ShopGoodsEditPage: React.FC = () => {
         ) : null}
 
         <Flex gap={16} wrap>
-          <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 240 }}>
+          <Flex vertical gap={6} className="u-flex-2-1-280px u-minw-240px">
             <Text strong>商品标题</Text>
             <Input value={title} maxLength={120} placeholder="商品标题" onChange={(e) => setTitle(e.target.value)} />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+          <Flex vertical gap={6} className="u-flex-1-1-200px u-minw-180px">
             <Text strong>商品类目（只能虚拟互联网产品）</Text>
             <Select
               value={cate}
               onChange={(v) => setCate(v)}
-              style={{ width: '100%' }}
+              className="u-w-100"
               options={cateOptions}
             />
           </Flex>
@@ -344,7 +344,7 @@ const ShopGoodsEditPage: React.FC = () => {
         <Flex vertical gap={6}>
           <Text strong>关键词</Text>
           <Flex gap={8} align="center">
-            <Input value={keywords} maxLength={200} placeholder="用空格或逗号分隔" onChange={(e) => setKeywords(e.target.value)} style={{ flex: 1 }} />
+            <Input value={keywords} maxLength={200} placeholder="用空格或逗号分隔" onChange={(e) => setKeywords(e.target.value)} className="u-flex-1" />
             <Button size="small" loading={keywordsLoading} onClick={onAiKeywords}>AI 生成</Button>
           </Flex>
         </Flex>
@@ -352,7 +352,7 @@ const ShopGoodsEditPage: React.FC = () => {
         <Flex vertical gap={6}>
           <Text strong>摘要</Text>
           <Flex gap={8} align="center">
-            <TextArea rows={2} maxLength={255} value={description} placeholder="一句话摘要" onChange={(e) => setDescription(e.target.value)} style={{ flex: 1 }} />
+            <TextArea rows={2} maxLength={255} value={description} placeholder="一句话摘要" onChange={(e) => setDescription(e.target.value)} className="u-flex-1" />
             <Button size="small" loading={summaryLoading} onClick={onAiSummary}>AI 生成</Button>
           </Flex>
         </Flex>
@@ -368,41 +368,41 @@ const ShopGoodsEditPage: React.FC = () => {
         </div>
       </div>
 
-      <Card size="small" style={{ background: 'var(--c-bg-soft)', border: 'none' }} title="商品交易字段">
+      <Card size="small" className="u-bg-c-bg-soft u-border-none" title="商品交易字段">
         <Flex gap={16} wrap>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+          <Flex vertical gap={6} className="u-flex-1-1-200px u-minw-180px">
             <Text strong>售价（元）</Text>
             <Input type="number" min={0} step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value) || 0)} />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+          <Flex vertical gap={6} className="u-flex-1-1-200px u-minw-180px">
             <Text strong>库存（0 = 不限）</Text>
             <Input type="number" min={0} step="1" value={stock} onChange={(e) => setStock(Number(e.target.value) || 0)} />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 220 }}>
+          <Flex vertical gap={6} className="u-flex-2-1-280px u-minw-220px">
             <Text strong>封面上传（图片上传控件，禁止填 URL）</Text>
             <Flex gap={8} align="center">
               <Upload accept="image/*" showUploadList={false} beforeUpload={onCover}>
                 <Button loading={coverUploading}>上传封面</Button>
               </Upload>
-              {cover ? <img src={cover} alt="cover" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8 }} /> : null}
+              {cover ? <img src={cover} alt="cover" className="u-w-120px u-h-120px u-of-cover u-radius-8px" /> : null}
             </Flex>
           </Flex>
         </Flex>
 
-        <Flex gap={16} wrap style={{ marginTop: 'var(--space-3)' }}>
-          <Flex vertical gap={6} style={{ flex: '1 1 200px', minWidth: 180 }}>
+        <Flex gap={16} wrap className="u-mt-space-3">
+          <Flex vertical gap={6} className="u-flex-1-1-200px u-minw-180px">
             <Text strong>交付方式（仅两类）</Text>
             <Select
               value={delivery}
               onChange={(v) => setDelivery(v)}
-              style={{ width: '100%' }}
+              className="u-w-100"
               options={[
                 { value: 'digital', label: '数字交付（自动发货）' },
                 { value: 'physical', label: '实体交付（物流）' },
               ]}
             />
           </Flex>
-          <Flex vertical gap={6} style={{ flex: '2 1 280px', minWidth: 220 }}>
+          <Flex vertical gap={6} className="u-flex-2-1-280px u-minw-220px">
             <Text strong>交付说明</Text>
             <Input value={deliveryNote} maxLength={255} placeholder="如：顺丰包邮 / 电子证书另发" onChange={(e) => setDeliveryNote(e.target.value)} />
           </Flex>
@@ -410,7 +410,7 @@ const ShopGoodsEditPage: React.FC = () => {
         <Alert
           type="info"
           showIcon
-          style={{ marginTop: 'var(--space-3)' }}
+          className="u-mt-space-3"
           message="实体交付仅在「发货」时由商家填写快递公司 + 单号；买家下单填写收货地址。数字就是数字、实体就是实体，无需区分更多类型。"
         />
       </Card>

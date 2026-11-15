@@ -148,37 +148,37 @@ const MyToolsPage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <Title level={4} style={{ margin: 0 }}>我的技能</Title>
+      <div className="u-d-flex u-justify-space-between u-items-center u-flexwrap-wrap u-gap-8px">
+        <Title level={4} className="u-m-0px">我的技能</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/user/submit-skill')}>提交技能</Button>
       </div>
       <Text type="secondary">提交后由管理员审核；通过即上线，拒绝会给出原因。已通过的技能可在此重新编辑，修改后需再次审核通过才会更新上线（审核期间线上保留旧版），也可删除。</Text>
 
       <Spin spinning={loading}>
         {list.length === 0 && !loading ? (
-          <Empty description="你还没有提交过技能" style={{ marginTop: 'var(--space-8)' }} />
+          <Empty description="你还没有提交过技能" className="u-mt-space-8" />
         ) : (
-          <Space direction="vertical" style={{ width: '100%', marginTop: 'var(--space-4)' }}>
+          <Space direction="vertical" className="u-w-100 u-mt-space-4">
             {list.map((it) => {
               const st = STATUS[it.status] || { color: 'default', label: '未知' };
               return (
-                <Card key={it.id} size="small" style={{ width: '100%' }}>
-                  <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                    {it.pic ? <img src={it.pic} alt={it.title} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
-                    <div style={{ flex: 1, minWidth: 220 }}>
+                <Card key={it.id} size="small" className="u-w-100">
+                  <div className="u-d-flex u-gap-space-4 u-items-flex-start u-flexwrap-wrap">
+                    {it.pic ? <img src={it.pic} alt={it.title} className="u-w-48px u-h-48px u-radius-8px u-of-cover" /> : null}
+                    <div className="u-flex-1 u-minw-220px">
                       <Space wrap>
                         <Text strong>{it.title}</Text>
                         <Tag color={st.color}>{st.label}</Tag>
                         {it.rmb && Number(it.rmb) > 0 ? <Tag color="blue">使用¥{it.rmb}/次</Tag> : <Tag>使用免费</Tag>}
                         {it.export_rmb && Number(it.export_rmb) > 0 ? <Tag color="purple">导出¥{it.export_rmb}/次</Tag> : <Tag>导出免费</Tag>}
-                        <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openPrice(it)}>使用设价</Button>
+                        <Button size="small" type="link" className="u-p-0-4px" onClick={() => openPrice(it)}>使用设价</Button>
                       </Space>
-                      <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 2 }}>
+                      <div className="u-color-c-text-3 u-fs-fs-xs u-mt-2px">
                         {it.alias && <span>标识：{it.alias}　</span>}
                         <span>提交时间：{it.time ? new Date(it.time * 1000).toLocaleString() : '-'}</span>
                       </div>
                       {it.status === 2 && it.reason ? (
-                        <Paragraph style={{ color: 'var(--capsule-danger)', fontSize: 'var(--fs-sm)', margin: '4px 0 0' }}>
+                        <Paragraph className="u-color-capsule-danger u-fs-fs-sm u-m-4px-0-0">
                           拒绝原因：{it.reason}
                         </Paragraph>
                       ) : null}
@@ -190,10 +190,10 @@ const MyToolsPage: React.FC = () => {
                       <Tooltip title="关闭后，技能详情页不再显示导出按钮，后端导出接口也会拒绝">
                         <Space size={4}>
                           <Switch size="small" checked={it.allow_export === 1} onChange={(v) => toggleExport(it, v)} />
-                          <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>允许导出</Text>
+                          <Text type="secondary" className="u-fs-fs-xs">允许导出</Text>
                         </Space>
                       </Tooltip>
-                      <Button size="small" type="link" style={{ padding: '0 4px' }} onClick={() => openExportPrice(it)}>导出设价</Button>
+                      <Button size="small" type="link" className="u-p-0-4px" onClick={() => openExportPrice(it)}>导出设价</Button>
                       <Button
                         size="small"
                         icon={<DownloadOutlined />}
@@ -228,14 +228,14 @@ const MyToolsPage: React.FC = () => {
         cancelText="取消"
         destroyOnClose
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" className="u-w-100">
           <Text type="secondary">设定使用者每次调用（运行）该技能需支付的金额（元）。免费请填 0。</Text>
           <InputNumber
             min={0}
             max={999999}
             step={0.01}
             precision={2}
-            style={{ width: '100%' }}
+            className="u-w-100"
             value={priceVal}
             onChange={(v) => setPriceVal(typeof v === 'number' ? v : 0)}
             placeholder="0.00"
@@ -254,14 +254,14 @@ const MyToolsPage: React.FC = () => {
         cancelText="取消"
         destroyOnClose
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" className="u-w-100">
           <Text type="secondary">设定使用者每次导出该技能 SKILL.md 需支付的金额（元）。免费请填 0。</Text>
           <InputNumber
             min={0}
             max={999999}
             step={0.01}
             precision={2}
-            style={{ width: '100%' }}
+            className="u-w-100"
             value={exportPriceVal}
             onChange={(v) => setExportPriceVal(typeof v === 'number' ? v : 0)}
             placeholder="0.00"

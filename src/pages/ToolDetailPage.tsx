@@ -207,13 +207,13 @@ const ToolDetailPage: React.FC = () => {
                     <Descriptions.Item label="作者">
                         {Number(item.uid) === 0 ? (
                             <Tag color="blue">
-                                <Link to="/dan/about" style={{ color: 'inherit' }}>
+                                <Link to="/dan/about" className="u-color-inherit">
                                     {site?.title || '官方'}
                                 </Link>
                             </Tag>
                         ) : (
                             <Tag color="blue">
-                                <Link to={`/user/${item.uid}`} style={{ color: 'inherit' }}>
+                                <Link to={`/user/${item.uid}`} className="u-color-inherit">
                                     {item.author || `会员${item.uid}`}
                                 </Link>
                             </Tag>

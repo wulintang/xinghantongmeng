@@ -9,8 +9,8 @@ export default function ShopSkeleton(): React.JSX.Element {
                 {Array.from({ length: 12 }).map((_, i) => (
                     <Col key={i} xs={12} sm={12} md={8} lg={6}>
                         <div className="sk-card shop-goods-card">
-                            <Skeleton.Image active style={{ width: '100%', height: 150 }} />
-                            <div style={{ padding: '12px 14px' }}>
+                            <Skeleton.Image active className="u-w-100 u-h-150px" />
+                            <div className="u-p-12px-14px">
                                 <Skeleton active title={{ width: '80%' }} paragraph={{ rows: 2 }} />
                                 <Skeleton active title={false} paragraph={{ rows: 1, width: ['40%'] }} />
                             </div>

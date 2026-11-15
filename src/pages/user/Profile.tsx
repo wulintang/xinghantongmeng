@@ -195,7 +195,7 @@ export default function ProfilePage() {
 
   return (
     <Card className="user-center-card">
-      <Title level={5} style={{ marginBottom: 'var(--space-4)' }}>个人资料</Title>
+      <Title level={5} className="u-mb-space-4">个人资料</Title>
       <Form form={form} layout="vertical" onFinish={onSave}>
         <Form.Item name="name" label="用户名" rules={[{ required: true }]}>
           <Input />
@@ -225,7 +225,7 @@ export default function ProfilePage() {
           </Space>
         </Form.Item>
       </Form>
-      <div style={{ marginTop: 'var(--space-4)' }}>
+      <div className="u-mt-space-4">
         <Title level={5}>账号安全</Title>
         <List bordered>
           <List.Item
@@ -272,7 +272,7 @@ export default function ProfilePage() {
             />
           </Form.Item>
           <Form.Item label="短信验证码">
-            <Space.Compact style={{ width: '100%' }}>
+            <Space.Compact className="u-w-100">
               <Input
                 placeholder="短信验证码"
                 value={phoneCode}
@@ -306,7 +306,7 @@ export default function ProfilePage() {
             />
           </Form.Item>
           <Form.Item label="邮箱验证码">
-            <Space.Compact style={{ width: '100%' }}>
+            <Space.Compact className="u-w-100">
               <Input
                 placeholder="邮箱验证码"
                 value={mailCode}
@@ -350,7 +350,7 @@ export default function ProfilePage() {
             </Form.Item>
           )}
           <Form.Item label="验证码">
-            <Space.Compact style={{ width: '100%' }}>
+            <Space.Compact className="u-w-100">
               <Input
                 placeholder="验证码"
                 value={pwdCode}

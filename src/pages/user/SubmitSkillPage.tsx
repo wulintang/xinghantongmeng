@@ -258,8 +258,8 @@ const SubmitSkillPage: React.FC = () => {
 
   return (
     <Card className="user-center-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <Title level={4} style={{ margin: 0 }}>{isEdit ? '编辑技能' : '提交技能'}</Title>
+      <div className="u-d-flex u-justify-space-between u-items-center u-flexwrap-wrap u-gap-8px">
+        <Title level={4} className="u-m-0px">{isEdit ? '编辑技能' : '提交技能'}</Title>
         <Space>
           <Button icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>一键导入</Button>
           {!isEdit && <Button icon={<DownloadOutlined />} onClick={downloadTemplate}>下载模板</Button>}
@@ -267,8 +267,8 @@ const SubmitSkillPage: React.FC = () => {
       </div>
       <Text type="secondary">技能正文是一份 SKILL.md：可上传 .md、从 Git 仓库导入或直接粘贴；在「## 参数」段里声明要填什么，系统据此生成运行界面。名称、分类等基本信息在下方填写。</Text>
 
-      <div style={{ display: 'flex', gap: 'var(--space-6)', flexWrap: 'wrap', marginTop: 'var(--space-4)' }}>
-        <div style={{ flex: '1 1 480px', minWidth: 320 }}>
+      <div className="u-d-flex u-gap-space-6 u-flexwrap-wrap u-mt-space-4">
+        <div className="u-flex-1-1-480px u-minw-320px">
           <Spin spinning={catesLoading || editLoading}>
             <Form form={form} layout="vertical" onFinish={onFinish}>
               <Form.Item label="技能名称" name="title" rules={[{ required: true, message: '请输入技能名称' }]}>
@@ -290,13 +290,13 @@ const SubmitSkillPage: React.FC = () => {
                   <Upload accept="image/*" showUploadList={false} beforeUpload={(file) => { doUpload(file); return false; }}>
                     <Button size="small" loading={uploading} icon={<UploadOutlined />}>上传图标</Button>
                   </Upload>
-                  {pic ? <img src={pic} alt="pic" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} /> : null}
+                  {pic ? <img src={pic} alt="pic" className="u-w-48px u-h-48px u-radius-8px u-of-cover" /> : null}
                 </Space>
-                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>未手动上传则提交时自动按当前名称生成首字图标</div>
+                <div className="u-mt-4px u-color-c-text-3 u-fs-fs-xs">未手动上传则提交时自动按当前名称生成首字图标</div>
               </Form.Item>
 
               <Form.Item label="技能正文（SKILL.md）" required>
-                <Space direction="vertical" style={{ width: '100%' }} size="small">
+                <Space direction="vertical" className="u-w-100" size="small">
                   <Space wrap size="small">
                     <Upload accept=".md,.markdown,.txt" showUploadList={false} beforeUpload={readMdFile}>
                       <Button size="small" icon={<UploadOutlined />}>上传 .md</Button>
@@ -309,17 +309,17 @@ const SubmitSkillPage: React.FC = () => {
                   <div className="rx-md-view">
                     <MdEditor modelValue={skillMd} onChange={setSkillMd} preview="live" theme={dark ? 'dark' : 'light'} />
                   </div>
-                  <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', lineHeight: 1.7 }}>
+                  <div className="u-color-c-text-3 u-fs-fs-xs u-lh-1-7">
                     正文自由写；用户要填什么，在 <code>## 参数</code> 段里逐行声明即可。
                     <code>- 字段名：单行/多行/下拉/单选/日期/时间，必填，示例 xxx</code>。
                     这份 md 会原样保存，导出时也是同一份，不再拆分、拼装或反猜。
                   </div>
                   <div className="skill-doc-fields">
-                    <Text strong style={{ fontSize: 'var(--fs-sm)' }}>
+                    <Text strong className="u-fs-fs-sm">
                       自动识别的字段（{parsedFields.length}）
                     </Text>
                     {parsedFields.length ? (
-                      <Space wrap size={[6, 6]} style={{ marginTop: 6 }}>
+                      <Space wrap size={[6, 6]} className="u-mt-6px">
                         {parsedFields.map((f, i) => (
                           <span className="skill-doc-field" key={`${f.name}-${i}`}>
                             {f.label}{f.required ? ' *' : ''} · {TYPE_TEXT[f.type] || f.type}
@@ -328,7 +328,7 @@ const SubmitSkillPage: React.FC = () => {
                         ))}
                       </Space>
                     ) : (
-                      <div style={{ color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)', marginTop: 4 }}>
+                      <div className="u-color-c-text-3 u-fs-fs-xs u-mt-4px">
                         未声明「## 参数」段：老技能会按历史写法兼容解析；新技能建议显式声明，表单才完全可控。
                       </div>
                     )}
@@ -336,19 +336,19 @@ const SubmitSkillPage: React.FC = () => {
                 </Space>
               </Form.Item>
               <Form.Item label="使用一次金额（元）" required>
-                <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} style={{ width: '100%', maxWidth: 200 }} addonAfter="元/次" />
-                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
+                <InputNumber min={0} precision={2} step={0.01} value={rmb} onChange={(v) => setRmb(typeof v === 'number' ? v : 0)} className="u-w-100 u-maxw-200px" addonAfter="元/次" />
+                <div className="u-mt-4px u-color-c-text-3 u-fs-fs-xs">0 表示免费；大于 0 时，使用者每次运行按此金额从余额扣费（免费次数上限由站点统一配置）。</div>
               </Form.Item>
 
               <Form.Item label="导出一次金额（元）">
-                <InputNumber min={0} precision={2} step={0.01} value={exportRmb} onChange={(v) => setExportRmb(typeof v === 'number' ? v : 0)} style={{ width: '100%', maxWidth: 200 }} addonAfter="元/次" />
-                <div style={{ marginTop: 4, color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>0 表示免费；大于 0 时，使用者每次导出该技能 SKILL.md 按此金额从余额扣费。开启「允许导出」后此价格对外可见。</div>
+                <InputNumber min={0} precision={2} step={0.01} value={exportRmb} onChange={(v) => setExportRmb(typeof v === 'number' ? v : 0)} className="u-w-100 u-maxw-200px" addonAfter="元/次" />
+                <div className="u-mt-4px u-color-c-text-3 u-fs-fs-xs">0 表示免费；大于 0 时，使用者每次导出该技能 SKILL.md 按此金额从余额扣费。开启「允许导出」后此价格对外可见。</div>
               </Form.Item>
 
               <Form.Item label="允许导出技能（SKILL.md）">
                 <Space size={8} wrap>
                   <Switch checked={allowExport} onChange={setAllowExport} />
-                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+                  <Text type="secondary" className="u-fs-fs-xs">
                     默认关闭。开启后，技能详情页才显示「导出技能」按钮；也可稍后在「我的技能」里逐个设置。
                   </Text>
                 </Space>
@@ -369,7 +369,7 @@ const SubmitSkillPage: React.FC = () => {
             key: 'git',
             label: 'Git 仓库导入',
             children: (
-              <Space direction="vertical" style={{ width: '100%' }}>
+              <Space direction="vertical" className="u-w-100">
                 <Input
                   value={gitUrl}
                   onChange={(e) => setGitUrl(e.target.value)}
@@ -377,7 +377,7 @@ const SubmitSkillPage: React.FC = () => {
                 />
                 <Space>
                   <Switch checked={gitPrivate} onChange={setGitPrivate} />
-                  <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>私有仓库（需填访问令牌）</Text>
+                  <Text type="secondary" className="u-fs-fs-xs">私有仓库（需填访问令牌）</Text>
                 </Space>
                 {gitPrivate ? (
                   <Input.Password
@@ -389,7 +389,7 @@ const SubmitSkillPage: React.FC = () => {
                 <Button type="primary" loading={gitLoading} block onClick={handleGitImport}>
                   {gitPrivate ? '拉取并填充' : '直接导入（公开仓库）'}
                 </Button>
-                <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库；公开仓库无需令牌，粘贴地址即可直接导入。</Text>
+                <Text type="secondary" className="u-fs-fs-xs">支持 GitHub / Gitee / cnb.cool / GitLab / 自建等任意标准 git 仓库；公开仓库无需令牌，粘贴地址即可直接导入。</Text>
               </Space>
             ),
           },
@@ -397,31 +397,19 @@ const SubmitSkillPage: React.FC = () => {
             key: 'paste',
             label: '粘贴 / 上传导入',
             children: (
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <div className="verify-code-block" style={{ position: 'relative' }}>
-                  <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--c-text-2)', marginBottom: 4 }}>
+              <Space direction="vertical" className="u-w-100">
+                <div className="verify-code-block u-pos-relative" >
+                  <div className="u-fs-fs-xs u-color-c-text-2 u-mb-4px">
                     JSON 示例（点击右侧复制）
                   </div>
                   <pre
-                    style={{
-                      margin: 0,
-                      background: 'transparent',
-                      border: 'none',
-                      padding: 0,
-                      color: 'var(--c-text)',
-                      fontSize: 'var(--fs-xs)',
-                      lineHeight: 'var(--lh-base)',
-                      maxHeight: 160,
-                      overflow: 'auto',
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-all',
-                    }}
+                    className="u-m-0px u-bg-transparent u-border-none u-p-0px u-color-c-text u-fs-fs-xs u-lh-lh-base u-maxh-160px u-ov-auto u-ws-pre-wrap u-wb-break-all"
                   >
                     {JSON_EXAMPLE}
                   </pre>
                   <Text
                     copyable={{ text: JSON_EXAMPLE }}
-                    style={{ position: 'absolute', top: 8, right: 8, color: 'var(--c-link)' }}
+                    className="u-pos-absolute u-top-8px u-right-8px u-color-c-link"
                   />
                 </div>
                 <Input.TextArea rows={5} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="在此粘贴 JSON 或 Markdown…" />

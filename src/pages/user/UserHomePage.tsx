@@ -112,7 +112,7 @@ const UserHomePage: React.FC = () => {
         };
     }, [id]);
 
-    if (loading) return <Spin style={{ display: 'block', margin: '80px auto' }} />;
+    if (loading) return <Spin className="u-d-block u-m-80px-auto" />;
     if (error || !info) {
         return (
             <Flex vertical gap={16}>

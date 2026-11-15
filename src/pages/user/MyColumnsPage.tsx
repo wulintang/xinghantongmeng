@@ -224,7 +224,7 @@ const MyColumnsPage: React.FC = () => {
     <Card className="user-center-card">
       <Flex vertical gap={16}>
       <Flex justify="space-between" align="center">
-        <Text strong style={{ fontSize: 'var(--fs-lg)' }}>
+        <Text strong className="u-fs-fs-lg">
           我的专栏
         </Text>
         <Button type="primary" onClick={openCreate}>
@@ -239,7 +239,7 @@ const MyColumnsPage: React.FC = () => {
       ) : (
         <div className="my-columns-list">
           {list.map((c) => (
-            <Card key={c.id} style={{ position: 'relative' }}>
+            <Card key={c.id} className="u-pos-relative">
               <Popconfirm
                 title="确认删除该专栏？"
                 description="专栏内有文章时会先退还文章奖励并删除文章，再删除专栏。"
@@ -247,7 +247,7 @@ const MyColumnsPage: React.FC = () => {
                 okText="删除"
                 cancelText="取消"
               >
-                <Button size="small" danger style={{ position: 'absolute', top: 16, right: 24, zIndex: 1 }}>
+                <Button size="small" danger className="u-pos-absolute u-top-16px u-right-24px u-z-1">
                   删除
                 </Button>
               </Popconfirm>
@@ -255,13 +255,13 @@ const MyColumnsPage: React.FC = () => {
                 <Avatar shape="square" size={48} src={assetUrl(c.pic) || undefined}>
                   {(c.name || '?').slice(0, 1)}
                 </Avatar>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="u-flex-1 u-minw-0px">
                   <Flex align="center" gap={8} wrap>
                     <Text strong>{c.name}</Text>
                     {statusTag(c)}
                   </Flex>
                   {c.status === 2 && c.reason ? (
-                    <Text type="danger" style={{ fontSize: 'var(--fs-sm)' }}>
+                    <Text type="danger" className="u-fs-fs-sm">
                       拒绝原因：{c.reason}
                     </Text>
                   ) : null}
@@ -269,7 +269,7 @@ const MyColumnsPage: React.FC = () => {
                     {c.description || '暂无简介'}
                   </Text>
                   <div className="column-my-url">
-                    <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>
+                    <Text type="secondary" className="u-fs-fs-sm">
                       自定义URL：
                       {c.custom_url ? (
                         <Tag color={c.url_status === 1 ? 'green' : c.url_status === 2 ? 'red' : 'gold'}>
@@ -290,7 +290,7 @@ const MyColumnsPage: React.FC = () => {
                   </div>
                 </div>
               </Flex>
-              <Flex justify="flex-end" gap={8} style={{ marginTop: 'var(--space-3)' }} wrap>
+              <Flex justify="flex-end" gap={8} className="u-mt-space-3" wrap>
                 <Button size="small" onClick={() => navigate(`/user/columns/${c.id}`)}>
                   文章管理
                 </Button>
@@ -338,10 +338,10 @@ const MyColumnsPage: React.FC = () => {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: 'var(--space-3)' }}
+          className="u-mb-space-3"
           message={`自定义URL需付费审核，提交即从余额扣除 ¥${urlFee.toFixed(2)}（禁止纯中文）。`}
         />
-        <Paragraph type="secondary" style={{ fontSize: 'var(--fs-sm)', marginBottom: 'var(--space-3)' }}>
+        <Paragraph type="secondary" className="u-fs-fs-sm u-mb-space-3">
           当前余额：
           {balance === null ? (
             '查询中…'

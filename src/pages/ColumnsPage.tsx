@@ -114,8 +114,8 @@ const ColumnsPage: React.FC = () => {
               <Col key={c.id} xs={12} sm={12} md={8}>
                 <Card
                   hoverable
-                  className="column-card"
-                  style={{ height: '100%' }}
+                  className="column-card u-h-100"
+                  
                   onClick={() => navigate(columnLink(c))}
                   styles={{ body: { padding: 16, height: '100%' } }}
                 >
@@ -138,13 +138,13 @@ const ColumnsPage: React.FC = () => {
                       <div className="column-card-author">
                         {c.uid === 0 ? (
                           <Tag color="blue">
-                            <Link to="/dan/about" style={{ color: 'inherit' }}>
+                            <Link to="/dan/about" className="u-color-inherit">
                               作者：{site?.title || '官方'}
                             </Link>
                           </Tag>
                         ) : (
                           <Tag color="blue">
-                            <Link to={`/user/${c.uid}`} style={{ color: 'inherit' }}>
+                            <Link to={`/user/${c.uid}`} className="u-color-inherit">
                               作者：{c.author || '作者'}
                             </Link>
                           </Tag>
@@ -158,38 +158,22 @@ const ColumnsPage: React.FC = () => {
                     <Flex
                       vertical
                       gap={4}
-                      style={{
-                        marginTop: 12,
-                        paddingTop: 10,
-                        borderTop: '1px solid var(--c-border)',
-                      }}
+                      className="u-mt-12px u-pt-10px u-bt-1px-solid-c-border"
                     >
                       {arts.map((a) => (
                         <Link
                           key={a.id}
                           to={`/article/detail/${a.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            fontSize: 'var(--fs-xs)',
-                            color: 'var(--c-text-2)',
-                          }}
+                          className="u-d-flex u-items-center u-gap-8px u-fs-fs-xs u-color-c-text-2"
                         >
                           <span
-                            style={{
-                              flex: 1,
-                              minWidth: 0,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
+                            className="u-flex-1 u-minw-0px u-ov-hidden u-to-ellipsis u-ws-nowrap"
                           >
                             {a.title}
                           </span>
                           {a.time ? (
-                            <span style={{ flex: 'none', color: 'var(--c-text-3)' }}>
+                            <span className="u-flex-none u-color-c-text-3">
                               {dayjs.unix(Number(a.time)).format('YYYY-MM-DD')}
                             </span>
                           ) : null}

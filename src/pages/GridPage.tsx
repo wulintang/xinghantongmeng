@@ -100,7 +100,7 @@ export default function GridPage(): React.JSX.Element {
         }}
       />
 
-      {!loggedIn ? <Alert style={{ marginTop: 'var(--page-gap)' }} type="info" message="登录后可框选格子并提交广告申请" /> : null}
+      {!loggedIn ? <Alert className="u-mt-page-gap" type="info" message="登录后可框选格子并提交广告申请" /> : null}
 
       <Modal
         title={`格子广告申请（${cellsCount} 格）`}

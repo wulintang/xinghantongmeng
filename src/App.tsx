@@ -101,21 +101,14 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: 'var(--space-10)', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: 'var(--space-3)' }}>页面出现了一点问题</h2>
-          <p style={{ color: 'var(--c-text-3)', marginBottom: 'var(--space-5)' }}>{this.state.msg}</p>
+        <div className="u-p-space-10 u-ta-center">
+          <h2 className="u-mb-space-3">页面出现了一点问题</h2>
+          <p className="u-color-c-text-3 u-mb-space-5">{this.state.msg}</p>
           <button
             onClick={() => {
               window.location.href = '/';
             }}
-            style={{
-              padding: '6px 18px',
-              borderRadius: 14,
-              border: '1px solid var(--c-border)',
-              background: 'var(--c-link)',
-              color: '#fff',
-              cursor: 'pointer',
-            }}
+            className="u-p-6px-18px u-radius-14px u-border-1px-solid-c-border u-bg-c-link u-color-fff u-cursor-pointer"
           >
             返回首页
           </button>

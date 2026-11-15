@@ -202,20 +202,20 @@ function UserShopTab({ uid }: { uid: string }) {
 
   return (
     <div>
-      <Flex gap={16} align="center" wrap style={{ marginBottom: 'var(--space-4)' }}>
-        <Avatar shape="square" size={48} src={shop.logo || undefined} style={{ background: 'var(--c-link)' }}>
+      <Flex gap={16} align="center" wrap className="u-mb-space-4">
+        <Avatar shape="square" size={48} src={shop.logo || undefined} className="u-bg-c-link">
           {(shop.shop_name || '?').slice(0, 1)}
         </Avatar>
         <Flex vertical gap={2}>
           <Flex align="center" gap={8}>
-            <Text strong style={{ fontSize: 'var(--fs-lg)' }}>{shop.shop_name}</Text>
+            <Text strong className="u-fs-fs-lg">{shop.shop_name}</Text>
             {shop.status === 1
               ? <Tag color="green">营业中</Tag>
               : <Tag color="orange">{Number(shop.audit_status) === 1 ? '待营业' : '审核中'}</Tag>}
             <Tag color={depositOk ? 'green' : 'red'}>保证金{depositOk ? '已缴' : '未缴'}</Tag>
           </Flex>
-          {shop.intro ? <Text type="secondary" style={{ fontSize: 'var(--fs-sm)' }}>{shop.intro}</Text> : null}
-          <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+          {shop.intro ? <Text type="secondary" className="u-fs-fs-sm">{shop.intro}</Text> : null}
+          <Text type="secondary" className="u-fs-fs-xs">
             平台佣金 {commission}%，卖家实得 {100 - commission}%；{depositOk ? '商品可正常购买' : '保证金未缴足，商品可浏览但暂不可购买'}
           </Text>
         </Flex>
@@ -229,7 +229,7 @@ function UserShopTab({ uid }: { uid: string }) {
         activeKey={cate}
         onChange={(k) => setCate(k)}
         size="small"
-        style={{ marginBottom: 'var(--space-3)' }}
+        className="u-mb-space-3"
       />
 
       {shown.length === 0 ? (
@@ -238,7 +238,7 @@ function UserShopTab({ uid }: { uid: string }) {
         <Row gutter={[16, 16]}>
           {shown.map((g) => (
             <Col key={g.id} xs={12} sm={12} md={8}>
-              <Card size="small" style={{ height: '100%' }}>
+              <Card size="small" className="u-h-100">
                 <Flex vertical gap={6}>
                   <Flex align="center" justify="space-between" gap={8}>
                     <Text strong ellipsis>{g.title}</Text>
@@ -251,10 +251,10 @@ function UserShopTab({ uid }: { uid: string }) {
                     <Tag color={Number(g.can_buy) === 0 ? 'red' : 'green'}>
                       {Number(g.can_buy) === 0 ? '保证金未缴' : '保证金已缴'}
                     </Tag>
-                    {g.delivery_note ? <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>{g.delivery_note}</Text> : null}
+                    {g.delivery_note ? <Text type="secondary" className="u-fs-fs-xs">{g.delivery_note}</Text> : null}
                   </Flex>
                   <Flex align="center" justify="space-between">
-                    <Text style={{ color: 'var(--capsule-danger)', fontWeight: 600 }}>¥{Number(g.price).toFixed(2)}</Text>
+                    <Text className="u-color-capsule-danger u-fw-600">¥{Number(g.price).toFixed(2)}</Text>
                     <Button type="primary" size="small" disabled={Number(g.can_buy) === 0} onClick={() => openBuy(g)}>
                       {Number(g.can_buy) === 0 ? '暂不可购买' : '购买'}
                     </Button>
@@ -280,7 +280,7 @@ function UserShopTab({ uid }: { uid: string }) {
           <Flex vertical gap={12}>
             <Flex justify="space-between">
               <Text type="secondary">价格</Text>
-              <Text strong style={{ color: 'var(--capsule-danger)' }}>¥{Number(buyTarget.price).toFixed(2)}</Text>
+              <Text strong className="u-color-capsule-danger">¥{Number(buyTarget.price).toFixed(2)}</Text>
             </Flex>
             <Flex justify="space-between">
               <Text type="secondary">交付方式</Text>
@@ -296,7 +296,7 @@ function UserShopTab({ uid }: { uid: string }) {
               <div>
                 <Text type="secondary">收货地址</Text>
                 <Select
-                  style={{ width: '100%', marginTop: 6 }}
+                  className="u-w-100 u-mt-6px"
                   placeholder="选择收货地址"
                   value={addrId || undefined}
                   onChange={(v) => setAddrId(v)}
@@ -304,7 +304,7 @@ function UserShopTab({ uid }: { uid: string }) {
                 />
               </div>
             ) : null}
-            <Text type="secondary" style={{ fontSize: 'var(--fs-xs)' }}>
+            <Text type="secondary" className="u-fs-fs-xs">
               将从你的余额实扣（真扣费），确认即下单。
             </Text>
           </Flex>
@@ -336,11 +336,11 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
           </Avatar>
           <Flex vertical gap={6}>
             <Flex align="center" gap={8}>
-              <Text strong style={{ fontSize: 'var(--fs-xl)' }}>
+              <Text strong className="u-fs-fs-xl">
                 {info?.name || ''}
               </Text>
               {icon ? (
-                <Tag color={info?.sex === 1 ? 'blue' : 'magenta'} style={{ marginInlineEnd: 0 }}>
+                <Tag color={info?.sex === 1 ? 'blue' : 'magenta'} className="u-me-0px">
                   {icon}
                 </Tag>
               ) : null}
@@ -352,7 +352,7 @@ export function UserHomeCards({ info, sites, columns, skills, loading = {}, bg }
             </Flex>
             {/* 与 /user/:id 完全一致：无签名时不显示，不写入任何虚构内容 */}
             {info?.description ? (
-              <Text type="secondary" style={{ fontSize: 'var(--fs-base)' }}>
+              <Text type="secondary" className="u-fs-fs-base">
                 {info.description}
               </Text>
             ) : null}

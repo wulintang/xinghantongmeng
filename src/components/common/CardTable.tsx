@@ -30,10 +30,11 @@ export interface CardTableProps<T> {
     className?: string;
     expandable?: TableProps<T>['expandable'];
     pagination?: TableProps<T>['pagination'];
+    locale?: TableProps<T>['locale'];
 }
 
 export default function CardTable<T extends Record<string, any>>(props: CardTableProps<T>) {
-    const { columns, dataSource, rowKey, loading, className, expandable, pagination } = props;
+    const { columns, dataSource, rowKey, loading, className, expandable, pagination, locale } = props;
     const isMobile = useIsMobile();
 
     if (isMobile) {
@@ -78,6 +79,7 @@ export default function CardTable<T extends Record<string, any>>(props: CardTabl
             loading={loading}
             pagination={pagination}
             expandable={expandable}
+            locale={locale}
             scroll={{ x: 'max-content' }}
         />
     );

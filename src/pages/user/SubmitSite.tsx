@@ -418,10 +418,10 @@ const SubmitSite: React.FC = () => {
             <Input placeholder="例如：兴汉联盟" disabled={ro} />
           </Form.Item>
           <Form.Item label="站点链接" required>
-            <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+            <div className="u-d-flex u-gap-space-2 u-items-center">
               <Form.Item name="url" noStyle rules={[{ required: true, message: '请输入站点链接' }]}>
                 <Input
-                  style={{ flex: 1 }}
+                  className="u-flex-1"
                   disabled={ro || (isEdit && domainLocked)}
                   placeholder="https://example.com"
                   onChange={() => {
@@ -467,9 +467,9 @@ const SubmitSite: React.FC = () => {
             </Space>
           </Form.Item>
           <Form.Item label="Feed 订阅地址">
-            <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+            <div className="u-d-flex u-gap-space-2 u-items-center">
               <Form.Item name="feed_url" noStyle rules={[{ type: 'url', message: '请输入合法的链接' }]}>
-                <Input style={{ flex: 1 }} disabled={ro || (isEdit && feedLocked)} placeholder="https://example.com/feed（选填，须为站点域名下路径）" />
+                <Input className="u-flex-1" disabled={ro || (isEdit && feedLocked)} placeholder="https://example.com/feed（选填，须为站点域名下路径）" />
               </Form.Item>
               {isEdit && feedLocked && (
                 <Button icon={<EditOutlined />} onClick={() => { setFeedLocked(false); setShowVerify(true); }}>
@@ -497,10 +497,10 @@ const SubmitSite: React.FC = () => {
                 ))}
               </Space>
               {!verifyType && (
-                <div style={{ marginTop: 'var(--space-2)', color: 'var(--c-text-3)', fontSize: 'var(--fs-xs)' }}>请选择一种验证方式完成域名归属验证</div>
+                <div className="u-mt-space-2 u-color-c-text-3 u-fs-fs-xs">请选择一种验证方式完成域名归属验证</div>
               )}
               {verifyType && (
-                <div style={{ marginTop: 'var(--space-2)', color: 'var(--c-link)', fontSize: 'var(--fs-xs)' }}>已通过：{VERIFY_LABELS[verifyType]}</div>
+                <div className="u-mt-space-2 u-color-c-link u-fs-fs-xs">已通过：{VERIFY_LABELS[verifyType]}</div>
               )}
             </Form.Item>
           )}
@@ -527,7 +527,7 @@ const SubmitSite: React.FC = () => {
           <div className="verify-modal-body">
             <p className="verify-desc">由管理员人工核对域名归属，提交后将自动进入人工审核流程。</p>
             {feeLoading ? (
-              <div style={{ padding: 'var(--space-6)', textAlign: 'center' }}>
+              <div className="u-p-space-6 u-ta-center">
                 <Spin />
               </div>
             ) : siteFee > 0 ? (
@@ -541,17 +541,17 @@ const SubmitSite: React.FC = () => {
                   <span>¥{myBalance ?? 0}</span>
                 </div>
                 {myBalance !== null && myBalance < siteFee ? (
-                  <Button type="primary" danger block onClick={() => navigate('/user/recharge')} style={{ marginTop: 'var(--space-4)' }}>
+                  <Button type="primary" danger block onClick={() => navigate('/user/recharge')} className="u-mt-space-4">
                     余额不足，去充值
                   </Button>
                 ) : (
-                  <Button type="primary" block onClick={chooseManual} style={{ marginTop: 'var(--space-4)' }}>
+                  <Button type="primary" block onClick={chooseManual} className="u-mt-space-4">
                     申请人工验证（支付 ¥{siteFee}）
                   </Button>
                 )}
               </>
             ) : (
-              <Button type="primary" block onClick={chooseManual} style={{ marginTop: 'var(--space-4)' }}>
+              <Button type="primary" block onClick={chooseManual} className="u-mt-space-4">
                 申请人工验证
               </Button>
             )}
@@ -559,7 +559,7 @@ const SubmitSite: React.FC = () => {
         ) : (
           <div className="verify-modal-body">
             {fetching && (
-              <div style={{ padding: 'var(--space-6)', textAlign: 'center' }}>
+              <div className="u-p-space-6 u-ta-center">
                 <Spin />
               </div>
             )}
@@ -645,7 +645,7 @@ const SubmitSite: React.FC = () => {
                   </>
                 )}
                 {vMsg && <Alert type={vMsg.ok ? 'success' : 'error'} message={vMsg.text} showIcon className="verify-alert" />}
-                <Button type="primary" block loading={verifying} onClick={runVerify} disabled={!!vMsg?.ok} style={{ marginTop: 'var(--space-4)' }}>
+                <Button type="primary" block loading={verifying} onClick={runVerify} disabled={!!vMsg?.ok} className="u-mt-space-4">
                   验证
                 </Button>
               </>

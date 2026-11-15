@@ -2934,7 +2934,8 @@ body {
 }
 
 /* ===== 商品详情信息胶囊：全站同款灰底胶囊，大小/字号/内边距完全一致 ===== */
-.shop-detail-info { display: flex; flex-direction: column; }
+/* info 内所有纵向块（胶囊行 / 描述块 / 金额行）统一间距，容器级 gap 一次到位 */
+.shop-detail-info { display: flex; flex-direction: column; gap: var(--space); }
 .goods-pills { gap: var(--space-2); }
 .goods-pill {
   display: inline-flex;
@@ -3162,14 +3163,12 @@ img { max-width: 100%; }
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 /* 「网址分类」是落在随机背景 hero 上的高亮标签，属 URL 入口；
-   antd 预设 processing 色在深色下是深底深字、几乎看不见。
-   统一走 hero 高对比规则：白字 + 半透明深底 + 白描边，深浅模式都清晰 */
+   统一实心蓝底白字（站点品牌色 --capsule-brand），深浅模式都用同一套蓝，清晰醒目 */
 .page-hero-children .ant-tag,
 .page-hero-children .home-hero-cates .ant-tag {
   color: #fff !important;
-  background: rgba(0, 0, 0, 0.35) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+  background: var(--capsule-brand) !important;
+  border: 1px solid var(--capsule-brand) !important;
   height: var(--capsule-h);
   display: inline-flex;
   align-items: center;

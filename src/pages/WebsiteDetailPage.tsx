@@ -180,9 +180,9 @@ const WebsiteDetailPage: React.FC = () => {
             <Flex vertical gap={16}>
                 <PageHeader title="站点详情" crumbs={[{ label: '首页', to: '/' }, { label: '网址导航', to: '/websites' }, { label: '详情' }]} />
                 <Alert type="warning" showIcon message={error || '站点不存在'} />
-                <div>
+                <Flex justify="flex-end">
                     <Button onClick={() => navigate('/websites')}>返回网址导航</Button>
-                </div>
+                </Flex>
             </Flex>
         );
     }
@@ -365,9 +365,9 @@ const WebsiteDetailPage: React.FC = () => {
 
             <AdSlotSkeleton slot="detail_website_bottom" />
 
-            <div>
+            <Flex justify="flex-end">
                 <Button onClick={() => navigate('/websites')}>返回网址导航</Button>
-            </div>
+            </Flex>
 
             <Modal
                 title={`举报「${item.title || item.name}」`}

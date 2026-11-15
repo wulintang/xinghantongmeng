@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Col, Divider, Flex, Row, Space, Typography } from 'antd'
+import { Divider, Flex, Space, Typography } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
@@ -45,7 +45,7 @@ function LinkColumn({
     emptyText?: string;
 }): React.JSX.Element {
     return (
-        <Flex vertical gap={10}>
+        <Flex vertical gap={10} className="site-footer-link-col">
             <Title level={5} className="site-footer-col-title">
                 {title}
             </Title>
@@ -117,30 +117,24 @@ export default function SiteFooter(): React.JSX.Element {
     return (
         <footer className="site-footer">
             <div className="container">
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} md={8}>
-                        <Flex vertical gap={12} align="flex-start">
-                            <Flex align="center" gap={10}>
-                                {site?.logo ? (
-                                    <img src={site.logo} alt={site.title || ''} className="site-footer-logo" />
-                                ) : null}
-                            </Flex>
-                            {site?.description ? (
-                                <Paragraph type="secondary" className="site-footer-desc">
-                                    {site.description}
-                                </Paragraph>
-                            ) : null}
-                        </Flex>
-                    </Col>
+                {/* 桌面：品牌居左、两列链接整体靠右；手机：品牌左对齐、两列整体居中且列内文字居中 */}
+                <Flex className="site-footer-main" gap={16} align="flex-start" justify="space-between" wrap>
+                    <Flex vertical gap={12} align="flex-start" className="site-footer-brand">
+                        {site?.logo ? (
+                            <img src={site.logo} alt={site.title || ''} className="site-footer-logo" />
+                        ) : null}
+                        {site?.description ? (
+                            <Paragraph type="secondary" className="site-footer-desc">
+                                {site.description}
+                            </Paragraph>
+                        ) : null}
+                    </Flex>
 
-                    <Col xs={12} sm={12} md={8}>
+                    <Flex className="site-footer-links" gap={48} align="flex-start">
                         <LinkColumn title="站内导航" items={siteNav} />
-                    </Col>
-
-                    <Col xs={12} sm={12} md={8}>
                         <LinkColumn title="友情链接" items={friendPreview} emptyText="暂无友情链接" />
-                    </Col>
-                </Row>
+                    </Flex>
+                </Flex>
 
                 <Flex className="site-footer-bottom" justify="space-between" align="center" gap={12} wrap>
                     <Text type="secondary">

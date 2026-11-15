@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert, Avatar, Button, Card, Flex, Input, Modal, Select, Tag, Typography, message,
+  Alert, Avatar, Button, Card, Flex, Input, Modal, Select, Typography, message,
 } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import PageHeader from '@components/common/PageHeader';
 import MdView from '@components/common/MdView';
@@ -174,6 +174,7 @@ const ShopGoodsDetailPage: React.FC = () => {
         title={detail.title}
         crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
       />
+      {/* 卡片一：商品信息（保持左图右信息；信息项统一胶囊、描述归位、金额+购买同行右对齐） */}
       <Card className="shop-detail-card">
         <Flex gap={24} wrap className="shop-detail-flex">
           {detail.cover ? (
@@ -181,38 +182,49 @@ const ShopGoodsDetailPage: React.FC = () => {
           ) : (
             <div className="shop-goods-ico shop-detail-cover-ico">{cateNameFrom(cfg, detail.cate)?.[0] || '商'}</div>
           )}
-          <Flex vertical className="u-flex-1 u-minw-240px">
-            {/* 店铺信息 + 类目/交付/保证金：全部同一行一致渲染（头像 + 店名 + 营业状态 + 进入店铺 + 各标签） */}
-            <Flex gap={10} wrap align="center">
+          <Flex vertical className="u-flex-1 u-minw-240px shop-detail-info">
+            {/* 店铺/类目/交付/保证金 + 收藏举报：全部同款灰胶囊、同尺寸；手机端只留 店名/进入店铺/收藏/举报 */}
+            <Flex gap={10} wrap align="center" className="goods-pills">
               {shop ? (
                 <>
-                  <Avatar
-                    size={22}
-                    shape="square"
-                    src={shop.logo || undefined}
-                    className="u-flex-0-0-auto u-bg-c-bg-2"
-                  >
-                    {(shop.shop_name || '店').slice(0, 1)}
-                  </Avatar>
-                  <Text strong>{shop.shop_name || '店铺'}</Text>
-                  <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} className="u-me-0px">
+                  <Link to={`/user/${detail.uid}?tab=shop`} className="goods-pill goods-pill-shop">
+                    <Avatar
+                      size={20}
+                      shape="square"
+                      src={shop.logo || undefined}
+                      className="goods-pill-avatar"
+                    >
+                      {(shop.shop_name || '店').slice(0, 1)}
+                    </Avatar>
+                    <span>{shop.shop_name || '店铺'}</span>
+                  </Link>
+                  <span className="goods-pill goods-pill-desktop-only">
                     {Number(shop.status) === 1 ? '营业中' : '未营业'}
-                  </Tag>
-                  <Button type="link" size="small" className="u-px-0px" onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
-                    进入店铺
-                  </Button>
+                  </span>
+                  <Link to={`/user/${detail.uid}?tab=shop`} className="goods-pill">进入店铺</Link>
                 </>
               ) : null}
-              <Tag>{cateNameFrom(cfg, detail.cate)}</Tag>
-              <Tag color={detail.delivery === 'digital' ? 'cyan' : 'orange'}>
+              <span className="goods-pill goods-pill-desktop-only">{cateNameFrom(cfg, detail.cate)}</span>
+              <span className="goods-pill goods-pill-desktop-only">
                 {detail.delivery === 'digital' ? '数字交付' : '实体交付'}
-              </Tag>
-              <Tag color={Number(detail.can_buy) === 0 ? 'red' : 'green'}>
+              </span>
+              <span className="goods-pill goods-pill-desktop-only">
                 保证金{Number(detail.can_buy) === 0 ? '未缴' : '已缴'}
-              </Tag>
-              {detail.delivery_note ? <Text type="secondary">{detail.delivery_note}</Text> : null}
+              </span>
+              <button type="button" className="goods-pill goods-pill-action" disabled={favLoading} onClick={onFav}>
+                {faved ? '★ 已收藏' : '☆ 收藏'}
+              </button>
+              <button type="button" className="goods-pill goods-pill-action" onClick={() => setReportOpen(true)}>举报</button>
             </Flex>
-            <div className="shop-detail-price">¥{(Number(detail.price) || 0).toFixed(2)}</div>
+
+            {/* 描述归位：统一背景块，位于金额/购买之上；hero 标题下不再放描述 */}
+            {detail.description || detail.delivery_note ? (
+              <div className="goods-desc-block">
+                {detail.description ? <div>{detail.description}</div> : null}
+                {detail.delivery_note ? <div className="u-mt-4px">{detail.delivery_note}</div> : null}
+              </div>
+            ) : null}
+
             {Number(detail.can_buy) === 0 ? (
               <Alert
                 type="warning"
@@ -221,26 +233,26 @@ const ShopGoodsDetailPage: React.FC = () => {
                 description={`已缴 ¥${(Number(detail.deposit_paid) || 0).toFixed(2)} / 应缴 ¥${(Number(detail.deposit_need) || 0).toFixed(2)}。商品可以正常浏览，但暂时不能购买。`}
               />
             ) : null}
-            {detail.description ? <Alert type="info" showIcon message={detail.description} /> : null}
-            {/* 操作胶囊：统一 size（无 large）、统一靠右（全站死命令） */}
-            <Flex justify="flex-end" wrap>
+
+            {/* 金额 + 立即购买：同一行、整体靠右 */}
+            <Flex align="center" justify="flex-end" gap={16} wrap className="goods-buy-row">
+              <span className="shop-detail-price">¥{(Number(detail.price) || 0).toFixed(2)}</span>
               <Button type="primary" disabled={Number(detail.can_buy) === 0} onClick={openBuy}>
                 {Number(detail.can_buy) === 0 ? '暂不可购买' : '立即购买'}
               </Button>
-              <Button loading={favLoading} onClick={onFav}>{faved ? '★ 已收藏' : '☆ 收藏'}</Button>
-              <Button onClick={() => setReportOpen(true)}>举报</Button>
             </Flex>
-            <Text type="secondary">
-              购买将实时从账号余额扣费；数字交付自动发货，实体交付由卖家填写快递单号。
-            </Text>
           </Flex>
         </Flex>
-        {detail.content ? (
-          <div className="detail-content md-content u-mt-space-5" >
+      </Card>
+
+      {/* 卡片二：商品介绍（与商品信息拆为上下两卡） */}
+      {detail.content ? (
+        <Card className="shop-detail-card" title="商品介绍">
+          <div className="detail-content md-content">
             <MdView id="shop-goods-detail-preview" modelValue={detail.content} />
           </div>
-        ) : null}
-      </Card>
+        </Card>
+      ) : null}
 
       <Modal
         title={detail ? `举报「${detail.title}」` : '举报商品'}

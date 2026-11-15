@@ -336,6 +336,11 @@ body {
   display: none !important;
 }
 
+/* 胶囊统一左右间距：只作用于选项式胶囊「各项之间」，
+   不用全局 gap !important（那会撑大广场等区块的内部间距）。
+   thumb 依据 option 的 offsetLeft 定位，会随列间距自动跟随，不错位。 */
+.ant-segmented-group { column-gap: 8px; }
+
 /* Segmented：胶囊尺寸以 Header「已签到」small 按钮为基准，不再用 --space（16px）撑大 */
 .ant-segmented-item {
   border-radius: var(--capsule-radius) !important;
@@ -502,8 +507,9 @@ body {
 
 .site-content {
   min-height: calc(100vh - 260px);
-  /* 全站唯一一处：hero 与内容区之间的统一间距（所有页面一致，不再逐页打补丁） */
-  padding-top: var(--space);
+  /* 全站统一上下边距：hero 与内容、内容与页脚之间各留 var(--space)；
+     左右 gutter 由 .container 提供，避免双层叠加 */
+  padding: var(--space) 0;
 }
 
 .ad-slot-skeleton {
@@ -986,6 +992,11 @@ body {
 }
 }
 
+/* 桌面：品牌居左、两列链接整体靠右 */
+.site-footer-main { width: 100%; }
+.site-footer-links { margin-left: auto; }
+.site-footer-link-col .site-footer-col-title { margin-bottom: 0; }
+
 .site-footer-bottom {
   font-size: var(--fs-xs);
   border-top: 1px solid var(--c-divider);
@@ -995,6 +1006,13 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* 手机：品牌保持左对齐（不居中） */
+  .site-footer-brand { align-self: flex-start; text-align: left; }
+  /* 手机：站内导航 + 友情链接 两列整体居中、列内文字居中 */
+  .site-footer-links { width: 100%; margin-left: 0; justify-content: center !important; }
+  .site-footer-link-col { align-items: center; text-align: center; }
+  .site-footer-link-col .ant-flex { align-items: center !important; }
+  .site-footer-link-col .ant-typography { text-align: center; }
   .site-footer-bottom {
     flex-direction: column;
     justify-content: center;
@@ -2031,11 +2049,11 @@ body {
 .feed-bubble-inner {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4) var(--space-5);
+  gap: 8px;
+  padding: 12px var(--space);
 }
 .feed-bubble-title {
-  margin: 0 0 var(--space-0-5);
+  margin: 0;
   font-size: var(--fs-lg);
   font-weight: 600;
   line-height: var(--lh-tight);
@@ -2908,6 +2926,35 @@ body {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
 }
+
+/* ===== 商品详情信息胶囊：全站同款灰底胶囊，大小/字号/内边距完全一致 ===== */
+.shop-detail-info { display: flex; flex-direction: column; }
+.goods-pills { gap: var(--space-2); }
+.goods-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--capsule-h);
+  padding: 0 var(--capsule-option-pad-x);
+  font-size: var(--fs-base);
+  line-height: 1;
+  color: var(--c-text);
+  background: var(--c-bg-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--capsule-radius);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: default;
+}
+/* 可点击胶囊（进入店铺/收藏/举报）：hover 仅变强调色，尺寸绝不变 */
+a.goods-pill,
+button.goods-pill { cursor: pointer; font-family: inherit; }
+@media (hover: hover) and (pointer: fine) {
+  a.goods-pill:hover,
+  button.goods-pill:hover { color: var(--c-link); border-color: var(--c-link); }
+}
+button.goods-pill:disabled { opacity: .55; cursor: not-allowed; }
+.goods-pill-avatar { flex: 0 0 auto; }
 /* 商品内页顶部留白已由 .site-content 统一提供，不再单独打补丁 */
 /* 封面：有界 1:1 方图（桌面 320px、移动铺满），不随上传原图尺寸大小不一 */
 .shop-detail-page .shop-detail-cover {
@@ -2923,7 +2970,19 @@ body {
 /* 集市卡片等高：栅格拉伸 + 卡片占满，避免错位/参差 */
 .shop-goods-card { height: 100%; }
 .shop-goods-card .ant-card-body { display: flex; flex-direction: column; }
-.shop-detail-price { font-size: var(--fs-xl); font-weight: 600; color: var(--capsule-danger); }
+/* 商品描述统一背景块：位于金额/购买之上 */
+.goods-desc-block {
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-divider);
+  border-radius: 10px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--c-text-2);
+}
+/* 金额 + 立即购买 同一行、整体靠右 */
+.goods-buy-row .shop-detail-price { line-height: 1.2; }
+.shop-detail-price { font-size: 28px; font-weight: 700; color: var(--capsule-danger); }
 
 /* 我的集市：店铺概览条 + 统计块 */
 .shop-hero {
@@ -2975,6 +3034,8 @@ img { max-width: 100%; }
   .site-content { padding: var(--space-4) 0; }
   .page-hero-desc.ant-typography { font-size: var(--fs-sm); }
   .shop-detail-page .shop-detail-cover { width: 100%; }
+  /* 手机端商品胶囊精简：只留 店名 / 进入店铺 / 收藏 / 举报 */
+  .shop-detail-page .goods-pill-desktop-only { display: none !important; }
   .detail-shot-side { width: 100%; max-width: 100%; }
   .article-edit-top { gap: var(--space-2); }
   .shop-hero { padding: var(--space-4); gap: var(--space-4); }

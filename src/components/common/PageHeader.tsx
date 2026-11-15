@@ -23,9 +23,9 @@ interface PageHeaderProps {
 }
 
 const BG_COUNT = 39;
-/** 主推背景：39.html 命中权重 80%（永久生效）；其余 1~38 平分剩余 20% */
+/** 主推背景：39.html 命中权重 20%；其余 1~38 平分剩余 80%（约每 5 次刷到 1 次） */
 const FEATURED_BG = 39;
-const FEATURED_WEIGHT = 0.8;
+const FEATURED_WEIGHT = 0.2;
 function pickBgNum(): number {
     if (Math.random() < FEATURED_WEIGHT) return FEATURED_BG;
     return Math.floor(Math.random() * (BG_COUNT - 1)) + 1; // 1~38，排除 39

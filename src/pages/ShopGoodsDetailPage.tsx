@@ -173,8 +173,26 @@ const ShopGoodsDetailPage: React.FC = () => {
       <PageHeader
         title={detail.title}
         crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
-        extra={<Button onClick={() => navigate('/user/shop')}>我的集市</Button>}
       />
+      {shop ? (
+        <Flex className="shop-detail-shop shop-detail-shop--inline" align="center" gap={10} wrap>
+          <Avatar
+            size={36}
+            shape="square"
+            src={shop.logo || undefined}
+            style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
+          >
+            {(shop.shop_name || '店').slice(0, 1)}
+          </Avatar>
+          <Text strong style={{ fontSize: 'var(--fs-md)' }}>{shop.shop_name || '店铺'}</Text>
+          <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} style={{ marginInlineEnd: 0 }}>
+            {Number(shop.status) === 1 ? '营业中' : '未营业'}
+          </Tag>
+          <Button type="link" size="small" style={{ paddingInline: 4 }} onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
+            进入店铺
+          </Button>
+        </Flex>
+      ) : null}
       <Card className="shop-detail-card">
         <Flex gap={24} wrap className="shop-detail-flex">
           {detail.cover ? (
@@ -214,7 +232,6 @@ const ShopGoodsDetailPage: React.FC = () => {
             <Text type="secondary">
               购买将实时从账号余额扣费；数字交付自动发货，实体交付由卖家填写快递单号。
             </Text>
-            <Text type="secondary"><a onClick={() => navigate('/user/buy')}>查看我的购买</a></Text>
           </Flex>
         </Flex>
         {detail.content ? (
@@ -223,35 +240,6 @@ const ShopGoodsDetailPage: React.FC = () => {
           </div>
         ) : null}
       </Card>
-
-      {shop ? (
-        <Card className="shop-detail-shop" style={{ marginTop: 'var(--space-4)' }}>
-          <Flex gap={16} align="center" wrap>
-            <Avatar
-              size={56}
-              shape="square"
-              src={shop.logo || undefined}
-              style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
-            >
-              {(shop.shop_name || '店').slice(0, 1)}
-            </Avatar>
-            <Flex vertical gap={4} style={{ flex: 1, minWidth: 200 }}>
-              <Flex align="center" gap={8} wrap>
-                <Text strong style={{ fontSize: 'var(--fs-lg)' }}>{shop.shop_name || '店铺'}</Text>
-                <Tag color={Number(shop.status) === 1 ? 'green' : 'default'}>
-                  {Number(shop.status) === 1 ? '营业中' : '未营业'}
-                </Tag>
-              </Flex>
-              <Text type="secondary" ellipsis={{ rows: 2 }}>
-                {shop.intro || '该店铺暂未填写简介'}
-              </Text>
-            </Flex>
-            <Button type="primary" ghost onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
-              进入店铺
-            </Button>
-          </Flex>
-        </Card>
-      ) : null}
 
       <Modal
         title={detail ? `举报「${detail.title}」` : '举报商品'}

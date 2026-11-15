@@ -5,3 +5,4 @@ export { default as AdSlotSkeleton } from './AdSlotSkeleton';
 export { default as GridCanvas } from './GridCanvas';
 export { default as SearchBox } from './SearchBox';
 export { default as CateFilter } from './CateFilter';
+export { default as ShopGoodsCard } from './ShopGoodsCard';

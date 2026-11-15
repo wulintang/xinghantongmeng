@@ -174,25 +174,6 @@ const ShopGoodsDetailPage: React.FC = () => {
         title={detail.title}
         crumbs={[{ label: '首页', to: '/' }, { label: '用户集市', to: '/shop' }]}
       />
-      {shop ? (
-        <Flex className="shop-detail-shop shop-detail-shop--inline" align="center" gap={10} wrap>
-          <Avatar
-            size={36}
-            shape="square"
-            src={shop.logo || undefined}
-            style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
-          >
-            {(shop.shop_name || '店').slice(0, 1)}
-          </Avatar>
-          <Text strong style={{ fontSize: 'var(--fs-md)' }}>{shop.shop_name || '店铺'}</Text>
-          <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} style={{ marginInlineEnd: 0 }}>
-            {Number(shop.status) === 1 ? '营业中' : '未营业'}
-          </Tag>
-          <Button type="link" size="small" style={{ paddingInline: 4 }} onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
-            进入店铺
-          </Button>
-        </Flex>
-      ) : null}
       <Card className="shop-detail-card">
         <Flex gap={24} wrap className="shop-detail-flex">
           {detail.cover ? (
@@ -200,9 +181,29 @@ const ShopGoodsDetailPage: React.FC = () => {
           ) : (
             <div className="shop-goods-ico shop-detail-cover-ico">{cateNameFrom(cfg, detail.cate)?.[0] || '商'}</div>
           )}
-          <Flex vertical gap={12} style={{ flex: 1, minWidth: 240 }}>
+          <Flex vertical style={{ flex: 1, minWidth: 240 }}>
             <Title level={3} style={{ margin: 0 }}>{detail.title}</Title>
+            {/* 店铺信息 + 类目/交付/保证金：全部同一行一致渲染（头像 + 店名 + 营业状态 + 进入店铺 + 各标签） */}
             <Flex gap={10} wrap align="center">
+              {shop ? (
+                <>
+                  <Avatar
+                    size={22}
+                    shape="square"
+                    src={shop.logo || undefined}
+                    style={{ flex: '0 0 auto', background: 'var(--c-bg-2)' }}
+                  >
+                    {(shop.shop_name || '店').slice(0, 1)}
+                  </Avatar>
+                  <Text strong>{shop.shop_name || '店铺'}</Text>
+                  <Tag color={Number(shop.status) === 1 ? 'green' : 'default'} style={{ marginInlineEnd: 0 }}>
+                    {Number(shop.status) === 1 ? '营业中' : '未营业'}
+                  </Tag>
+                  <Button type="link" size="small" style={{ paddingInline: 0 }} onClick={() => navigate(`/shop?uid=${detail.uid}`)}>
+                    进入店铺
+                  </Button>
+                </>
+              ) : null}
               <Tag>{cateNameFrom(cfg, detail.cate)}</Tag>
               <Tag color={detail.delivery === 'digital' ? 'cyan' : 'orange'}>
                 {detail.delivery === 'digital' ? '数字交付' : '实体交付'}
@@ -222,8 +223,9 @@ const ShopGoodsDetailPage: React.FC = () => {
               />
             ) : null}
             {detail.description ? <Alert type="info" showIcon message={detail.description} /> : null}
-            <Flex gap={12} wrap>
-              <Button type="primary" size="large" disabled={Number(detail.can_buy) === 0} onClick={openBuy}>
+            {/* 操作胶囊：统一 size（无 large）、统一靠右（全站死命令） */}
+            <Flex justify="flex-end" wrap>
+              <Button type="primary" disabled={Number(detail.can_buy) === 0} onClick={openBuy}>
                 {Number(detail.can_buy) === 0 ? '暂不可购买' : '立即购买'}
               </Button>
               <Button loading={favLoading} onClick={onFav}>{faved ? '★ 已收藏' : '☆ 收藏'}</Button>

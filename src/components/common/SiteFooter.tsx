@@ -117,7 +117,7 @@ export default function SiteFooter(): React.JSX.Element {
     return (
         <footer className="site-footer">
             <div className="container">
-                <Row gutter={[32, 28]}>
+                <Row gutter={[16, 16]}>
                     <Col xs={24} md={10}>
                         <Flex vertical gap={12}>
                             <Flex align="center" gap={10}>

@@ -6,7 +6,7 @@ export default function ShopGoodsDetailSkeleton(): React.JSX.Element {
     return (
         <div className="sk-page shop-detail-page">
             <div className="shop-detail-card">
-                <Row gutter={24}>
+                <Row gutter={[16, 16]}>
                     <Col xs={24} md={8}>
                         <Skeleton.Image active style={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 12 }} />
                     </Col>

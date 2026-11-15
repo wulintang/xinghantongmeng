@@ -4,14 +4,14 @@ import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
+import { PageHeader, SearchBox, AdSlotSkeleton, ShopGoodsCard } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getColumns, columnLink } from '@/services/column';
 import { getPosts } from '@/services/postService';
-import { getMallList, cateOptionsFrom, type MallGoodsItem, type ShopConfig } from '@/services/shop';
+import { getMallList, type MallGoodsItem, type ShopConfig } from '@/services/shop';
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
 
@@ -33,7 +33,6 @@ const HomePage: React.FC = () => {
     const [columnMap, setColumnMap] = useState<Map<number, { id: number; name: string; description: string | null; author: string; custom_url?: string | null; url_status?: number }>>(new Map());
 
     usePageMeta({});
-    const cateName = (key: string) => cateOptionsFrom(mallCfg).find((c) => c.key === key)?.name || key;
 
     useEffect(() => {
         Promise.all([
@@ -148,7 +147,7 @@ const HomePage: React.FC = () => {
                 )}
             </section>
 
-            <Row gutter={[24, 24]}>
+            <Row gutter={[16, 16]}>
                 <Col xs={24} lg={12}>
                     <Flex className="section-head" justify="space-between" align="center">
                         <Title level={4} className="section-title">
@@ -269,34 +268,11 @@ const HomePage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {mallGoods.map((g) => (
                             <Col key={g.id} xs={12} sm={12} md={8} lg={6}>
-                                <Card
-                                    hoverable
-                                    className="shop-goods-card"
-                                    onClick={() => navigate(`/shop?goods=${g.id}`)}
-                                    cover={
-                                        g.cover ? (
-                                            <div className="shop-goods-cover"><img src={g.cover} alt={g.title} /></div>
-                                        ) : (
-                                            <div className="shop-goods-ico">{cateName(g.cate)?.[0] || '商'}</div>
-                                        )
-                                    }
-                                >
-                                    <Flex vertical gap={8}>
-                                        <Text strong className="shop-goods-title" title={g.title}>{g.title}</Text>
-                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="shop-goods-desc">
-                                            {g.description || '暂无商品简介'}
-                                        </Paragraph>
-                                        <Flex justify="space-between" align="center" wrap gap={6}>
-                                            <Text className="shop-goods-price">¥{(Number(g.price) || 0).toFixed(2)}</Text>
-                                            <Tag color={g.delivery === 'digital' ? 'cyan' : 'orange'}>
-                                                {g.delivery === 'digital' ? '数字交付' : '实体交付'}
-                                            </Tag>
-                                        </Flex>
-                                        <Text type="secondary" className="shop-goods-meta">
-                                            {g.shop_name || '店铺'} · {cateName(g.cate)}
-                                        </Text>
-                                    </Flex>
-                                </Card>
+                                <ShopGoodsCard
+                                    item={g}
+                                    cfg={mallCfg}
+                                    onOpen={(id) => navigate(`/shop/goods/${id}`)}
+                                />
                             </Col>
                         ))}
                     </Row>

@@ -24,31 +24,41 @@
   --lh-loose: 1.9;   /* 长文正文 */
   --lh-none: 1;
 
-  --page-gap: 24px;
+  /* ============ 全站唯一间距（死命令：所有 margin/padding/gap 统一到此值，桌面/移动各一个） ============ */
+  --space: 16px;            /* 桌面唯一间距值 */
+  --space-sm: 12px;         /* 移动端唯一间距值 */
+  --content-max: 1200px;    /* 内容最大宽度（头部/内容/页脚/hero 内/操作条内统一） */
+  --capsule-h: 32px;        /* 全站胶囊（操作按钮）统一高度 */
 
-  /* ============ 全站统一「边距」单一真相：所有可见横向留白统一走这一个值 ============ */
-  --content-max: 1200px;     /* 内容最大宽度（头部/内容/页脚/hero 内/操作条内统一） */
-  --page-gutter: 16px;       /* 桌面横向边距：头部、内容、页脚、hero 内、操作条内、详情页 全部一致 */
-  --page-gutter-sm: 12px;    /* 移动端横向边距 */
-  --capsule-h: 32px;         /* 全站胶囊（操作按钮）统一高度 */
-
-  /* ============ 间距 scale（padding / margin / gap / row-gap / column-gap 统一走此套） ============ */
-  --space-hair: 1px;   /* 极细间距 */
-  --space-0-5: 2px;
-  --space-1: 4px;
-  --space-1-5: 6px;
-  --space-2: 8px;
-  --space-2-5: 10px;
-  --space-3: 12px;
-  --space-3-5: 14px;
-  --space-4: 16px;
-  --space-4-5: 18px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-6-5: 26px;
-  --space-10: 40px;
-  --space-15: 60px;
-  --space-20: 80px;
+  /* 边距 / 区块间距 / 间距 scale 全部别名到 --space，确保全站唯一值（移动端媒体查询里 --space 翻成 --space-sm） */
+  --page-gap: var(--space);
+  --page-gutter: var(--space);
+  --page-gutter-sm: var(--space-sm);
+  --space-hair: 1px;        /* 仅用于 1px 视觉细线（border），非布局间距 */
+  --space-0-5: var(--space);
+  --space-1: var(--space);
+  --space-1-5: var(--space);
+  --space-2: var(--space);
+  --space-2-5: var(--space);
+  --space-3: var(--space);
+  --space-3-5: var(--space);
+  --space-4: var(--space);
+  --space-4-5: var(--space);
+  --space-5: var(--space);
+  --space-6: var(--space);
+  --space-6-5: var(--space);
+  --space-7: var(--space);
+  --space-8: var(--space);
+  --space-9: var(--space);
+  --space-10: var(--space);
+  --space-11: var(--space);
+  --space-12: var(--space);
+  --space-13: var(--space);
+  --space-14: var(--space);
+  --space-15: var(--space);
+  --space-16: var(--space);
+  --space-18: var(--space);
+  --space-20: var(--space);
 
   /* ============ 胶囊体系（全站统一：按钮 / 标签 / 大容器一套圆角语言） ============ */
   --capsule-radius: 999px;          /* 胶囊 = 满圆角 */
@@ -81,6 +91,20 @@
   --c-tooltip-text: #ffffff;
   --c-canvas-bg: #ffffff;       /* 格子画布 */
   --c-canvas-line: rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   全站间距「唯一值」强制（死命令）：
+   antd 的 Flex / Space 组件把 gap 写成内联样式（8/6/12/16/24...），
+   普通 CSS 无法覆盖内联，故用 !important 统一压到唯一令牌 --space
+   （桌面 16px / 移动端媒体查询翻成 --space-sm 12px）。
+   配合上方所有 --space-N 别名，全站 margin/padding/gap 收敛为同一个值。
+   ============================================================ */
+.ant-flex,
+.ant-space {
+  gap: var(--space) !important;
+  row-gap: var(--space) !important;
+  column-gap: var(--space) !important;
 }
 
 body {
@@ -315,7 +339,7 @@ body {
   --capsule-option-pad-x: 16px;
   --capsule-option-pad-y: 5px;
   background: transparent !important;
-  gap: 8px !important;
+  gap: var(--space) !important;
 }
 
 /* 去掉 Tabs 底部横线 */
@@ -327,8 +351,8 @@ body {
 .ant-segmented-item {
   border-radius: var(--capsule-radius) !important;
   color: var(--capsule-brand) !important;
-  padding: 5px 16px !important;
-  margin: 0 4px !important;
+  padding: var(--space) !important;
+  margin: 0 var(--space) !important;
 }
 .ant-segmented-item-selected {
   background: var(--capsule-brand) !important;
@@ -368,8 +392,8 @@ body {
 .ant-tabs-nav .ant-tabs-tab {
   border-radius: var(--capsule-radius) !important;
   color: var(--capsule-brand) !important;
-  padding: 5px 16px !important;
-  margin: 0 4px !important;
+  padding: var(--space) !important;
+  margin: 0 var(--space) !important;
   border: none !important;
 }
 .ant-tabs-nav .ant-tabs-tab-active {
@@ -631,7 +655,7 @@ body {
   height: 6px;
   border-radius: 50%;
   background: var(--c-text-3);
-  margin-top: 8px;
+  margin-top: var(--space);
   flex: none;
 }
 .change-content {
@@ -662,7 +686,7 @@ body {
   line-height: var(--lh-base);
 }
 .change-meta {
-  margin-top: 2px;
+  margin-top: var(--space);
 }
 .change-author {
   font-size: var(--fs-xs);
@@ -720,13 +744,13 @@ body {
   line-height: var(--lh-tight);
 }
 .ad-upload-tip {
-  margin-bottom: 8px;
+  margin-bottom: var(--space);
 }
 .ad-upload-hint {
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 .ad-upload-label {
-  margin-top: 8px;
+  margin-top: var(--space);
   font-size: var(--fs-sm);
 }
 .page-spin {
@@ -838,7 +862,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: 8px;
+  margin-bottom: var(--space);
 }
 .home-grid-title {
   color: var(--c-text);
@@ -851,7 +875,7 @@ body {
 }
 .home-grid-footer {
   text-align: right;
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 .home-grid-more {
   color: var(--c-link);
@@ -952,7 +976,7 @@ body {
     display: none;
   }
   .site-theme-toggle {
-    margin-right: 2px !important;
+    margin-right: var(--space) !important;
   }
 }
 @media (max-width: 400px) {
@@ -1059,7 +1083,7 @@ body {
 }
 
 .main-content-header {
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 /* ============================================================
@@ -1089,7 +1113,7 @@ body {
 }
 
 .section-head {
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 .section-title {
@@ -1216,7 +1240,7 @@ body {
 }
 
 .article-lead {
-  margin-bottom: 16px;
+  margin-bottom: var(--space);
 }
 
 .post-summary {
@@ -1424,7 +1448,7 @@ body {
 .sk-line-title {
   height: 22px;
   width: 60%;
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 .sk-user {
@@ -1455,7 +1479,7 @@ body {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 @media (max-width: 768px) {
@@ -1474,23 +1498,23 @@ body {
    用户中心 / 工具类
    ============================================================ */
 .mt-8 {
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 
 .mb-8 {
-  margin-bottom: 8px;
+  margin-bottom: var(--space);
 }
 
 .mb-16 {
-  margin-bottom: 16px;
+  margin-bottom: var(--space);
 }
 
 .mt-16 {
-  margin-top: 16px;
+  margin-top: var(--space);
 }
 
 .mt-24 {
-  margin-top: 24px;
+  margin-top: var(--space);
 }
 
 .text-center {
@@ -1531,7 +1555,7 @@ body {
 .column-card-desc {
   font-size: var(--fs-sm);
   color: var(--c-text-3);
-  margin-top: 4px;
+  margin-top: var(--space);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -1542,7 +1566,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-1-5);
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 .column-card-author-name {
   font-size: var(--fs-xs);
@@ -1553,7 +1577,7 @@ body {
 .col-upload-tip {
   font-size: var(--fs-xs);
   color: var(--c-text-3);
-  margin-bottom: 8px;
+  margin-bottom: var(--space);
 }
 .col-upload-label {
   font-size: var(--fs-sm);
@@ -1561,7 +1585,7 @@ body {
 
 .column-my-desc {
   display: block;
-  margin-top: 6px;
+  margin-top: var(--space);
   font-size: var(--fs-sm);
   color: var(--c-text-3);
   overflow: hidden;
@@ -1569,7 +1593,7 @@ body {
   white-space: nowrap;
 }
 .column-my-url {
-  margin-top: 6px;
+  margin-top: var(--space);
 }
 
 .member-column-card {
@@ -1615,7 +1639,7 @@ body {
 .color-secondary-12-ml {
   color: var(--c-text-3);
   font-size: var(--fs-xs);
-  margin-left: 8px;
+  margin-left: var(--space);
 }
 
 .user-loading {
@@ -1645,7 +1669,7 @@ body {
 }
 
 .user-sider-name {
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 
 .user-sider-logout {
@@ -1718,8 +1742,8 @@ body {
 }
 
 .cardtable-detail {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: var(--space);
+  padding-top: var(--space);
   border-top: 1px dashed var(--c-border);
 }
 
@@ -1765,7 +1789,7 @@ body {
   }
 
   .user-center-card .ant-form-item {
-    margin-bottom: 12px !important;
+    margin-bottom: var(--space) !important;
   }
 
   .user-center-card .ant-picker,
@@ -1866,7 +1890,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 .fav-item-wrap {
@@ -1877,7 +1901,7 @@ body {
 }
 
 .fav-item-wrap .ant-checkbox-wrapper {
-  margin-top: 4px;
+  margin-top: var(--space);
   flex: 0 0 auto;
 }
 .fav-url {
@@ -1937,14 +1961,14 @@ body {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2-5);
-  margin-bottom: 20px;
+  margin-bottom: var(--space);
   position: relative;
 }
 /* 作者栏：居左竖排（默认显示，仅手机模式隐藏） */
 .feed-author-col {
   flex-shrink: 0;
   width: 96px;
-  padding-top: 4px;
+  padding-top: var(--space);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -2123,7 +2147,7 @@ body {
 }
 .feed-bubble-actions {
   flex-shrink: 0;
-  margin-left: 8px;
+  margin-left: var(--space);
 }
 .feed-bubble-action {
   display: inline-flex;
@@ -2162,12 +2186,12 @@ body {
 
 /* 弹窗内 TextArea 计数提示（ant-input-data-count）不被底部按钮覆盖 */
 .ant-modal-body .ant-input-textarea-show-count {
-  margin-bottom: 12px;
+  margin-bottom: var(--space);
 }
 
 /* 我的友链管理列表 */
 .mylinks-list {
-  margin-top: 8px;
+  margin-top: var(--space);
 }
 .mylink-item {
   display: block;
@@ -2204,7 +2228,7 @@ body {
 }
 
 .submit-site-form {
-  margin-top: 16px;
+  margin-top: var(--space);
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -2227,17 +2251,17 @@ body {
   margin-bottom: var(--page-gap);
 }
 .links-notice-card .ant-typography {
-  margin-bottom: 8px;
+  margin-bottom: var(--space);
 }
 .links-notice-list {
-  margin: 0 0 var(--space-4);
-  padding-left: 20px;
+  margin: 0 0 var(--space);
+  padding-left: var(--space);
   color: var(--c-text-2);
   font-size: var(--fs-sm);
   line-height: var(--lh-relaxed);
 }
 .links-notice-list li {
-  margin-bottom: 6px;
+  margin-bottom: var(--space);
 }
 .links-code-row {
   display: grid;
@@ -2250,7 +2274,7 @@ body {
 .links-code-label {
   color: var(--c-text-2);
   font-size: var(--fs-sm);
-  margin-bottom: 6px;
+  margin-bottom: var(--space);
 }
 .links-code-block {
   background: var(--c-bg-soft);
@@ -2301,7 +2325,7 @@ body {
 .captcha-compact .captcha-img {
   height: 32px;
   cursor: pointer;
-  margin-left: 8px;
+  margin-left: var(--space);
 }
 
 .jump-title-no-margin {
@@ -2354,7 +2378,7 @@ body {
 .detail-content img,
 .rx-md-view .md-editor-preview img {
   max-width: 70%;
-  margin: 33px auto;
+  margin: var(--space) auto;
 }
 /* figure 已负责 70% 宽与留白，图片在 figure 内撑满、不再重复留白。
    .md-figure.md-figure 提权到 0,2,1，稳定压过上面那条尺寸规则与 preview.css。 */
@@ -2366,7 +2390,7 @@ body {
 .rx-md-view .md-editor-preview .md-figure {
   display: block;
   max-width: 70%;
-  margin: 33px auto;
+  margin: var(--space) auto;
   text-align: center;
   text-indent: 0;
 }
@@ -2374,7 +2398,7 @@ body {
 .md-figure-caption,
 .detail-content .md-figure-caption,
 .rx-md-view .md-editor-preview .md-figure-caption {
-  margin: 10px auto 0;
+  margin: var(--space) auto 0;
   text-align: center;
   color: var(--c-text-3);
   font-size: var(--fs-sm);
@@ -2557,7 +2581,7 @@ body {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: var(--space);
 }
 .verify-step-badge {
   flex: 0 0 auto;
@@ -2578,7 +2602,7 @@ body {
 .verify-step-desc {
   font-size: var(--fs-sm);
   color: var(--c-text-2);
-  margin-top: 2px;
+  margin-top: var(--space);
 }
 .verify-code-block {
   background: var(--c-bg-soft);
@@ -2757,14 +2781,14 @@ body {
 .skill-chat-msg {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space);
   max-width: 88%;
 }
 .skill-chat-user { align-self: flex-end; align-items: flex-end; }
 .skill-chat-assistant { align-self: flex-start; align-items: flex-start; }
 .skill-chat-who { font-size: var(--fs-xs); color: var(--c-text-3); }
 .skill-chat-body {
-  padding: 10px 14px;
+  padding: var(--space) var(--space);
   border-radius: 12px;
   border: 1px solid var(--c-border);
   background: var(--c-surface);
@@ -2782,7 +2806,7 @@ body {
   font-size: inherit;
   color: inherit;
 }
-.skill-chat-body .md-editor-preview p { margin: 0 0 8px; }
+.skill-chat-body .md-editor-preview p { margin: 0 0 var(--space); }
 .skill-chat-body .md-editor-preview p:last-child { margin-bottom: 0; }
 .skill-chat-typing { color: var(--c-text-3); font-size: var(--fs-sm); }
 .skill-chat-input {
@@ -2807,7 +2831,7 @@ body {
 .skill-form-head {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space);
   margin-bottom: var(--space-4);
 }
 .skill-form-hint { font-size: var(--fs-xs); }
@@ -2824,7 +2848,7 @@ body {
 }
 .skill-doc-field {
   display: inline-block;
-  padding: 2px 8px;
+  padding: var(--space) var(--space);
   border: 1px solid var(--c-border);
   border-radius: 6px;
   background: var(--c-surface);
@@ -2862,6 +2886,9 @@ body {
   transform: translateY(-2px);
 }
 .shop-goods-card .ant-card-body { padding: var(--space-4) !important; }
+/* 卡片内所有 Flex 直接子项允许收缩，保证长标题 ellipsis 生效、不撑出横向滚轮 */
+.shop-goods-card .ant-card-body .ant-flex { min-width: 0; max-width: 100%; }
+.shop-goods-card .ant-card-body .ant-flex > * { min-width: 0; }
 .shop-goods-cover,
 .shop-goods-ico {
   aspect-ratio: 1 / 1;
@@ -2877,6 +2904,8 @@ body {
 .shop-goods-ico { color: var(--c-text-2); font-size: 32px; font-weight: 600; }
 .shop-goods-title {
   display: block;
+  min-width: 0;          /* flex 子项省略生效的关键：允许收缩到小于内容宽度，消除长标题横向滚轮 */
+  max-width: 100%;
   font-size: var(--fs-md);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2904,12 +2933,9 @@ body {
   background: var(--c-bg-2);
 }
 
-/* ===== 集市独立详情单页：复用统一表面/边线令牌 ===== */
-.shop-detail-page {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: var(--page-gutter);
-}
+/* ===== 集市独立详情单页：复用统一表面/边线令牌 =====
+   外圈 max-width / 边距由 MainLayout 的 .container 统一提供，此处不再叠加，
+   避免详情页在 container 之内再内缩一层 gutter（与列表页边距不一致）。 */
 /* 商品顶部紧凑店铺行（替代原底部长栏）：头像 + 店名 + 营业状态 + 进入店铺 */
 .shop-detail-shop--inline {
   margin: var(--space-4) 0;
@@ -2950,7 +2976,7 @@ body {
 }
 .shop-hero-main { flex: 1 1 260px; min-width: 0; }
 .shop-hero-name { font-size: var(--fs-xl); font-weight: 600; color: var(--c-text); }
-.shop-hero-desc { margin-top: 6px; font-size: var(--fs-sm); color: var(--c-text-3); }
+.shop-hero-desc { margin-top: var(--space); font-size: var(--fs-sm); color: var(--c-text-3); }
 .shop-stats { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
 .shop-stat {
   flex: 1 1 140px;
@@ -2960,7 +2986,7 @@ body {
   border-radius: var(--container-radius);
 }
 .shop-stat-label { font-size: var(--fs-xs); color: var(--c-text-3); }
-.shop-stat-value { margin-top: 4px; font-size: var(--fs-xl); font-weight: 600; color: var(--c-text); }
+.shop-stat-value { margin-top: var(--space); font-size: var(--fs-xl); font-weight: 600; color: var(--c-text); }
 .shop-step-hint {
   margin-bottom: var(--space-4);
   border-radius: var(--container-radius);
@@ -2981,11 +3007,10 @@ img { max-width: 100%; }
 
 /* 移动端（≤768px）：统一收窄容器 gutter 与区块间距，标题降级，详情图全宽 */
 @media (max-width: 768px) {
-  :root { --page-gap: 16px; --page-gutter: var(--page-gutter-sm); }
+  :root { --space: var(--space-sm); }
   .container { padding: 0 var(--page-gutter); }
   .site-content { padding: var(--space-4) 0; }
   .page-hero-desc.ant-typography { font-size: var(--fs-sm); }
-  .shop-detail-page { padding: var(--page-gutter); }
   .shop-detail-page .shop-detail-cover { width: 100%; }
   .detail-shot-side { width: 100%; max-width: 100%; }
   .article-edit-top { gap: var(--space-2); }
@@ -2997,7 +3022,7 @@ img { max-width: 100%; }
   .container { padding: 0 var(--page-gutter); }
   .page-hero-title.ant-typography { font-size: 19px !important; }
   .site-header-inner { gap: var(--space-2); }
-  .site-user .ant-btn { padding-inline: 10px; }
+  .site-user .ant-btn { padding-inline: var(--space); }
 }
 
 /* 详情双栏（网址 / 商品）：平板与手机下改为竖向堆叠，杜绝「预览图比文字宽」的不和谐 */
@@ -3066,14 +3091,8 @@ img { max-width: 100%; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-}
-/* 文字区块：仅作居中容器，无任何灰色背景/笼罩（示例即纯文字 + 描边） */
-.page-hero-panel {
-  width: 100%;
-  max-width: 760px;
   text-align: center;
-  padding: var(--space-6) 0;
+  padding: var(--space-6) var(--page-gutter);
 }
 /* 标题：白填充 + 深色描边（描边在外、白字在内，即示例的「外框中白」线条感）+ 阴影，
    深/浅背景上都可读，且没有任何笼罩 */
@@ -3141,6 +3160,7 @@ img { max-width: 100%; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;   /* 全站操作胶囊统一靠右（死命令）：所有走 PageHeader extra 的详情页一并生效 */
   gap: var(--space-2);
 }
 /* 统一操作条内的胶囊高度/圆角，消除「忽大忽小」 */
@@ -3151,7 +3171,7 @@ img { max-width: 100%; }
 
 @media (max-width: 768px) {
   .page-hero { min-height: 176px; }
-  .page-hero-panel { padding: var(--space-5) 0; }
+  .page-hero-content { padding: var(--space-5) var(--page-gutter); }
   .page-hero-title.ant-typography { font-size: 22px !important; -webkit-text-stroke-width: 1.5px; }
   .page-hero-actions-inner { padding: var(--space-2) var(--page-gutter); }
 }

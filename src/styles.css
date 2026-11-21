@@ -3171,6 +3171,8 @@ img { max-width: 100%; }
   overflow: hidden;
   background: var(--c-bg);
   isolation: isolate;
+  /* 内页统一样式：hero 自带底部横线，深浅模式跟随 --c-border */
+  border-bottom: 1px solid var(--c-border);
 }
 .page-hero-bg {
   position: absolute;
@@ -3254,10 +3256,9 @@ img { max-width: 100%; }
   gap: var(--space-2);
 }
 /* 内页功能区块：就地在各页 DOM 流里（.site-content > .container 内），属于内页而非随机背景 hero。
-   hero 本身不含任何操作条；此区用【上边线】与上方 hero 分隔。 */
+   hero 本身不含任何操作条；底部分隔线统一由 .page-hero 的 border-bottom 提供，此处不再画线。 */
 .page-actions {
   width: 100%;
-  border-top: 1px solid var(--c-border);
   padding: var(--space-3) 0;
 }
 .page-actions-inner {

@@ -33,7 +33,7 @@ export default function WebsiteDetailSkeleton(): React.JSX.Element {
             </Card>
             <Card title="最新文章">
                 <List
-                    dataSource={Array.from({ length: 4 })}
+                    dataSource={Array.from({ length: 4 }, (_, i) => ({ key: i }))}
                     renderItem={() => (
                         <List.Item>
                             <List.Item.Meta

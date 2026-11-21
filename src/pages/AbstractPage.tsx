@@ -17,11 +17,6 @@ import { getToken } from '@/utils/auth';
 
 const { Text, Paragraph } = Typography;
 
-const StarIcon = () => (
-    <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
-        <path d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 00.6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0046.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z" />
-    </svg>
-);
 const EyeIcon = () => (
     <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor" aria-hidden="true">
         <path d="M942.2 486.2C847.4 286.5 704.1 186 512 186c-192.2 0-335.4 100.5-430.2 300.3a60.3 60.3 0 000 51.5C176.6 737.5 319.9 838 512 838c192.2 0 335.4-100.5 430.2-300.3 7.7-16.2 7.7-35 0-51.5zM512 766c-161.3 0-279.4-81.8-362.7-254C232.6 339.8 350.7 258 512 258c161.3 0 279.4 81.8 362.7 254C791.5 684.2 673.4 766 512 766zm-4-430c-97.2 0-176 78.8-176 176s78.8 176 176 176 176-78.8 176-176-78.8-176-176-176zm0 288c-61.9 0-112-50.1-112-112s50.1-112 112-112 112 50.1 112 112-50.1 112-112 112z" />
@@ -204,16 +199,6 @@ const AbstractPage: React.FC = () => {
                             {p.blogName || domain}
                         </Link>
                     </AppTooltip>
-                    {p.blogJoinYears ? (
-                        <div className="feed-author-meta feed-author-meta-blue">
-                            <StarIcon /> 已履约 {p.blogJoinYears} 年
-                        </div>
-                    ) : null}
-                    {p.blogTotalAccessCount ? (
-                        <div className="feed-author-meta feed-author-meta-blue">
-                            <EyeIcon /> {p.blogTotalAccessCount}
-                        </div>
-                    ) : null}
                 </div>
 
                 <div className="feed-bubble" onClick={() => { bumpClick(); window.open(jumpUrl(p.link), '_blank'); }}>

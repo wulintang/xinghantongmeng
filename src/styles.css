@@ -1112,8 +1112,35 @@ body {
   height: 100%;
   border-radius: 10px;
   overflow: hidden;
+  position: relative;
+}
+/* 统一站点卡片：右上角履约标识（已履约绿 / 未履约灰） */
+.site-card-badge-wrap {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+.site-fulfill-badge {
+  margin: 0;
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0 7px;
+  border-radius: 9px;
+  backdrop-filter: blur(4px);
+}
+.site-fulfill-badge.is-on {
+  color: #fff;
+  background: #16a34a;
+  border-color: #16a34a;
+}
+.site-fulfill-badge.is-off {
+  color: var(--c-text-3);
+  background: var(--c-bg-soft);
+  border-color: var(--c-border);
 }
 
+.site-card-head.has-badge { padding-right: 76px; }
 .site-card-body {
   flex: 1;
   min-width: 0;
@@ -3434,3 +3461,110 @@ img { max-width: 100%; }
 .u-ws-nowrap { white-space: nowrap; }
 .u-ws-pre-wrap { white-space: pre-wrap; }
 .u-z-1 { z-index: 1; }
+
+/* ============ 履约证明页（证书） ============ */
+.fulfill-cert { width: 100%; }
+.fulfill-cert-card { overflow: hidden; }
+.fulfill-cert-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+  padding: calc(var(--space) * 1.5) var(--space);
+  border-radius: 12px;
+  margin-bottom: var(--space);
+  color: #fff;
+}
+.fulfill-cert-banner.is-on { background: linear-gradient(135deg, var(--c-link), #a21c1c); }
+.fulfill-cert-banner.is-off { background: linear-gradient(135deg, #64748b, #475569); }
+.fulfill-cert-seal {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+.fulfill-cert-heading { flex: 1 1 auto; min-width: 0; }
+.fulfill-cert-title { color: #fff !important; margin: 0 !important; }
+.fulfill-cert-sub { color: rgba(255, 255, 255, 0.85); }
+.fulfill-cert-status { flex: 0 0 auto; }
+.fulfill-cert-lead {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--c-text);
+  padding: var(--space) 0;
+  border-bottom: 1px solid var(--c-divider);
+  margin-bottom: var(--space) !important;
+}
+.fulfill-cert-progress {
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  padding: var(--space);
+  margin-bottom: var(--space);
+}
+.fulfill-cert-date { font-size: 12px; }
+.fulfill-cert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space);
+  margin-bottom: var(--space);
+}
+.fulfill-cert-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--c-divider);
+  min-width: 0;
+}
+.fulfill-cert-audit {
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  padding: var(--space);
+  margin-bottom: var(--space);
+}
+.fulfill-cert-audit ul { list-style: none; margin: 0; padding: 0; }
+.fulfill-cert-audit li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  color: var(--c-text-2);
+  font-size: 14px;
+}
+.fulfill-cert-audit li span { color: var(--c-text-3); font-weight: 700; }
+.fulfill-cert-audit li.ok span { color: #16a34a; }
+.fulfill-cert-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding-top: var(--space);
+  border-top: 1px solid var(--c-divider);
+}
+.fulfill-cert-note { font-size: 12px; }
+.cert-skeleton { display: flex; flex-direction: column; gap: var(--space); }
+
+@media (max-width: 640px) {
+  .fulfill-cert-banner { flex-wrap: wrap; }
+  .fulfill-cert-status { margin-left: auto; }
+  .fulfill-cert-grid { grid-template-columns: 1fr; }
+  .fulfill-cert-foot { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============ 履约管理弹窗（user/mysites） ============ */
+.fulfill-manage .fulfill-tip { font-size: 13px; line-height: 1.7; margin: 0 0 10px; }
+.fulfill-manage .fulfill-embed textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  background: var(--c-bg-soft);
+  color: var(--c-text);
+}

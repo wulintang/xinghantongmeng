@@ -467,6 +467,8 @@ export interface WebsiteItem {
   pending?: boolean;
   /** 站长 QQ（已认领时，供「联系站长」按钮使用） */
   qq?: string;
+  /** 履约计划展示数据（openapi 带出，未加入为 null） */
+  fulfill?: FulfillView | null;
 }
 
 export interface ArticleItem {
@@ -823,4 +825,76 @@ export function getMemberHome(id: number | string) {
 }
 export function getMemberSites(id: number | string) {
   return request<ApiResp<MemberSiteItem[]>>(`${USER}/memberSites.html?id=${encodeURIComponent(String(id))}`);
+}
+
+// ===================== 站点履约计划（fulfill 插件） =====================
+const FULFILL = '/index.php/fulfill/api';
+
+/** 站点列表/详情带出的履约展示数据 */
+export interface FulfillView {
+  status: number;       // 0=未履约 1=已履约 2=已撤销
+  years: number;        // 1/3/5/10
+  agree: string;        // N年之约
+  progress: number;     // 履约进度百分比
+  startTime: number;
+  endTime: number;
+  domain: string;
+}
+
+/** 我的履约记录（mysites 履约管理用） */
+export interface FulfillRecord {
+  id: number;
+  site_id: number;
+  uid: number;
+  domain: string;
+  years: number;
+  agree: string;
+  token: string;
+  status: number;       // 0=待验证/未履约 1=已履约 2=已撤销
+  start_time: number;
+  end_time: number;
+  verify_time: number;
+  fail_reason: string;
+  time: number;
+  site_title: string;
+  site_open: number;
+  logo: string;
+  progress: number;
+  embed_html: string;   // 站长贴到自己站点的 <a><img></a>
+  badge_url: string;
+  cert_url: string;
+  start_date: string;
+  end_date: string;
+}
+
+export function getMyFulfills(key: string) {
+  return request<ApiResp<FulfillRecord[]>>(`${FULFILL}/mine.html?key=${encodeURIComponent(key)}`);
+}
+export function applyFulfill(key: string, siteId: number | string, years: number) {
+  return post<ApiResp>('/apply.html', { key, site_id: siteId, years }, FULFILL);
+}
+export function verifyFulfill(key: string, siteId: number | string) {
+  return post<ApiResp>('/verify.html', { key, site_id: siteId }, FULFILL);
+}
+export function cancelFulfill(key: string, siteId: number | string) {
+  return post<ApiResp>('/cancel.html', { key, site_id: siteId }, FULFILL);
+}
+
+/** 履约证明数据（公开，证书页用） */
+export interface FulfillCert {
+  domain: string;
+  siteTitle: string;
+  owner: string;
+  logo: string;
+  years: number;
+  agree: string;
+  status: number;
+  progress: number;
+  startDate: string;
+  endDate: string;
+  certNo: string;
+  token: string;
+}
+export function getFulfillCert(domain: string) {
+  return request<ApiResp<FulfillCert>>(`${FULFILL}/cert.html?domain=${encodeURIComponent(domain)}`);
 }

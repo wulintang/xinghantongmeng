@@ -13,6 +13,4 @@ export interface PostData {
   publishedAt: string;
   recommended: boolean;
   title: string;
-  blogTotalAccessCount: number;
-  blogJoinYears: number;
 }

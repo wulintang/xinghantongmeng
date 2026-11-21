@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Col, Flex, List, Row, Tag, Typography } from 'antd'
+import { Alert, Button, Col, Flex, List, Row, Tag, Typography } from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { PageHeader, SearchBox, AdSlotSkeleton, ShopGoodsCard } from '@components/common';
+import { PageHeader, SearchBox, AdSlotSkeleton, ShopGoodsCard, SiteCard } from '@components/common';
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -16,7 +16,7 @@ import { getMallList, type MallGoodsItem, type ShopConfig } from '@/services/sho
 import type { PostData } from '@/types/post';
 import { domainOf, normalizeDomain, jumpUrl } from '@/utils/route';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const HOME_SITE_LIMIT = 12;
 const HOME_SIDE_LIMIT = 6;
@@ -119,37 +119,7 @@ const HomePage: React.FC = () => {
                     <Row gutter={[16, 16]}>
                         {sites.map((w) => (
                             <Col key={w.id} xs={12} sm={12} md={8} lg={6}>
-                                <Card className="site-card" size="small">
-                                    <Flex vertical gap={10}>
-                                        <Flex align="center" gap={10}>
-                                            <Avatar shape="square" size={40} src={w.ico || w.pic || undefined}>
-                                                {(w.title || w.name || '?').slice(0, 1)}
-                                            </Avatar>
-                                            <AppTooltip title={w.title || w.name}>
-                                                <Link to={`/${domainOf(w)}`} className="site-card-name">
-                                                    {w.title || w.name}
-                                                </Link>
-                                            </AppTooltip>
-                                        </Flex>
-                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
-                                            {w.keywords || w.content || w.domain}
-                                        </Paragraph>
-                                        <Flex justify="space-between" align="center">
-                                            <Text type="secondary" className="site-card-meta">
-                                                浏览 {w.view} · 点赞 {w.zan}
-                                            </Text>
-                                            {w.url ? (
-                                                <AppTooltip title={w.title || w.name || '访问'}>
-                                                    <Link to={`/${domainOf(w)}`} className="site-card-visit">
-                                                        <Button type="link" size="small">
-                                                            访问
-                                                        </Button>
-                                                    </Link>
-                                                </AppTooltip>
-                                            ) : null}
-                                        </Flex>
-                                    </Flex>
-                                </Card>
+                                <SiteCard item={w} size="small" showFulfillBadge={false} />
                             </Col>
                         ))}
                     </Row>

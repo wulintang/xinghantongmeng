@@ -1,139 +1,294 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Tag, Space, Popconfirm, message, Typography } from 'antd'
+import {
+    Button, Card, Tag, Space, Popconfirm, message, Typography, Modal,
+    Alert, Flex, Radio, Input, Divider, Tooltip,
+} from 'antd'
 import AppTooltip from '@/components/common/AppTooltip';
 import { Link } from 'react-router-dom';
 
-import { getMySites, delMySite, delMySiteApply } from '@/services/userCenter';
+import {
+    getMySites, delMySite, delMySiteApply,
+    getMyFulfills, applyFulfill, verifyFulfill, cancelFulfill,
+    type WebsiteItem, type FulfillRecord,
+} from '@/services/userCenter';
 import { domainOf } from '@/utils/route';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import CardTable from '@components/common/CardTable';
-import type { WebsiteItem } from '@/services/userCenter';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
+const YEARS = [1, 3, 5, 10];
 
 export default function MySitesPage() {
-  const navigate = useNavigate();
-  usePageMeta({ title: '我的站点' });
-  const [list, setList] = useState<WebsiteItem[]>([]);
-  const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    usePageMeta({ title: '我的站点' });
+    const [list, setList] = useState<WebsiteItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [fulfills, setFulfills] = useState<FulfillRecord[]>([]);
 
-  const load = () => {
-    const key = getToken();
-    if (!key) {
-      navigate('/login');
-      return;
-    }
-    setLoading(true);
-    getMySites(key)
-      .then((r: any) => {
-        if (r.code === 1) setList(r.data || []);
-        else {
-          message.error(r.msg || '加载失败');
-          if (r.msg && r.msg.indexOf('登录') >= 0) navigate('/login');
+    // 履约管理弹窗
+    const [fulfillOpen, setFulfillOpen] = useState(false);
+    const [curSite, setCurSite] = useState<WebsiteItem | null>(null);
+    const [curRec, setCurRec] = useState<FulfillRecord | null>(null);
+    const [years, setYears] = useState(3);
+    const [acting, setActing] = useState(false);
+
+    const load = () => {
+        const key = getToken();
+        if (!key) {
+            navigate('/login');
+            return;
         }
-      })
-      .catch(() => message.error('网络错误'))
-      .finally(() => setLoading(false));
-  };
+        setLoading(true);
+        Promise.all([
+            getMySites(key),
+            getMyFulfills(key).catch(() => ({ code: 0, data: [] })),
+        ])
+            .then(([r, f]: any[]) => {
+                if (r.code === 1) setList(r.data || []);
+                else {
+                    message.error(r.msg || '加载失败');
+                    if (r.msg && r.msg.indexOf('登录') >= 0) navigate('/login');
+                }
+                if (f && f.code === 1) setFulfills(f.data || []);
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setLoading(false));
+    };
 
-  useEffect(load, [navigate]);
+    useEffect(load, [navigate]);
 
-  const onDelete = (row: WebsiteItem) => {
-    const key = getToken();
-    const api = row.pending ? delMySiteApply : delMySite;
-    api(key || '', row.id)
-      .then((r: any) => {
-        if (r.code === 1) {
-          message.success('已删除');
-          load();
-        } else {
-          message.error(r.msg || '删除失败');
-        }
-      })
-      .catch(() => message.error('网络错误'));
-  };
+    const fulfillOf = (siteId: number) => fulfills.find((f) => Number(f.site_id) === Number(siteId)) || null;
 
-  const columns = [
-    {
-      title: '站点',
-      dataIndex: 'title',
-      render: (v: string, row: WebsiteItem) => (
-        <Space>
-          {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
-          {row.pending ? (
-            <AppTooltip title={row.title || row.www || row.domain || v}>
-              <span>{v}</span>
-            </AppTooltip>
-          ) : (
-            <AppTooltip title={row.title || row.www || row.domain || v}>
-              <Link to={`/${domainOf(row)}`}>{v}</Link>
-            </AppTooltip>
-          )}
-        </Space>
-      ),
-    },
-    { title: '域名', dataIndex: 'www', render: (v: string) => v || '-' },
-    {
-      title: '状态',
-      dataIndex: 'open',
-      render: (v: number) =>
-        Number(v) === 1 ? (
-          <Tag color="success">已收录</Tag>
-        ) : Number(v) === 9 ? (
-          <Tag color="error">已拒绝</Tag>
-        ) : (
-          <Tag color="warning">待审核</Tag>
-        ),
-    },
-    { title: '浏览', dataIndex: 'view' },
-    { title: '点赞', dataIndex: 'zan' },
-    {
-      title: '操作',
-      render: (_: any, row: WebsiteItem) => (
-        <Space wrap className="mysite-actions">
-          {!row.pending && (
-            <Button size="small" onClick={() => navigate(`/user/submit?mode=edit&siteId=${row.id}`)}>
-              编辑
-            </Button>
-          )}
-          <Popconfirm
-            title={row.pending ? '确认撤回该申请？' : '确认删除该站点？'}
-            onConfirm={() => onDelete(row)}
-            okText="删除"
-            cancelText="取消"
-          >
-            <Button size="small" danger>
-              {row.pending ? '撤回' : '删除'}
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+    const onDelete = (row: WebsiteItem) => {
+        const key = getToken();
+        const api = row.pending ? delMySiteApply : delMySite;
+        api(key || '', row.id)
+            .then((r: any) => {
+                if (r.code === 1) {
+                    message.success('已删除');
+                    load();
+                } else {
+                    message.error(r.msg || '删除失败');
+                }
+            })
+            .catch(() => message.error('网络错误'));
+    };
 
-  return (
-    <Card
-      className="user-center-card"
-      title="我的站点"
-      extra={
-        <Button type="primary" shape="round" onClick={() => navigate('/user/submit')}>
-          + 提交站点
-        </Button>
-      }
-    >
-      <Text type="secondary">
-        认领/提交的站点会出现在这里。点击「编辑」修改资料（仅改域名或 Feed 需重新验证域名归属），待审核的站点由管理员收录后对外展示。
-      </Text>
-      <CardTable<WebsiteItem>
-        className="mt-16"
-        rowKey="id"
-        loading={loading}
-        pagination={false}
-        columns={columns}
-        dataSource={list}
-      />
-    </Card>
-  );
+    const openFulfill = (row: WebsiteItem) => {
+        const rec = fulfillOf(row.id);
+        setCurSite(row);
+        setCurRec(rec);
+        setYears(rec?.years || 3);
+        setFulfillOpen(true);
+    };
+
+    const doApply = () => {
+        const key = getToken();
+        if (!key || !curSite) return;
+        setActing(true);
+        applyFulfill(key, curSite.id, years)
+            .then((r: any) => {
+                if (r.code === 1) {
+                    message.success('已提交，请将下方标识贴到站点首页后验证');
+                    load();
+                } else message.error(r.msg || '申请失败');
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setActing(false));
+    };
+
+    const doVerify = () => {
+        const key = getToken();
+        if (!key || !curSite) return;
+        setActing(true);
+        verifyFulfill(key, curSite.id)
+            .then((r: any) => {
+                if (r.code === 1) message.success(r.msg || '履约验证通过');
+                else message.error(r.msg || '未通过验证');
+                load();
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setActing(false));
+    };
+
+    const doCancel = () => {
+        const key = getToken();
+        if (!key || !curSite) return;
+        setActing(true);
+        cancelFulfill(key, curSite.id)
+            .then((r: any) => {
+                if (r.code === 1) { message.success('已撤销履约'); load(); }
+                else message.error(r.msg || '撤销失败');
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setActing(false));
+    };
+
+    const columns = [
+        {
+            title: '站点',
+            dataIndex: 'title',
+            render: (v: string, row: WebsiteItem) => (
+                <Space>
+                    {row.ico ? <img src={row.ico} alt={row.title || ''} className="mysite-ico" /> : null}
+                    {row.pending ? (
+                        <AppTooltip title={row.title || row.www || row.domain || v}>
+                            <span>{v}</span>
+                        </AppTooltip>
+                    ) : (
+                        <AppTooltip title={row.title || row.www || row.domain || v}>
+                            <Link to={`/${domainOf(row)}`}>{v}</Link>
+                        </AppTooltip>
+                    )}
+                </Space>
+            ),
+        },
+        { title: '域名', dataIndex: 'www', render: (v: string) => v || '-' },
+        {
+            title: '状态',
+            dataIndex: 'open',
+            render: (v: number) =>
+                Number(v) === 1 ? (
+                    <Tag color="success">已收录</Tag>
+                ) : Number(v) === 9 ? (
+                    <Tag color="error">已拒绝</Tag>
+                ) : (
+                    <Tag color="warning">待审核</Tag>
+                ),
+        },
+        {
+            title: '履约',
+            key: 'fulfill',
+            render: (_: any, row: WebsiteItem) => {
+                const rec = fulfillOf(row.id);
+                if (!rec) return <Text type="secondary">—</Text>;
+                if (Number(rec.status) === 1) return <Tag color="success">{rec.agree} · 履约中 {rec.progress}%</Tag>;
+                if (Number(rec.status) === 2) return <Tag>已撤销</Tag>;
+                return <Tag color="processing">待验证</Tag>;
+            },
+        },
+        { title: '浏览', dataIndex: 'view' },
+        { title: '点赞', dataIndex: 'zan' },
+        {
+            title: '操作',
+            render: (_: any, row: WebsiteItem) => (
+                <Space wrap className="mysite-actions">
+                    {Number(row.open) === 1 && !row.pending ? (
+                        <Button size="small" type="primary" ghost onClick={() => openFulfill(row)}>履约管理</Button>
+                    ) : null}
+                    {!row.pending && (
+                        <Button size="small" onClick={() => navigate(`/user/submit?mode=edit&siteId=${row.id}`)}>
+                            编辑
+                        </Button>
+                    )}
+                    <Popconfirm
+                        title={row.pending ? '确认撤回该申请？' : '确认删除该站点？'}
+                        onConfirm={() => onDelete(row)}
+                        okText="删除"
+                        cancelText="取消"
+                    >
+                        <Button size="small" danger>
+                            {row.pending ? '撤回' : '删除'}
+                        </Button>
+                    </Popconfirm>
+                </Space>
+            ),
+        },
+    ];
+
+    const rec = curRec;
+    const status = rec ? Number(rec.status) : 0;
+    const embedHtml = rec?.embed_html || '';
+
+    return (
+        <Card
+            className="user-center-card"
+            title="我的站点"
+            extra={
+                <Button type="primary" shape="round" onClick={() => navigate('/user/submit')}>
+                    + 提交站点
+                </Button>
+            }
+        >
+            <Text type="secondary">
+                认领/提交的站点会出现在这里。点击「编辑」修改资料（仅改域名或 Feed 需重新验证域名归属），待审核的站点由管理员收录后对外展示。
+            </Text>
+            <CardTable<WebsiteItem>
+                className="mt-16"
+                rowKey="id"
+                loading={loading}
+                pagination={false}
+                columns={columns}
+                dataSource={list}
+            />
+
+            <Modal
+                title={`履约管理 · ${curSite?.title || ''}`}
+                open={fulfillOpen}
+                onCancel={() => setFulfillOpen(false)}
+                footer={null}
+                width={640}
+                destroyOnClose
+            >
+                <div className="fulfill-manage">
+                    {status === 1 ? (
+                        <Alert type="success" showIcon
+                            message={`${rec?.agree} · 履约中`}
+                            description={`履约进度 ${rec?.progress}%，有效期至 ${rec?.end_date}。`}
+                            className="mb-16"
+                        />
+                    ) : status === 2 ? (
+                        <Alert type="warning" showIcon message="履约已撤销"
+                            description="可重新选择档位申请加入，系统验证通过后重新履约。" className="mb-16" />
+                    ) : rec ? (
+                        <Alert type="info" showIcon message="待验证"
+                            description={rec.fail_reason ? `上次未通过：${rec.fail_reason}` : '请将履约标识贴到站点首页后点击验证。'}
+                            className="mb-16" />
+                    ) : null}
+
+                    <Divider orientation="left" plain>1. 选择履约档位</Divider>
+                    <Radio.Group value={years} onChange={(e) => setYears(e.target.value)} disabled={status === 1}>
+                        {YEARS.map((y) => (
+                            <Radio.Button key={y} value={y}>{y === 1 ? '一年' : y === 3 ? '三年' : y === 5 ? '五年' : '十年'}之约</Radio.Button>
+                        ))}
+                    </Radio.Group>
+
+                    <Divider orientation="left" plain>2. 系统生成履约标识（贴到站点首页）</Divider>
+                    <Paragraph type="secondary" className="fulfill-tip">
+                        将下面这段 HTML 复制到你站点首页（如页脚）。履约几年即显示「几年之约」，含站点 logo 与履约进度，点击跳转履约证明。
+                    </Paragraph>
+                    {embedHtml ? (
+                        <Input.TextArea value={embedHtml} readOnly rows={3} className="fulfill-embed" />
+                    ) : (
+                        <Alert type="info" showIcon message="请先选择档位并点击「申请加入」生成标识" />
+                    )}
+
+                    <Divider orientation="left" plain>3. 系统验证（无人工审核）</Divider>
+                    <Paragraph type="secondary" className="fulfill-tip">
+                        贴好标识后点击验证：系统抓取站点首页或检测徽章加载，通过即履约，未通过保持未履约；通过/失败均发邮件提醒。
+                    </Paragraph>
+                    <Flex gap={8} wrap>
+                        {status === 1 ? null : (
+                            <Button type="primary" loading={acting} onClick={rec ? doVerify : doApply}>
+                                {rec ? '我已贴好，验证' : '申请加入并生成标识'}
+                            </Button>
+                        )}
+                        {rec && years !== rec.years && status !== 1 ? (
+                            <Button loading={acting} onClick={doApply}>按新档位更新</Button>
+                        ) : null}
+                        {rec && status === 1 ? (
+                            <Popconfirm title="确认撤销履约？撤销后不再展示履约标识。" onConfirm={doCancel} okText="撤销" cancelText="取消">
+                                <Button danger loading={acting}>撤销履约</Button>
+                            </Popconfirm>
+                        ) : null}
+                        {rec ? (
+                            <Link to={rec.cert_url} target="_blank"><Button>查看履约证明</Button></Link>
+                        ) : null}
+                    </Flex>
+                </div>
+            </Modal>
+        </Card>
+    );
 }

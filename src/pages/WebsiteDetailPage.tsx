@@ -241,6 +241,13 @@ const WebsiteDetailPage: React.FC = () => {
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap className="site-info-pills">
                             <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
+                            {item.fulfill && Number(item.fulfill.status) === 1 ? (
+                                <Tag color="success" className="site-fulfill-pill">
+                                    <Link to={`/certificate/${encodeURIComponent(item.fulfill.domain || domain)}`} className="u-color-inherit">
+                                        ✓ {item.fulfill.agree} · 已履约
+                                    </Link>
+                                </Tag>
+                            ) : null}
                             {claimed && item.owner ? (
                                 <Tag color="blue">
                                     <Link to={`/user/${item.uid}`} className="u-color-inherit">

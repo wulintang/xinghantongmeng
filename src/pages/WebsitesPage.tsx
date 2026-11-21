@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Avatar, Button, Card, Col, Flex, Pagination, Row, Typography } from 'antd'
-import AppTooltip from '@/components/common/AppTooltip';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Alert, Col, Flex, Pagination, Row, Typography } from 'antd'
+import { useSearchParams } from 'react-router-dom';
 
-import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
+import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton, SiteCard } from '@components/common';
 import { WebsitesSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useMinLoading } from '@/hooks/useMinLoading';
 import { getWebsiteCates, getWebsites, type CateItem, type WebsiteItem } from '@/services/userCenter';
-import { domainOf } from '@/utils/route';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 const PAGE_SIZE = 12;
 
@@ -115,49 +113,10 @@ const WebsitesPage: React.FC = () => {
                         <Text type="secondary">共 {total} 个站点</Text>
                     </Flex>
                     <Row gutter={[16, 16]} align="stretch">
-                        {list.map((w, i) => (
-                            <React.Fragment key={w.id}>
-                                <Col xs={24} sm={12} md={8}>
-                                <Card className="site-card">
-                                    <Flex vertical gap={12}>
-                                        <Flex align="center" gap={12}>
-                                            <Avatar shape="square" size={48} src={w.ico || w.pic || undefined}>
-                                                {(w.title || w.name || '?').slice(0, 1)}
-                                            </Avatar>
-                                            <Flex vertical gap={2} className="site-card-body">
-                                            <AppTooltip title={w.title || w.name}>
-                                                <Link to={`/${domainOf(w)}`} className="site-card-name">
-                                                    {w.title || w.name}
-                                                </Link>
-                                            </AppTooltip>
-                                                <Text type="secondary" className="site-card-domain">
-                                                    {w.domain || w.www}
-                                                </Text>
-                                            </Flex>
-                                        </Flex>
-                                        <Paragraph type="secondary" ellipsis={{ rows: 2 }} className="site-card-desc">
-                                            {w.content || w.keywords || '暂无简介'}
-                                        </Paragraph>
-                                        <Flex justify="space-between" align="center" wrap gap={8}>
-                                            <Text type="secondary" className="site-card-meta">
-                                                浏览 {w.view} · 点赞 {w.zan}
-                                            </Text>
-                                            <Flex gap={4}>
-                                                {w.url ? (
-                                                    <AppTooltip title={w.title || w.name}>
-                                                    <Link to={`/${domainOf(w)}`}>
-                                                        <Button type="link" size="small">
-                                                            {w.feed_url ? '查看文章' : '访问'}
-                                                        </Button>
-                                                    </Link>
-                                                </AppTooltip>
-                                                ) : null}
-                                            </Flex>
-                                        </Flex>
-                                    </Flex>
-                                </Card>
+                        {list.map((w) => (
+                            <Col key={w.id} xs={24} sm={12} md={8}>
+                                <SiteCard item={w} />
                             </Col>
-                            </React.Fragment>
                         ))}
                     </Row>
                     {total > PAGE_SIZE ? (

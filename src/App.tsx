@@ -10,6 +10,7 @@ import ShopPage from '@pages/ShopPage';
 import ShopGoodsDetailPage from '@pages/ShopGoodsDetailPage';
 import WebsitesPage from '@pages/WebsitesPage';
 import WebsiteDetailPage from '@pages/WebsiteDetailPage';
+import FulfillCertPage from '@pages/FulfillCertPage';
 import ToolsPage from '@pages/ToolsPage';
 import ToolDetailPage from '@pages/ToolDetailPage';
 import BlogsPage from '@pages/BlogsPage';
@@ -210,6 +211,9 @@ function ThemedShell(): React.JSX.Element {
 
                                 {/* 公开会员主页：/user/:id（与 /user/* 子路由并存，静态子路由优先，不冲突） */}
                                 <Route path="/user/:id" element={<UserHomePage />} />
+
+                                {/* 履约证明页：必须在通配 /:id 之前，否则被当成站点域名 */}
+                                <Route path="/certificate/:domain" element={<FulfillCertPage />} />
 
                                 {/* 站点内页：/域名 直达收录站点的详情，置于路由表最末 */}
                                 <Route path="/jump" element={<JumpPage />} />

@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { BlogsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getPosts } from '@/services/postService';
 import { getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
@@ -81,7 +82,8 @@ const BlogsPage: React.FC = () => {
     const sort = (params.get('sort') as SortKey) || 'latest';
     const page = Math.max(1, Number(params.get('page') || 1));
 
-    const [loading, setLoading] = useState(true);
+    const [rawLoading, setLoading] = useState(true);
+    const loading = useMinLoading(rawLoading);
     const [posts, setPosts] = useState<PostData[]>([]);
     /** 域名 -> 站点头像（用网站数据 API 的 ico/pic，提交时上传、不可能为空） */
     const [siteIcons, setSiteIcons] = useState<Record<string, string>>({});

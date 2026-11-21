@@ -9,6 +9,7 @@ import { WebsiteDetailSkeleton } from '@components/common/skeleton';
 import MdView from '@components/common/MdView';
 import 'md-editor-rt/lib/preview.css';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import {
     getWebsiteByDomain,
     submitReport,
@@ -173,7 +174,15 @@ const WebsiteDetailPage: React.FC = () => {
             .finally(() => setReporting(false));
     };
 
-    if (loading) return <WebsiteDetailSkeleton />;
+    const showSkeleton = useMinLoading(loading);
+    if (showSkeleton) {
+        return (
+            <Flex vertical gap={20}>
+                <PageHeader title="站点详情" />
+                <WebsiteDetailSkeleton />
+            </Flex>
+        );
+    }
 
     if (error || !item) {
         return (
@@ -230,7 +239,7 @@ const WebsiteDetailPage: React.FC = () => {
                         {(item.title || item.name || '?').slice(0, 1)}
                     </Avatar>
                     <Flex vertical gap={10} className="detail-main">
-                        <Space size={[8, 8]} wrap>
+                        <Space size={[8, 8]} wrap className="site-info-pills">
                             <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
                             {claimed && item.owner ? (
                                 <Tag color="blue">

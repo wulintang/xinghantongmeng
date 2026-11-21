@@ -5,7 +5,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
+import { ColumnDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { useSite } from '@/context/SiteContext';
 import { getColumns, getColumnArticles, type ColumnItem, type ColumnArticleItem } from '@/services/column';
 import { assetUrl } from '@/utils/route';
@@ -55,7 +57,8 @@ const ColumnDetailPage: React.FC = () => {
   const columnId = Number(id) || 0;
   const { site } = useSite();
 
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [column, setColumn] = useState<ColumnItem | null>(null);
   const [articles, setArticles] = useState<ColumnArticleItem[]>([]);
   const [error, setError] = useState('');
@@ -111,8 +114,8 @@ const ColumnDetailPage: React.FC = () => {
   if (loading) {
     return (
       <Flex vertical gap={20}>
-        <PageHeader title="专栏详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
-        <Card loading />
+        <PageHeader title="专栏详情" />
+        <ColumnDetailSkeleton />
       </Flex>
     );
   }

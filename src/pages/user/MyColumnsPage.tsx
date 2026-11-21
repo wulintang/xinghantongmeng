@@ -16,6 +16,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
+import { ColumnsSkeleton } from '@components/common/skeleton';
 import {
   getMyColumns,
   getColumnConfig,
@@ -38,7 +40,8 @@ const MyColumnsPage: React.FC = () => {
   const navigate = useNavigate();
   const key = getToken();
 
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [list, setList] = useState<ColumnItem[]>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<ColumnItem | null>(null);
@@ -233,7 +236,7 @@ const MyColumnsPage: React.FC = () => {
       </Flex>
 
       {loading ? (
-        <Card loading />
+        <ColumnsSkeleton />
       ) : list.length === 0 ? (
         <Alert type="info" showIcon message="你还没有专栏" description="创建专栏后可向其投稿文章，审核通过即获得随机奖励。" />
       ) : (

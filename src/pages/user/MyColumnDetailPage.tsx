@@ -15,6 +15,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
+import { ArticlesSkeleton } from '@components/common/skeleton';
 import {
   getMyColumns,
   getMyArticles,
@@ -34,7 +36,8 @@ const MyColumnDetailPage: React.FC = () => {
   const columnId = Number(id) || 0;
   const key = getToken();
 
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [column, setColumn] = useState<ColumnItem | null>(null);
   const [articles, setArticles] = useState<ColumnArticleItem[]>([]);
 
@@ -136,7 +139,7 @@ const MyColumnDetailPage: React.FC = () => {
               投稿文章
             </Button>
           </Flex>
-          <Card loading />
+          <ArticlesSkeleton />
         </Flex>
       </Card>
     );

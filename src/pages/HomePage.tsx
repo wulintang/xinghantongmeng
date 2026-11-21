@@ -8,6 +8,7 @@ import { PageHeader, SearchBox, AdSlotSkeleton, ShopGoodsCard } from '@component
 import { HomeSkeleton } from '@components/common/skeleton';
 import { useSite } from '@/context/SiteContext';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getArticles, getWebsites, type ArticleItem, type WebsiteItem } from '@/services/userCenter';
 import { getColumns, columnLink } from '@/services/column';
 import { getPosts } from '@/services/postService';
@@ -66,7 +67,15 @@ const HomePage: React.FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading || siteLoading) return <HomeSkeleton />;
+    const showSkeleton = useMinLoading(loading || siteLoading);
+    if (showSkeleton) {
+        return (
+            <Flex vertical gap={28}>
+                <PageHeader title={site?.titles || site?.title || '兴汉联盟'} />
+                <HomeSkeleton />
+            </Flex>
+        );
+    }
 
     const heroTitle = site?.titles || site?.title || '兴汉联盟';
     const heroDesc =

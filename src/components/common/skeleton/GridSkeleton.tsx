@@ -1,12 +1,17 @@
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Flex } from 'antd';
 
-/** 格子广告骨架：画布占位 + 说明文字 */
+import Skeleton from './Skeleton';
+
+/** 格子广告骨架：按 GridPage 真实 DOM —— 格子画布 + 说明文字 */
 export default function GridSkeleton(): React.JSX.Element {
     return (
         <div className="sk-page grid-page">
-            <Skeleton.Image active className="u-w-100 u-h-360px u-radius-12px" />
-            <Skeleton active title={false} paragraph={{ rows: 2, width: ['60%', '40%'] }} className="u-mt-16px" />
+            <Skeleton className="sk-block" style={{ height: 360, borderRadius: 12 }} />
+            <Flex vertical gap={10}>
+                <Skeleton className="sk-line sk-line-long" />
+                <Skeleton className="sk-line sk-line-mid" />
+            </Flex>
         </div>
     );
 }

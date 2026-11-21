@@ -6,6 +6,7 @@ import { getFavorites, toggleFavorite } from '@/services/userCenter';
 import { FavoriteItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { FavoritesSkeleton } from '@components/common/skeleton';
 import dayjs from 'dayjs';
 
@@ -15,7 +16,8 @@ export default function FavoritesPage() {
   const navigate = useNavigate();
   usePageMeta({ title: '我的收藏' });
   const [list, setList] = useState<FavoriteItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [err, setErr] = useState('');
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [canceling, setCanceling] = useState(false);

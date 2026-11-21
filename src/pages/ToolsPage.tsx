@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CateFilter, PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getToolCates, getTools, type CateItem, type ToolItem } from '@/services/userCenter';
 import { plainText } from '@/utils/CommonUtil';
 import { assetUrl } from '@/utils/route';
@@ -16,7 +17,8 @@ const ToolsPage: React.FC = () => {
     const [params, setParams] = useSearchParams();
     const cate = params.get('cate') || '';
 
-    const [loading, setLoading] = useState(true);
+    const [rawLoading, setLoading] = useState(true);
+    const loading = useMinLoading(rawLoading);
     const [cates, setCates] = useState<CateItem[]>([]);
     const [list, setList] = useState<ToolItem[]>([]);
     const [total, setTotal] = useState(0);

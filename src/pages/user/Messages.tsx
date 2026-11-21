@@ -4,6 +4,7 @@ import { Card, Typography, List, Tag, Button, Space, Empty, message, Checkbox, P
 import { getMessages, readMessage, deleteMessage, type MessageItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { MessagesSkeleton } from '@components/common/skeleton';
 
 const { Title, Paragraph, Text } = Typography;
@@ -12,7 +13,8 @@ export default function MessagesPage() {
   const navigate = useNavigate();
   usePageMeta({ title: '消息中心' });
   const [list, setList] = useState<MessageItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
 
   const fmt = (t: number) => (t ? new Date(t * 1000).toLocaleString() : '');

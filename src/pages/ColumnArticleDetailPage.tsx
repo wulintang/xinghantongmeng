@@ -5,7 +5,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader, AdSlotSkeleton } from '@components/common';
+import { ArticleDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { useSite } from '@/context/SiteContext';
 import { getColumnDetail, type ColumnArticleItem } from '@/services/column';
 import { getToken } from '@/utils/auth';
@@ -22,7 +24,8 @@ const ColumnArticleDetailPage: React.FC = () => {
   const articleId = stripHtmlSuffix(id);
   const { site } = useSite();
 
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [item, setItem] = useState<ColumnArticleItem | null>(null);
   const [error, setError] = useState('');
   const [liked, setLiked] = useState(false);
@@ -137,8 +140,8 @@ const ColumnArticleDetailPage: React.FC = () => {
   if (loading) {
     return (
       <Flex vertical gap={20}>
-        <PageHeader title="文章详情" crumbs={[{ label: '首页', to: '/' }, { label: '用户专栏', to: '/article' }, { label: '详情' }]} />
-        <Card loading />
+        <PageHeader title="文章详情" />
+        <ArticleDetailSkeleton />
       </Flex>
     );
   }

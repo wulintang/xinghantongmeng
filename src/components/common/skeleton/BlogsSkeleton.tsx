@@ -1,14 +1,28 @@
 import React from 'react';
-import { Card, Flex, Skeleton } from 'antd';
+import { Flex } from 'antd';
 
-// Feed广场骨架屏：文章列表形态（与 BlogsPage 的 List 一一对应）
-export default function BlogsSkeleton() {
+import Skeleton from './Skeleton';
+
+/** 广场骨架：按 BlogsPage 真实 DOM —— feed-timeline-item（作者列 + feed-bubble 气泡） */
+export default function BlogsSkeleton(): React.JSX.Element {
     return (
-        <Flex vertical gap={16}>
+        <Flex vertical gap={16} className="feed-timeline">
             {Array.from({ length: 5 }).map((_, i) => (
-                <Card key={i} size="small">
-                    <Skeleton avatar active paragraph={{ rows: 2 }} />
-                </Card>
+                <div key={i} className="feed-timeline-item">
+                    <Flex vertical align="center" gap={6} className="feed-author-col">
+                        <Skeleton className="sk-avatar-circle-36" />
+                        <Skeleton className="sk-line" style={{ width: 36, height: 10 }} />
+                    </Flex>
+                    <div className="feed-bubble">
+                        <div className="feed-bubble-inner">
+                            <Skeleton className="sk-feed-line" style={{ width: '55%' }} />
+                            <Skeleton className="sk-feed-line sk-line-long" />
+                            <Skeleton className="sk-feed-line sk-line-mid" />
+                            <Skeleton className="sk-feed-line sk-line-long" />
+                            <Skeleton className="sk-feed-line sk-line-short" />
+                        </div>
+                    </div>
+                </div>
             ))}
         </Flex>
     );

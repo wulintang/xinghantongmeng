@@ -6,6 +6,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { CateFilter, PageHeader, SearchBox, AdSlotSkeleton } from '@components/common';
 import { WebsitesSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getWebsiteCates, getWebsites, type CateItem, type WebsiteItem } from '@/services/userCenter';
 import { domainOf } from '@/utils/route';
 
@@ -19,7 +20,8 @@ const WebsitesPage: React.FC = () => {
     const keyword = params.get('keyword') || '';
     const page = Math.max(1, Number(params.get('page') || 1));
 
-    const [loading, setLoading] = useState(true);
+    const [rawLoading, setLoading] = useState(true);
+    const loading = useMinLoading(rawLoading);
     const [cates, setCates] = useState<CateItem[]>([]);
     const [list, setList] = useState<WebsiteItem[]>([]);
     const [total, setTotal] = useState(0);

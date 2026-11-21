@@ -1,12 +1,25 @@
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Card, Flex } from 'antd';
 
-/** 文章详情骨架：大标题 + 元信息行 + 正文段落 */
+import Skeleton from './Skeleton';
+
+/** 文章详情骨架：大标题 + 元信息行 + 正文段落卡 */
 export default function ArticleDetailSkeleton(): React.JSX.Element {
     return (
         <div className="sk-page">
-            <Skeleton active title={{ width: '60%' }} paragraph={{ rows: 1, width: ['35%'] }} />
-            <Skeleton active title={false} paragraph={{ rows: 8 }} />
+            <Card>
+                <Flex vertical gap={12}>
+                    <Skeleton className="sk-line" style={{ width: '60%', height: 24 }} />
+                    <Skeleton className="sk-line sk-line-short" />
+                </Flex>
+            </Card>
+            <Card>
+                <Flex vertical gap={10}>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <Skeleton key={i} className="sk-line sk-line-long" />
+                    ))}
+                </Flex>
+            </Card>
         </div>
     );
 }

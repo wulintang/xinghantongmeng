@@ -16,7 +16,7 @@ interface PageHeaderProps {
     description?: string;
     /** 面包屑已全站移除，保留类型以兼容旧调用 */
     crumbs?: Crumb[];
-    /** 操作胶囊（按钮等）：自动移入 hero 下方的统一操作条，不再压在标题上 */
+    /** 内页功能按钮：就地渲染在本页 DOM 流里（.site-content 内），不进 hero */
     extra?: React.ReactNode;
     /** hero 内额外内容（如首页搜索框 / 分类标签），渲染在标题描述下方、文字区块内 */
     children?: React.ReactNode;
@@ -45,8 +45,8 @@ const STATIC_BASE: string =
  *   与 head、container 三者平级，紧贴导航下方，不再靠 100vw 负 margin 破出；
  * - 每次挂载随机渲染 /public/static/html/N.html（N∈1~39）作为全屏背景，左右边距 0；
  * - 标题 + 描述垂直居中，文字用「白填充 + 深色描边 + 阴影」保证在任意深/浅背景上均可辨；
- * - 底部一条统一样式横线，颜色跟随深浅模式（var(--c-border)）；
- * - 操作胶囊（extra）移出 hero，落到 hero 下方的统一操作条。
+ * - extra 是「内页功能区块」，就地在页面正常 DOM 流里渲染（.site-content 内、
+ *   hero 之下），它属于内页内容而非随机背景 hero；hero 本身不含任何操作条。
  */
 const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, extra, children }) => {
     const bgNum = useMemo(pickBgNum, []);
@@ -83,17 +83,21 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, description, crumbs, ext
                     {children ? <div className="page-hero-children">{children}</div> : null}
                 </div>
             </section>
+        </>
+    );
+
+    // hero portal 到 layout 插槽（与 head、container 平级）；extra 是内页功能区块，
+    // 就地渲染在页面正常 DOM 流里（.site-content > .container 内），不进随机背景 hero。
+    return (
+        <>
+            {slot ? createPortal(hero, slot) : null}
             {extra ? (
-                <div className="page-hero-actions">
-                    <div className="page-hero-actions-inner">{extra}</div>
+                <div className="page-actions">
+                    <div className="page-actions-inner">{extra}</div>
                 </div>
             ) : null}
         </>
     );
-
-    // portal 到 layout 的 hero 插槽，DOM 上与 head、container 平级；
-    // 插槽尚未挂载时（首帧）先不渲染，避免把 hero 留在 container 内。
-    return slot ? createPortal(hero, slot) : null;
 };
 
 export default PageHeader;

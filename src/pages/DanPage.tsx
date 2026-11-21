@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { DanSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getDan, submitReport, toggleFavorite, readFaved, type DanItem } from '@/services/userCenter';
 import MdView from '@components/common/MdView';
 import ArticleHtml from '@components/common/ArticleHtml';
@@ -95,7 +96,15 @@ const DanPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '网络错误'));
     };
 
-    if (loading) return <DanSkeleton />;
+    const showSkeleton = useMinLoading(loading);
+    if (showSkeleton) {
+        return (
+            <Flex vertical gap={20}>
+                <PageHeader title="单页" />
+                <DanSkeleton />
+            </Flex>
+        );
+    }
 
     if (error || !dan) {
         return (

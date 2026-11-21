@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { PageHeader } from '@components/common';
+import { ColumnsSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { useSite } from '@/context/SiteContext';
 import {
   getColumns,
@@ -24,7 +26,8 @@ const ARTICLE_LIMIT = 10;
 const ColumnsPage: React.FC = () => {
   const navigate = useNavigate();
   const { site } = useSite();
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [list, setList] = useState<ColumnItem[]>([]);
   const [articlesMap, setArticlesMap] = useState<Record<number, ColumnArticleItem[]>>({});
 
@@ -97,13 +100,7 @@ const ColumnsPage: React.FC = () => {
       />
 
       {loading ? (
-        <Row gutter={[16, 16]} align="stretch">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Col key={i} xs={12} sm={12} md={8}>
-              <Card loading />
-            </Col>
-          ))}
-        </Row>
+        <ColumnsSkeleton />
       ) : list.length === 0 ? (
         <Empty description="暂无专栏" />
       ) : (

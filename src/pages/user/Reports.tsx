@@ -7,6 +7,7 @@ import { PageHeader } from '@components/common';
 import { ReportsSkeleton } from '@components/common/skeleton';
 import CardTable from '@components/common/CardTable';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getReports, type ReportItem } from '@/services/userCenter';
 import { getToken } from '@/utils/auth';
 
@@ -23,7 +24,8 @@ const statusOf = (v: any) => {
 const ReportsPage: React.FC = () => {
     const navigate = useNavigate();
     const [list, setList] = useState<ReportItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [rawLoading, setLoading] = useState(true);
+    const loading = useMinLoading(rawLoading);
 
     usePageMeta('我的举报');
 

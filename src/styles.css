@@ -1175,6 +1175,38 @@ body {
   min-width: 0;
 }
 
+/* 网址内页「站点信息标签组」：只统一外观，不动组件与功能。
+   已认领/未认领、站长、联系站长/认领 三种元素外观统一为同款灰胶囊（与 goods-pills 一致）：
+   同高、同内边距、同圆角、同灰底灰边、同字号同文字色；可点项仅 hover 变强调色。 */
+.site-info-pills .ant-tag,
+.site-info-pills .ant-btn {
+  height: var(--capsule-h) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0 var(--capsule-option-pad-x) !important;
+  margin: 0 !important;
+  font-size: var(--fs-base) !important;
+  line-height: 1 !important;
+  border-radius: var(--capsule-radius) !important;
+  background: var(--c-bg-2) !important;
+  border: 1px solid var(--c-border) !important;
+  box-shadow: none !important;
+  color: var(--c-text) !important;
+}
+.site-info-pills .ant-btn {
+  min-width: 0 !important;
+}
+.site-info-pills a {
+  color: inherit !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site-info-pills .ant-btn:hover,
+  .site-info-pills a:hover {
+    color: var(--c-link) !important;
+    border-color: var(--c-link) !important;
+  }
+}
+
 .detail-subtitle {
   margin: 0;
 }
@@ -1420,6 +1452,44 @@ body {
   width: 60%;
   margin-bottom: var(--space);
 }
+
+/* ===== 真实性骨架：外壳复用各页真实卡片 class，内部用统一 shimmer 占位块 =====
+   占位块用 .sk-* 尺寸类，形状/数量/网格与真实 DOM 一一对应，深浅只翻变量。 */
+.sk-block { border-radius: 8px; }
+.sk-avatar-square-40,
+.sk-avatar-square-48,
+.sk-avatar-square-56,
+.sk-avatar-square-72 { border-radius: 10px; flex: none; }
+.sk-avatar-square-40 { width: 40px; height: 40px; }
+.sk-avatar-square-48 { width: 48px; height: 48px; }
+.sk-avatar-square-56 { width: 56px; height: 56px; }
+.sk-avatar-square-72 { width: 72px; height: 72px; }
+.sk-avatar-circle-36,
+.sk-avatar-circle-48 { border-radius: 50%; flex: none; }
+.sk-avatar-circle-36 { width: 36px; height: 36px; }
+.sk-avatar-circle-48 { width: 48px; height: 48px; }
+.sk-chip { display: inline-block; height: var(--capsule-h); border-radius: var(--capsule-radius); }
+.sk-cover-1x1 { width: 100%; aspect-ratio: 1 / 1; border-radius: 10px; }
+.sk-cover-16x9 { width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; }
+
+/* 网址卡片骨架：外壳 = 真实 .site-card 结构 */
+.sk-site-card .sk-site-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sk-site-card .sk-site-card-titles { flex: 1; min-width: 0; }
+.sk-site-card .sk-site-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+
+/* 工具卡片骨架：外壳 = 真实 .tool-card 结构（图标居中 + 名称 + 说明） */
+.sk-tool-card-inner { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* 集市商品卡片骨架 */
+.sk-shop-goods-body { padding: var(--space-4); display: flex; flex-direction: column; gap: 10px; }
+
+/* feed 气泡骨架：外壳复用 .feed-timeline-item / .feed-bubble-inner */
+.sk-feed-line { height: 12px; margin: 6px 0; border-radius: 6px; }
+
+/* 单页骨架：标题 + 正文段落（DanSkeleton 使用，之前缺失导致占位块无尺寸） */
+.sk-dan { display: flex; flex-direction: column; gap: var(--space-3); }
+.sk-dan-title { width: 50%; height: 26px; }
+.sk-dan-body { display: flex; flex-direction: column; gap: var(--space-2); }
 
 .sk-user {
   display: flex;
@@ -3183,25 +3253,22 @@ img { max-width: 100%; }
   justify-content: center;
   gap: var(--space-2);
 }
-/* 操作胶囊移出 hero，落到下方统一操作条 */
-.page-hero-actions {
-  position: relative;
+/* 内页功能区块：就地在各页 DOM 流里（.site-content > .container 内），属于内页而非随机背景 hero。
+   hero 本身不含任何操作条；此区用【上边线】与上方 hero 分隔。 */
+.page-actions {
   width: 100%;
-  background: var(--c-bg);
-  border-bottom: 1px solid var(--c-border);
+  border-top: 1px solid var(--c-border);
+  padding: var(--space-3) 0;
 }
-.page-hero-actions-inner {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: var(--space-3) var(--page-gutter);
+.page-actions-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;   /* 全站操作胶囊统一靠右（死命令）：所有走 PageHeader extra 的详情页一并生效 */
+  justify-content: flex-end;   /* 全站内页功能按钮统一靠右（死命令） */
   gap: var(--space-2);
 }
-/* 统一操作条内的胶囊高度/圆角，消除「忽大忽小」 */
-.page-hero-actions-inner .ant-btn {
+/* 统一功能区块内胶囊高度/圆角，消除「忽大忽小」 */
+.page-actions-inner .ant-btn {
   height: var(--capsule-h);
   border-radius: var(--capsule-radius);
 }
@@ -3210,7 +3277,7 @@ img { max-width: 100%; }
   .page-hero { min-height: 260px; }
   .page-hero-content { padding: var(--space-5) var(--page-gutter); }
   .page-hero-title.ant-typography { font-size: 22px !important; -webkit-text-stroke-width: 1.5px; }
-  .page-hero-actions-inner { padding: var(--space-2) var(--page-gutter); }
+  .page-actions { padding: var(--space-2) 0; }
 }
 
 /* 聚合搜索结果卡片 */

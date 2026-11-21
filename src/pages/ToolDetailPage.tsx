@@ -9,6 +9,7 @@ import { useSite } from '@/context/SiteContext';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { ToolDetailSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getTool, submitReport, toggleFavorite, readFaved, exportSkillDownload, type ToolItem } from '@/services/userCenter';
 import { assetUrl, stripHtmlSuffix } from '@/utils/route';
 import SkillChat from '@/components/common/SkillChat';
@@ -114,7 +115,15 @@ const ToolDetailPage: React.FC = () => {
             .catch((e) => message.error(e?.message || '导出失败'));
     };
 
-    if (loading) return <ToolDetailSkeleton />;
+    const showSkeleton = useMinLoading(loading);
+    if (showSkeleton) {
+        return (
+            <Flex vertical gap={20}>
+                <PageHeader title="技能详情" />
+                <ToolDetailSkeleton />
+            </Flex>
+        );
+    }
 
     if (error || !item) {
         return (

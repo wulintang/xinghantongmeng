@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { PageHeader, AdSlotSkeleton } from '@components/common';
 import { AbstractSkeleton } from '@components/common/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getPosts } from '@/services/postService';
 import { feedClick, getWebsiteByDomain, getWebsites, submitReport, type WebsiteItem } from '@/services/userCenter';
 import type { PostData } from '@/types/post';
@@ -65,7 +66,8 @@ const AbstractPage: React.FC = () => {
     const [params] = useSearchParams();
     const link = params.get('link') || '';
 
-    const [loading, setLoading] = useState(true);
+    const [rawLoading, setLoading] = useState(true);
+    const loading = useMinLoading(rawLoading);
     const [posts, setPosts] = useState<PostData[]>([]);
     const [siteIcons, setSiteIcons] = useState<Record<string, string>>({});
     const [error, setError] = useState('');

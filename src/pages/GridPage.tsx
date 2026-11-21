@@ -4,6 +4,7 @@ import { Alert, Button, Form, Input, InputNumber, Modal, Typography, message } f
 import { getToken } from '@/utils/auth';
 import { getGrid, applyGrid, type AdPayGrid } from '@/services/adpay';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { PageHeader } from '@components/common';
 import { GridSkeleton } from '@components/common/skeleton';
 import GridCanvas from '@components/common/GridCanvas';
@@ -78,7 +79,15 @@ export default function GridPage(): React.JSX.Element {
       .finally(() => setSubmitting(false));
   };
 
-  if (loading) return <GridSkeleton />;
+  const showSkeleton = useMinLoading(loading);
+  if (showSkeleton) {
+    return (
+      <div className="grid-page">
+        <PageHeader title="格子广告" />
+        <GridSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="grid-page">

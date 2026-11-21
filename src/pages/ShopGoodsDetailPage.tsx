@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import PageHeader from '@components/common/PageHeader';
 import MdView from '@components/common/MdView';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getToken } from '@/utils/auth';
 import { toggleFavorite, readFaved, submitReport } from '@/services/userCenter';
 import {
@@ -157,8 +158,14 @@ const ShopGoodsDetailPage: React.FC = () => {
       .finally(() => setBuying(false));
   };
 
-  if (loading) {
-    return <ShopGoodsDetailSkeleton />;
+  const showSkeleton = useMinLoading(loading);
+  if (showSkeleton) {
+    return (
+      <div className="shop-detail-page">
+        <PageHeader title="商品详情" />
+        <ShopGoodsDetailSkeleton />
+      </div>
+    );
   }
   if (!detail) {
     return (

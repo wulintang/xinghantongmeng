@@ -1,20 +1,36 @@
 import React from 'react';
-import { Col, Row, Skeleton } from 'antd';
+import { Card, Col, Flex, Row } from 'antd';
 
-/** 集市列表骨架：与 ShopPage 网格一致的在售商品卡片占位 */
+import Skeleton from './Skeleton';
+
+/** 集市列表骨架：按 ShopPage 真实 DOM —— 筛选卡 + shop-goods-card 网格（方图 + 标题/描述/价格胶囊） */
 export default function ShopSkeleton(): React.JSX.Element {
     return (
         <div className="sk-page">
+            <Card className="shop-filter-card">
+                <Flex vertical gap={14} align="center">
+                    <div className="sk-block sk-search" style={{ height: 40 }} />
+                    <Flex wrap gap={8} justify="center">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="sk-chip" style={{ width: 60 }} />
+                        ))}
+                    </Flex>
+                </Flex>
+            </Card>
             <Row gutter={[16, 16]} align="stretch">
                 {Array.from({ length: 12 }).map((_, i) => (
                     <Col key={i} xs={12} sm={12} md={8} lg={6}>
-                        <div className="sk-card shop-goods-card">
-                            <Skeleton.Image active className="u-w-100 u-h-150px" />
-                            <div className="u-p-12px-14px">
-                                <Skeleton active title={{ width: '80%' }} paragraph={{ rows: 2 }} />
-                                <Skeleton active title={false} paragraph={{ rows: 1, width: ['40%'] }} />
+                        <Card className="shop-goods-card">
+                            <Skeleton className="sk-cover-1x1" style={{ borderRadius: 0 }} />
+                            <div className="sk-shop-goods-body">
+                                <Skeleton className="sk-line sk-line-long" />
+                                <Skeleton className="sk-line sk-line-mid" />
+                                <Flex justify="space-between" align="center">
+                                    <Skeleton className="sk-line sk-line-short" />
+                                    <Skeleton className="sk-chip" style={{ width: 48 }} />
+                                </Flex>
                             </div>
-                        </div>
+                        </Card>
                     </Col>
                 ))}
             </Row>

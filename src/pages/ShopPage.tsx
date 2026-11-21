@@ -8,6 +8,7 @@ import PageHeader from '@components/common/PageHeader';
 import ShopGoodsCard from '@components/common/ShopGoodsCard';
 import SearchBox from '@components/common/SearchBox';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useMinLoading } from '@/hooks/useMinLoading';
 import { getShopConfig, getMallList, cateOptionsFrom, type MallGoodsItem, type ShopConfig } from '@/services/shop';
 import { ShopSkeleton } from '@components/common/skeleton';
 
@@ -28,7 +29,8 @@ const ShopPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [list, setList] = useState<MallGoodsItem[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [rawLoading, setLoading] = useState(true);
+  const loading = useMinLoading(rawLoading);
   const [failed, setFailed] = useState(false);
 
   const cateOptions = cateOptionsFrom(cfg);

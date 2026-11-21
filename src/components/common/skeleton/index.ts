@@ -17,3 +17,5 @@ export { default as AbstractSkeleton } from './AbstractSkeleton';
 export { default as ShopSkeleton } from './ShopSkeleton';
 export { default as ShopGoodsDetailSkeleton } from './ShopGoodsDetailSkeleton';
 export { default as GridSkeleton } from './GridSkeleton';
+export { default as ColumnsSkeleton } from './ColumnsSkeleton';
+export { default as ColumnDetailSkeleton } from './ColumnDetailSkeleton';

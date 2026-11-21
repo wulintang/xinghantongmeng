@@ -1,14 +1,23 @@
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Flex } from 'antd';
 
-export default function MessagesSkeleton() {
-  return (
-    <div className="sk-list">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div className="sk-list-row" key={i}>
-          <Skeleton active avatar={{ size: 36 }} title={{ width: '30%' }} paragraph={{ rows: 1, width: ['70%'] }} />
+import Skeleton from './Skeleton';
+
+/** 消息列表骨架：按 MessagesPage 真实 DOM —— 头像 + 标题 + 一行摘要 */
+export default function MessagesSkeleton(): React.JSX.Element {
+    return (
+        <div className="sk-list">
+            {Array.from({ length: 5 }).map((_, i) => (
+                <div className="sk-list-row" key={i}>
+                    <Flex gap={12} align="flex-start">
+                        <Skeleton className="sk-avatar-circle-36" />
+                        <Flex vertical gap={8} style={{ flex: 1 }}>
+                            <Skeleton className="sk-line" style={{ width: '30%' }} />
+                            <Skeleton className="sk-line sk-line-long" />
+                        </Flex>
+                    </Flex>
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 }

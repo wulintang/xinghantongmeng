@@ -29,12 +29,14 @@ export interface CardTableProps<T> {
     loading?: boolean;
     className?: string;
     expandable?: TableProps<T>['expandable'];
-    pagination?: TableProps<T>['pagination'];
-    locale?: TableProps<T>['locale'];
+  pagination?: TableProps<T>['pagination'];
+  locale?: TableProps<T>['locale'];
+  /** 是否强制横向滚动（默认 true）；内容已用 uc-ellipsis+Tooltip 收敛时可传 false 消除滚动条 */
+  scrollX?: boolean;
 }
 
 export default function CardTable<T extends Record<string, any>>(props: CardTableProps<T>) {
-    const { columns, dataSource, rowKey, loading, className, expandable, pagination, locale } = props;
+    const { columns, dataSource, rowKey, loading, className, expandable, pagination, locale, scrollX = true } = props;
     const isMobile = useIsMobile();
 
     if (isMobile) {
@@ -80,7 +82,7 @@ export default function CardTable<T extends Record<string, any>>(props: CardTabl
             pagination={pagination}
             expandable={expandable}
             locale={locale}
-            scroll={{ x: 'max-content' }}
+            scroll={scrollX ? { x: 'max-content' } : undefined}
         />
     );
 }

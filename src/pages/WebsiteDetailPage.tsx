@@ -198,6 +198,8 @@ const WebsiteDetailPage: React.FC = () => {
 
     const related = Array.isArray(item.related) ? item.related : [];
     const siteDomain = domainOf(item);
+    const ff = item.fulfill;
+    const ffDone = !!ff && Number(ff.status) === 1;
     const sitePosts = allPosts.filter(
         (p) => normalizeDomain(domainOf(p)) === normalizeDomain(siteDomain)
     );
@@ -241,13 +243,18 @@ const WebsiteDetailPage: React.FC = () => {
                     <Flex vertical gap={10} className="detail-main">
                         <Space size={[8, 8]} wrap className="site-info-pills">
                             <Tag color={claimed ? 'green' : 'orange'}>{claimed ? '已认领' : '未认领'}</Tag>
-                            {item.fulfill && Number(item.fulfill.status) === 1 ? (
-                                <Tag color="success" className="site-fulfill-pill">
-                                    <Link to={`/certificate/${encodeURIComponent(item.fulfill.domain || domain)}`} className="u-color-inherit">
-                                        ✓ {item.fulfill.agree} · 已履约
+                            <Tag
+                                color={ffDone ? 'success' : 'default'}
+                                className={`site-fulfill-pill ${ffDone ? 'is-on' : 'is-off'}`}
+                            >
+                                {ffDone ? (
+                                    <Link to={`/certificate/${encodeURIComponent(ff?.domain || domain)}`} className="u-color-inherit">
+                                        ✓ {ff?.agree} · 已履约
                                     </Link>
-                                </Tag>
-                            ) : null}
+                                ) : (
+                                    <span>○ 未履约</span>
+                                )}
+                            </Tag>
                             {claimed && item.owner ? (
                                 <Tag color="blue">
                                     <Link to={`/user/${item.uid}`} className="u-color-inherit">

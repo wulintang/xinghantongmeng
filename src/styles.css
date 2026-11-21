@@ -3568,3 +3568,4 @@ img { max-width: 100%; }
   background: var(--c-bg-soft);
   color: var(--c-text);
 }
+.fulfill-manage .fulfill-tier-label { display: block; margin-bottom: 4px; font-size: 13px; }

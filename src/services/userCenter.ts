@@ -870,6 +870,16 @@ export interface FulfillRecord {
 export function getMyFulfills(key: string) {
   return request<ApiResp<FulfillRecord[]>>(`${FULFILL}/mine.html?key=${encodeURIComponent(key)}`);
 }
+export interface FulfillPreviewItem {
+  years: number;
+  agree: string;
+  html: string;
+}
+export function previewFulfillHtml(key: string, siteId: number | string) {
+  return request<ApiResp<{ domain: string; list: FulfillPreviewItem[] }>>(
+    `${FULFILL}/preview.html?key=${encodeURIComponent(key)}&site_id=${encodeURIComponent(String(siteId))}`
+  );
+}
 export function applyFulfill(key: string, siteId: number | string, years: number) {
   return post<ApiResp>('/apply.html', { key, site_id: siteId, years }, FULFILL);
 }

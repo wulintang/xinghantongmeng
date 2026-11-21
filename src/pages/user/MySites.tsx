@@ -9,8 +9,8 @@ import { Link } from 'react-router-dom';
 
 import {
     getMySites, delMySite, delMySiteApply,
-    getMyFulfills, applyFulfill, verifyFulfill, cancelFulfill,
-    type WebsiteItem, type FulfillRecord,
+    getMyFulfills, applyFulfill, verifyFulfill, cancelFulfill, previewFulfillHtml,
+    type WebsiteItem, type FulfillRecord, type FulfillPreviewItem,
 } from '@/services/userCenter';
 import { domainOf } from '@/utils/route';
 import { getToken } from '@/utils/auth';
@@ -33,6 +33,8 @@ export default function MySitesPage() {
     const [curRec, setCurRec] = useState<FulfillRecord | null>(null);
     const [years, setYears] = useState(3);
     const [acting, setActing] = useState(false);
+    const [previewList, setPreviewList] = useState<FulfillPreviewItem[]>([]);
+    const [previewLoading, setPreviewLoading] = useState(false);
 
     const load = () => {
         const key = getToken();
@@ -82,35 +84,41 @@ export default function MySitesPage() {
         setCurRec(rec);
         setYears(rec?.years || 3);
         setFulfillOpen(true);
+        // 打开即拉取四档 HTML，无需先申请
+        const key = getToken();
+        if (!key) return;
+        setPreviewList([]);
+        setPreviewLoading(true);
+        previewFulfillHtml(key, row.id)
+            .then((r: any) => {
+                if (r.code === 1) setPreviewList(r.data?.list || []);
+                else message.error(r.msg || '获取履约标识失败');
+            })
+            .catch(() => message.error('网络错误'))
+            .finally(() => setPreviewLoading(false));
     };
 
     const doApply = () => {
         const key = getToken();
         if (!key || !curSite) return;
         setActing(true);
+        // 先申请建记录，随即触发系统验证（通过/失败各一次通知，不跳转）
         applyFulfill(key, curSite.id, years)
             .then((r: any) => {
-                if (r.code === 1) {
-                    message.success('已提交，请将下方标识贴到站点首页后验证');
-                    load();
-                } else message.error(r.msg || '申请失败');
+                if (r.code !== 1) {
+                    message.error(r.msg || '申请失败');
+                    return;
+                }
+                return verifyFulfill(key, curSite.id).then((v: any) => {
+                    if (v.code === 1) message.success(v.msg || '履约验证通过');
+                    else message.error(v.msg || '未通过验证，请确认已悬挂履约标识');
+                });
             })
             .catch(() => message.error('网络错误'))
-            .finally(() => setActing(false));
-    };
-
-    const doVerify = () => {
-        const key = getToken();
-        if (!key || !curSite) return;
-        setActing(true);
-        verifyFulfill(key, curSite.id)
-            .then((r: any) => {
-                if (r.code === 1) message.success(r.msg || '履约验证通过');
-                else message.error(r.msg || '未通过验证');
+            .finally(() => {
+                setActing(false);
                 load();
-            })
-            .catch(() => message.error('网络错误'))
-            .finally(() => setActing(false));
+            });
     };
 
     const doCancel = () => {
@@ -145,7 +153,15 @@ export default function MySitesPage() {
                 </Space>
             ),
         },
-        { title: '域名', dataIndex: 'www', render: (v: string) => v || '-' },
+        {
+            title: '域名',
+            dataIndex: 'www',
+            render: (v: string) => (
+                <AppTooltip title={v || '-'}>
+                    <Text className="uc-ellipsis">{v || '-'}</Text>
+                </AppTooltip>
+            ),
+        },
         {
             title: '状态',
             dataIndex: 'open',
@@ -200,7 +216,6 @@ export default function MySitesPage() {
 
     const rec = curRec;
     const status = rec ? Number(rec.status) : 0;
-    const embedHtml = rec?.embed_html || '';
 
     return (
         <Card
@@ -222,6 +237,7 @@ export default function MySitesPage() {
                 pagination={false}
                 columns={columns}
                 dataSource={list}
+                scrollX={false}
             />
 
             <Modal
@@ -248,43 +264,47 @@ export default function MySitesPage() {
                             className="mb-16" />
                     ) : null}
 
-                    <Divider orientation="left" plain>1. 选择履约档位</Divider>
-                    <Radio.Group value={years} onChange={(e) => setYears(e.target.value)} disabled={status === 1}>
+                    <Divider orientation="left" plain>1. 复制履约标识，贴到站点首页</Divider>
+                    <Paragraph type="secondary" className="fulfill-tip">
+                        下面四档 HTML 已按你的站点生成，直接复制对应档位贴到站点首页（如页脚）。履约几年即显示「几年之约」，含站点 logo 与履约进度，点击跳转履约证明。
+                    </Paragraph>
+                    {previewLoading ? (
+                        <Alert type="info" showIcon message="正在生成履约标识…" />
+                    ) : previewList.length ? (
+                        <Flex vertical gap={12}>
+                            {previewList.map((p) => (
+                                <div key={p.years}>
+                                    <Text strong className="fulfill-tier-label">{p.agree}</Text>
+                                    <Input.TextArea value={p.html} readOnly rows={2} className="fulfill-embed" />
+                                </div>
+                            ))}
+                        </Flex>
+                    ) : (
+                        <Alert type="info" showIcon message="履约标识生成失败，请关闭后重试" />
+                    )}
+
+                    <Divider orientation="left" plain>2. 选择档位并申请（系统自动验证，无人工审核）</Divider>
+                    <Paragraph type="secondary" className="fulfill-tip">
+                        选好已贴到站点的档位后点「申请」，系统即时抓取站点首页/检测徽章加载，通过即履约、失败保持未履约；通过/失败均发邮件，不跳转。
+                    </Paragraph>
+                    <Radio.Group value={years} onChange={(e) => setYears(e.target.value)} disabled={status === 1} className="mb-16">
                         {YEARS.map((y) => (
                             <Radio.Button key={y} value={y}>{y === 1 ? '一年' : y === 3 ? '三年' : y === 5 ? '五年' : '十年'}之约</Radio.Button>
                         ))}
                     </Radio.Group>
-
-                    <Divider orientation="left" plain>2. 系统生成履约标识（贴到站点首页）</Divider>
-                    <Paragraph type="secondary" className="fulfill-tip">
-                        将下面这段 HTML 复制到你站点首页（如页脚）。履约几年即显示「几年之约」，含站点 logo 与履约进度，点击跳转履约证明。
-                    </Paragraph>
-                    {embedHtml ? (
-                        <Input.TextArea value={embedHtml} readOnly rows={3} className="fulfill-embed" />
-                    ) : (
-                        <Alert type="info" showIcon message="请先选择档位并点击「申请加入」生成标识" />
-                    )}
-
-                    <Divider orientation="left" plain>3. 系统验证（无人工审核）</Divider>
-                    <Paragraph type="secondary" className="fulfill-tip">
-                        贴好标识后点击验证：系统抓取站点首页或检测徽章加载，通过即履约，未通过保持未履约；通过/失败均发邮件提醒。
-                    </Paragraph>
                     <Flex gap={8} wrap>
                         {status === 1 ? null : (
-                            <Button type="primary" loading={acting} onClick={rec ? doVerify : doApply}>
-                                {rec ? '我已贴好，验证' : '申请加入并生成标识'}
+                            <Button type="primary" loading={acting} onClick={doApply}>
+                                申请并验证
                             </Button>
                         )}
-                        {rec && years !== rec.years && status !== 1 ? (
-                            <Button loading={acting} onClick={doApply}>按新档位更新</Button>
-                        ) : null}
                         {rec && status === 1 ? (
                             <Popconfirm title="确认撤销履约？撤销后不再展示履约标识。" onConfirm={doCancel} okText="撤销" cancelText="取消">
                                 <Button danger loading={acting}>撤销履约</Button>
                             </Popconfirm>
                         ) : null}
                         {rec ? (
-                            <Link to={rec.cert_url} target="_blank"><Button>查看履约证明</Button></Link>
+                            <a href={rec.cert_url} target="_blank" rel="noreferrer"><Button>查看履约证明</Button></a>
                         ) : null}
                     </Flex>
                 </div>
